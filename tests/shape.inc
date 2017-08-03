@@ -1,0 +1,319 @@
+#ifndef __SHAPE_INCLUDED__
+#define __SHAPE_INCLUDED__
+
+/*
+  Shape is base class
+*/
+class_table(shape)
+{
+  void (*virtual_dtor)(pointer);
+  void (*virtual_copy_ctor)(pointer,const_pointer);
+  void (*virtual_assign)(pointer,const_pointer);
+  double (*area)(const_pointer);
+};
+
+class_instance(shape)
+{
+};
+
+class(shape);
+
+void shape_default_ctor(pointer p)
+{
+  if(optr)
+    optr+=sprintf(optr,"SDC:");
+  /* For this case, does nothing */
+}
+
+void shape_dtor(pointer p)
+{
+  if(optr)
+    optr+=sprintf(optr,"SVD:");
+  M(((shape_pointer)p),virtual_dtor);
+}
+
+void shape_copy_ctor(pointer d,const_pointer s)
+{
+  if(optr)
+    optr+=sprintf(optr,"SCC:");
+  M(((shape_pointer)d),virtual_copy_ctor,s);
+}
+
+void shape_assign(pointer d,const_pointer s)
+{
+  if(optr)
+    optr+=sprintf(optr,"SA:");
+  M(((shape_pointer)d),virtual_assign,s);
+}
+
+/*
+  Class table for shape is NULL because no items of type shape will be called.
+*/
+
+DEFINE_TYPE_INFO(shape,shape_default_ctor,shape_dtor,shape_copy_ctor,shape_assign,NULL,NULL,NULL)
+/*
+  Circle is derived from shape
+*/
+class_table(circle)
+{
+  shape_class_members_t;
+  void (*set_radius)(pointer p,double v);
+};
+
+class_instance(circle)
+{
+  double radius_;
+};
+
+class(circle);
+
+/*
+  Need a default constructor for derived classes
+*/
+void circle_default_ctor(pointer p)
+{
+  circle_pointer this=p;
+  this->radius_=0;
+  if(optr)
+    optr+=sprintf(optr,"CDC:");
+}
+
+void circle_virtual_dtor(pointer p)
+{
+  if(optr)
+    optr+=sprintf(optr,"CVD:");
+}
+
+void circle_virtual_copy_ctor(pointer d,const_pointer s)
+{
+  ((circle_pointer)d)->radius_=((circle_const_pointer)s)->radius_;
+  if(optr)
+    optr+=sprintf(optr,"CVCC:");
+}
+
+void circle_virtual_assign(pointer d,const_pointer s)
+{
+  ((circle_pointer)d)->radius_=((circle_const_pointer)s)->radius_;
+  if(optr)
+    optr+=sprintf(optr,"CVA:");
+}
+
+double circle_area(const_pointer p)
+{
+  if(optr)
+    optr+=sprintf(optr,"Circle Area=%lg : ",(((circle_const_pointer)p)->radius_*((circle_const_pointer)p)->radius_)*3.1415927);
+  return (((circle_const_pointer)p)->radius_*((circle_const_pointer)p)->radius_)*3.1415927;
+}
+
+void circle_dtor(pointer p)
+{
+  if(optr)
+    optr+=sprintf(optr,"CD:");
+}
+
+void circle_copy_ctor(pointer d,const_pointer s)
+{
+  ((circle_pointer)d)->radius_=((circle_const_pointer)s)->radius_;
+  if(optr)
+    optr+=sprintf(optr,"CCC:");
+}
+
+void circle_assign(pointer d,const_pointer s)
+{
+  ((circle_pointer)d)->radius_=((circle_const_pointer)s)->radius_;
+  if(optr)
+    optr+=sprintf(optr,"CA:");
+}
+
+void circle_set_radius(pointer p,double value)
+{
+  if(optr)
+    optr+=sprintf(optr,"CSR:");
+  ((circle_pointer)p)->radius_=value;
+}
+
+void circle_ctor_radius(pointer p,va_list args)
+{
+  if(optr)
+    optr+=sprintf(optr,"CCR:");
+  circle_set_radius(p,va_arg(args,double));
+}
+
+circle_class_members_t circle_class_members=
+{
+  {
+    circle_virtual_dtor,
+    circle_virtual_copy_ctor,
+    circle_virtual_assign,
+    circle_area
+  },
+    circle_set_radius
+};
+
+DEFINE_TYPE_INFO(circle,circle_default_ctor,NULL,NULL,NULL,NULL,&circle_class_members,shape)
+
+/*
+  Square is derived from shape
+*/
+class_table(square)
+{
+  shape_class_members_t;
+  void (*set_length)(pointer,double);
+};
+
+class_instance(square)
+{
+  double length_;
+};
+
+class(square);
+
+void square_default_ctor(pointer p)
+{
+  if(optr)
+    optr+=sprintf(optr,"SQDC:");
+  ((square_pointer)p)->length_=0;
+}
+
+void square_virtual_dtor(pointer p)
+{
+  if(optr)
+    optr+=sprintf(optr,"SQVD:");
+}
+
+void square_virtual_copy_ctor(pointer d,const_pointer s)
+{
+  if(optr)
+    optr+=sprintf(optr,"SQVCC:");
+  ((square_pointer)d)->length_=((square_const_pointer)s)->length_;
+}
+
+void square_virtual_assign(pointer d,const_pointer s)
+{
+  if(optr)
+    optr+=sprintf(optr,"SQVA:");
+  ((square_pointer)d)->length_=((square_const_pointer)s)->length_;
+}
+
+double square_area(const_pointer p)
+{
+  if(optr)
+    optr+=sprintf(optr,"Square area=%lg : ",((square_const_pointer)p)->length_*((square_const_pointer)p)->length_);
+  return ((square_const_pointer)p)->length_*((square_const_pointer)p)->length_;
+}
+
+void square_set_length(pointer p,double value)
+{
+  if(optr)
+    optr+=sprintf(optr,"SQSL:");
+  ((square_pointer)p)->length_=value;
+}
+
+void square_ctor_length(pointer p,va_list args)
+{
+  if(optr)
+    optr+=sprintf(optr,"SQCL:");
+  square_set_length(p,va_arg(args,double));
+}
+
+square_class_members_t square_class_members=
+{
+  {
+    square_virtual_dtor,
+    square_virtual_copy_ctor,
+    square_virtual_assign,
+    square_area
+  },
+    square_set_length
+};
+
+DEFINE_TYPE_INFO(square,square_default_ctor,NULL,NULL,NULL,NULL,&square_class_members,shape)
+
+/*
+  Rectangle is derived from square
+*/
+class_table(rectangle)
+{
+  square_class_members_t;
+  void (*set_width)(pointer,double);
+};
+
+class_instance(rectangle)
+{
+  square_instance_members_t;
+  double width_;
+};
+
+class(rectangle);
+
+void rectangle_default_ctor(pointer p)
+{
+  if(optr)
+    optr+=sprintf(optr,"RDC:");
+  ((rectangle_pointer)p)->length_=0;
+  ((rectangle_pointer)p)->width_=0;
+}
+
+void rectangle_virtual_dtor(pointer p)
+{
+  if(optr)
+    optr+=sprintf(optr,"RVD:");
+}
+
+void rectangle_virtual_copy_ctor(pointer d,const_pointer s)
+{
+  if(optr)
+    optr+=sprintf(optr,"RVCC:");
+  square_virtual_copy_ctor(d,s);
+  ((rectangle_pointer)d)->width_=((rectangle_const_pointer)s)->width_;
+}
+
+void rectangle_virtual_assign(pointer d,const_pointer s)
+{
+  if(optr)
+    optr+=sprintf(optr,"RVA:");
+  square_virtual_assign(d,s);
+  ((rectangle_pointer)d)->width_=((rectangle_const_pointer)s)->width_;
+}
+
+double rectangle_area(const_pointer p)
+{
+  if(optr)
+    optr+=sprintf(optr,"Rectangle Area=%lg : ",((rectangle_const_pointer)p)->length_*((rectangle_const_pointer)p)->width_);
+  return ((rectangle_const_pointer)p)->length_*((rectangle_const_pointer)p)->width_;
+}
+
+void rectangle_set_width(pointer p,double value)
+{
+  if(optr)
+    optr+=sprintf(optr,"RSW:");
+  ((rectangle_pointer)p)->width_=value;
+}
+
+void rectangle_ctor_length_width(pointer p,va_list args)
+{
+  if(optr)
+    optr+=sprintf(optr,"RCLW:");
+  double length=va_arg(args,double);
+  double width=va_arg(args,double);
+  square_set_length(p,length);
+  rectangle_set_width(p,width);
+}
+
+rectangle_class_members_t rectangle_class_members =
+{
+  {
+    {
+      rectangle_virtual_dtor,
+      rectangle_virtual_copy_ctor,
+      rectangle_virtual_assign,
+      rectangle_area
+    },
+      square_set_length
+  },
+  rectangle_set_width
+};
+
+DEFINE_TYPE_INFO(rectangle,rectangle_default_ctor,NULL,NULL,NULL,NULL,&rectangle_class_members,square)
+
+#endif
