@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <yaooc/container.h>
+#include <yaooc/array_container.h>
 #include "test_harness.h"
 #include "simple_object.inc"
 
@@ -12,7 +12,7 @@ typedef const int32_t* int32_container_const_iterator;
 
 class_table(int32_container)
 {
-  yaooc_container_class_members_t;
+  yaooc_array_container_class_members_t;
   int32_container_iterator (*begin)(pointer);
   int32_container_iterator (*end)(pointer);
   int32_container_const_iterator (*cbegin)(const_pointer);
@@ -21,40 +21,40 @@ class_table(int32_container)
   int32_container_const_iterator (*cfind)(const_pointer,const_pointer);
   int32_container_const_iterator (*insert)(pointer,const_iterator,const_pointer);
   int32_container_const_iterator (*insert_range)(pointer,const_iterator,const_iterator,const_iterator);
-  int32_container_const_iterator (*insert_n)(pointer,const_iterator,size_t,const_pointer);
+  int32_container_const_iterator (*insert_n)(pointer,const_iterator,yaooc_size_type,const_pointer);
   int32_container_iterator (*erase)(pointer,const_iterator);
   int32_container_iterator (*erase_range)(pointer,const_iterator,const_iterator);
-  size_t (*erase_value)(pointer,const_pointer);
-  void (*resize)(pointer,size_t,const_pointer);
+  yaooc_size_type (*erase_value)(pointer,const_pointer);
+  void (*resize)(pointer,yaooc_size_type,const_pointer);
   void (*shrink_to_fit)(pointer);
 };
 
 class_instance(int32_container)
 {
-	yaooc_container_instance_members_t;
+	yaooc_array_container_instance_members_t;
 };
 
 class(int32_container);
 
-#define int32_container_begin (int32_container_iterator (*)(pointer))yaooc_container_begin
-#define int32_container_end (int32_container_iterator (*)(pointer))yaooc_container_end
-#define int32_container_find (int32_container_iterator (*)(const_pointer,const_pointer))yaooc_container_find
-#define int32_container_insert (int32_container_const_iterator (*)(pointer,const_iterator,const_pointer))yaooc_container_insert
-#define int32_container_insert_range (int32_container_const_iterator (*)(pointer,const_iterator,const_iterator,const_iterator))yaooc_container_insert_range
-#define int32_container_insert_n (int32_container_const_iterator (*)(pointer,const_iterator,size_t,const_pointer))yaooc_container_insert_n
-#define int32_container_erase (int32_container_iterator (*)(pointer,const_iterator))yaooc_container_erase
-#define int32_container_erase_range (int32_container_iterator (*)(pointer,const_iterator,const_iterator))yaooc_container_erase_range
-#define int32_container_erase_value (size_t (*)(pointer,const_pointer))yaooc_container_erase_value
-#define int32_container_resize (void (*)(pointer,size_t,const_pointer))yaooc_container_resize
-#define int32_container_shrink_to_fit (void (*)(pointer))yaooc_container_shrink_to_fit
+#define int32_container_begin (int32_container_iterator (*)(pointer))yaooc_array_container_begin
+#define int32_container_end (int32_container_iterator (*)(pointer))yaooc_array_container_end
+#define int32_container_find (int32_container_iterator (*)(const_pointer,const_pointer))yaooc_array_container_find
+#define int32_container_insert (int32_container_const_iterator (*)(pointer,const_iterator,const_pointer))yaooc_array_container_insert
+#define int32_container_insert_range (int32_container_const_iterator (*)(pointer,const_iterator,const_iterator,const_iterator))yaooc_array_container_insert_range
+#define int32_container_insert_n (int32_container_const_iterator (*)(pointer,const_iterator,yaooc_size_type,const_pointer))yaooc_array_container_insert_n
+#define int32_container_erase (int32_container_iterator (*)(pointer,const_iterator))yaooc_array_container_erase
+#define int32_container_erase_range (int32_container_iterator (*)(pointer,const_iterator,const_iterator))yaooc_array_container_erase_range
+#define int32_container_erase_value (yaooc_size_type (*)(pointer,const_pointer))yaooc_array_container_erase_value
+#define int32_container_resize (void (*)(pointer,yaooc_size_type,const_pointer))yaooc_array_container_resize
+#define int32_container_shrink_to_fit (void (*)(pointer))yaooc_array_container_shrink_to_fit
 const char*int32_container_isa(const_pointer);
 bool int32_container_is_descendent(const_pointer,const char*);
 void int32_container_default_ctor(pointer d)
 {
-	call_constructor(d,yaooc_container_ctor,int32_ti);
+	call_constructor(d,yaooc_array_container_ctor,int32_ti);
 }
 
-ISA_IMPLEMENTATION(int32_container,yaooc_container)
+ISA_IMPLEMENTATION(int32_container,yaooc_array_container)
 
 int32_container_class_members_t int32_container_class_members=
 {
@@ -62,9 +62,9 @@ int32_container_class_members_t int32_container_class_members=
     {
       int32_container_isa,
       int32_container_is_descendent,
-      yaooc_container_swap
+      yaooc_array_container_swap
     },
-    YAOOC_CONTAINER_NEW_METHODS
+    YAOOC_ARRAY_CONTAINER_NEW_METHODS
   },
   int32_container_begin,
   int32_container_end,
@@ -83,17 +83,17 @@ int32_container_class_members_t int32_container_class_members=
 };
 
 DEFINE_TYPE_INFO(int32_container,int32_container_default_ctor,NULL,NULL,NULL,NULL,
-      &int32_container_class_members,yaooc_container)
+      &int32_container_class_members,yaooc_array_container)
 
 void test_sizes()
 {
 //	printf("%zu\n",sizeof(int32_container_t));
-	TEST("SIZE container == 48",sizeof(int32_container_t)== 48);
+	TEST("SIZE container == 40",sizeof(int32_container_t)== 40);
 }
 
 void test_constructor()
 {
-	yaooc_container_pointer bc=new_ctor(yaooc_container,yaooc_container_ctor,int32_ti);
+	yaooc_array_container_pointer bc=new_ctor(yaooc_array_container,yaooc_array_container_ctor,int32_ti);
 	TEST("Array is NULL",bc->array_==NULL);
 	TEST("Typeinfo is int32_ti",bc->type_info_==int32_ti);
 	TEST("Size is 0",bc->size_==0);
@@ -275,8 +275,8 @@ typedef simple_object_t* simple_object_container_iterator;
 typedef const simple_object_t* simple_object_container_const_iterator;
 
 typedef void (*simple_object_container_clear_method)(pointer);
-typedef size_t (*simple_object_container_size_method)(const_pointer);
-typedef size_t (*simple_object_container_capacity_method)(const_pointer);
+typedef yaooc_size_type (*simple_object_container_size_method)(const_pointer);
+typedef yaooc_size_type (*simple_object_container_capacity_method)(const_pointer);
 typedef bool (*simple_object_container_empty_method)(const_pointer);
 typedef simple_object_container_iterator (*simple_object_container_find_method)(const_pointer,const_pointer);
 typedef simple_object_container_const_iterator (*simple_object_container_cfind_method)(const_pointer,const_pointer);
@@ -286,15 +286,15 @@ typedef simple_object_container_const_iterator (*simple_object_container_cbegin_
 typedef simple_object_container_const_iterator (*simple_object_container_cend_method)(const_pointer);
 typedef simple_object_container_const_iterator (*simple_object_container_insert_method)(const_pointer,const_iterator,const_pointer);
 typedef simple_object_container_const_iterator (*simple_object_container_insert_range_method)(const_pointer,const_iterator,const_iterator,const_iterator);
-typedef simple_object_container_const_iterator (*simple_object_container_insert_n_method)(const_pointer,const_iterator,size_t,const_pointer);
-typedef void (*simple_object_container_resize_method)(pointer,size_t,const_pointer);
+typedef simple_object_container_const_iterator (*simple_object_container_insert_n_method)(const_pointer,const_iterator,yaooc_size_type,const_pointer);
+typedef void (*simple_object_container_resize_method)(pointer,yaooc_size_type,const_pointer);
 typedef void (*simple_object_container_shrink_to_fit_method)(pointer);
 typedef simple_object_container_iterator (*simple_object_container_erase_method)(pointer,const_iterator);
 typedef simple_object_container_iterator (*simple_object_container_erase_range_method)(pointer,const_iterator,const_iterator);
 
 class_table(simple_object_container)
 {
-  yaooc_container_class_members_t;
+  yaooc_array_container_class_members_t;
 	simple_object_container_find_method find;
 	simple_object_container_cfind_method cfind;
 	simple_object_container_begin_method begin;
@@ -312,44 +312,44 @@ class_table(simple_object_container)
 
 class_instance(simple_object_container)
 {
-	yaooc_container_instance_members_t;
+	yaooc_array_container_instance_members_t;
 };
 
 class(simple_object_container);
 
 void simple_object_container_default_ctor(pointer d)
 {
-	call_constructor(d,yaooc_container_ctor,simple_object_ti);
+	call_constructor(d,yaooc_array_container_ctor,simple_object_ti);
 }
 
 simple_object_container_class_members_t simple_object_container_class_members=
 {
-  { YAOOC_CONTAINER_CLASS_MEMBERS },
-	(simple_object_container_find_method)yaooc_container_find,
-	(simple_object_container_cfind_method)yaooc_container_find,
-	(simple_object_container_begin_method)yaooc_container_begin,
-	(simple_object_container_end_method)yaooc_container_end,
-	(simple_object_container_cbegin_method)yaooc_container_begin,
-	(simple_object_container_cend_method)yaooc_container_end,
-	(simple_object_container_insert_method)yaooc_container_insert,
-	(simple_object_container_insert_range_method)yaooc_container_insert_range,
-	(simple_object_container_insert_n_method)yaooc_container_insert_n,
-	(simple_object_container_erase_method)yaooc_container_erase,
-	(simple_object_container_erase_range_method)yaooc_container_erase_range,
-	(simple_object_container_resize_method)yaooc_container_resize,
-	(simple_object_container_shrink_to_fit_method)yaooc_container_shrink_to_fit,
+  { YAOOC_ARRAY_CONTAINER_CLASS_MEMBERS },
+	(simple_object_container_find_method)yaooc_array_container_find,
+	(simple_object_container_cfind_method)yaooc_array_container_find,
+	(simple_object_container_begin_method)yaooc_array_container_begin,
+	(simple_object_container_end_method)yaooc_array_container_end,
+	(simple_object_container_cbegin_method)yaooc_array_container_begin,
+	(simple_object_container_cend_method)yaooc_array_container_end,
+	(simple_object_container_insert_method)yaooc_array_container_insert,
+	(simple_object_container_insert_range_method)yaooc_array_container_insert_range,
+	(simple_object_container_insert_n_method)yaooc_array_container_insert_n,
+	(simple_object_container_erase_method)yaooc_array_container_erase,
+	(simple_object_container_erase_range_method)yaooc_array_container_erase_range,
+	(simple_object_container_resize_method)yaooc_array_container_resize,
+	(simple_object_container_shrink_to_fit_method)yaooc_array_container_shrink_to_fit,
 };
 
 DEFINE_TYPE_INFO(simple_object_container,simple_object_container_default_ctor,
-  NULL,NULL,NULL,NULL,&simple_object_container_class_members,yaooc_container)
+  NULL,NULL,NULL,NULL,&simple_object_container_class_members,yaooc_array_container)
 
 void test_resize_shrink()
 {
 	simple_object_container_pointer soc=new(simple_object_container);
 	TESTCASE("Creation");
 	TEST("Container array is NULL",soc->array_==NULL);
-	TEST("Size is 0",yaooc_container_size(soc)==0);
-	TEST("Capacity is 0",yaooc_container_capacity(soc)==0);
+	TEST("Size is 0",yaooc_array_container_size(soc)==0);
+	TEST("Capacity is 0",yaooc_array_container_capacity(soc)==0);
 
 	simple_object_t* so=new_ctor(simple_object,simple_object_ctor,12);
 	optr=output;

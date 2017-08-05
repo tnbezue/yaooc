@@ -169,7 +169,7 @@ void test_big()
 			}
 		}
 	}
-	printf("%ld clock cycles to insert %zu items\n",clock()-start,M(mfls,size));
+	printf("%ld clock cycles to insert %d items\n",clock()-start,M(mfls,size));
 //	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
 	yaooc_string_int32_ordered_map_const_iterator isi;
 	for(isi=M(mfls,cbegin);isi!=M(mfls,cend);isi++) {
@@ -212,7 +212,7 @@ void test_big_unique_ptr()
 			}
 		}
 	}
-	printf("%ld clock cycles to insert %zu items\n",clock()-start,M(mfls,size));
+	printf("%ld clock cycles to insert %d items\n",clock()-start,M(mfls,size));
 //	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
 	yaooc_string_unique_ptr_int32_ordered_map_const_iterator isi;
 	for(isi=M(mfls,cbegin);isi!=M(mfls,cend);isi++) {

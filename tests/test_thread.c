@@ -66,6 +66,7 @@ void test_single_thread()
     M(mt,join);
   } else
     puts("Failed to start");
+  delete(mt);
 }
 
 #define N_TEST_THREADS 5

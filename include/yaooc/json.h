@@ -250,9 +250,9 @@ typedef json_value_vector_const_iterator json_array_const_iterator;
 class_table(json_array) {
   json_value_class_members_t;
   void (*add)(pointer,const_pointer);
-  json_value_pointer (*at)(pointer,size_t);
-  json_value_const_pointer (*cat)(const_pointer,size_t);
-  size_t (*size)(pointer);
+  json_value_pointer (*at)(pointer,yaooc_size_type);
+  json_value_const_pointer (*cat)(const_pointer,yaooc_size_type);
+  yaooc_size_type (*size)(pointer);
   json_array_iterator (*begin)(pointer);
   json_array_iterator (*end)(pointer);
   json_array_const_iterator (*cbegin)(const_pointer);
@@ -277,8 +277,8 @@ bool json_array_virtual_less_than_compare(const_pointer,const_pointer);
 int json_array_print_to_string(const_pointer,char *,int);
 void json_array_clear(pointer);
 void json_array_add(pointer,const_pointer);
-json_value_pointer json_array_at(pointer,size_t);
-size_t json_array_size(const_pointer);
+json_value_pointer json_array_at(pointer,yaooc_size_type);
+yaooc_size_type json_array_size(const_pointer);
 json_array_iterator json_array_begin(pointer);
 json_array_iterator json_array_end(pointer);
 json_array_const_iterator json_array_cbegin(const_pointer);
@@ -289,9 +289,9 @@ json_array_const_iterator json_array_cend(const_pointer);
 #define JSON_ARRAY_CLASS_MEMBERS \
   { JSON_VALUE_CLASS_MEMBERS }, \
   (void (*)(pointer,const_pointer)) json_array_add,\
-  (json_value_pointer (*)(pointer,size_t)) json_array_at,\
-  (json_value_const_pointer (*)(pointer,size_t)) json_array_at,\
-  (size_t (*)(const_pointer)) json_array_size,\
+  (json_value_pointer (*)(pointer,yaooc_size_type)) json_array_at,\
+  (json_value_const_pointer (*)(pointer,yaooc_size_type)) json_array_at,\
+  (yaooc_size_type (*)(const_pointer)) json_array_size,\
   (json_array_iterator (*)(pointer)) json_array_begin,\
   (json_array_iterator (*)(pointer)) json_array_end,\
   (json_array_const_iterator (*)(const_pointer)) json_array_cbegin,\
@@ -306,7 +306,7 @@ class_table(json_object) {
   void (*insert)(pointer,const_pointer,const_pointer);
   json_value_pointer (*at)(pointer,const_pointer);
   json_value_const_pointer (*cat)(const_pointer,const_pointer);
-  size_t (*size)(const_pointer);
+  yaooc_size_type (*size)(const_pointer);
   json_object_iterator (*begin)(pointer);
   json_object_iterator (*end)(pointer);
   json_object_const_iterator (*cbegin)(const_pointer);
@@ -332,7 +332,7 @@ int json_object_print_to_string(const_pointer,char *,int);
 void json_object_clear(pointer);
 void json_object_insert(pointer,const_pointer,const_pointer);
 json_value_pointer json_object_at(pointer,const_pointer);
-size_t json_object_size(const_pointer);
+yaooc_size_type json_object_size(const_pointer);
 json_object_iterator json_object_begin(pointer);
 json_object_iterator json_object_end(pointer);
 json_object_const_iterator json_object_cbegin(const_pointer);
@@ -345,7 +345,7 @@ json_object_const_iterator json_object_cend(const_pointer);
   (void (*)(pointer,const_pointer,const_pointer)) json_object_insert,\
   (json_value_pointer (*)(pointer,const_pointer)) json_object_at,\
   (json_value_const_pointer (*)(const_pointer,const_pointer)) json_object_at,\
-  (size_t (*)(pointer)) json_object_size,\
+  (yaooc_size_type (*)(pointer)) json_object_size,\
   (json_object_iterator (*)(pointer)) json_object_begin,\
   (json_object_iterator (*)(pointer)) json_object_end,\
   (json_object_const_iterator (*)(const_pointer)) json_object_cbegin,\

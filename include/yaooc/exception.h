@@ -30,7 +30,7 @@ struct yaooc_jmpbuf_s {
   jmp_buf jb_;
   yaooc_exception_pointer exception_thrown_;
   char* file_;
-  size_t line_no_;
+  yaooc_size_type line_no_;
   yaooc_garbage_bag_pointer pb_;
   yaooc_jmpbuf_t* prev_;
 };
@@ -52,13 +52,13 @@ yaooc_jmpbuf_t* yaooc_jmpbuf_new(void);
 
 void yaooc_jmpbuf_destroy(yaooc_jmpbuf_t*);
 yaooc_jmpbuf_t* yaooc_jmpbuf_top(void);
-void yaooc_uncaught_exception(const char*,size_t,yaooc_exception_pointer);
+void yaooc_uncaught_exception(const char*,yaooc_size_type,yaooc_exception_pointer);
 void yaooc_jmpbuf_dump(yaooc_exception_thread_t* et);
 
 /*
   Macros/routines to implement TRY/CATCH
 */
-yaooc_jmpbuf_t* setup_jmpbuf_for_exeception(void *,const char*,size_t);
+yaooc_jmpbuf_t* setup_jmpbuf_for_exeception(void *,const char*,yaooc_size_type);
 pointer yaooc_exception_garbage_bag_save(pointer);
 
 #define EGB_SAVE(ptr) yaooc_exception_garbage_bag_save(ptr)

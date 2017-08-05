@@ -1,5 +1,4 @@
 #include <yaooc/json.h>
-#include <assert.h>
 
 void json_value_default_ctor(pointer p)
 {
@@ -24,15 +23,12 @@ void json_value_assign(pointer d,const_pointer s)
 {
   json_value_pointer dst=d;
   json_value_const_pointer src=s;
-  assert((M(dst,type) == JSON_UNDEFINED || M(dst,type)==M(src,type)) && "Invalid json assignment");
   M(dst,virtual_assign,src);
 }
 
 bool json_value_less_than_compare(const_pointer p1,const_pointer p2)
 {
   json_value_const_pointer v1=p1;
-  json_value_const_pointer v2=p2;
-  assert(M(v1,type)== M(v2,type) && "Invalid comparison between different json types");
   return M(v1,virtual_less_than_compare,p2);
 }
 
@@ -595,7 +591,6 @@ int json_array_print_to_string(const_pointer p,char * str,int remaining)
       int np;
       for(ia=M(this,cbegin);ia!=M(this,cend);ia++) {
         np=M(ia,print_to_string,str,remaining);
-        assert(np<remaining && "String length insufficient");
         str+=np;
         *str=','; n+=np+1; remaining-=np+1; str++;
       }
@@ -620,13 +615,13 @@ void json_array_add(pointer p,const_pointer value)
   M(this->array_,push_back,value);
 }
 
-json_value_pointer json_array_at(pointer p,size_t i)
+json_value_pointer json_array_at(pointer p,yaooc_size_type i)
 {
   json_array_pointer this=p;
   return M(this->array_,at,i);
 }
 
-size_t json_array_size(const_pointer p)
+yaooc_size_type json_array_size(const_pointer p)
 {
   json_array_const_pointer this=p;
   return M(this->array_,size);
@@ -662,9 +657,9 @@ json_array_class_members_t json_array_class_members = {
     (void (*)(pointer)) json_array_clear
   },
   (void (*)(pointer,const_pointer)) json_array_add,
-  (json_value_pointer (*)(pointer,size_t)) json_array_at,
-  (json_value_const_pointer (*)(const_pointer,size_t)) json_array_at,
-  (size_t (*)(pointer)) json_array_size,
+  (json_value_pointer (*)(pointer,yaooc_size_type)) json_array_at,
+  (json_value_const_pointer (*)(const_pointer,yaooc_size_type)) json_array_at,
+  (yaooc_size_type (*)(pointer)) json_array_size,
   (json_array_iterator (*)(pointer)) json_array_begin,
   (json_array_iterator (*)(pointer)) json_array_end,
   (json_array_const_iterator (*)(const_pointer)) json_array_begin,
@@ -716,17 +711,14 @@ int json_object_print_to_string(const_pointer p,char * str,int remaining)
 {
   json_object_const_pointer this=p;
   int ret=0;
-  assert(remaining > 2 && "Insufficent string space");
   *str='{'; ret++; str++; remaining--;
   json_object_const_iterator io;
   int np;
   if(M(this,size) > 0) {
     for(io=M(this,cbegin);io!=M(this,cend);io++) {
       np=M(&io->first,print_to_string,str,remaining);
-      assert(np < remaining && "Insufficent string space");
       str+=np; *str=':'; str++; remaining-=np+1; ret+=np+1;
       np=M(&io->second,print_to_string,str,remaining);
-      assert(np < remaining && "Insufficent string space");
       str+=np; *str=','; str++; remaining-=np+1; ret+=np+1;
     }
     str--; remaining++; ret--; /* remove comma */
@@ -745,7 +737,6 @@ void json_object_insert(pointer p,const_pointer key,const_pointer value)
 {
   json_object_pointer this=p;
   /* key type must be string */
-  assert(M((json_value_pointer)key,type)==JSON_STRING && "Object key must be a string");
   M(this->object_,insert,key,value);
 }
 
@@ -755,7 +746,7 @@ json_value_pointer json_object_at(pointer p,const_pointer key)
   return M(this->object_,at,key);
 }
 
-size_t json_object_size(const_pointer p)
+yaooc_size_type json_object_size(const_pointer p)
 {
   json_object_const_pointer this=p;
   return M(this->object_,size);
@@ -793,7 +784,7 @@ json_object_class_members_t json_object_class_members = {
   (void (*)(pointer,const_pointer,const_pointer)) json_object_insert,
   (json_value_pointer (*)(pointer,const_pointer)) json_object_at,
   (json_value_const_pointer (*)(const_pointer,const_pointer)) json_object_at,
-  (size_t (*)(const_pointer)) json_object_size,
+  (yaooc_size_type (*)(const_pointer)) json_object_size,
   (json_object_iterator (*)(pointer)) json_object_begin,
   (json_object_iterator (*)(pointer)) json_object_end,
   (json_object_const_iterator (*)(const_pointer)) json_object_begin,

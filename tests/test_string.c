@@ -117,6 +117,7 @@ void test_erase()
 	TEST("Size is 16",M(s1,size)==16);*/
 	M(s1,erase,8,-1);
 //	printf("*** %s %zu ****\n",M(s1,c_str),M(s1,size));
+  puts(M(s1,c_str));
 	TEST("Erase",strcmp(M(s1,c_str),"This tes")==0);
 	puts(M(s1,c_str));
 	TEST("Size is 8",M(s1,size)==8);
@@ -153,7 +154,7 @@ void test_up_down()
 	s_new=M(s,downcase);
 	sprintf(output,"string is \"%s\"",temp_lower);
 	TEST(output,strcmp(M(s_new,c_str),temp_lower)==0);
-
+  delete(s_new);
   delete(s);
 }
 
@@ -231,7 +232,7 @@ void test_find()
  "needle.  What needle?  The needle in the haystack.  Can someone find the needle?  Who found the needle";
 
 	yaooc_string_t* s1=new_ctor(yaooc_string,yaooc_string_ctor_ccs,str);
-	size_t pos=M(s1,findstr,"Needle",0);
+	yaooc_size_type pos=M(s1,findstr,"Needle",0);
 	TEST("findstr(\"Needle\",0) == npos",pos==yaooc_string_npos);
 	pos=M(s1,findstr,"needle",0);
 	TEST("findstr(\"needle\",0) found at 0",pos==0);
@@ -241,6 +242,7 @@ void test_find()
 	TEST("findstr(\"needle\",28) found at 73",pos==73);
 
 	pos=M(s1,rfindstr,"needle",yaooc_string_npos);
+  printf("Z%dZ\n",pos);
 	TEST("rfindstr(\"needle\",string_npos) found at 96",pos==96);
 	pos=M(s1,rfindstr,"needle",97);
 	TEST("rfindstr(\"needle\",97) found at 73",pos==73);

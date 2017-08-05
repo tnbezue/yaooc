@@ -14,10 +14,8 @@ void test_push()
 	char*ptr = M(pb,push,new_array(char,128));
   demo_t* dt = M(pb,push,new_ctor(demo,demo_ctor,99));
   TEST("Size is 2",M(pb,size)==2);
-  yaooc_garbage_bag_const_iterator ipb=M(pb,cbegin);
-  TEST("First item is ptr",*ipb==ptr);
-  ipb++;
-  TEST("Second item is dt",*ipb==dt);
+  TEST("First item is ptr",pb->pointers_->array_[0]==ptr);
+  TEST("Second item is dt",pb->pointers_->array_[1]==dt);
 	delete(pb);
 }
 
@@ -29,10 +27,8 @@ void test_push_list()
   demo_t* dt = new_ctor(demo,demo_ctor,99);
   M(pb,push_list,ptr,dt,NULL);
   TEST("Size is 2",M(pb,size)==2);
-  yaooc_garbage_bag_const_iterator ipb=M(pb,cbegin);
-  TEST("First item is ptr",*ipb==ptr);
-  ipb++;
-  TEST("Second item is dt",*ipb==dt);
+  TEST("First item is ptr",pb->pointers_->array_[0]==ptr);
+  TEST("Second item is dt",pb->pointers_->array_[1]==dt);
 	delete(pb);
 }
 
@@ -44,14 +40,12 @@ void test_remove()
   demo_t* dt = new_ctor(demo,demo_ctor,99);
   M(pb,push_list,ptr,dt,NULL);
   TEST("Size is 2",M(pb,size)==2);
-  yaooc_garbage_bag_const_iterator ipb=M(pb,cbegin);
-  TEST("First item is ptr",*ipb==ptr);
-  ipb++;
-  TEST("Second item is dt",*ipb==dt);
+  TEST("First item is ptr",pb->pointers_->array_[0]==ptr);
+  TEST("Second item is dt",pb->pointers_->array_[1]==dt);
   puts("Remove first item");
   M(pb,remove,ptr);
-  TEST("Size is 2",M(pb,size)==1);
-  TEST("First item is dt",pb->array_[0]==dt);
+  TEST("Size is 1",M(pb,size)==1);
+  TEST("First item is dt",pb->pointers_->array_[0]==dt);
   delete(ptr);
 	delete(pb);
 

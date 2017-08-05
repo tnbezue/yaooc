@@ -1,16 +1,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <ctype.h>
 #include <yaooc/string.h>
-
-size_t yaooc_string_size_needed(const_pointer,size_t);
+#ifdef __YAOOC_BOUNDS_CHECKING__
+#include <assert.h>
+#endif
+yaooc_size_type yaooc_string_size_needed(const_pointer,yaooc_size_type);
 
 static container_private_class_methods_t string_private_class_methods=
 {
   yaooc_string_size_needed,
-  yaooc_container_increase_capacity
+  yaooc_array_container_increase_capacity
 };
 
 /*
@@ -19,7 +20,7 @@ static container_private_class_methods_t string_private_class_methods=
 void yaooc_string_default_ctor(pointer p)
 {
   yaooc_string_pointer this=p;
-	call_constructor(p,yaooc_container_ctor,char_ti);
+	call_constructor(p,yaooc_array_container_ctor,char_ti);
   this->private_class_table_=&string_private_class_methods;
   CPM(this,increase_capacity,1);
 	*END(p)=0;
@@ -71,7 +72,7 @@ void yaooc_string_ctor_ccs_n(pointer p,va_list args)
 {
 	yaooc_string_default_ctor(p);
 	const char* str = va_arg(args,const char *);
-	size_t n = va_arg(args,size_t);
+	yaooc_size_type n = va_arg(args,yaooc_size_type);
 	yaooc_string_insertn(p,0,str,n);
 }
 
@@ -82,7 +83,7 @@ void yaooc_string_ctor_chr_n(pointer p,va_list args)
 {
 	yaooc_string_default_ctor(p);
 	char c = va_arg(args,int);
-	size_t n = va_arg(args,size_t);
+	yaooc_size_type n = va_arg(args,yaooc_size_type);
   yaooc_string_insertn_chr(p,0,c,n);
 }
 
@@ -96,7 +97,7 @@ void yaooc_string_clear(pointer p)
   this->array_[0]=0;
 }
 
-size_t yaooc_string_size_needed(const_pointer p,size_t n)
+yaooc_size_type yaooc_string_size_needed(const_pointer p,yaooc_size_type n)
 {
   return n+1;
 }
@@ -109,34 +110,36 @@ void yaooc_string_set(pointer p,const char* str)
   yaooc_string_setn(p,str,str?strlen(str):0);
 }
 
-void yaooc_string_setn(pointer p,const char* str,size_t n)
+void yaooc_string_setn(pointer p,const char* str,yaooc_size_type n)
 {
   yaooc_string_clear(p);
   yaooc_string_insertn(p,0,str,n);
 }
 
-void yaooc_string_insert_chr(pointer p,size_t ipos,char ch)
+void yaooc_string_insert_chr(pointer p,yaooc_size_type ipos,char ch)
 {
 	yaooc_string_pointer this=p;
   yaooc_string_insertn(this,ipos,&ch,1);
 }
 
-void yaooc_string_insertn_chr(pointer p,size_t ipos,char ch,size_t n)
+void yaooc_string_insertn_chr(pointer p,yaooc_size_type ipos,char ch,yaooc_size_type n)
 {
   if(n>0) {
     yaooc_string_pointer this=p;
+#ifdef __YAOOC_BOUNDS_CHECKING__
     assert(ipos <= M(this,size) && "string insertn_chr ipos out of range");
+#endif
     char * temp = (char*)MALLOC(n+1);
     memset(temp,ch,n);
     yaooc_string_insertn(this,ipos,temp,n);
     FREE(temp);
   }
 }
-//const size_t yaooc_string_npos=(size_t)-1;
+//const yaooc_size_type yaooc_string_npos=(yaooc_size_type)-1;
 /*
 	Append first n characters of const char*
 */
-void yaooc_string_appendn(pointer p,const char* s,size_t n)
+void yaooc_string_appendn(pointer p,const char* s,yaooc_size_type n)
 {
 	yaooc_string_pointer this=p;
 	return yaooc_string_insertn(this,this->size_,s,n);
@@ -151,23 +154,25 @@ void yaooc_string_append(pointer p,const char* s)
 	return yaooc_string_insertn(this,this->size_,s,s ? strlen(s) : 0);
 }
 
-void yaooc_string_insert(pointer p,size_t spos,const char* s)
+void yaooc_string_insert(pointer p,yaooc_size_type spos,const char* s)
 {
 	yaooc_string_pointer this=p;
 	return yaooc_string_insertn(this,spos,s,s ? strlen(s) : 0);
 }
 
-void yaooc_string_insertn(pointer p,size_t spos,const char* s,size_t n)
+void yaooc_string_insertn(pointer p,yaooc_size_type spos,const char* s,yaooc_size_type n)
 {
 	yaooc_string_pointer this=p;
+#ifdef __YAOOC_BOUNDS_CHECKING__
 	assert(spos <= this->size_ && "spos out of range in yaooc_string_insertn");
+#endif
   if(s) {
     char* ptr=memchr(s,0,n); /* can't use strlen */
     if(ptr)
       n=ptr-s;
     if(n>0) {
       CPM(this,increase_capacity,n);
-      size_t nb_move=this->size_-spos;
+      yaooc_size_type nb_move=this->size_-spos;
       char* insert_pos=AT(this,spos);
       memmove(AT(this,spos+n),insert_pos,nb_move);
       memcpy(insert_pos,s,n);
@@ -180,25 +185,27 @@ void yaooc_string_insertn(pointer p,size_t spos,const char* s,size_t n)
 /*
 	Erase n characters starting at spos
 */
-void yaooc_string_erase(pointer p,size_t spos, size_t n)
+void yaooc_string_erase(pointer p,yaooc_size_type spos, yaooc_size_type n)
 {
 	yaooc_string_pointer this=p;
+#ifdef __YAOOC_BOUNDS_CHECKING__
 	assert(spos <= this->size_ && "spos out of range in yaooc_string_erase");
-	if(n > (this->size_ - spos))
+#endif
+  if(n > (this->size_ - spos))
 		n=this->size_ - spos;
-  size_t nb = this->size_ - (spos+n);
+  yaooc_size_type nb = this->size_ - (spos+n);
   memmove(AT(this,spos),AT(this,spos+n),nb);
   this->size_-=n;
 	*END(this)=0;
 }
 
-void yaooc_string_replace(pointer p,size_t pos,size_t len,const char* str)
+void yaooc_string_replace(pointer p,yaooc_size_type pos,yaooc_size_type len,const char* str)
 {
   yaooc_string_erase(p,pos,len);
   yaooc_string_insertn(p,pos,str,strlen(str));
 }
 
-void yaooc_string_replacen(pointer p,size_t pos,size_t len,const char* str,size_t n)
+void yaooc_string_replacen(pointer p,yaooc_size_type pos,yaooc_size_type len,const char* str,yaooc_size_type n)
 {
   yaooc_string_erase(p,pos,len);
   yaooc_string_insertn(p,pos,str,n);
@@ -244,11 +251,13 @@ yaooc_string_pointer yaooc_string_downcase(const_pointer p)
 /*
 	Return new string creates from n characters starting a pos
 */
-yaooc_string_pointer yaooc_string_substr(const_pointer p,size_t pos,size_t n)
+yaooc_string_pointer yaooc_string_substr(const_pointer p,yaooc_size_type pos,yaooc_size_type n)
 {
 	yaooc_string_const_pointer this=p;
 //	printf("substr: pos: %zu size: %zu\n",pos,this->size_);
+#ifdef __YAOOC_BOUNDS_CHECKING__
 	assert(pos <= this->size_ && "pos out of range in yaooc_string_substr");
+#endif
   if(n>(this->size_-pos))
 		n=this->size_-pos;
 	return new_ctor(yaooc_string,yaooc_string_ctor_ccs_n,this->array_+pos,n);
@@ -317,7 +326,9 @@ char_range ranges[max_ranges];
 char_range* rptr;
 void add_to_range(char b,char e)
 {
+#ifdef __YAOOC_BOUNDS_CHECKING__
 	assert(n_ranges < max_ranges && "Too many ranges specified for squeeze");
+#endif
 	if(b != 0) {
 		rptr->min=b;
 		if(e != 0)
@@ -364,7 +375,7 @@ static void parse_ranges(const char* squeeze_chars)
 	}
 }
 
-static bool in_range(char c)
+static inline bool in_range(char c)
 {
 	if(n_ranges==0)
 		return true;
@@ -397,18 +408,18 @@ void yaooc_string_squeeze(pointer p,const char* squeeze_chars)
 void yaooc_string_shrink_to_fit(pointer p)
 {
 	yaooc_string_pointer this=p;
-	yaooc_container_shrink_to_fit(this);
+	yaooc_array_container_shrink_to_fit(this);
 	*END(this)=0;
 }
 
-void yaooc_string_resize(pointer p,size_t new_size,char c)
+void yaooc_string_resize(pointer p,yaooc_size_type new_size,char c)
 {
 	yaooc_string_pointer this=p;
-	yaooc_container_resize(this,new_size,&c);
+	yaooc_array_container_resize(this,new_size,&c);
 	*END(this)=0;
 }
 
-const void *memrmem(const void *ptr, size_t size, const void *pat, size_t patsize)
+const void *memrmem(const void *ptr, yaooc_size_type size, const void *pat, yaooc_size_type patsize)
 {
 	const char *p;
 
@@ -429,7 +440,7 @@ const void *memrmem(const void *ptr, size_t size, const void *pat, size_t patsiz
 }
 
 #ifdef _WIN32
-void* memrchr(const void* buf,size_t c,size_t spos)
+void* memrchr(const void* buf,yaooc_size_type c,yaooc_size_type spos)
 {
 	const char* ptr = (const char*)buf+spos-1;
 	while(ptr >= (const char*)buf) {
@@ -442,7 +453,7 @@ void* memrchr(const void* buf,size_t c,size_t spos)
 
 #else
 
-char* memrchr(void*,size_t,size_t);
+char* memrchr(void*,yaooc_size_type,yaooc_size_type);
 
 #endif
 
@@ -460,10 +471,10 @@ const char* strrstr(const char* s1,const char* s2,int pos)
 }
 */
 
-size_t yaooc_string_findstr(const_pointer p,const char* s,size_t spos)
+yaooc_size_type yaooc_string_findstr(const_pointer p,const char* s,yaooc_size_type spos)
 {
   yaooc_string_const_pointer this=p;
-  size_t pos=this->class_table_->npos;
+  yaooc_size_type pos=this->class_table_->npos;
 	if(this->size_ > 0 && spos < this->size_) {
 		char* ptr=strstr(BEGIN(this)+spos,s);
 		if(ptr)
@@ -472,10 +483,10 @@ size_t yaooc_string_findstr(const_pointer p,const char* s,size_t spos)
 	return pos;
 }
 
-size_t yaooc_string_rfindstr(const_pointer p,const char* s,size_t spos)
+yaooc_size_type yaooc_string_rfindstr(const_pointer p,const char* s,yaooc_size_type spos)
 {
   yaooc_string_const_pointer this=p;
-	size_t pos=this->class_table_->npos;
+	yaooc_size_type pos=this->class_table_->npos;
 	if(this->size_ > 0) {
 		if(spos >= this->size_)
 			spos=this->size_-1;
@@ -486,10 +497,10 @@ size_t yaooc_string_rfindstr(const_pointer p,const char* s,size_t spos)
 	return pos;
 }
 
-size_t yaooc_string_findchr(const_pointer p,char c,size_t spos)
+yaooc_size_type yaooc_string_findchr(const_pointer p,char c,yaooc_size_type spos)
 {
   yaooc_string_const_pointer this=p;
-	size_t pos=this->class_table_->npos;
+	yaooc_size_type pos=this->class_table_->npos;
 	if(this->size_ > 0 && spos < this->size_) {
 		char* ptr=strchr(BEGIN(this)+spos,c);
 		if(ptr)
@@ -498,10 +509,10 @@ size_t yaooc_string_findchr(const_pointer p,char c,size_t spos)
 	return pos;
 }
 
-size_t yaooc_string_rfindchr(const_pointer p,char c,size_t spos)
+yaooc_size_type yaooc_string_rfindchr(const_pointer p,char c,yaooc_size_type spos)
 {
   yaooc_string_const_pointer this=p;
-	size_t pos=this->class_table_->npos;
+	yaooc_size_type pos=this->class_table_->npos;
 	if(this->size_ > 0) {
 		if(spos >= this->size_)
 			spos=this->size_-1;
@@ -512,7 +523,7 @@ size_t yaooc_string_rfindchr(const_pointer p,char c,size_t spos)
 	return pos;
 }
 
-ISA_IMPLEMENTATION(yaooc_string,yaooc_container)
+ISA_IMPLEMENTATION(yaooc_string,yaooc_array_container)
 
 yaooc_string_class_members_t yaooc_string_class_members = { YAOOC_STRING_CLASS_MEMBERS };
 
@@ -522,6 +533,6 @@ DEFINE_TYPE_INFO(yaooc_string,yaooc_string_default_ctor,NULL,
 #ifdef __YAOOC_USE_GC__
       yaooc_object   /* If using GC, want to skip container destructor */
 #else
-      yaooc_container
+      yaooc_array_container
 #endif
   )

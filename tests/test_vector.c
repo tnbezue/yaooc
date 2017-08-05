@@ -18,8 +18,8 @@ void test_int64()
 {
 	int64_vector_pointer vi64=new(int64_vector);
 	int64_t numbers[]={ 9,10, -2, 44, 55};
-	size_t n=sizeof(numbers)/sizeof(numbers[0]);
-	size_t i;
+	yaooc_size_type n=sizeof(numbers)/sizeof(numbers[0]);
+	yaooc_size_type i;
 	for(i=0;i<n;i++)
 		M(vi64,push_back,numbers+i);
 	int64_vector_const_iterator ivi;
@@ -85,7 +85,7 @@ void test_str_8()
 	s[4]=0;
 	int i,j,k,l;
 	M(vec,reserve,456976);
-	printf("Size: %zu Cap: %zu\n",M(vec,size),M(vec,capacity));
+	printf("Size: %d Cap: %d\n",M(vec,size),M(vec,capacity));
 	clock_t duration=clock()-start;
 	for(i='a';i<='z';i++) {
 		s[0]=i;
@@ -101,7 +101,7 @@ void test_str_8()
 		}
 	}
 	clock_t insert_time=clock()-start;
-	printf("Size is %zu Insert time: %zu\n",M(vec,size),insert_time);
+	printf("Size is %d Insert time: %zu\n",M(vec,size),insert_time);
 	start=clock();
 	str_8_vector_iterator fpos=yaooc_find(str_8_ti,M(vec,cbegin),M(vec,cend),"zmzz");
 	duration=clock()-start;
@@ -128,7 +128,7 @@ void test_string_vector()
 	newp_ctor(&s,yaooc_string,yaooc_string_ctor_chr_n,'a',4);
 	int i,j,k,l;
 	M(vec,reserve,456976);
-	printf("Size: %zu Cap: %zu\n",M(vec,size),M(vec,capacity));
+	printf("Size: %d Cap: %d\n",M(vec,size),M(vec,capacity));
 	clock_t duration=clock()-start;
   yaooc_string_iterator si=M(&s,begin);
 	for(i='a';i<='z';i++) {
@@ -145,7 +145,7 @@ void test_string_vector()
 		}
 	}
 	clock_t insert_time=clock()-start;
-	printf("Size is %zu Insert time: %zu\n",M(vec,size),insert_time);
+	printf("Size is %d Insert time: %zu\n",M(vec,size),insert_time);
 	start=clock();
 //  yaooc_string_vector_const_iterator svi;
 //  for(svi=M(vec,cbegin);svi!=M(vec,cend);svi++)

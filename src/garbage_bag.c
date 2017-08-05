@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <string.h>
 #include <yaooc/garbage_bag.h>
+
+YAOOC_SIMPLE_ARRAY_IMPLEMENTATION(pointer)
+YAOOC_SIMPLE_ARRAY_FIND_POD(pointer)
 
 void yaooc_garbage_bag_default_ctor(pointer p)
 {
   yaooc_garbage_bag_pointer this=p;
-  this->size_=0;
-  this->capacity_=16;
-  this->array_=(pointer*)MALLOC(this->capacity_*sizeof(pointer));
+  this->pointers_=new(pointer_simple_array);
 }
 
 
@@ -17,7 +17,7 @@ void yaooc_garbage_bag_dtor(pointer p)
 {
   yaooc_garbage_bag_pointer this=p;
   yaooc_garbage_bag_delete_all(this);
-  FREE(this->array_);
+  delete(this->pointers_);
 }
 
 ISA_IMPLEMENTATION(yaooc_garbage_bag,yaooc_object)
@@ -26,60 +26,39 @@ void yaooc_garbage_bag_swap(pointer p,pointer o)
 {
   yaooc_garbage_bag_pointer this=p;
   yaooc_garbage_bag_pointer other=o;
-  SWAP(pointer*,this->array_,other->array_)
-  SWAP(size_t,this->size_,other->size_)
-  SWAP(size_t,this->capacity_,other->capacity_)
+  SWAP(pointer_simple_array_t*,this->pointers_,other->pointers_)
 }
 
 void* yaooc_garbage_bag_push(pointer p,pointer ptr)
 {
   yaooc_garbage_bag_pointer this=p;
-  if(this->size_==this->capacity_) {
-    this->capacity_*=2;
-    this->array_=(pointer*)REALLOC(this->array_,this->capacity_*sizeof(pointer));
-  }
-  /* Don't allow NULL pointers to be saved */
   if(ptr != NULL)
-    this->array_[this->size_++]=ptr;
+    pointer_simple_array_insert(this->pointers_,this->pointers_->size_,ptr);
 	return ptr;
 }
 
 void yaooc_garbage_bag_remove(pointer p,pointer ptr)
 {
   yaooc_garbage_bag_pointer this=p;
-  size_t i;
-  for(i=0;i<this->size_;i++) {
-    if(this->array_[i]==ptr) {
-      memmove(this->array_+i,this->array_+i+1,(this->size_-(i+1))*sizeof(pointer));
-      this->size_--;
-    }
+  pointer_simple_array_iterator i=pointer_simple_array_find(this->pointers_,ptr);
+  if(i!=SA_END(this->pointers_)) {
+    pointer_simple_array_erase(this->pointers_,i-SA_BEGIN(this->pointers_));
   }
 }
 
 void yaooc_garbage_bag_clear(pointer p)
 {
-  ((yaooc_garbage_bag_pointer)p)->size_=0;
+  SA_CLEAR(((yaooc_garbage_bag_pointer)p)->pointers_);
 }
 
-size_t yaooc_garbage_bag_size(const_pointer p)
+yaooc_size_type yaooc_garbage_bag_size(const_pointer p)
 {
-  return ((yaooc_garbage_bag_const_pointer)p)->size_;
+  return ((yaooc_garbage_bag_const_pointer)p)->pointers_->size_;
 }
 
 bool yaooc_garbage_bag_empty(const_pointer p)
 {
-  return ((yaooc_garbage_bag_const_pointer)p)->size_==0;
-}
-
-yaooc_garbage_bag_iterator yaooc_garbage_bag_begin(pointer p)
-{
-  return ((yaooc_garbage_bag_pointer)p)->array_;
-}
-
-yaooc_garbage_bag_iterator yaooc_garbage_bag_end(pointer p)
-{
-  yaooc_garbage_bag_pointer this=p;
-  return this->array_+this->size_;
+  return ((yaooc_garbage_bag_const_pointer)p)->pointers_->size_==0;
 }
 
 void yaooc_garbage_bag_push_list(pointer p,...)
@@ -101,17 +80,16 @@ void yaooc_garbage_bag_push_list(pointer p,...)
 void yaooc_garbage_bag_delete_all(pointer p)
 {
   yaooc_garbage_bag_pointer this=p;
-  pointer* i=this->array_;
-  pointer* end=this->array_+this->size_;
-  for(i=this->array_;i!=end;i++) {
+  pointer_simple_array_iterator i;
+  SA_ITERATE(i,this->pointers_) {
     delete(*i);
   }
-  this->size_=0;
+  SA_CLEAR(this->pointers_);
 }
 
 yaooc_garbage_bag_class_members_t yaooc_garbage_bag_class_members =
 {
-	yaooc_garbage_bag_CLASS_MEMBERS
+	YAOOC_GARBAGE_BAG_CLASS_MEMBERS
 };
 
 DEFINE_TYPE_INFO(yaooc_garbage_bag,yaooc_garbage_bag_default_ctor,yaooc_garbage_bag_dtor,

@@ -1,4 +1,5 @@
 #include <yaooc/thread.h>
+#include <yaooc/exception.h>
 
 void yaooc_exception_thread_list_remove_exception_thread(pthread_t tid);
 
@@ -35,13 +36,17 @@ void yaooc_thread_dtor(pointer p)
     yaooc_thread_join(this);
   }
 }
-/*
+
 void yaooc_thread_copy_ctor(pointer d,const_pointer s)
 {
-  yaooc_thread_pointer dst=d;
-  yaooc_thread_const_pointer src=s;
+
 }
-*/
+
+void yaooc_thread_assign(pointer d,const_pointer s)
+{
+
+}
+
 /* Additional constructors for yaooc_thread */
 
 /* Class table members for yaooc_thread */
@@ -104,7 +109,8 @@ bool yaooc_thread_start(pointer p)
 
 yaooc_thread_class_members_t yaooc_thread_class_members = { YAOOC_THREAD_CLASS_MEMBERS };
 
-DEFINE_TYPE_INFO(yaooc_thread,yaooc_thread_default_ctor,yaooc_thread_dtor,NULL,NULL,NULL,&yaooc_thread_class_members,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_thread,yaooc_thread_default_ctor,yaooc_thread_dtor,yaooc_thread_copy_ctor,
+        yaooc_thread_assign,NULL,&yaooc_thread_class_members,yaooc_object)
 
 /*
 void* yaooc_thread_run(pointer p)

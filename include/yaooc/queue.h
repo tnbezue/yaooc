@@ -1,7 +1,7 @@
 #ifndef __YAOOC_queue_INCLUDED__
 #define __YAOOC_queue_INCLUDED__
 
-#include <yaooc/container.h>
+#include <yaooc/array_container.h>
 
 pointer yaooc_queue_front(pointer);
 const_pointer yaooc_queue_cfront(const_pointer);
@@ -14,7 +14,7 @@ void yaooc_queue_pop(pointer);
 typedef T ## _t* T ## _queue_iterator; \
 typedef T ## _t* T ## _queue_const_iterator; \
 class_table(T ## _queue) {\
-  yaooc_container_class_members_t; \
+  yaooc_array_container_class_members_t; \
   T ## _t* (*front) (pointer); \
   const T ## _t* (*cfront) (const_pointer); \
   T ## _t* (*back) (pointer); \
@@ -27,23 +27,23 @@ class_table(T ## _queue) {\
   T ## _queue_const_iterator(*cend) (const_pointer); \
 };\
 class_instance(T ## _queue) {\
-  yaooc_container_instance_members_t; \
+  yaooc_array_container_instance_members_t; \
 };\
 class(T ## _queue); \
-ISA_DEFINITION(T ## _queue,yaooc_container)
+ISA_DEFINITION(T ## _queue,yaooc_array_container)
 
 #define QUEUE_IMPLEMENTATION(T) \
-void T ## _queue_default_ctor(pointer p) { call_constructor(p,yaooc_container_ctor,T ## _ti); } \
-ISA_IMPLEMENTATION(T ## _queue,yaooc_container) \
+void T ## _queue_default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor,T ## _ti); } \
+ISA_IMPLEMENTATION(T ## _queue,yaooc_array_container) \
 T ## _queue_class_members_t T ## _queue_class_members = \
 {\
   { \
     { \
       T ## _queue_isa, \
       T ## _queue_is_descendent, \
-      yaooc_container_swap \
+      yaooc_array_container_swap \
     }, \
-    YAOOC_CONTAINER_NEW_METHODS \
+    YAOOC_ARRAY_CONTAINER_NEW_METHODS \
   }, \
   (T ## _t* (*) (pointer)) yaooc_queue_front, \
   (const T ## _t* (*) (const_pointer)) yaooc_queue_front, \
@@ -51,12 +51,12 @@ T ## _queue_class_members_t T ## _queue_class_members = \
   (const T ## _t* (*) (const_pointer)) yaooc_queue_back ,\
   (void (*)(pointer,const_pointer)) yaooc_queue_push ,\
   (void (*)(pointer)) yaooc_queue_pop, \
-  (T ## _queue_iterator(*)(pointer)) yaooc_container_begin, \
-  (T ## _queue_iterator(*)(pointer)) yaooc_container_end, \
-  (T ## _queue_const_iterator(*)(const_pointer)) yaooc_container_begin, \
-  (T ## _queue_const_iterator(*)(const_pointer)) yaooc_container_end \
+  (T ## _queue_iterator(*)(pointer)) yaooc_array_container_begin, \
+  (T ## _queue_iterator(*)(pointer)) yaooc_array_container_end, \
+  (T ## _queue_const_iterator(*)(const_pointer)) yaooc_array_container_begin, \
+  (T ## _queue_const_iterator(*)(const_pointer)) yaooc_array_container_end \
 };\
 DEFINE_TYPE_INFO(T ## _queue,T ## _queue_default_ctor,NULL,NULL,NULL,NULL, \
-        &T ## _queue_class_members,yaooc_container)
+        &T ## _queue_class_members,yaooc_array_container)
 
 #endif

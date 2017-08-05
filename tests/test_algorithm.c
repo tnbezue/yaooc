@@ -3,8 +3,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <yaooc/algorithm.h>
+#include <yaooc/string.h>
 #include <time.h>
-
 #include "test_harness.h"
 
 
@@ -38,6 +38,35 @@ void test_copy()
 	}
 }
 
+void test_fill()
+{
+	char msg[256];
+  TESTCASE("FILL");
+	int n=5;
+	int32_t* ary2=new_array(int32,n);
+  int32_t value=37;
+	memset(ary2,0,n*sizeof(int32_t));
+  yaooc_fill(int32_ti,ary2,ary2+n,&value);
+	int i;
+	for(i=0;i<n;i++) {
+		sprintf(msg,"ary2[%d]==37",i);
+		TEST(msg,ary2[i]==37);
+	}
+  delete(ary2);
+  yaooc_string_pointer str_ary = new_array(yaooc_string,5);
+  yaooc_string_t str;
+  newp(&str,yaooc_string);
+  M(&str,set,"Testing");
+  yaooc_fill(yaooc_string_ti,str_ary,str_ary+5,&str);
+
+  for(i=0;i<5;i++) {
+    sprintf(msg,"str_ary[%d] is \"Testing\"",i);
+    TEST(msg,strcmp(M(str_ary+i,c_str),"Testing")==0);
+  }
+  deletep(&str,yaooc_string);
+  delete(str_ary);
+}
+
 void double_fun(void* ptr)
 {
 	*(int32_t*)ptr <<= 1;
@@ -60,6 +89,8 @@ void test_for_each()
 		sprintf(msg,"After for each ary1[%d]==%d",i,ary2[i]<<1);
 		TEST(msg,ary1[i]==ary2[i]<<1);
 	}
+
+
 }
 
 void test_count()
@@ -106,6 +137,7 @@ test_function tests[]=
 {
 	test_find,
 	test_copy,
+  test_fill,
 	test_for_each,
 	test_count,
 	test_count_if

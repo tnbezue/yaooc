@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <yaooc/unique_index_container.h>
+#include <yaooc/unique_index_array_container.h>
 #include "test_harness.h"
 #include "simple_object.inc"
 
@@ -13,12 +13,12 @@ typedef const int32_t* int32_unique_index_container_const_iterator;
 
 class_table(int32_unique_index_container)
 {
-  yaooc_unique_index_container_class_members_t;
+  yaooc_unique_index_array_container_class_members_t;
   int32_unique_index_container_iterator (*find)(const_pointer,const_pointer);
   int32_unique_index_container_const_iterator (*cfind)(const_pointer,const_pointer);
   int32_unique_index_container_iterator (*insert)(pointer,const_iterator,const_pointer);
   int32_unique_index_container_iterator (*insert_range)(pointer,const_iterator,const_iterator,const_iterator);
-  int32_unique_index_container_iterator (*insert_n)(pointer,const_iterator,size_t,const_pointer);
+  int32_unique_index_container_iterator (*insert_n)(pointer,const_iterator,yaooc_size_type,const_pointer);
   int32_unique_index_container_iterator (*erase)(pointer,const_iterator);
   int32_unique_index_container_iterator (*erase_range)(pointer,const_iterator,const_iterator);
   int32_unique_index_container_iterator (*begin)(pointer);
@@ -29,37 +29,37 @@ class_table(int32_unique_index_container)
 
 class_instance(int32_unique_index_container)
 {
-	yaooc_unique_index_container_instance_members_t;
+	yaooc_unique_index_array_container_instance_members_t;
 };
 
 class(int32_unique_index_container);
 
 void int32_unique_index_container_default_ctor(pointer d)
 {
-	call_constructor(d,yaooc_unique_index_container_ctor,int32_ti);
+	call_constructor(d,yaooc_unique_index_array_container_ctor,int32_ti);
 }
 
 int32_unique_index_container_class_members_t int32_unique_index_container_class_members=
 {
   {
-    YAOOC_UNIQUE_INDEX_CONTAINER_CLASS_MEMBERS
+    YAOOC_UNIQUE_INDEX_ARRAY_CONTAINER_CLASS_MEMBERS
   },
-	(int32_unique_index_container_iterator (*)(const_pointer,const_pointer))yaooc_unique_index_container_find,
-	(int32_unique_index_container_const_iterator (*)(const_pointer,const_pointer))yaooc_unique_index_container_find,
-	(int32_unique_index_container_iterator (*)(pointer,const_iterator,const_pointer))yaooc_unique_index_container_insert,
-	(int32_unique_index_container_iterator (*)(pointer,const_iterator,const_iterator,const_iterator))yaooc_unique_index_container_insert_range,
-	(int32_unique_index_container_iterator (*)(pointer,const_iterator,size_t,const_pointer))yaooc_unique_index_container_insert_n,
-	(int32_unique_index_container_iterator (*)(pointer,const_iterator))yaooc_unique_index_container_erase,
-	(int32_unique_index_container_iterator (*)(pointer,const_iterator,const_iterator))yaooc_unique_index_container_erase_range,
-	(int32_unique_index_container_iterator (*)(pointer))yaooc_container_begin,
-	(int32_unique_index_container_iterator (*)(pointer))yaooc_container_end,
-	(int32_unique_index_container_const_iterator (*)(const_pointer))yaooc_container_begin,
-	(int32_unique_index_container_const_iterator (*)(const_pointer))yaooc_container_end
+	(int32_unique_index_container_iterator (*)(const_pointer,const_pointer))yaooc_unique_index_array_container_find,
+	(int32_unique_index_container_const_iterator (*)(const_pointer,const_pointer))yaooc_unique_index_array_container_find,
+	(int32_unique_index_container_iterator (*)(pointer,const_iterator,const_pointer))yaooc_unique_index_array_container_insert,
+	(int32_unique_index_container_iterator (*)(pointer,const_iterator,const_iterator,const_iterator))yaooc_unique_index_array_container_insert_range,
+	(int32_unique_index_container_iterator (*)(pointer,const_iterator,yaooc_size_type,const_pointer))yaooc_unique_index_array_container_insert_n,
+	(int32_unique_index_container_iterator (*)(pointer,const_iterator))yaooc_unique_index_array_container_erase,
+	(int32_unique_index_container_iterator (*)(pointer,const_iterator,const_iterator))yaooc_unique_index_array_container_erase_range,
+	(int32_unique_index_container_iterator (*)(pointer))yaooc_array_container_begin,
+	(int32_unique_index_container_iterator (*)(pointer))yaooc_array_container_end,
+	(int32_unique_index_container_const_iterator (*)(const_pointer))yaooc_array_container_begin,
+	(int32_unique_index_container_const_iterator (*)(const_pointer))yaooc_array_container_end
 };
 
 DEFINE_TYPE_INFO(int32_unique_index_container,int32_unique_index_container_default_ctor,
       NULL,NULL,NULL,NULL,&int32_unique_index_container_class_members,
-      yaooc_unique_index_container)
+      yaooc_unique_index_array_container)
 
 const char* get_values(int32_unique_index_container_const_pointer this)
 {
@@ -73,16 +73,16 @@ const char* get_values(int32_unique_index_container_const_pointer this)
 const char* get_indexes(int32_unique_index_container_const_pointer this)
 {
   optr=output;
-	size_t i;
+	yaooc_size_type i;
 	for(i=0;i<this->size_;i++)
-		optr+=sprintf(optr,"%zu ",this->index_[i]);
+		optr+=sprintf(optr,"%d ",this->index_[i]);
   return output;
 }
 
 const char* get_values_in_order(int32_unique_index_container_const_pointer this)
 {
 	optr=output;
-  size_t i;
+  yaooc_size_type i;
 	for(i=0;i<this->size_;i++)
 		optr+=sprintf(optr,"%d ",((int32_t*)this->array_)[this->index_[i]]);
   return output;
@@ -96,7 +96,7 @@ void test_sizes()
 
 void test_constructor()
 {
-	yaooc_unique_index_container_pointer bc=new_ctor(yaooc_unique_index_container,yaooc_unique_index_container_ctor,int32_ti);
+	yaooc_unique_index_array_container_pointer bc=new_ctor(yaooc_unique_index_array_container,yaooc_unique_index_array_container_ctor,int32_ti);
 	TEST("Array is NULL",bc->array_==NULL);
 	TEST("Index is NULL",bc->index_==NULL);
 	TEST("Typeinfo is int32_ti",bc->type_info_==int32_ti);
@@ -262,12 +262,12 @@ typedef const simple_object_t* simple_unique_object_container_const_iterator;
 
 class_table(simple_unique_object_container)
 {
-  yaooc_unique_index_container_class_members_t;
+  yaooc_unique_index_array_container_class_members_t;
   simple_unique_object_container_iterator (*find)(const_pointer,const_pointer);
   simple_unique_object_container_const_iterator (*cfind)(const_pointer,const_pointer);
   simple_unique_object_container_iterator (*insert)(pointer,const_iterator,const_pointer);
   simple_unique_object_container_iterator (*insert_range)(pointer,const_iterator,const_iterator,const_iterator);
-  simple_unique_object_container_iterator (*insert_n)(pointer,const_iterator,size_t,const_pointer);
+  simple_unique_object_container_iterator (*insert_n)(pointer,const_iterator,yaooc_size_type,const_pointer);
   simple_unique_object_container_iterator (*erase)(pointer,const_iterator);
   simple_unique_object_container_iterator (*erase_range)(pointer,const_iterator,const_iterator);
   simple_unique_object_container_iterator (*begin)(pointer);
@@ -278,37 +278,37 @@ class_table(simple_unique_object_container)
 
 class_instance(simple_unique_object_container)
 {
-	yaooc_unique_index_container_instance_members_t;
+	yaooc_unique_index_array_container_instance_members_t;
 };
 
 class(simple_unique_object_container);
 
 void simple_unique_object_container_default_ctor(pointer d)
 {
-	call_constructor(d,yaooc_unique_index_container_ctor,simple_object_ti);
+	call_constructor(d,yaooc_unique_index_array_container_ctor,simple_object_ti);
 }
 
 simple_unique_object_container_class_members_t simple_unique_object_container_class_members=
 {
   {
-    YAOOC_UNIQUE_INDEX_CONTAINER_CLASS_MEMBERS
+    YAOOC_UNIQUE_INDEX_ARRAY_CONTAINER_CLASS_MEMBERS
   },
-	(simple_unique_object_container_iterator (*)(const_pointer,const_pointer))yaooc_unique_index_container_find,
-	(simple_unique_object_container_const_iterator (*)(const_pointer,const_pointer))yaooc_unique_index_container_find,
-	(simple_unique_object_container_iterator (*)(pointer,const_iterator,const_pointer))yaooc_unique_index_container_insert,
-	(simple_unique_object_container_iterator (*)(pointer,const_iterator,const_iterator,const_iterator))yaooc_unique_index_container_insert_range,
-	(simple_unique_object_container_iterator (*)(pointer,const_iterator,size_t,const_pointer))yaooc_unique_index_container_insert_n,
-	(simple_unique_object_container_iterator (*)(pointer,const_iterator))yaooc_unique_index_container_erase,
-	(simple_unique_object_container_iterator (*)(pointer,const_iterator,const_iterator))yaooc_unique_index_container_erase_range,
-	(simple_unique_object_container_iterator (*)(pointer))yaooc_unique_index_container_begin,
-	(simple_unique_object_container_iterator (*)(pointer))yaooc_unique_index_container_end,
-	(simple_unique_object_container_const_iterator (*)(const_pointer))yaooc_unique_index_container_begin,
-	(simple_unique_object_container_const_iterator (*)(const_pointer))yaooc_unique_index_container_end,
+	(simple_unique_object_container_iterator (*)(const_pointer,const_pointer))yaooc_unique_index_array_container_find,
+	(simple_unique_object_container_const_iterator (*)(const_pointer,const_pointer))yaooc_unique_index_array_container_find,
+	(simple_unique_object_container_iterator (*)(pointer,const_iterator,const_pointer))yaooc_unique_index_array_container_insert,
+	(simple_unique_object_container_iterator (*)(pointer,const_iterator,const_iterator,const_iterator))yaooc_unique_index_array_container_insert_range,
+	(simple_unique_object_container_iterator (*)(pointer,const_iterator,yaooc_size_type,const_pointer))yaooc_unique_index_array_container_insert_n,
+	(simple_unique_object_container_iterator (*)(pointer,const_iterator))yaooc_unique_index_array_container_erase,
+	(simple_unique_object_container_iterator (*)(pointer,const_iterator,const_iterator))yaooc_unique_index_array_container_erase_range,
+	(simple_unique_object_container_iterator (*)(pointer))yaooc_unique_index_array_container_begin,
+	(simple_unique_object_container_iterator (*)(pointer))yaooc_unique_index_array_container_end,
+	(simple_unique_object_container_const_iterator (*)(const_pointer))yaooc_unique_index_array_container_begin,
+	(simple_unique_object_container_const_iterator (*)(const_pointer))yaooc_unique_index_array_container_end,
 };
 
 DEFINE_TYPE_INFO(simple_unique_object_container,simple_unique_object_container_default_ctor,
       NULL,NULL,NULL,NULL,&int32_unique_index_container_class_members,
-      yaooc_unique_index_container)
+      yaooc_unique_index_array_container)
 
 /*
 void test_resize_shrink()
@@ -316,8 +316,8 @@ void test_resize_shrink()
 	simple_unique_object_container_pointer soc=new(simple_unique_object_container_ti);
 	TESTCASE("Creation");
 	TEST("Container array is NULL",soc->array_==NULL);
-	TEST("Size is 0",yaooc_container_size(soc)==0);
-	TEST("Capacity is 0",yaooc_container_capacity(soc)==0);
+	TEST("Size is 0",yaooc_array_container_size(soc)==0);
+	TEST("Capacity is 0",yaooc_array_container_capacity(soc)==0);
 
 	simple_object_t* so=new_ctor(simple_object_ti,simple_object_ctor,12);
 	so_ptr=output;

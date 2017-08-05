@@ -111,7 +111,7 @@ student_data_t student_updates []=
 {
   { 66, "Smith","Lisa", 91 },
 	{ 121, "Bell","John", 79 },
-	{ 44, "Long","Kathy", 79 },
+	{ 44, "Long","Kathy", 66 },
 	{ 0, 0, 0, 0 }
 };
 
@@ -167,10 +167,10 @@ void test_big()
 	yaooc_string_iterator is=M(&str,begin);
 	yaooc_string_int32_map_pointer mfls=new(yaooc_string_int32_map);
 	clock_t start=clock();
-  M(mfls,reserve,131072);
-  printf("%zu\n",M(mfls,capacity));
+  M(mfls,reserve,456976);
+  printf("%d\n",M(mfls,capacity));
 	const char *i,*j,*k,*l;
-	for(i=str1+20;*i!=0;i++) {
+	for(i=str1;*i!=0;i++) {
 		is[0]=*i;
 		for(j=str2;*j!=0;j++) {
 			is[1]=*j;
@@ -185,12 +185,12 @@ void test_big()
 		}
 	}
 
-	printf("%ld clock cycles to insert %zu items\n",clock()-start,M(mfls,size));
+	printf("%ld clock cycles to insert %d items\n",clock()-start,M(mfls,size));
 //	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
-	yaooc_string_int32_map_const_iterator isi;
+/*	yaooc_string_int32_map_const_iterator isi;
 	for(isi=M(mfls,cbegin);isi!=M(mfls,cend);isi++) {
 		printf("%5s %6d\n",M(&isi->first,c_str),isi->second);
-	}
+	}*/
 	delete(mfls);
 	deletep(&str,yaooc_string);
 }
@@ -213,7 +213,7 @@ void test_big_unique_ptr()
 	clock_t start=clock();
   STACK_PTR(yaooc_string_unique_ptr,s);
 	const char *i,*j,*k,*l;
-	for(i=str1+20;*i!=0;i++) {
+	for(i=str1;*i!=0;i++) {
 		str[0]=*i;
 		for(j=str2;*j!=0;j++) {
 			str[1]=*j;
@@ -228,13 +228,13 @@ void test_big_unique_ptr()
 			}
 		}
 	}
-	printf("%ld clock cycles to insert %zu items\n",clock()-start,M(mfls,size));
+	printf("%ld clock cycles to insert %d items\n",clock()-start,M(mfls,size));
 //	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
 	yaooc_string_unique_ptr_int32_map_const_iterator isi;
-	for(isi=M(mfls,cbegin);isi!=M(mfls,cend);isi++) {
+/*	for(isi=M(mfls,cbegin);isi!=M(mfls,cend);isi++) {
     yaooc_string_const_pointer first=M(&isi->first,cget);
 		printf("%5s %6d\n",M(first,c_str),isi->second);
-	}
+	}*/
 	delete(mfls);
 
 }

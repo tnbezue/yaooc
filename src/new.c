@@ -4,14 +4,13 @@
 #include <string.h>
 #include <assert.h>
 #include <yaooc/new.h>
-#include <yaooc/yaooc_debug.h>
 
 /*
 	Header for allocated objects.
 */
 typedef struct {
 	const type_info_t* type_info_;
-	size_t	n_elem_;			// number of elements allocated
+	yaooc_size_type	n_elem_;			// number of elements allocated
 	char ptr_[0];
 } memory_header_t;
 
@@ -53,7 +52,7 @@ static void __yaooc_finalizer__(GC_PTR obj, GC_PTR x)
 /*
 	Allocate memory and setup memory header
 */
-memory_header_t* allocate_memory(const type_info_t* ti,size_t n_elements)
+memory_header_t* allocate_memory(const type_info_t* ti,yaooc_size_type n_elements)
 {
   assert(ti->type_size_ > 0 && "Cannot allocate element of size 0");
 	memory_header_t* mh=MALLOC(n_elements*ti->type_size_+offsetof(memory_header_t,ptr_));
@@ -82,13 +81,13 @@ default_constructor get_default_ctor(const type_info_t* ti)
 	return NULL;
 }
 
-pointer real_newp_array(pointer ptr,const type_info_t* ti,size_t n_elements)
+pointer real_newp_array(pointer ptr,const type_info_t* ti,yaooc_size_type n_elements)
 {
-	size_t i;
+	yaooc_size_type i;
 	yaooc_private_iterator iptr;
 	default_constructor default_ctor=get_default_ctor(ti);
 	const class_table_t* ct=ti->class_table_;
-	size_t element_size=ti->type_size_;
+	yaooc_size_type element_size=ti->type_size_;
 	if(ct) {
 		iptr=ptr;
 		for(i=0;i<n_elements;i++) {
@@ -106,7 +105,7 @@ pointer real_newp_array(pointer ptr,const type_info_t* ti,size_t n_elements)
 	return ptr;
 }
 
-pointer real_new_array(const type_info_t* ti,size_t n)
+pointer real_new_array(const type_info_t* ti,yaooc_size_type n)
 {
 	memory_header_t* mh=allocate_memory(ti,n);
 	return real_newp_array(mh->ptr_,ti,n);
@@ -128,12 +127,12 @@ copy_constructor get_copy_ctor(const type_info_t* ti)
 	return NULL;
 }
 
-pointer real_newp_array_copy_static(pointer dst,const type_info_t* ti,const_pointer src,size_t n_elements)
+pointer real_newp_array_copy_static(pointer dst,const type_info_t* ti,const_pointer src,yaooc_size_type n_elements)
 {
 	yaooc_private_iterator idst=dst;
-	size_t i;
+	yaooc_size_type i;
 	copy_constructor copy_ctor=get_copy_ctor(ti);
-	size_t element_size=ti->type_size_;
+	yaooc_size_type element_size=ti->type_size_;
 	bool has_class_table = ti->class_table_ != NULL;
 	for(i=0;i<n_elements;i++) {
 		if(copy_ctor) {
@@ -148,18 +147,18 @@ pointer real_newp_array_copy_static(pointer dst,const type_info_t* ti,const_poin
 	return dst;
 }
 
-pointer real_new_array_copy_static(const type_info_t* ti,const_pointer src,size_t n)
+pointer real_new_array_copy_static(const type_info_t* ti,const_pointer src,yaooc_size_type n)
 {
 	memory_header_t* mh=allocate_memory(ti,n);
 	return real_newp_array_copy_static(mh->ptr_,ti,src,n);
 }
 
-pointer real_new_array_copy(const_pointer src,size_t n)
+pointer real_new_array_copy(const_pointer src,yaooc_size_type n)
 {
 	return real_new_array_copy_static(get_type_info(src),src,n);
 }
 
-pointer real_newp_array_copy(pointer dst,const_pointer src,size_t n)
+pointer real_newp_array_copy(pointer dst,const_pointer src,yaooc_size_type n)
 {
 	return real_newp_array_copy_static(dst,get_type_info(src),src,n);
 }
@@ -168,11 +167,11 @@ pointer real_newp_array_copy(pointer dst,const_pointer src,size_t n)
 	New using a constructor other than default or copy constructor
 */
 
-static void new_ctor_private(yaooc_private_iterator ptr,const type_info_t* ti,size_t n_elements,constructor ctor,va_list args)
+static void new_ctor_private(yaooc_private_iterator ptr,const type_info_t* ti,yaooc_size_type n_elements,constructor ctor,va_list args)
 {
-	size_t i;
+	yaooc_size_type i;
 	const class_table_t* ct=ti->class_table_;
-	size_t element_size=ti->type_size_;
+	yaooc_size_type element_size=ti->type_size_;
 	va_list args2;
 	for(i=0;i<n_elements;i++) {
 		if(ct)
@@ -184,7 +183,7 @@ static void new_ctor_private(yaooc_private_iterator ptr,const type_info_t* ti,si
 	}
 }
 
-pointer real_new_array_ctor(const type_info_t* ti,size_t n,constructor ctor,...)
+pointer real_new_array_ctor(const type_info_t* ti,yaooc_size_type n,constructor ctor,...)
 {
 	va_list args;
 	va_start(args,ctor);
@@ -194,7 +193,7 @@ pointer real_new_array_ctor(const type_info_t* ti,size_t n,constructor ctor,...)
 	return mh->ptr_;
 }
 
-pointer real_newp_array_ctor(void* ptr,const type_info_t* ti,size_t n,constructor ctor,...)
+pointer real_newp_array_ctor(void* ptr,const type_info_t* ti,yaooc_size_type n,constructor ctor,...)
 {
 	va_list args;
 	va_start(args,ctor);
@@ -218,9 +217,9 @@ const class_table_t* super_class_table(const_pointer p)
   return mh->type_info_->parent_==NULL ? NULL : mh->type_info_->parent_->class_table_;
 }
 /* **************** Delete ************* */
-void real_deletep_array(void* ptr,const type_info_t* ti,size_t n)
+void real_deletep_array(void* ptr,const type_info_t* ti,yaooc_size_type n)
 {
-	size_t i;
+	yaooc_size_type i;
   // Execute dtors for each item (if not null)
   while(ti != NULL) {
     if(ti->dtor_ != NULL) {
@@ -267,9 +266,9 @@ typedef struct {
 	iterator ptr; // pointer to beginning of array to be returned by calling function
 	iterator dst; // pointer to where new members added -- NULL if no elements are added
 	const type_info_t* ti;
-	size_t	n;		// number of new elements
+	yaooc_size_type	n;		// number of new elements
 } renew_info_t;
-renew_info_t renew_private(pointer old_ptr,size_t n_new)
+renew_info_t renew_private(pointer old_ptr,yaooc_size_type n_new)
 {
 	renew_info_t ri;
 	memory_header_t* mh_old=get_memory_header(old_ptr);
@@ -279,7 +278,7 @@ renew_info_t renew_private(pointer old_ptr,size_t n_new)
 		ri.dst=NULL;
 		ri.n=0;
 	} else {
-		size_t n_copy;
+		yaooc_size_type n_copy;
 #ifdef __YAOOC_USE_GC__
     GC_register_finalizer(mh_old, 0, 0, 0, 0);  // Remove finalizer from old allocated memory
 #endif
@@ -301,7 +300,7 @@ renew_info_t renew_private(pointer old_ptr,size_t n_new)
 	return ri;
 }
 
-pointer renew_array(pointer ptr,size_t n)
+pointer renew_array(pointer ptr,yaooc_size_type n)
 {
 	renew_info_t ri=renew_private(ptr,n);
 	if(ri.dst) {
@@ -310,7 +309,7 @@ pointer renew_array(pointer ptr,size_t n)
 	return ri.ptr;
 }
 
-pointer renew_array_copy(pointer ptr,size_t n,const_pointer src)
+pointer renew_array_copy(pointer ptr,yaooc_size_type n,const_pointer src)
 {
 	renew_info_t ri=renew_private(ptr,n);
 	if(ri.dst) {
@@ -319,7 +318,7 @@ pointer renew_array_copy(pointer ptr,size_t n,const_pointer src)
 	return ri.ptr;
 }
 
-pointer renew_array_ctor(pointer ptr,size_t n,constructor ctor,...)
+pointer renew_array_ctor(pointer ptr,yaooc_size_type n,constructor ctor,...)
 {
 	renew_info_t ri=renew_private(ptr,n);
 	if(ri.dst) {
@@ -457,23 +456,32 @@ bool op_le_static(const_pointer v1,const_pointer v2,const type_info_t* ti)
   Type info for POD
 */
 #define POD_TYPE_INFO_IMPLEMENTATION(T) \
-bool T ## _less_than_compare(T ## _const_pointer v1,T ## _const_pointer v2) { return *v1 < *v2; } \
+bool T ## _less_than_compare(const T* v1,const T* v2) { return *v1 < *v2; } \
 DEFINE_TYPE_INFO(T,NULL,NULL,NULL,NULL,(less_than_compare)T ## _less_than_compare,NULL,NULL )
 
 POD_TYPE_INFO_IMPLEMENTATION(char)
 POD_TYPE_INFO_IMPLEMENTATION(uchar)
+ALIAS_IMPLEMENTATION(int8,char)
+ALIAS_IMPLEMENTATION(uint8,uchar)
 POD_TYPE_INFO_IMPLEMENTATION(int)
 POD_TYPE_INFO_IMPLEMENTATION(uint)
+ALIAS_IMPLEMENTATION(int32,int)
+ALIAS_IMPLEMENTATION(uint32,uint)
+#if __WORDSIZE == 64
 POD_TYPE_INFO_IMPLEMENTATION(long)
 POD_TYPE_INFO_IMPLEMENTATION(ulong)
+ALIAS_IMPLEMENTATION(int64,long)
+ALIAS_IMPLEMENTATION(uint64,ulong)
+ALIAS_IMPLEMENTATION(long_long,long)
+ALIAS_IMPLEMENTATION(ulong_long,ulong)
+#else
+ALIAS_IMPLEMENTATION(long,int)
+ALIAS_IMPLEMENTATION(ulong,uint)
 POD_TYPE_INFO_IMPLEMENTATION(long_long)
 POD_TYPE_INFO_IMPLEMENTATION(ulong_long)
-POD_TYPE_INFO_IMPLEMENTATION(int16)
-POD_TYPE_INFO_IMPLEMENTATION(uint16)
-POD_TYPE_INFO_IMPLEMENTATION(int32)
-POD_TYPE_INFO_IMPLEMENTATION(uint32)
-POD_TYPE_INFO_IMPLEMENTATION(int64)
-POD_TYPE_INFO_IMPLEMENTATION(uint64)
+ALIAS_IMPLEMENTATION(int64,long_long)
+ALIAS_IMPLEMENTATION(uint64,ulong_long)
+#endif
 POD_TYPE_INFO_IMPLEMENTATION(double)
 
 /*
@@ -483,7 +491,7 @@ POD_TYPE_INFO_IMPLEMENTATION(double)
 /*
   Swaps objects.  Brute force object swap.  Only reliable works with object of the same type (and size)
 */
-void swap_object(void *obj1,void* obj2,size_t obj_size)
+void swap_object(void *obj1,void* obj2,yaooc_size_type obj_size)
 {
   if(obj_size > 0) {
     void* temp=MALLOC(obj_size);
@@ -499,7 +507,7 @@ char* yaooc_strdup(const char* str)
 {
   char* dup_str=NULL;
   if(str) {
-    size_t len=strlen(str);
+    yaooc_size_type len=strlen(str);
     dup_str=real_new_array(char_ti,len+1);
     strcpy(dup_str,str);
   }

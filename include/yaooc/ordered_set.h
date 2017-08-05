@@ -2,7 +2,7 @@
 #define __YAOOC_ORDERED_SET_INCLUDED__
 #include <stdlib.h>
 
-#include <yaooc/unique_ordered_container.h>
+#include <yaooc/unique_ordered_array_container.h>
 
 // Constructor
 void yaooc_ordered_set_ctor(pointer,va_list);
@@ -20,7 +20,7 @@ pointer yaooc_ordered_set_sdiff(const_pointer,const_pointer);
 typedef T ## _t* T ## _ordered_set_iterator; \
 typedef const T ## _t* T ## _ordered_set_const_iterator; \
 class_table(T ## _ordered_set) { \
-	yaooc_unique_ordered_container_class_members_t; \
+	yaooc_unique_ordered_array_container_class_members_t; \
 	T ## _ordered_set_iterator (*insert)(pointer,const_iterator); \
 	T ## _ordered_set_iterator (*insert_v)(pointer,T ## _t); \
 	T ## _ordered_set_iterator (*insert_range)(pointer,const_iterator,const_iterator); \
@@ -37,17 +37,17 @@ class_table(T ## _ordered_set) { \
 };\
 class_instance(T ## _ordered_set) \
 {\
-	yaooc_unique_ordered_container_instance_members_t;\
+	yaooc_unique_ordered_array_container_instance_members_t;\
 };\
 class(T ## _ordered_set); \
-ISA_DEFINITION(T ## _ordered_set,yaooc_unique_ordered_container)
+ISA_DEFINITION(T ## _ordered_set,yaooc_unique_ordered_array_container)
 
 #define ORDERED_SET_IMPLEMENTATION(T) \
 void T ## _ordered_set_default_ctor(pointer p) { call_constructor(p,yaooc_ordered_set_ctor,T ## _ti); } \
 T ## _ordered_set_iterator T ## _ordered_set_insert_v(pointer p,T ## _t v) { return yaooc_ordered_set_insert(p,&v); } \
-T ## _ordered_set_iterator T ## _ordered_set_find_v(pointer p,T ## _t v) { return yaooc_ordered_container_find(p,&v); } \
-T ## _ordered_set_const_iterator T ## _ordered_set_cfind_v(const_pointer p,T ## _t v) { return yaooc_ordered_container_find(p,&v); } \
-ISA_IMPLEMENTATION(T ## _ordered_set,yaooc_unique_ordered_container) \
+T ## _ordered_set_iterator T ## _ordered_set_find_v(pointer p,T ## _t v) { return yaooc_ordered_array_container_find(p,&v); } \
+T ## _ordered_set_const_iterator T ## _ordered_set_cfind_v(const_pointer p,T ## _t v) { return yaooc_ordered_array_container_find(p,&v); } \
+ISA_IMPLEMENTATION(T ## _ordered_set,yaooc_unique_ordered_array_container) \
 T ## _ordered_set_class_members_t T ## _ordered_set_class_members = \
 {\
   { \
@@ -56,27 +56,27 @@ T ## _ordered_set_class_members_t T ## _ordered_set_class_members = \
         { \
           T ## _ordered_set_isa, \
           T ## _ordered_set_is_descendent, \
-          yaooc_container_swap \
+          yaooc_array_container_swap \
         }, \
-        YAOOC_CONTAINER_NEW_METHODS \
+        YAOOC_ARRAY_CONTAINER_NEW_METHODS \
       } \
     } \
   }, \
 	(T ## _ordered_set_iterator (*)(pointer,const_iterator)) yaooc_ordered_set_insert, \
 	(T ## _ordered_set_iterator (*)(pointer,T ## _t)) T ## _ordered_set_insert_v, \
 	(T ## _ordered_set_iterator (*)(pointer,const_iterator,const_iterator)) yaooc_ordered_set_insert_range, \
-	(T ## _ordered_set_iterator (*) (pointer,iterator)) yaooc_unique_ordered_container_erase, \
-	(T ## _ordered_set_iterator (*) (pointer,iterator,iterator)) yaooc_unique_ordered_container_erase_range, \
-	(T ## _ordered_set_iterator (*)(pointer,const_iterator)) yaooc_ordered_container_find, \
+	(T ## _ordered_set_iterator (*) (pointer,iterator)) yaooc_unique_ordered_array_container_erase, \
+	(T ## _ordered_set_iterator (*) (pointer,iterator,iterator)) yaooc_unique_ordered_array_container_erase_range, \
+	(T ## _ordered_set_iterator (*)(pointer,const_iterator)) yaooc_ordered_array_container_find, \
 	(T ## _ordered_set_iterator (*)(pointer,T ## _t)) T ## _ordered_set_find_v, \
-	(T ## _ordered_set_const_iterator (*)(const_pointer,const_iterator)) yaooc_ordered_container_find, \
+	(T ## _ordered_set_const_iterator (*)(const_pointer,const_iterator)) yaooc_ordered_array_container_find, \
 	(T ## _ordered_set_const_iterator (*)(const_pointer,T ## _t)) T ## _ordered_set_cfind_v, \
-	(T ## _ordered_set_iterator (*) (pointer)) yaooc_container_begin, \
-	(T ## _ordered_set_iterator (*)(pointer)) yaooc_container_end, \
-	(T ## _ordered_set_const_iterator (*) (const_pointer)) yaooc_container_begin, \
-	(T ## _ordered_set_const_iterator (*)(const_pointer)) yaooc_container_end \
+	(T ## _ordered_set_iterator (*) (pointer)) yaooc_array_container_begin, \
+	(T ## _ordered_set_iterator (*)(pointer)) yaooc_array_container_end, \
+	(T ## _ordered_set_const_iterator (*) (const_pointer)) yaooc_array_container_begin, \
+	(T ## _ordered_set_const_iterator (*)(const_pointer)) yaooc_array_container_end \
 };\
 DEFINE_TYPE_INFO(T ## _ordered_set,T ## _ordered_set_default_ctor,NULL,NULL,NULL,NULL, \
-      &T ## _ordered_set_class_members,yaooc_unique_ordered_container)
+      &T ## _ordered_set_class_members,yaooc_unique_ordered_array_container)
 
 #endif

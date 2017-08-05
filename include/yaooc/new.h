@@ -29,6 +29,7 @@ typedef unsigned char bool;
 #define true 1
 #endif
 
+typedef unsigned int yaooc_size_type;
 /*
 	Generic pointer.  Objects should define a more appropriate pointer.
 	For example, yaooc_string class uses yaooc_string_pointer and yaooc_string_const_pointer to point to
@@ -36,7 +37,7 @@ typedef unsigned char bool;
 */
 typedef void* pointer;
 typedef const void* const_pointer;
-
+typedef pointer pointer_t;
 /*
 	Generic iterator
 */
@@ -131,7 +132,7 @@ typedef struct {
 */
 typedef struct type_info_s type_info_t;
 struct type_info_s {
-	size_t type_size_;											// object size
+	yaooc_size_type type_size_;											// object size
 	default_constructor  default_ctor_;
 	destructor dtor_;
 	copy_constructor copy_ctor_;
@@ -153,14 +154,14 @@ struct type_info_s {
 */
 #define new(T) real_new_array(T ## _ti,1)
 #define new_array(T,N) real_new_array(T ## _ti,N)
-pointer real_new_array(const type_info_t*,size_t);
+pointer real_new_array(const type_info_t*,yaooc_size_type);
 /*
 	Placement new -- arguments are pointer to preallocated memory, pointer to type info structure, and number
 	of elements.  The default constructor is used to initialize objects.
 */
 #define newp(P,T) real_newp_array(P,T ## _ti,1)
 #define newp_array(P,T,N) real_newp_array(P,T ## _ti,N)
-pointer real_newp_array(pointer,const type_info_t*,size_t);
+pointer real_newp_array(pointer,const type_info_t*,yaooc_size_type);
 
 /*
 	Copy new -- arguments are const pointer to object to copy and number of elements.
@@ -168,7 +169,7 @@ pointer real_newp_array(pointer,const type_info_t*,size_t);
 */
 #define new_copy(CP) real_new_array_copy(CP,1)
 #define new_array_copy(CP,N) real_new_array_copy(CP,N)
-pointer real_new_array_copy(const_pointer src,size_t);
+pointer real_new_array_copy(const_pointer src,yaooc_size_type);
 
 /*
 	Copy placement new (placement version of above)-- arguments are pointer to preallocated memory, const pointer
@@ -176,7 +177,7 @@ pointer real_new_array_copy(const_pointer src,size_t);
 */
 #define newp_copy(P,CP) real_newp_array_copy(P,CP,N)
 #define newp_array_copy(P,CP,N) real_newp_array_copy(P,CP,N)
-pointer real_newp_array_copy(pointer,const_pointer,size_t);
+pointer real_newp_array_copy(pointer,const_pointer,yaooc_size_type);
 
 /*
 	Copy static new -- arguments are type info pointer, const pointer to object to be copied, and number of
@@ -188,28 +189,28 @@ pointer real_newp_array_copy(pointer,const_pointer,size_t);
 */
 #define new_copy_static(T,CP)  		real_new_array_copy_static(T ## _ti,CP,1)
 #define new_array_copy_static(T,CP,N) 		real_new_array_copy_static(T ## _ti,CP,N)
-pointer real_new_array_copy_static(const type_info_t*,const_pointer,size_t);
+pointer real_new_array_copy_static(const type_info_t*,const_pointer,yaooc_size_type);
 
 /*
 	Placement version of abover
 */
 #define newp_copy_static(P,T,CP) real_newp_array_copy_static(P,T ## _ti,CP,1)
 #define newp_array_copy_static(P,T,CP,N) real_newp_array_copy_static(P,T ## _ti,CP,N)
-pointer real_newp_array_copy_static(pointer,const type_info_t*,const_pointer,size_t);
+pointer real_newp_array_copy_static(pointer,const type_info_t*,const_pointer,yaooc_size_type);
 
 /*
 	New ctor -- arguments are type info pointer, number of elements, constructor, and arguments to constructor
 */
 #define new_ctor(T,CON,...)  				real_new_array_ctor(T ## _ti,1,CON, __VA_ARGS__)
 #define new_array_ctor(T,N,CON,...)  				real_new_array_ctor(T ## _ti,N,CON, __VA_ARGS__)
-pointer real_new_array_ctor(const type_info_t*,size_t, constructor,...);
+pointer real_new_array_ctor(const type_info_t*,yaooc_size_type, constructor,...);
 
 /*
 	new ctor placement.  Placement version of above
 */
 #define newp_ctor(P,T,CON,...)  		real_newp_array_ctor(P,T ## _ti,1,CON,## __VA_ARGS__)
 #define newp_array_ctor(P,T,N,CON,...)  		real_newp_array_ctor(P,T ## _ti,N,CON,## __VA_ARGS__)
-pointer real_newp_array_ctor(pointer,const type_info_t*,size_t,constructor,...);
+pointer real_newp_array_ctor(pointer,const type_info_t*,yaooc_size_type,constructor,...);
 
 /*
 	YAOOC extension.  "renew" is to "new" as "realloc" is to "malloc".
@@ -218,9 +219,9 @@ pointer real_newp_array_ctor(pointer,const type_info_t*,size_t,constructor,...);
 	If size specified is less than current size, destructor is called for objects beyond new size
 	If size is same, nothing happens
 */
-pointer renew_array(pointer,size_t); // new objects initilized with default constructor
-pointer renew_array_copy(pointer,size_t,const_pointer); // new objets copied from const_pointer
-pointer renew_array_ctor(pointer,size_t,constructor,...); // new objects initialized using constructor
+pointer renew_array(pointer,yaooc_size_type); // new objects initilized with default constructor
+pointer renew_array_copy(pointer,yaooc_size_type,const_pointer); // new objets copied from const_pointer
+pointer renew_array_ctor(pointer,yaooc_size_type,constructor,...); // new objects initialized using constructor
 
 /*
 	Deletes an array of objects by calling destructor if defined
@@ -237,7 +238,7 @@ void delete_array(pointer);
 */
 #define deletep(P,T) real_deletep_array(P,T ## _ti,1)
 #define deletep_array(P,T,N) real_deletep_array(P,T ## _ti,N)
-void real_deletep_array(pointer,const type_info_t*,size_t);
+void real_deletep_array(pointer,const type_info_t*,yaooc_size_type);
 
 void delete_list(pointer,...);
 #define DELETE(p,...) delete_list(p, ## __VA_ARGS__ , NULL)
@@ -246,7 +247,7 @@ void delete_list(pointer,...);
   Calls method for the specified object.
 */
 #define REAL_M(ptr,method,...) (ptr)->class_table_->method(ptr, ## __VA_ARGS__)
-#define M(...) REAL_M(__VA_ARGS__)
+#define M(ptr,...) REAL_M(ptr,__VA_ARGS__)
 
 default_constructor get_default_ctor(const type_info_t* ti);
 copy_constructor get_copy_ctor(const type_info_t* ti);
@@ -273,45 +274,12 @@ bool op_lt_static(const_pointer,const_pointer,const type_info_t*);
 bool op_le_static(const_pointer,const_pointer,const type_info_t*);
 
 /*
-	type info for POD types
-*/
-#define POD_TYPE_INFO_DEFINITION(T) \
-typedef T ## _t* T ## _pointer; \
-typedef const T ## _t* T ## _const_pointer; \
-extern const type_info_t* const T ## _ti;
-
-typedef char char_t;
-typedef unsigned char uchar;
-typedef uchar uchar_t;
-typedef int int_t;
-typedef unsigned int uint_t;
-typedef unsigned long ulong_t;
-typedef unsigned long long ulong_long_t;
-typedef long int long_t;
-typedef long long int long_long_t;
-typedef double double_t;
-POD_TYPE_INFO_DEFINITION(char)
-POD_TYPE_INFO_DEFINITION(uchar)
-POD_TYPE_INFO_DEFINITION(int)
-POD_TYPE_INFO_DEFINITION(uint)
-POD_TYPE_INFO_DEFINITION(long)
-POD_TYPE_INFO_DEFINITION(ulong)
-POD_TYPE_INFO_DEFINITION(long_long)
-POD_TYPE_INFO_DEFINITION(ulong_long)
-POD_TYPE_INFO_DEFINITION(int16)
-POD_TYPE_INFO_DEFINITION(uint16)
-POD_TYPE_INFO_DEFINITION(int32)
-POD_TYPE_INFO_DEFINITION(uint32)
-POD_TYPE_INFO_DEFINITION(int64)
-POD_TYPE_INFO_DEFINITION(uint64)
-POD_TYPE_INFO_DEFINITION(double)
-
-/*
 	Make it look more like C++
 */
 #define class_forward(name) \
 typedef struct name ## _s name ## _t; \
 typedef struct name ## _s * name ## _pointer; \
+typedef const struct name ## _s * name ## _const_pointer; \
 extern type_info_t __ ## name ## _ti; \
 extern const type_info_t* const name ## _ti;
 
@@ -360,6 +328,10 @@ extern const type_info_t* const NEW_TYPE ## _ti;
 
 #define ALIAS_IMPLEMENTATION(NEW_TYPE,EXISTING_TYPE) \
 const type_info_t* const NEW_TYPE ## _ti=&__ ## EXISTING_TYPE ## _ti;
+
+#define ALIAS(NEW_TYPE,EXISTING_TYPE) \
+ALIAS_DEFINITION(NEW_TYPE,EXISTING_TYPE) \
+ALIAS_IMPLEMENTATION(NEW_TYPE,EXISTING_TYPE)
 
 #define __NULL_ti (*(char*)NULL)
 
@@ -415,7 +387,7 @@ const type_info_t* const T ## _ti = &__ ## T ## _ti;
 
 #define SWAP(T,x,y) { T __temp__=x; x=y; y=__temp__; }
 
-void swap_object(void *,void*,size_t); /* Careful using this */
+void swap_object(void *,void*,yaooc_size_type); /* Careful using this */
 char* yaooc_strdup(const char*);
 
 /*
@@ -424,4 +396,48 @@ char* yaooc_strdup(const char*);
 */
 #define STACK_PTR(T,P) char P ## _stack[sizeof(T ## _t)]; T ## _pointer P=real_newp_array(P ## _stack,T ## _ti,1)
 #define STACK_PTR_CTOR(T,P,CTOR,...) char P ## _stack[sizeof(T ## _t)]; T ## _pointer P=real_newp_array_ctor(P ## _stack,T ## _ti,1,CTOR,## __VA_ARGS__)
+
+/*
+	type info for POD types
+*/
+#define POD_TYPE_INFO_DEFINITION(T) \
+typedef T ## _t* T ## _pointer; \
+typedef const T ## _t* T ## _const_pointer; \
+extern const type_info_t* const T ## _ti;
+
+/*
+  Typedefs so that POD types adhere to naming convention
+*/
+typedef char char_t;
+typedef unsigned char uchar;
+typedef uchar uchar_t;
+typedef short int short_t;
+typedef unsigned short int ushort_t;
+typedef int int_t;
+typedef unsigned int uint_t;
+typedef unsigned long ulong_t;
+typedef unsigned long long ulong_long_t;
+typedef long int long_t;
+typedef long long int long_long_t;
+typedef double double_t;
+extern const type_info_t* const char_ti;
+extern const type_info_t* const int8_ti;
+extern const type_info_t* const uchar_ti;
+extern const type_info_t* const uint8_ti;
+extern const type_info_t* const short_ti;
+extern const type_info_t* const int16_ti;
+extern const type_info_t* const ushort_ti;
+extern const type_info_t* const uint16_ti;
+extern const type_info_t* const int_ti;
+extern const type_info_t* const int32_ti;
+extern const type_info_t* const uint_ti;
+extern const type_info_t* const uint32_ti;
+extern const type_info_t* const long_ti;
+extern const type_info_t* const ulong_ti;
+extern const type_info_t* const long_long_ti;
+extern const type_info_t* const ulong_long_ti;
+extern const type_info_t* const int64_ti;
+extern const type_info_t* const uint64_ti;
+extern const type_info_t* const double_ti;
+
 #endif

@@ -133,8 +133,8 @@ void yaooc_jmpbuf_dump(yaooc_exception_thread_t* et)
   if(et->current_jmpbuf_) {
     printf("Exception: %p\n"
         "File: %s\n"
-        "Line number: %zu\n"
-        "Pointer bag size: %zu\n"
+        "Line number: %d\n"
+        "Pointer bag size: %d\n"
         "Previous: %p\n",et->current_jmpbuf_->exception_thrown_,et->current_jmpbuf_->file_,
         et->current_jmpbuf_->line_no_,M(et->current_jmpbuf_->pb_,size),et->current_jmpbuf_->prev_);
   }
@@ -204,13 +204,13 @@ void yaooc_jmpbuf_destroy(yaooc_jmpbuf_t* jb)
   }
 }
 
-void yaooc_exception_terminate(const char* fname,size_t line,yaooc_exception_pointer e)
+void yaooc_exception_terminate(const char* fname,yaooc_size_type line,yaooc_exception_pointer e)
 {
-  fprintf(stderr,"Uncaught %s exception in file %s at line number %zu: %s\n",M(e,isa),fname,line,M(e,what));
+  fprintf(stderr,"Uncaught %s exception in file %s at line number %d: %s\n",M(e,isa),fname,line,M(e,what));
   abort();
 }
 
-yaooc_jmpbuf_t* setup_jmpbuf_for_exeception(void *e,const char* f,size_t l)
+yaooc_jmpbuf_t* setup_jmpbuf_for_exeception(void *e,const char* f,yaooc_size_type l)
 {
   yaooc_exception_thread_t* et=yaooc_exception_thread_list_find_or_create_exception_thread(pthread_self(),false);
   if(et->current_jmpbuf_ == NULL) {
