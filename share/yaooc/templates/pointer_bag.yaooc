@@ -1,0 +1,24 @@
+#ifndef __POINTER_BAG_INCLUDED__
+#define __POINTER_BAG_INCLUDED__
+
+#include "object.yaooc"
+
+class yaooc_pointer_bag : yaooc_object
+{
+    yaooc_pointer_bag();
+    ~yaooc_pointer_bag();
+  table:
+    const char* isa() const;
+    void swap(pointer p2);
+    pointer push(pointer v);
+    void push_list(...);
+    void remove(pointer v);
+    void clear();  /* Clear remove all pointer without deleteing */
+    void delete_all();  /* This deletes objects before clearing */
+    size_t size() const;
+    bool empty() const;
+  instance:
+    pointer_bag_array_t* pointers_;
+};
+
+#endif

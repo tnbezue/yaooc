@@ -1,0 +1,48 @@
+#ifndef __POD_ARRAY_YAOOC_INCLUDED__
+#define __POD_ARRAY_YAOOC_INCLUDED__
+
+#include "object.yaooc"
+
+class yaooc_pod_array : yaooc_object
+{
+    yaooc_pod_array();
+    yaooc_pod_array(yaooc_pod_array);
+    ~yaooc_pod_array();
+    yaooc_pod_array_ctor_ti(const typeinfo_t* ti);
+    operator=();
+  private:
+  protected:
+    iterator insert_space(const_iterator pos,yaooc_size_t n);
+    iterator erase_space(const_iterator pos,yaooc_size_t n);
+    iterator replace_space(const_iterator f,const_iterator n,yaooc_size_t count);
+    iterator find(const_pointer value);
+    iterator insert(const_iterator pos,const_pointer value);
+    iterator insertn(const_iterator pos,yaooc_size_t n,const_pointer val);
+    iterator insert_range(const_iterator pos,const_iterator f,const_iterator l);
+    iterator erase(const_iterator pos);
+    iterator erase_range(const_iterator f,const_iterator l);
+    yaooc_size_t erase_value(const_pointer value);
+    iterator at() const;
+    void shrink_to_fit();
+    void reserve(size_t n);
+    void clear();
+
+  table:
+    cont class_table_t* private_class_table_=&yaooc_pod_array_private_class_table;
+    const char* isa() const;
+    void swap(pointer p2);
+    bool increase_capacity(yaooc_size_t n);
+    size_t size_needed(size_t n);
+    yaooc_size_t size() const;
+    yaooc_size_t capacity() const;
+    bool empty() const;
+    iterator begin() const;
+    iterator end() const;
+  instance:
+    char* array_;
+    const type_info_t* type_info_;
+    yaooc_size_t size_;
+    yaooc_size_t capacity_;
+};
+
+#endif

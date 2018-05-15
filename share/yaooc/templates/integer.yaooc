@@ -1,0 +1,24 @@
+#ifndef __YAOOC_INTEGER_INCLUDED__
+#define __YAOOC_INTEGER_INCLUDED__
+
+#include "object.yaooc"
+
+class yaooc_integer : yaooc_object
+{
+    yaooc_integer();
+    yaooc_integer(yaooc_integer);
+    yaooc_integer_ctor_int(long value);
+    operator=();
+    operator<();
+
+  protected:
+  table:
+    const char* isa() const;
+    void swap(pointer o);
+    void set(long value);
+    long get() const;
+  instance:
+    long value_;
+};
+
+#endif

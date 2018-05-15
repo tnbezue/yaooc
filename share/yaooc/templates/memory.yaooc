@@ -1,0 +1,46 @@
+#ifndef __MEMORY_YAOOC_INCLUDED__
+#define __MEMORY_YAOOC_INCLUDED__
+
+#include "object.yaooc"
+
+class yaooc_unique_ptr : yaooc_object
+{
+    yaooc_unique_ptr();
+    ~yaooc_unique_ptr();
+    yaooc_unique_ptr(yaooc_unique_ptr);
+    yaooc_unique_ptr_ctor_ptr(pointer ptr);
+    operator=();
+    operator<();
+
+  table:
+    const char* isa() const;
+    void swap(pointer ptr);
+    pointer get();
+    pointer release();
+    void reset(pointer ptr);
+  instance:
+    pointer ptr_;
+};
+
+class yaooc_shared_ptr : yaooc_object
+{
+    yaooc_shared_ptr();
+    ~yaooc_shared_ptr();
+    yaooc_shared_ptr(yaooc_shared_ptr);
+    yaooc_shared_ptr_ctor_ptr(pointer ptr);
+    operator=();
+    operator<();
+  private:
+    void acquire(yaooc_counter_t* counter);
+  table:
+    const char* isa() const;
+    void swap(pointer ptr);
+    pointer get();
+    pointer release();
+    void reset(pointer ptr);
+    yaooc_size_t count() const;
+  instance:
+    yaooc_counter_t* counter_;
+};
+
+#endif

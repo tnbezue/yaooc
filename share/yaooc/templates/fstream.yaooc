@@ -1,0 +1,27 @@
+#ifndef __YAOOC_FSTREAM_INCLUDED__
+#define __YAOOC_FSTREAM_INCLUDED__
+
+#include "stream.yaooc"
+
+class yaooc_ifstream : yaooc_istream
+{
+	yaooc_ifstream();
+	~yaooc_ifstream();
+	yaooc_ifstream_ctor_fname_mode(const char* fname,const char* mode);
+	table:
+		void open(const char* fname,const char* mode);
+		void close();
+};
+
+class yaooc_ofstream : yaooc_ostream
+{
+	yaooc_ofstream();
+	~yaooc_ofstream();
+	yaooc_ofstream_ctor_fname_mode(const char* fname,const char* mode);
+
+	table:
+		void open(const char* fname,const char* mode);
+		void close();
+};
+
+#endif

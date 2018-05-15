@@ -1,0 +1,37 @@
+#ifndef __RED_BLACK_INDEX_ARRAY_CONTAINER_YAOOC_INCLUDED__
+#define __RED_BLACK_INDEX_ARRAY_CONTAINER_YAOOC_INCLUDED__
+
+#include "array_container.yaooc"
+
+class yaooc_red_black_index_array_container : yaooc_array_container
+{
+    yaooc_red_black_index_array_container_ctor_ti();
+    yaooc_red_black_index_array_container(yaooc_red_black_index_array_container);
+    ~yaooc_red_black_index_array_container();
+    operator=();
+
+  private:
+  protected:
+    rb_node_t* find_protected(const_pointer value);
+    iterator find(const_pointer value);
+    void insert_index(const_pointer value);
+    iterator insert(const_iterator pos,const_pointer value);
+    iterator insertn(const_iterator pos,yaooc_size_t n,const_pointer val);
+    iterator insert_range(const_iterator pos,const_iterator f,const_iterator l);
+    void remove_index(const_pointer value);
+    iterator erase(const_iterator pos);
+    yaooc_size_t erase_value(const_pointer value);
+    iterator erase_range(const_iterator f,const_iterator l);
+    void resize(yaooc_size_t n);
+    void resize_value(yaooc_size_t n,const_pointer value);
+    void clear();
+
+  table:
+    const char* isa() const;
+    void swap(pointer p2);
+
+  instance:
+    rb_tree_t red_black_tree_;
+};
+
+#endif

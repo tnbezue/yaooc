@@ -1,0 +1,14 @@
+#ifndef __EXCEPTION_YAOOC_INCLUDED__
+#define __EXCEPTION_YAOOC_INCLUDED__
+
+#include "object.yaooc"
+
+class yaooc_exception : yaooc_object
+{
+
+  table:
+    const char* isa() const;
+    const char* what() const;
+};
+
+#endif

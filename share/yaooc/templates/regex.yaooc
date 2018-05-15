@@ -1,0 +1,50 @@
+#ifndef __REGEX_YAOOC_INCLUDED__
+#define __REGEX_YAOOC_INCLUDED__
+
+#include "object.yaooc"
+
+class yaooc_matchdata : yaooc_object {
+    yaooc_matchdata();
+    yaooc_matchdata(yaooc_matchdata);
+    ~yaooc_matchdata();
+    operator=();
+  table:
+    const char* isa() const;
+    void swap(pointer other);
+    yaooc_string_pointer at(size_t i) const;
+    yaooc_string_pointer exec(const char* str);
+    const char* subject() const;
+    bool bool() const;
+    size_t size() const;
+  instance:
+    regmatch_t * ovector_;
+    char* subject_;
+    int match_result_;
+    int n_captures_;
+    int match_flags_;
+};
+
+class yaooc_regex : yaooc_object {
+    yaooc_regex();
+    yaooc_regex(yaooc_regex);
+    ~yaooc_regex();
+    operator=();
+    yaooc_regex_ctor_ccs_int(const char* pattern,int flags);
+  private:
+    void compile();
+    bool match_private(yaooc_matchdata_pointer md,int offset);
+  table:
+    void set_pattern_flags(const char* pattern,int flags);
+    const char* get_pattern() const;
+    int get_flags() const;
+    yaooc_matchdata_pointer match(const char* subject,int match_flags);
+    bool match_next(yaooc_matchdata_pointer md);
+    bool bool() const;
+  instance:
+    regex_t * re_;
+    char* pattern_;
+    int	compile_flags_;
+    int compile_result_;
+};
+
+#endif

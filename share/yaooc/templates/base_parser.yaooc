@@ -1,0 +1,55 @@
+#ifndef __BASE_PARSER_YAOOC_INCLUDED__
+#define __BASE_PARSER_YAOOC_INCLUDED__
+
+#include "object.yaooc"
+
+class yaooc_base_parser : yaooc_object {
+    yaooc_base_parser();
+    ~yaooc_base_parser();
+    yaooc_base_parser(yaooc_base_parser);
+    operator=();
+  table:
+    const char* isa() const;
+    void swap(pointer o);
+    void set_parse_string(const char* str);
+    void rule_start();
+    void rule_success();
+    void rule_fail();
+    yaooc_terminal_t eos();
+    yaooc_terminal_t string_until_chrs(const char* chrs);
+    yaooc_terminal_t string_while_chrs(const char* chrs);
+    yaooc_terminal_t string_until_eol();
+    yaooc_terminal_t shell_comment();
+    yaooc_terminal_t c_comment();
+    yaooc_terminal_t cpp_comment();
+    yaooc_terminal_t custom_whitespace();
+    void set_whitespace_types(uint32_t ws);
+    uint32_t get_whitespace_types();
+    int whitespace();
+    yaooc_terminal_t chr(char ch);
+    int chr_choices(const char* ch_choices);
+    yaooc_terminal_t str(const char* str);
+    int str_choices(...);
+    yaooc_terminal_t digits();
+    yaooc_terminal_t hexdigits();
+    yaooc_terminal_t integer();
+    yaooc_terminal_t hexinteger();
+    yaooc_terminal_t real();
+    yaooc_terminal_t ident();
+    yaooc_terminal_t regex(const char* re_str,uint32_t compile_opts,uint32_t match_opts);
+    yaooc_terminal_t quoted_string(char quote_type);
+    yaooc_terminal_t single_quoted_string();
+    yaooc_terminal_t double_quoted_string();
+    yaooc_terminal_t bare_string();
+    yaooc_terminal_t string_until_matching_chr(char lch,char rch);
+    yaooc_base_parser_result_t result() const;
+  instance:
+    const char* subject_;
+    parser_position_stack_pointer stack_;
+    const char* current_pos_;
+    unsigned int line_no_;
+    unsigned int whitespace_types_;
+    yaooc_base_parser_result_t result_;
+};
+
+#endif
