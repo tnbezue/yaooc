@@ -1,78 +1,105 @@
-#include <assert.h>
-#include <string.h>
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <yaooc/unique_array_container.h>
 
-iterator yaooc_unique_array_container_insert_n(pointer p,const_iterator pos,yaooc_size_type n,const_pointer value)
-{
-	yaooc_unique_array_container_pointer this=p;
-	return yaooc_unique_array_container_insert_range(p,pos,value,value+this->type_info_->type_size_);
-}
+/* Private items for yaooc_unique_array_container */
 
+/* Protected items for yaooc_unique_array_container */
 iterator yaooc_unique_array_container_insert(pointer p,const_iterator pos,const_pointer value)
 {
-	yaooc_unique_array_container_pointer this=p;
-	return yaooc_unique_array_container_insert_range(p,pos,value,value+this->type_info_->type_size_);
+  return yaooc_unique_array_container_insert_range(p,pos,value,value+TYPE_SIZE(p));
+}
+
+/*
+  Not really valid for unique array.  Can only insert 1 to be unique.
+*/
+iterator yaooc_unique_array_container_insertn(pointer p,const_iterator pos,size_t n,const_pointer value)
+{
+  return yaooc_unique_array_container_insert_range(p,pos,value,value+TYPE_SIZE(p));
 }
 
 iterator yaooc_unique_array_container_insert_range(pointer p,const_iterator pos,const_iterator f,const_iterator l)
 {
-	WITHIN_BOUNDS(p,pos,"Insert position out of range in yaooc_unique_array_container_insert_range");
-	PROPER_RANGE(f,l,"First > last for insert in yaooc_unique_array_container_insert_range");
-	yaooc_unique_array_container_pointer this=p;
-	yaooc_private_const_iterator ptr=pos;
-	yaooc_private_const_iterator first=f;
-	yaooc_private_const_iterator last=l;
-	yaooc_size_type ofs=INDEX(this,ptr);
-	yaooc_size_type element_size=this->type_info_->type_size_;
-	yaooc_size_type n=(last-first)/element_size;
-	yaooc_array_container_increase_capacity(this,n);
-	yaooc_size_type first_insert_pos=(yaooc_size_type)-1;
-	for(;first!=last;first+=element_size) {
-		yaooc_private_iterator position = yaooc_unique_array_container_find(this,first);
-		if(first_insert_pos==(yaooc_size_type)-1)
-			first_insert_pos=position-this->array_;
-		if(position == yaooc_unique_array_container_end(this)) {
-			yaooc_array_container_insert_n_private(this,ofs++,1,first);
-		}
-	}
-	if(first_insert_pos==(yaooc_size_type)-1)
-		first_insert_pos=this->size_;
-	return AT(this,first_insert_pos);
+  yaooc_unique_array_container_pointer this=p;
+  size_t ipos=INDEX(this,pos);
+  yaooc_private_const_iterator first=f;
+  yaooc_private_const_iterator last=l;
+  size_t index=(size_t)-1;
+  iterator temp;
+  for(;first<last;first+=TYPE_SIZE(p)) {
+    if((temp = yaooc_array_container_find(this,first)) == END(this)) {
+      temp=yaooc_array_container_insertn(this,AT(this,ipos),1,first);
+      ipos++;
+    }
+    if(index == (size_t)-1)
+      index=INDEX(p,temp);
+  }
+  /*
+    index will only be -1 when zero elements are inserted
+  */
+  return AT(p,index==(size_t)-1 ? SIZE(p) : index);
 }
 
-void yaooc_array_container_erase_range_private(pointer p,iterator f,iterator l);
-yaooc_size_type yaooc_unique_array_container_erase_value(pointer p,const_pointer value)
+void yaooc_unique_array_container_resize_value(pointer p,size_t n,const_pointer val)
 {
-	yaooc_unique_array_container_pointer this=p;
-	yaooc_size_type i,n_erased=0;
-	for(i=0;i<this->size_;i++) {
-		if(op_eq_static(AT(this,i),value,this->type_info_)) {
-			/*
-				Since this is a unique container, no other matches will be found
-			*/
-			yaooc_array_container_erase_range_private(this,AT(this,i),AT(this,i+1));
-			n_erased=1;
-			break;
-		}
-	}
-	return n_erased;
+  yaooc_unique_array_container_pointer this=p;
+  if(n<this->size_) {
+    yaooc_array_container_erase_range(p,AT(p,n),END(p));
+  } else if(n > this->size_){
+    yaooc_unique_array_container_insert_range(this,END(this),val,((yaooc_private_const_pointer)val)+TYPE_SIZE(p));
+  }
 }
 
-void yaooc_unique_array_container_resize(pointer p,yaooc_size_type new_size,const_pointer value)
+void yaooc_unique_array_container_resize(pointer p,size_t n)
 {
-//	yaooc_size_type n;
-	yaooc_array_container_pointer this=p;
-//	const type_info_t* ti=this->type_info_;
-	if(new_size > this->size_) {
-		yaooc_unique_array_container_insert_n(this,yaooc_array_container_end(p),1,value);
-	} else {
-		yaooc_array_container_erase_range(this,AT(this,new_size),yaooc_array_container_end(p));
-	}
+  yaooc_array_container_pointer this=p;
+  pointer temp=__new_array(this->type_info_,1);
+  yaooc_array_container_resize_value(p,n,temp);
+  delete(temp);
 }
 
-ISA_IMPLEMENTATION(yaooc_unique_array_container,yaooc_array_container)
 
-DEFINE_TYPE_INFO(yaooc_unique_array_container,NULL,NULL,NULL,NULL,NULL,
-        NULL,yaooc_array_container)
+/* Typeinfo for yaooc_unique_array_container */
 
+/* Constructors for yaooc_unique_array_container */
+
+/* Class table methods for yaooc_unique_array_container */
+const char* yaooc_unique_array_container_isa(const_pointer p) { return "yaooc_unique_array_container_t"; }
+
+/* Class table for yaooc_unique_array_container */
+yaooc_unique_array_container_class_table_t yaooc_unique_array_container_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table,
+  .isa = (const char* (*) (const_pointer p)) yaooc_unique_array_container_isa,
+  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_unique_array_container_is_descendant,
+  .swap = (void (*) (pointer p,pointer)) yaooc_unique_array_container_swap,
+  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
+  .size = (size_t (*) (const_pointer p)) yaooc_unique_array_container_size,
+  .capacity = (size_t (*) (const_pointer p)) yaooc_unique_array_container_capacity,
+  .empty = (bool (*) (const_pointer p)) yaooc_unique_array_container_empty,
+  .begin = (iterator (*) (const_pointer p)) yaooc_unique_array_container_begin,
+  .end = (iterator (*) (const_pointer p)) yaooc_unique_array_container_end,
+};
+
+
+DEFINE_TYPE_INFO(yaooc_unique_array_container,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+			&yaooc_unique_array_container_class_table,yaooc_array_container)

@@ -1,4 +1,22 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
+#include <string.h>
 #include <yaooc/base_parser.h>
 
 #include "test_harness.h"
@@ -33,24 +51,24 @@ void test_whitespace()
   TEST("Offset is 3",bp->current_pos_-str == 3);
   M(bp,whitespace);
   TEST("Offset is still 3",bp->current_pos_-str == 3);
-  M(bp,set_crlf_as_whitespace,true);
+  M(bp,set_whitespace_types,CRLF);
   M(bp,whitespace);
   TEST("Offset is 8",bp->current_pos_-str == 8);
-  M(bp,set_c_comment_as_whitespace,true);
+  M(bp,set_whitespace_types,CRLF | C_COMMENT);
   M(bp,whitespace);
   TEST("Offset is 28",bp->current_pos_-str == 28);
-  M(bp,set_cpp_comment_as_whitespace,true);
+  M(bp,set_whitespace_types,CRLF | C_COMMENT | CPP_COMMENT);
   M(bp,whitespace);
   TEST("Offset is 47",bp->current_pos_-str == 47);
   printf("%zu X%s\n",bp->current_pos_-str,bp->current_pos_);
-  M(bp,set_shell_comment_as_whitespace,true);
+  M(bp,set_whitespace_types,CRLF | C_COMMENT | CPP_COMMENT | SHELL_COMMENT );
   M(bp,whitespace);
   TEST("Offset is 64",bp->current_pos_-str == 64);
-  TEST("At end of string",yaooc_base_parser_eos(bp));
+  TEST("At end of string",M(bp,eos).end_);
   M(bp,set_parse_string,str);
   M(bp,whitespace);
   TEST("After reset, Offset is 64",bp->current_pos_-str == 64);
-  TEST("After reset, At end of string",yaooc_base_parser_eos(bp));
+  TEST("After reset, At end of string",M(bp,eos).end_);
   delete(bp);
 }
 
@@ -59,9 +77,9 @@ void test_chr()
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="a test";
   M(bp,set_parse_string,str);
-  TEST("Matches 'a'",M(bp,chr,'a'));
+  TEST("Matches 'a'",M(bp,chr,'a').end_);
   TEST("Offset is 2",bp->current_pos_-str == 2);
-  TEST("Does not matches 'b'",!M(bp,chr,'b'));
+  TEST("Does not matches 'b'",!M(bp,chr,'b').end_);
   TEST("Offset is 2",bp->current_pos_-str == 2);
 
   TEST("Matches one of \"stu\"",M(bp,chr_choices,"stu"));
@@ -76,10 +94,10 @@ void test_str()
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="this is some test";
   M(bp,set_parse_string,str);
-  TEST("Matches \"this\"",M(bp,str,"this"));
+  TEST("Matches \"this\"",M(bp,str,"this").end_);
   printf("%zu X%s\n",bp->current_pos_-str,bp->current_pos_);
   TEST("Offset is 5",bp->current_pos_-str == 5);
-  TEST("Does not match \"this\"",!M(bp,str,"this"));
+  TEST("Does not match \"this\"",!M(bp,str,"this").end_);
   TEST("Offset is 5",bp->current_pos_-str == 5);
 
   TEST("Matches item 1 of \"this\",\"is\",\"a\",\"test\"",M(bp,str_choices,"this","is","a","test",NULL)==1);
@@ -378,33 +396,63 @@ void test_qouted_string()
   delete(bp);
 }
 
+void test_string_until_chrs()
+{
+  const char* str="abcdefghijklmnopqrstuvwxyz5173904268";
+  yaooc_base_parser_pointer bp=new(yaooc_base_parser);
+  M(bp,set_parse_string,str);
+  yaooc_terminal_t r=M(bp,string_until_chrs,"0123456789");
+  char* ts=M(&r,get_raw_text);
+  TEST("Matched alpha string",strcmp(ts,"abcdefghijklmnopqrstuvwxyz")==0);
+  if(ts)
+    delete(ts);
+  r=M(bp,string_until_chrs,"0123456789");
+  TEST("Matched no characters",r.end_==NULL);
+	delete(bp);
+}
+
+void test_string_while_chrs()
+{
+  const char* str="abcdefghijklmnopqrstuvwxyz5173904268";
+  yaooc_base_parser_pointer bp=new(yaooc_base_parser);
+  M(bp,set_parse_string,str);
+  yaooc_terminal_t r=M(bp,string_while_chrs,"prwanzbkjtxmohygdcqufvslie");
+  char* ts=M(&r,get_raw_text);
+  TEST("Matched alpha string",strcmp(ts,"abcdefghijklmnopqrstuvwxyz")==0);
+  if(ts)
+    delete(ts);
+  r=M(bp,string_while_chrs,"prwanzbkjtxmohygdcqufvslie");
+  TEST("Matched no characters",r.end_==NULL);
+  delete(bp);
+}
+
 void test_string_until_matching_chr()
 {
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
-  const char* str="( parens ) {  { (withing braces) } }   [ { [ inside square brackets ] }  ] [  [ unmatched ] ";
+  const char* str="( parens ) {  { (within braces) } }   [ { [ inside square brackets ] }  ] [  [ unmatched ] ";
   yaooc_terminal_t r;
   char* ts;
   M(bp,set_parse_string,str);
-  TEST("Found open paren",M(bp,chr,'('));
+  TEST("Found open paren",M(bp,chr,'(').end_);
   TEST("Offset is 2",bp->current_pos_-str==2);
   r=M(bp,string_until_matching_chr,'(',')');
   ts=M(&r,get_raw_text);
   TEST("Captured string is \"parens \"",strcmp(ts,"parens ")==0);
   if(ts) delete(ts);
   TEST("Offset is 11",bp->current_pos_-str==11);
-  TEST("Found open bracket",M(bp,chr,'{'));
+  TEST("Found open bracket",M(bp,chr,'{').end_);
   r=M(bp,string_until_matching_chr,'{','}');
   ts=M(&r,get_raw_text);
-  TEST("Captured string is \"{ (withing braces) } \"",strcmp(ts,"{ (withing braces) } ")==0);
+  TEST("Captured string is \"{ (within braces) } \"",strcmp(ts,"{ (within braces) } ")==0);
   if(ts) delete(ts);
-  TEST("Offset is 39",bp->current_pos_-str==39);
-  TEST("Found open bracket",M(bp,chr,'['));
+  TEST("Offset is 38",bp->current_pos_-str==38);
+  TEST("Found open bracket",M(bp,chr,'[').end_);
   r=M(bp,string_until_matching_chr,'[',']');
   ts=M(&r,get_raw_text);
   TEST("Captured string is \"{ [ inside square brackets ] }  \"",strcmp(ts,"{ [ inside square brackets ] }  ")==0);
   if(ts) delete(ts);
-  TEST("Offset is 75",bp->current_pos_-str==75);
-  TEST("Found open bracket",M(bp,chr,'['));
+  TEST("Offset is 74",bp->current_pos_-str==74);
+  TEST("Found open bracket",M(bp,chr,'[').end_);
   r=M(bp,string_until_matching_chr,'[',']');
   ts=M(&r,get_raw_text);
   TEST("Captured string is NULL",ts==NULL);
@@ -424,6 +472,8 @@ test_function tests[] =
   test_ident,
   test_regex,
   test_qouted_string,
+  test_string_until_chrs,
+  test_string_while_chrs,
   test_string_until_matching_chr
 };
 

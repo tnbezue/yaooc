@@ -1,8 +1,26 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <time.h>
+#include <yaooc/object.h>
 #include <yaooc/ordered_map.h>
 #include <yaooc/string.h>
 #include <yaooc/memory.h>
@@ -19,17 +37,20 @@ void dump_map(student_info_const_pointer this,FILE* out)
 
 class_table(student_info)
 {
-  yaooc_object_class_members_t;
+  yaooc_object_class_table_t;
+  uint_t (*score)(const_pointer);
 };
 
 class_instance(student_info)
 {
   yaooc_string_t lname_;
   yaooc_string_t fname_;
-  uint32_t score_;
+  uint_t score_;
 };
 
 class(student_info);
+
+const char* student_info_isa(const_pointer p) { return "student_info_t"; }
 
 void student_info_default_ctor(pointer p)
 {
@@ -60,33 +81,40 @@ void student_info_copy_ctor(pointer d,const_pointer s)
   student_info_default_ctor(d);
   student_info_assign(d,s);
 }
-#define STUDENT_CLASS_MEMBERS \
-( \
-  YAOOC_OBJECT_CLASS_MEMBERS \
+
+uint_t student_info_score(const_pointer p)
+{
+  return 0;
 }
 
-student_info_class_members_t student_info_class_members; // = { STUDENT_GLOBAL_MEMBERS };
+student_info_class_table_t student_info_class_table = {
+  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+  .isa=student_info_isa,
+  .is_descendant = yaooc_object_is_descendant,
+  .swap = yaooc_object_swap,
+  .score = student_info_score
+};
 
-DEFINE_TYPE_INFO(student_info,student_info_default_ctor,student_info_dtor
-      ,student_info_copy_ctor,student_info_assign,NULL,&student_info_class_members,
-      NULL)
+DEFINE_TYPE_INFO(student_info,student_info_default_ctor,
+      student_info_dtor,student_info_copy_ctor,student_info_assign,NULL,NULL,NULL,
+      &student_info_class_table,yaooc_object)
 
 void student_info_ctor(pointer p,va_list args)
 {
   student_info_pointer this=p;
   newp_ctor(&this->lname_,yaooc_string,yaooc_string_ctor_ccs,va_arg(args,const char*));
   newp_ctor(&this->fname_,yaooc_string,yaooc_string_ctor_ccs,va_arg(args,const char*));
-  this->score_=va_arg(args,uint32_t);
+  this->score_=va_arg(args,uint_t);
 }
 
-typedef uint32_t student_id_t;
-#define student_id_ti uint32_ti
+typedef uint_t student_id_t;
+#define student_id_ti uint_ti
 
 typedef struct {
-  uint32_t student_id;
+  uint_t student_id;
   const char* lname;
   const char* fname;
-  uint32_t score;
+  uint_t score;
 } student_data_t;
 
 student_data_t students []=
@@ -97,49 +125,53 @@ student_data_t students []=
 		{ 1010, "Lester","Ming", 82 },
 		{ 0, 0, 0, 0 }
 	};
+
 student_data_t student_updates []=
 {
   { 66, "Smith","Lisa", 91 },
 	{ 121, "Bell","John", 79 },
-	{ 44, "Long","Kathy", 79 },
+	{ 44, "Long","Kathy", 66 },
 	{ 0, 0, 0, 0 }
 };
 
-
-ORDERED_MAP_DEFINITION(student_id,student_info)
-ORDERED_MAP_IMPLEMENTATION(student_id,student_info)
+ORDERED_MAP_DEFINITION(student_id,student_info,student_id_student_info_ordered_map)
+ORDERED_MAP_IMPLEMENTATION(student_id,student_info,student_id_student_info_ordered_map)
 
 void test_basic()
 {
-  student_id_student_info_ordered_map_pointer student_info_ordered_map=new(student_id_student_info_ordered_map);
+  printf("Test map size %zu\n",sizeof(student_id_student_info_ordered_map_t));
+  student_id_student_info_ordered_map_pointer student_info_map=new(student_id_student_info_ordered_map);
   student_data_t * isd=students;
   for(;isd->student_id!=0;isd++) {
     student_info_pointer sip=new_ctor(student_info,student_info_ctor,isd->lname,isd->fname,isd->score);
-    M(student_info_ordered_map,insert,&isd->student_id,sip);
+    M(student_info_map,insert,&isd->student_id,sip);
     delete(sip);
   }
   student_id_student_info_ordered_map_const_iterator i;
-  for(i=M(student_info_ordered_map,cbegin);i!=M(student_info_ordered_map,cend);i++) {
+  for(i=M(student_info_map,begin);i!=M(student_info_map,end);i++) {
     student_info_const_pointer p=&i->second;
     printf("%d %s %s %d\n",i->first,M(&p->lname_,c_str),M(&p->fname_,c_str),p->score_);
   }
+//  yaooc_index_container_print_indexes(student_info_map,stdout);
   isd=student_updates;
   printf("\n");
   for(;isd->student_id!=0;isd++) {
     student_info_pointer sip=new_ctor(student_info,student_info_ctor,isd->lname,isd->fname,isd->score);
-    M(student_info_ordered_map,insert,&isd->student_id,sip);
+    M(student_info_map,insert,&isd->student_id,sip);
     delete(sip);
   }
-  for(i=M(student_info_ordered_map,cbegin);i!=M(student_info_ordered_map,cend);i++) {
+  for(i=M(student_info_map,begin);i!=M(student_info_map,end);i++) {
     student_info_const_pointer p=&i->second;
     printf("%d %s %s %d\n",i->first,M(&p->lname_,c_str),M(&p->fname_,c_str),p->score_);
   }
-	delete(student_info_ordered_map);
+//  yaooc_index_container_print_indexes(student_info_map,stdout);
+	delete(student_info_map);
+
 }
 
 
-ORDERED_MAP_DEFINITION(yaooc_string,int32);
-ORDERED_MAP_IMPLEMENTATION(yaooc_string,int32);
+ORDERED_MAP_DEFINITION(yaooc_string,int,yaooc_string_int_map);
+ORDERED_MAP_IMPLEMENTATION(yaooc_string,int,yaooc_string_int_map);
 
 const char* str1="rpkjeiuhvlocynwtqdagzmfbxs";
 const char* str2="fzhcvtdkjpoxgyenluqrmawsib";
@@ -148,12 +180,14 @@ const char* str4="iufkyowzvmhljbsrxqgacnpted";
 
 void test_big()
 {
-	int32_t counter=0;
+	int_t counter=0;
   yaooc_string_t str;
   newp_ctor(&str,yaooc_string,yaooc_string_ctor_ccs,"    ");
 	yaooc_string_iterator is=M(&str,begin);
-	yaooc_string_int32_ordered_map_pointer mfls=new(yaooc_string_int32_ordered_map);
+	yaooc_string_int_map_pointer mfls=new(yaooc_string_int_map);
 	clock_t start=clock();
+//  M(mfls,reserve,456976);
+  printf("%zu\n",M(mfls,capacity));
 	const char *i,*j,*k,*l;
 	for(i=str1+20;*i!=0;i++) {
 		is[0]=*i;
@@ -163,16 +197,17 @@ void test_big()
 				is[2]=*k;
         for(l=str4;*l!=0;l++) {
           is[3]=*l;
-          M(mfls,insert_kv,str,counter);
+          M(mfls,insert,&str,&counter);
           counter++;
         }
 			}
 		}
 	}
-	printf("%ld clock cycles to insert %d items\n",clock()-start,M(mfls,size));
+
+	printf("%ld clock cycles to insert %zu items\n",clock()-start,M(mfls,size));
 //	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
-	yaooc_string_int32_ordered_map_const_iterator isi;
-	for(isi=M(mfls,cbegin);isi!=M(mfls,cend);isi++) {
+	yaooc_string_int_map_const_iterator isi;
+	for(isi=M(mfls,begin);isi!=M(mfls,end);isi++) {
 		printf("%5s %6d\n",M(&isi->first,c_str),isi->second);
 	}
 	delete(mfls);
@@ -181,21 +216,20 @@ void test_big()
 
 /*
   The following is the same as above but uses unique pointers for the key.
-  It should execute in half the time as above.  Compare this to map.
 */
-UNIQUE_PTR_DEFINITION(yaooc_string)
-UNIQUE_PTR_IMPLEMENTATION(yaooc_string)
-ORDERED_MAP_DEFINITION(yaooc_string_unique_ptr,int32)
-ORDERED_MAP_IMPLEMENTATION(yaooc_string_unique_ptr,int32)
+UNIQUE_PTR_DEFINITION(yaooc_string,yaooc_string_unique_ptr)
+UNIQUE_PTR_IMPLEMENTATION(yaooc_string,yaooc_string_unique_ptr)
+ORDERED_MAP_DEFINITION(yaooc_string_unique_ptr,int,yaooc_string_unique_ptr_int_map)
+ORDERED_MAP_IMPLEMENTATION(yaooc_string_unique_ptr,int,yaooc_string_unique_ptr_int_map)
 
 void test_big_unique_ptr()
 {
-	int32_t counter=0;
+	int_t counter=0;
   char str[8];
 	str[4]=0;
-	yaooc_string_unique_ptr_int32_ordered_map_pointer mfls=new(yaooc_string_unique_ptr_int32_ordered_map);
+	yaooc_string_unique_ptr_int_map_pointer mfls=new(yaooc_string_unique_ptr_int_map);
 	clock_t start=clock();
-  STACK_PTR(yaooc_string_unique_ptr,s);
+  STACK_VAR(yaooc_string_unique_ptr,s);
 	const char *i,*j,*k,*l;
 	for(i=str1+20;*i!=0;i++) {
 		str[0]=*i;
@@ -205,21 +239,22 @@ void test_big_unique_ptr()
 				str[2]=*k;
         for(l=str4;*l!=0;l++) {
           str[3]=*l;
-          M(s,set,new_ctor(yaooc_string,yaooc_string_ctor_ccs,str));
-          M(mfls,insert_pv,s,counter);
+          M(&s,reset,new_ctor(yaooc_string,yaooc_string_ctor_ccs,str));
+          M(mfls,insert,&s,&counter);
           counter++;
         }
 			}
 		}
 	}
-	printf("%ld clock cycles to insert %d items\n",clock()-start,M(mfls,size));
+	printf("%ld clock cycles to insert %zu items\n",clock()-start,M(mfls,size));
 //	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
-	yaooc_string_unique_ptr_int32_ordered_map_const_iterator isi;
-	for(isi=M(mfls,cbegin);isi!=M(mfls,cend);isi++) {
-    yaooc_string_const_pointer first=M(&isi->first,cget);
+	yaooc_string_unique_ptr_int_map_const_iterator isi;
+	for(isi=M(mfls,begin);isi!=M(mfls,end);isi++) {
+    yaooc_string_const_pointer first=M(&isi->first,get);
 		printf("%5s %6d\n",M(first,c_str),isi->second);
 	}
 	delete(mfls);
+
 }
 
 test_function tests[]=

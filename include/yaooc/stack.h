@@ -1,59 +1,65 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #ifndef __YAOOC_STACK_INCLUDED__
 #define __YAOOC_STACK_INCLUDED__
 
 #include <yaooc/array_container.h>
 
-pointer yaooc_stack_top(pointer);
-const_pointer yaooc_stack_ctop(const_pointer);
 void yaooc_stack_push(pointer,const_pointer);
 void yaooc_stack_pop(pointer);
 
-#define STACK_DEFINITION(T) \
-typedef T ## _t* T ## _stack_iterator; \
-typedef const T ## _t* T ## _stack_const_iterator; \
-class_table(T ## _stack) {\
-  yaooc_array_container_class_members_t; \
+#define STACK_DEFINITION(T,N) \
+typedef T ## _t* N ## _iterator; \
+typedef const T ## _t* N ## _const_iterator; \
+class_table(N) {\
+  yaooc_array_container_class_table_t; \
   T ## _t* (*top) (pointer); \
-  const T ## _t* (*ctop) (const_pointer); \
-  void (*push)(pointer,const_pointer); \
-  void (*push_v)(pointer,T ## _t); \
+  void (*push)(pointer,const T ## _t*); \
   void (*pop)(pointer); \
-  T ## _stack_iterator(*begin) (pointer); \
-  T ## _stack_iterator(*end) (pointer); \
-  T ## _stack_const_iterator(*cbegin) (const_pointer); \
-  T ## _stack_const_iterator(*cend) (const_pointer); \
 };\
-class_instance(T ## _stack) {\
-  yaooc_array_container_instance_members_t; \
+class_instance(N) {\
+  yaooc_array_container_class_instance_t; \
 };\
-class(T ## _stack); \
-ISA_DEFINITION(T ## _stack,yaooc_array_container)
+class(N); \
+const char* N ## _isa(const_pointer p);
 
-#define STACK_IMPLEMENTATION(T) \
-void T ## _stack_default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor,T ## _ti); } \
-void T ## _stack_push_v(pointer p,T ## _t v) { yaooc_stack_push(p,&v); } \
-ISA_IMPLEMENTATION(T ## _stack,yaooc_array_container) \
-T ## _stack_class_members_t T ## _stack_class_members = \
+#define STACK_IMPLEMENTATION(T,N) \
+void N ## _default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor_ti,T ## _ti); } \
+void N ## _push(pointer p,T ## _t *v) { yaooc_array_container_insert(p,BEGIN(p),v); } \
+void N ## _pop(pointer p) { yaooc_array_container_erase(p,BEGIN(p)); } \
+const char* N ## _isa(const_pointer p)  { return # N "_t"; } \
+N ## _class_table_t N ## _class_table = \
 {\
-  { \
-    { \
-      T ## _stack_isa, \
-      T ## _stack_is_descendent, \
-      yaooc_array_container_swap \
-    }, \
-    YAOOC_ARRAY_CONTAINER_NEW_METHODS \
-  }, \
-  (T ## _t* (*) (pointer)) yaooc_stack_top, \
-  (const T ## _t* (*) (const_pointer)) yaooc_stack_top, \
-  (void (*)(pointer,const_pointer)) yaooc_stack_push, \
-  (void (*)(pointer,T ## _t)) T ## _stack_push_v, \
-  (void (*)(pointer)) yaooc_stack_pop, \
-  (T ## _stack_iterator(*)(pointer)) yaooc_array_container_begin, \
-  (T ## _stack_iterator(*)(pointer)) yaooc_array_container_end, \
-  (T ## _stack_const_iterator(*)(const_pointer)) yaooc_array_container_begin, \
-  (T ## _stack_const_iterator(*)(const_pointer)) yaooc_array_container_end, \
+  .parent_class_table_ = (const class_table_t*)&yaooc_array_container_class_table, \
+  .isa = N ## _isa, \
+  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_object_is_descendant, \
+  .swap = (void (*) (pointer p,pointer)) yaooc_array_container_swap, \
+  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity, \
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed, \
+  .size = (size_t (*) (const_pointer p)) yaooc_array_container_size, \
+  .capacity = (size_t (*) (const_pointer p)) yaooc_array_container_capacity, \
+  .empty = (bool (*) (const_pointer p)) yaooc_array_container_empty, \
+  .begin = (iterator (*) (const_pointer p)) yaooc_array_container_begin, \
+  .end = (iterator (*) (const_pointer p)) yaooc_array_container_end, \
+  .top = (T ## _t* (*) (pointer)) yaooc_array_container_begin, \
+  .push = (void (*)(pointer,const T ## _t*)) yaooc_stack_push, \
+  .pop = (void (*)(pointer)) yaooc_stack_pop, \
 };\
-DEFINE_TYPE_INFO(T ## _stack,T ## _stack_default_ctor,NULL,NULL,NULL,NULL, \
-        &T ## _stack_class_members,yaooc_array_container)
+DEFINE_TYPE_INFO(N,N ## _default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&N ## _class_table,yaooc_array_container)
 
 #endif

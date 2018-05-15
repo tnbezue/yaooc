@@ -1,54 +1,70 @@
-#ifndef __YAOOC_UNIQUE_INDEX_ARRAY_CONTAINER_INCLUDED__
-#define __YAOOC_UNIQUE_INDEX_ARRAY_CONTAINER_INCLUDED__
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#ifndef __UNIQUE_INDEX_ARRAY_CONTAINER_INCLUDED__
+#define __UNIQUE_INDEX_ARRAY_CONTAINER_INCLUDED__
 
 #include <yaooc/index_array_container.h>
 
+/*  Begin YAOOC PreProcessor generated content */
+
+
+/*
+  Class definition for yaooc_unique_index_array_container
+*/
 class_table(yaooc_unique_index_array_container)
 {
-  yaooc_index_array_container_class_members_t;
+  yaooc_index_array_container_class_table_t;
 };
 
 class_instance(yaooc_unique_index_array_container)
 {
-	yaooc_index_array_container_instance_members_t;
+  yaooc_index_array_container_class_instance_t;
 };
 
 class(yaooc_unique_index_array_container);
-ISA_DEFINITION(yaooc_unique_index_array_container,yaooc_index_array_container)
-// Container contructors
-// args: 1- const type_info_t*
-#define yaooc_unique_index_array_container_ctor yaooc_index_array_container_ctor
-#define yaooc_unique_index_array_container_internal_ctor yaooc_index_array_container_internal_ctor
-void yaooc_index_array_container_resize(pointer,yaooc_size_type,const_pointer);
-#define yaooc_unique_index_array_container_reserve yaooc_index_array_container_reserve
-#define yaooc_unique_index_array_container_clear   yaooc_array_container_clear
-#define yaooc_unique_index_array_container_shrink_to_fit yaooc_index_array_container_shrink_to_fit
-#define yaooc_unique_index_array_container_at yaooc_array_container_at
-#define yaooc_unique_index_array_container_cat yaooc_array_container_cat
-#define yaooc_unique_index_array_container_size yaooc_array_container_size
-#define yaooc_unique_index_array_container_capacity yaooc_array_container_capacity
-#define yaooc_unique_index_array_container_empty yaooc_array_container_empty
-#define yaooc_unique_index_array_container_clear yaooc_array_container_clear
-#define yaooc_unique_index_array_container_begin yaooc_array_container_begin
-#define yaooc_unique_index_array_container_end yaooc_array_container_end
-#define yaooc_unique_index_array_container_cbegin yaooc_array_container_cbegin
-#define yaooc_unique_index_array_container_cend yaooc_array_container_cend
-#define yaooc_unique_index_array_container_get_type_info yaooc_array_container_get_type_info
+/* Prototypes for yaooc_unique_index_array_container type info */
 
-iterator yaooc_unique_index_array_container_insert(pointer,const_iterator,const_pointer); //,yaooc_size_type n);  // insert n elements starting a pos
+/* Constructors for yaooc_unique_index_array_container */
+#define yaooc_unique_index_array_container_ctor_ti yaooc_index_array_container_ctor_ti
+
+/* Prototypes for yaooc_unique_index_array_container class table*/
+const char* yaooc_unique_index_array_container_isa(const_pointer);
+#define yaooc_unique_index_array_container_is_descendant yaooc_index_array_container_is_descendant
+#define yaooc_unique_index_array_container_swap yaooc_index_array_container_swap
+#define yaooc_unique_index_array_container_size yaooc_index_array_container_size
+#define yaooc_unique_index_array_container_capacity yaooc_index_array_container_capacity
+#define yaooc_unique_index_array_container_empty yaooc_index_array_container_empty
+#define yaooc_unique_index_array_container_begin yaooc_index_array_container_begin
+#define yaooc_unique_index_array_container_end yaooc_index_array_container_end
+
+/* Prototypes for yaooc_unique_index_array_container class instance*/
+
+/* Prototypes for yaooc_unique_index_array_container class protected items*/
+#define yaooc_unique_index_array_container_find yaooc_index_array_container_find
+iterator yaooc_unique_index_array_container_insert(pointer,const_iterator,const_pointer);
+iterator yaooc_unique_index_array_container_insertn(pointer,const_iterator,size_t,const_pointer);
 iterator yaooc_unique_index_array_container_insert_range(pointer,const_iterator,const_iterator,const_iterator);
-iterator yaooc_unique_index_array_container_insert_n(pointer,const_iterator,yaooc_size_type,const_pointer);
 #define yaooc_unique_index_array_container_erase yaooc_index_array_container_erase
 #define yaooc_unique_index_array_container_erase_range yaooc_index_array_container_erase_range
+#define yaooc_unique_index_array_container_erase_value yaooc_index_array_container_erase_value
+void yaooc_unique_index_array_container_resize(pointer,size_t);
+void yaooc_unique_index_array_container_resize_value(pointer,size_t,const_pointer);
 
-#define yaooc_unique_index_array_container_find yaooc_index_array_container_find
-#define yaooc_unique_index_array_container_cfind yaooc_index_array_container_cfind
-
-#define yaooc_index_array_container_default_ctor yaooc_array_container_default_ctor
-
-#define YAOOC_UNIQUE_INDEX_ARRAY_CONTAINER_CLASS_MEMBERS \
-  { \
-    YAOOC_INDEX_ARRAY_CONTAINER_CLASS_MEMBERS \
-  }
+/*  End YAOOC PreProcessor generated content */
 
 #endif

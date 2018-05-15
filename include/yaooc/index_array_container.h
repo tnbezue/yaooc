@@ -1,68 +1,94 @@
-#ifndef __YAOOC_INDEX_CONTAINER_INCLUDED__
-#define __YAOOC_INDEX_CONTAINER_INCLUDED__
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#ifndef __INDEX_ARRAY_CONTAINER_INCLUDED__
+#define __INDEX_ARRAY_CONTAINER_INCLUDED__
 
 #include <yaooc/array_container.h>
 
+typedef unsigned int yaooc_index_array_container_index_t;
+
+typedef struct {
+  // If found, lower_index to upper_index of index array of found item.
+  // If not found, index in ordered index array of where insertion should occur
+	yaooc_index_array_container_index_t lower_index_;
+  yaooc_index_array_container_index_t upper_index_;
+	bool found_;		// indicates whether found
+} yaooc_index_array_container_find_result_t;
+
+
+/*  Begin YAOOC PreProcessor generated content */
+
+/*
+  Class definition for yaooc_index_array_container
+*/
 class_table(yaooc_index_array_container)
 {
-  yaooc_array_container_class_members_t;
+  yaooc_array_container_class_table_t;
 };
 
 class_instance(yaooc_index_array_container)
 {
-	yaooc_array_container_instance_members_t;
-	yaooc_size_type* index_;
+  yaooc_array_container_class_instance_t;
+  yaooc_index_array_container_index_t* indexes_;
 };
 
 class(yaooc_index_array_container);
-ISA_DEFINITION(yaooc_index_array_container,yaooc_array_container)
-
-typedef struct {
-	yaooc_size_type	index_;  // index in ordered index array of where insertion should occur
-	bool found_;		// indicates whether found
-} yaooc_index_array_container_find_result_t;
-
-// Container contructors
-// args: 1- const type_info_t*
-void yaooc_index_array_container_ctor(pointer p,va_list args);
-
-void yaooc_index_array_container_internal_ctor(yaooc_index_array_container_pointer this,const type_info_t* ti);
-
-void yaooc_index_array_container_resize(pointer,yaooc_size_type,const_pointer);
-void yaooc_index_array_container_reserve(pointer,yaooc_size_type);
-void yaooc_insert_index(pointer,yaooc_size_type,yaooc_size_type,yaooc_size_type,yaooc_size_type);
-#define yaooc_index_array_container_clear   yaooc_array_container_clear
-void yaooc_index_array_container_shrink_to_fit(pointer p); // shrink array capcity
-#define yaooc_index_array_container_at yaooc_array_container_at
-#define yaooc_index_array_container_cat yaooc_array_container_cat
-#define yaooc_index_array_container_size yaooc_array_container_size
-#define yaooc_index_array_container_capacity yaooc_array_container_capacity
-#define yaooc_index_array_container_empty yaooc_array_container_empty
-#define yaooc_index_array_container_clear yaooc_array_container_clear
-#define yaooc_index_array_container_begin yaooc_array_container_begin
-#define yaooc_index_array_container_end yaooc_array_container_end
-#define yaooc_index_array_container_get_type_info yaooc_array_container_get_type_info
-
-iterator yaooc_index_array_container_insert(pointer,const_iterator,const_pointer); //,yaooc_size_type n);  // insert n elements starting a pos
-iterator yaooc_index_array_container_insert_range(pointer,const_iterator,const_iterator,const_iterator);
-iterator yaooc_index_array_container_insert_n(pointer,const_iterator,yaooc_size_type,const_pointer);
-iterator yaooc_index_array_container_erase(pointer,iterator);  // erase n elements starting at pos
-iterator yaooc_index_array_container_erase_range(pointer,iterator,iterator);  // erase n elements starting at pos
-void yaooc_index_array_container_swap(pointer,pointer);
-
-yaooc_index_array_container_find_result_t
-	yaooc_index_array_container_private_find(yaooc_index_array_container_const_pointer p,const_pointer value);
-iterator yaooc_index_array_container_find(const_pointer p,const_pointer value);
-bool yaooc_index_array_container_increase_capacity(pointer p,yaooc_size_type n);
-
-#define yaooc_index_array_container_default_ctor yaooc_array_container_default_ctor
-//void yaooc_index_array_container_dtor(pointer);
+/* Prototypes for yaooc_index_array_container type info */
+void yaooc_index_array_container_dtor(pointer);
 void yaooc_index_array_container_copy_ctor(pointer,const_pointer);
 void yaooc_index_array_container_assign(pointer,const_pointer);
 
-#define YAOOC_INDEX_ARRAY_CONTAINER_CLASS_MEMBERS \
-  { \
-    YAOOC_ARRAY_CONTAINER_CLASS_MEMBERS \
-  }
+/* Constructors for yaooc_index_array_container */
+void yaooc_index_array_container_ctor_ti(pointer,va_list);
+
+/* Prototypes for yaooc_index_array_container class table*/
+const char* yaooc_index_array_container_isa(const_pointer);
+#define yaooc_index_array_container_is_descendant yaooc_array_container_is_descendant
+void yaooc_index_array_container_swap(pointer,pointer);
+#define yaooc_index_array_container_size yaooc_array_container_size
+#define yaooc_index_array_container_capacity yaooc_array_container_capacity
+#define yaooc_index_array_container_empty yaooc_array_container_empty
+#define yaooc_index_array_container_begin yaooc_array_container_begin
+#define yaooc_index_array_container_end yaooc_array_container_end
+void yaooc_index_array_container_insert_index(pointer,size_t,size_t,size_t,size_t);
+void yaooc_index_array_container_remove_index(pointer,size_t,size_t);
+
+/* Prototypes for yaooc_index_array_container class instance*/
+
+/* Prototypes for yaooc_index_array_container class protected items*/
+bool yaooc_index_array_container_increase_capacity(pointer,size_t);
+#define yaooc_index_array_container_size_needed yaooc_array_container_size_needed
+iterator yaooc_index_array_container_insert(pointer,const_iterator,const_pointer);
+iterator yaooc_index_array_container_insertn(pointer,const_iterator,size_t,const_pointer);
+iterator yaooc_index_array_container_insert_range(pointer,const_iterator,const_iterator,const_iterator);
+yaooc_index_array_container_find_result_t yaooc_index_array_container_find_protected(const_pointer,const_pointer);
+iterator yaooc_index_array_container_find(const_pointer,const_pointer);
+iterator yaooc_index_array_container_erase(pointer,const_iterator);
+size_t yaooc_index_array_container_erase_value(pointer,const_pointer);
+iterator yaooc_index_array_container_erase_range(pointer,const_iterator,const_iterator);
+void yaooc_index_array_container_resize(pointer,size_t);
+void yaooc_index_array_container_resize_value(pointer,size_t,const_pointer);
+void yaooc_index_array_container_shrink_to_fit(pointer);
+void yaooc_index_array_container_reserve(pointer,size_t);
+#define yaooc_index_array_container_clear yaooc_array_container_clear
+//iterator yaooc_index_array_container_at_i(const_pointer,size_t);
+/*  End YAOOC PreProcessor generated content */
+
+#define AT_I(p,i) AT(p,((yaooc_index_array_container_const_pointer)(p))->indexes_[i])
 
 #endif

@@ -1,69 +1,77 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #ifndef __YAOOC_ORDERED_ARRAY_CONTAINER_INCLUDED__
-#define __YAOOC_ORDERED_ARRAY_ARRAY_CONTAINER_INCLUDED__
+#define __YAOOC_ORDERED_ARRAY_CONTAINER_INCLUDED__
 
 #include <yaooc/array_container.h>
 
+typedef struct {
+	yaooc_private_iterator position_;	// position at which it was found.  If found_ is false, indicates position to insert item
+	bool found_;			// indicates if item found
+} yaooc_ordered_array_container_find_result_t;
+
+/*  Begin YAOOC PreProcessor generated content */
+
+
+/*
+  Class definition for yaooc_ordered_array_container
+*/
 class_table(yaooc_ordered_array_container)
 {
-  yaooc_array_container_class_members_t;
+  yaooc_array_container_class_table_t;
 };
 
 class_instance(yaooc_ordered_array_container)
 {
-	yaooc_array_container_instance_members_t;
+  yaooc_array_container_class_instance_t;
 };
 
 class(yaooc_ordered_array_container);
-ISA_DEFINITION(yaooc_ordered_array_container,yaooc_array_container)
+/* Prototypes for yaooc_ordered_array_container type info */
 
-// Container contructors
-// args: 1- const type_info_t*
-#define yaooc_ordered_array_container_ctor yaooc_array_container_ctor
+/* Constructors for yaooc_ordered_array_container */
+#define yaooc_ordered_array_container_ctor_ti yaooc_array_container_ctor_ti
 
-#define yaooc_ordered_array_container_internal_ctor yaooc_array_container_internal_ctor
+/* Prototypes for yaooc_ordered_array_container class table*/
+const char* yaooc_ordered_array_container_isa(const_pointer);
+#define yaooc_ordered_array_container_is_descendant yaooc_array_container_is_descendant
+#define yaooc_ordered_array_container_increase_capacity yaooc_pod_array_increase_capacity
+#define yaooc_ordered_array_container_size_needed yaooc_pod_array_size_needed
 
-void yaooc_ordered_array_container_resize(pointer,yaooc_size_type,const_pointer);
-#define yaooc_ordered_array_container_reserve yaooc_array_container_reserve
-#define yaooc_ordered_array_container_clear yaooc_array_container_clear
-#define yaooc_ordered_array_container_shrink_to_fit yaooc_array_container_shrink_to_fit
-#define yaooc_ordered_array_container_at yaooc_array_container_at
+#define yaooc_ordered_array_container_swap yaooc_array_container_swap
 #define yaooc_ordered_array_container_size yaooc_array_container_size
 #define yaooc_ordered_array_container_capacity yaooc_array_container_capacity
 #define yaooc_ordered_array_container_empty yaooc_array_container_empty
-#define yaooc_ordered_array_container_clear yaooc_array_container_clear
 #define yaooc_ordered_array_container_begin yaooc_array_container_begin
 #define yaooc_ordered_array_container_end yaooc_array_container_end
-#define yaooc_ordered_array_container_cbegin yaooc_array_container_cbegin
-#define yaooc_ordered_array_container_cend yaooc_array_container_cend
-#define yaooc_ordered_array_container_get_type_info yaooc_array_container_get_type_info
 
-iterator yaooc_ordered_array_container_insert(pointer,const_iterator,const_pointer); //,yaooc_size_type n);  // insert n elements starting a pos
+/* Prototypes for yaooc_ordered_array_container class instance*/
+
+/* Prototypes for yaooc_ordered_array_container class protected items*/
+iterator yaooc_ordered_array_container_insert(pointer,const_iterator,const_pointer);
+iterator yaooc_ordered_array_container_insertn(pointer,const_iterator,size_t,const_pointer);
 iterator yaooc_ordered_array_container_insert_range(pointer,const_iterator,const_iterator,const_iterator);
-iterator yaooc_ordered_array_container_insert_n(pointer,const_iterator,yaooc_size_type,const_pointer);
-#define yaooc_ordered_array_container_erase yaooc_array_container_erase
-#define yaooc_ordered_array_container_erase_range yaooc_array_container_erase_range
-yaooc_size_type yaooc_ordered_array_container_erase_value(pointer,const_pointer);
+yaooc_ordered_array_container_find_result_t yaooc_ordered_array_container_find_protected(const_pointer,const_pointer);
+iterator yaooc_ordered_array_container_find(const_pointer,const_pointer);
+size_t yaooc_ordered_array_container_erase_value(pointer,const_pointer);
+void yaooc_ordered_array_container_resize(pointer,size_t);
+void yaooc_ordered_array_container_resize_value(pointer,size_t,const_pointer);
 
-iterator yaooc_ordered_array_container_find(const_pointer p,const_pointer value);
-
-#define yaooc_ordered_array_container_default_ctor yaooc_array_container_default_ctor
-#define yaooc_ordered_array_container_dtor yaooc_array_container_dtor
-#define yaooc_ordered_array_container_copy_ctor yaooc_array_container_copy_ctor
-#define yaooc_ordered_array_container_assign yaooc_array_container_assign
-
-#define yaooc_ordered_array_container_increase_capacity yaooc_array_container_increase_capacity
-
-typedef struct {
-	bool found_;			// indicates if item found
-	yaooc_private_iterator position_;	// position at which it was found.  If found is false, indicates position to insert item
-} yaooc_ordered_array_container_find_result_t;
-
-yaooc_ordered_array_container_find_result_t yaooc_ordered_array_container_find_private(const_pointer p,const_pointer value);
-
-#define YAOOC_ORDERED_ARRAY_CONTAINER_CLASS_MEMBERS \
-  { \
-    YAOOC_ARRAY_CONTAINER_CLASS_MEMBERS \
-  }
-
+/*  End YAOOC PreProcessor generated content */
 
 #endif

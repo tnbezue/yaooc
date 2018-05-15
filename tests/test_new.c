@@ -1,3 +1,20 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,54 +25,50 @@
 #include "test_harness.h"
 
 int base_x=0;
-typedef struct {
+class_(demo) {
 	int x;
-} demo_t;
+};
 
 void demo_default_ctor(pointer p)
 {
-	demo_t* this=p;
+	demo_pointer this=p;
 	this->x=base_x++;
 	if(optr) optr+=sprintf(optr,"DC%d",this->x);
 }
 
 void demo_dtor(pointer p)
 {
-	if(optr) optr+=sprintf(optr,"DT%d",((demo_t*)p)->x);
+	if(optr) optr+=sprintf(optr,"DT%d",((demo_const_pointer)p)->x);
 }
 
 void demo_assign(pointer dst,const_pointer src)
 {
-	((demo_t*)dst)->x=((const demo_t*)src)->x;
-	if(optr) optr+=sprintf(optr,"AS%d",((const demo_t*)src)->x);
+	((demo_pointer)dst)->x=((demo_const_pointer)src)->x;
+	if(optr) optr+=sprintf(optr,"AS%d",((demo_const_pointer)src)->x);
 }
 
 void demo_copy_ctor(pointer dst,const_pointer src)
 {
-  /*
-    Normallly, the default constructor is called for dst and then assignment.
-    Buf of course it is up to user to determine the best implementation.
-  */
-  if(optr) optr+=sprintf(optr,"CC%d",((const demo_t*)src)->x);
+  if(optr) optr+=sprintf(optr,"CC%d",((demo_const_pointer)src)->x);
   demo_default_ctor(dst);
   demo_assign(dst,src);
 }
 
 bool demo_less_than_compare(const_pointer v1,const_pointer v2)
 {
-	if(optr) optr+=sprintf(optr,"%d<%d",((const demo_t*)v1)->x,((const demo_t*)v2)->x);
-	return ((const demo_t*)v1)->x < ((const demo_t*)v2)->x;
+	if(optr) optr+=sprintf(optr,"%d<%d",((demo_const_pointer)v1)->x,((demo_const_pointer)v2)->x);
+	return ((demo_const_pointer)v1)->x < ((demo_const_pointer)v2)->x;
 }
 
 DEFINE_TYPE_INFO(demo,demo_default_ctor,demo_dtor,demo_copy_ctor,demo_assign,
-    demo_less_than_compare,NULL,NULL)
+    demo_less_than_compare,NULL,NULL,NULL,NULL)
 
 /*
   Demo constructor that takes a integer as an argument
 */
 void demo_ctor_int(pointer p,va_list args)
 {
-	demo_t* this=p;
+	demo_pointer this=p;
 	this->x=va_arg(args,int);
 	if(optr) optr+=sprintf(optr,"CT%d",this->x);
 }
@@ -63,20 +76,20 @@ void demo_ctor_int(pointer p,va_list args)
 void test_new_delete()
 {
 	optr=output;
-	demo_t* d1 = new(demo);
+	demo_pointer d1 = new(demo);
 	TESTCASE("New/delete");
 	TEST("Default ctor called",strcmp(output,"DC0")==0);
 	optr=output;
 	delete(d1);
 	TEST("Dtor called",strcmp(output,"DT0")==0);
 	optr=output;
-	d1=new_ctor(demo,demo_ctor_int,99);
+	demo_pointer d1a=new_ctor(demo,demo_ctor_int,99);
 	TEST("Non default ctor called",strcmp(output,"CT99")==0);
 	optr=output;
-	demo_t* d2=new_copy(d1);
+	demo_pointer d2=new_copy(d1a);
 	TEST("Copy ctor (calls default and assign)",strcmp(output,"CC99DC1AS99")==0);
 	optr=output;
-	delete(d1);
+	delete(d1a);
 	delete(d2);
 	TEST("Dtor called",strcmp(output,"DT99DT99")==0);
 
@@ -92,12 +105,12 @@ void test_new_delete()
 	TEST("Dtor called",strcmp(output,"DT25")==0);
 }
 
-typedef const demo_t* demo_const_iterator;
+typedef const demo_t* demo_array_const_iterator;
 void test_new_delete_array()
 {
 	base_x=0;
 	optr=output;
-	demo_t* d1 = new_array(demo,5);
+	demo_pointer d1 = new_array(demo,5);
 	TESTCASE("New/delete Array");
 	TEST("Default ctor called",strcmp(output,"DC0DC1DC2DC3DC4")==0);
 	optr=output;
@@ -110,12 +123,12 @@ void test_new_delete_array()
 	delete(d1);
 
 	optr=output;
-	d1=new_array_ctor(demo,5,demo_ctor_int,127);
-	demo_const_iterator iter;
-	for(iter=d1;iter!=d1+5;iter++)
+	demo_pointer d1a=new_array_ctor(demo,5,demo_ctor_int,127);
+	demo_array_const_iterator iter;
+	for(iter=d1a;iter!=d1a+5;iter++)
 		TEST("Value is 127",iter->x == 127);
 	TEST("Ctor called for each",strcmp(output,"CT127CT127CT127CT127CT127") ==0);
-	delete(d1);
+	delete(d1a);
 
 	demo_t d2[5];
 	optr=output;
@@ -150,35 +163,35 @@ void test_pod()
 void test_operators()
 {
 
-	demo_t* di = new_ctor(demo,demo_ctor_int,33);
-	demo_t* dj = new_ctor(demo,demo_ctor_int,24);
-	demo_t* dk = new_ctor(demo,demo_ctor_int,33);
-	demo_t* dm = new_ctor(demo,demo_ctor_int,40);
+	demo_pointer di = new_ctor(demo,demo_ctor_int,33);
+	demo_pointer dj = new_ctor(demo,demo_ctor_int,24);
+	demo_pointer dk = new_ctor(demo,demo_ctor_int,33);
+	demo_pointer dm = new_ctor(demo,demo_ctor_int,40);
 	puts("Static compares");
 	printf("%d %d\n",di->x,dj->x);
-	TEST("EQ: false",op_eq_static(di,dj,demo_ti)== 0);
-	TEST("NE: true",op_ne_static(di,dj,demo_ti)!=0);
-	TEST("LT: false",op_lt_static(di,dj,demo_ti)==0);
-	TEST("LE: false",op_le_static(di,dj,demo_ti)==0);
-	TEST("GT: true",op_gt_static(di,dj,demo_ti)!=0);
-	TEST("GE: true",op_ge_static(di,dj,demo_ti)!=0);
+	TEST("EQ: false",op_eq_static(di,dj,demo)== 0);
+	TEST("NE: true",op_ne_static(di,dj,demo)!=0);
+	TEST("LT: false",op_lt_static(di,dj,demo)==0);
+	TEST("LE: false",op_le_static(di,dj,demo)==0);
+	TEST("GT: true",op_gt_static(di,dj,demo)!=0);
+	TEST("GE: true",op_ge_static(di,dj,demo)!=0);
 
 	puts("Dynamic compares");
 	printf("%d %d\n",di->x,dk->x);
-	TEST("EQ: true",op_eq_static(di,dk,demo_ti)!=0);
-	TEST("NE: false",op_ne_static(di,dk,demo_ti)==0);
-	TEST("LT: false",op_lt_static(di,dk,demo_ti)==0);
-	TEST("LE: true",op_le_static(di,dk,demo_ti)!=0);
-	TEST("GT: false",op_gt_static(di,dk,demo_ti)==0);
-	TEST("GE: true",op_ge_static(di,dk,demo_ti)!=0);
+	TEST("EQ: true",op_eq_static(di,dk,demo)!=0);
+	TEST("NE: false",op_ne_static(di,dk,demo)==0);
+	TEST("LT: false",op_lt_static(di,dk,demo)==0);
+	TEST("LE: true",op_le_static(di,dk,demo)!=0);
+	TEST("GT: false",op_gt_static(di,dk,demo)==0);
+	TEST("GE: true",op_ge_static(di,dk,demo)!=0);
 
 	printf("%d %d\n",di->x,dm->x);
-	TEST("EQ: false",op_eq_static(di,dm,demo_ti)==0);
-	TEST("NE: true",op_ne_static(di,dm,demo_ti)!=0);
-	TEST("LT: true",op_lt_static(di,dm,demo_ti)!=0);
-	TEST("LE: true",op_le_static(di,dm,demo_ti)!=0);
-	TEST("GT: false",op_gt_static(di,dm,demo_ti)==0);
-	TEST("GE: false",op_ge_static(di,dm,demo_ti)==0);
+	TEST("EQ: false",op_eq_static(di,dm,demo)==0);
+	TEST("NE: true",op_ne_static(di,dm,demo)!=0);
+	TEST("LT: true",op_lt_static(di,dm,demo)!=0);
+	TEST("LE: true",op_le_static(di,dm,demo)!=0);
+	TEST("GT: false",op_gt_static(di,dm,demo)==0);
+	TEST("GE: false",op_ge_static(di,dm,demo)==0);
 
 	delete(di);
 	delete(dj);
@@ -188,8 +201,8 @@ void test_operators()
 
 void test_copy()
 {
-	demo_t* dx=new_ctor(demo,demo_ctor_int,23);
-	demo_t* dy=new_copy(dx);
+	demo_pointer dx=new_ctor(demo,demo_ctor_int,23);
+	demo_pointer dy=new_copy(dx);
   TEST("dx == dy",op_eq(dx,dy));
   TEST("dx->x == dy->x",dx->x==dy->x);
 	delete(dx);
@@ -228,7 +241,7 @@ bool base_less_than_compare(const_pointer v1,const_pointer v2)
   return ((const base_t*)v1)->x < ((const base_t*)v2)->x;
 }
 DEFINE_TYPE_INFO(base,base_default_ctor,base_dtor,base_copy_ctor,base_assign,base_less_than_compare,
-    NULL,NULL);
+    NULL,NULL,NULL,NULL);
 
 void base_ctor_int(pointer p,va_list args)
 {
@@ -279,7 +292,7 @@ void derived_copy_ctor(pointer dst,const_pointer src)
 }
 
 DEFINE_TYPE_INFO(derived,derived_default_ctor,derived_dtor,derived_copy_ctor,derived_assign,
-    NULL,NULL,base)
+    NULL,NULL,NULL,NULL,base)
 
 void derived_ctor_int_int(pointer p,va_list args)
 {
@@ -326,7 +339,7 @@ void derived2_copy_ctor(pointer dst,const_pointer src)
 }
 
 DEFINE_TYPE_INFO(derived2,derived2_default_ctor,derived2_dtor,derived2_copy_ctor,derived2_assign,
-  NULL,NULL,derived)
+  NULL,NULL,NULL,NULL,derived)
 
 void derived2_ctor_int_int_int(pointer p,va_list args)
 {

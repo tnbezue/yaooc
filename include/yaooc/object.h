@@ -1,15 +1,36 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #ifndef __YAOOC_OBJECT_INCLUDED__
 #define __YAOOC_OBJECT_INCLUDED__
 
 #include <yaooc/new.h>
-#include <stdio.h>
-#include <stddef.h>
 
+/*  Begin YAOOC PreProcessor generated content */
+
+/*
+  Class definition for yaooc_object
+*/
 class_table(yaooc_object)
 {
-	const char*(*isa)(const_pointer);
-	bool(*is_descendent)(const_pointer,const char*);
-	void (*swap)(pointer,pointer);
+  const class_table_t* parent_class_table_;
+  const char* (*isa)(const_pointer);
+  bool (*is_descendant)(const_pointer,const char*);
+  void (*swap)(pointer,pointer);
 };
 
 class_instance(yaooc_object)
@@ -18,31 +39,27 @@ class_instance(yaooc_object)
 
 class(yaooc_object);
 
-#define YAOOC_OBJECT_CLASS_MEMBERS \
-	yaooc_object_isa, \
-	yaooc_object_is_descendent, \
-	yaooc_object_swap
+/* Prototypes for yaooc_object type info */
+bool yaooc_object_less_than_compare(const_pointer,const_pointer);
 
-void yaooc_object_default_ctor(pointer p);
-void yaooc_object_dtor(pointer p);
-void yaooc_object_assign(pointer d,const_pointer s);
-void yaooc_object_copy_ctor(pointer d,const_pointer s);
+/* Constructors for yaooc_object */
+void yaooc_object_default_ctor(pointer);
+void yaooc_object_copy_ctor(pointer,const_pointer);
+#define yaooc_object_assign yaooc_object_copy_ctor
 
+/* Prototypes for yaooc_object class table*/
 const char* yaooc_object_isa(const_pointer);
-bool yaooc_object_is_descendent(const_pointer,const char*);
+bool yaooc_object_is_descendant(const_pointer,const char*);
 void yaooc_object_swap(pointer,pointer);
 
+/* Prototypes for yaooc_object class instance*/
 
-/*
-  The ISA macro will define the class isa and is_decendant methods
-*/
-#define ISA_DEFINITION(C,P) \
-const char* C ## _isa(const_pointer); \
-bool  C ## _is_descendent(const_pointer,const char*);
+/* Prototypes for yaooc_object class protected items*/
 
-#define ISA_IMPLEMENTATION(C,P) \
-const char* C ## _isa(const_pointer p ) { return # C "_t" ; } \
-bool  C ## _is_descendent(const_pointer p,const char* s) \
-{ return strcmp(# C "_t",s) == 0 || P ## _is_descendent(p,s); }
+/*  End YAOOC PreProcessor generated content */
+
+#define ISA(p,o) (strcmp(((yaooc_object_pointer)(p))->class_table_->isa((p)),# o "_t") == 0)
+#define IS_DESCENDANT(p,o) (((yaooc_object_pointer)(p))->class_table_->is_descendant((p),# o "_t"))
+
 
 #endif

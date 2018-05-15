@@ -1,111 +1,119 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #ifndef __YAOOC_EXCEPTION_INCLUDED__
 #define __YAOOC_EXCEPTION_INCLUDED__
 #include <setjmp.h>
+#include <pthread.h>
 #include <yaooc/object.h>
-#include <yaooc/garbage_bag.h>
+#include <yaooc/pointer_bag.h>
+
+/*  Begin YAOOC PreProcessor generated content */
 
 /*
-  Base exception class.  All exception classes should be derived for it.
+  Class definition for yaooc_exception
 */
 class_table(yaooc_exception)
 {
-  yaooc_object_class_members_t;
-  const char * (*what) (const_pointer);
+  yaooc_object_class_table_t;
+  const char* (*what)(const_pointer);
 };
 
 class_instance(yaooc_exception)
 {
-  yaooc_object_instance_members_t;
+  yaooc_object_class_instance_t;
 };
-class(yaooc_exception);
-ISA_DEFINITION(yaooc_exception,yaooc_object)
 
+class(yaooc_exception);
+
+/* Prototypes for yaooc_exception type info */
+
+/* Constructors for yaooc_exception */
+#define yaooc_exception_default_ctor yaooc_object_default_ctor
+#define yaooc_exception_dtor yaooc_object_dtor
+#define yaooc_exception_copy_ctor yaooc_object_copy_ctor
+#define yaooc_exception_assign yaooc_object_assign
+
+/* Prototypes for yaooc_exception class table*/
+const char* yaooc_exception_isa(const_pointer);
+#define yaooc_exception_is_descendant yaooc_object_is_descendant
+#define yaooc_exception_swap yaooc_object_swap
 const char* yaooc_exception_what(const_pointer);
 
-/*
-  Exception stack
-*/
-typedef struct yaooc_jmpbuf_s yaooc_jmpbuf_t;
-struct yaooc_jmpbuf_s {
-  jmp_buf jb_;
-  yaooc_exception_pointer exception_thrown_;
-  char* file_;
-  yaooc_size_type line_no_;
-  yaooc_garbage_bag_pointer pb_;
-  yaooc_jmpbuf_t* prev_;
-};
+/* Prototypes for yaooc_exception class instance*/
 
-typedef struct yaooc_exception_thread_s yaooc_exception_thread_t;
-struct yaooc_exception_thread_s {
-  yaooc_jmpbuf_t* current_jmpbuf_;
-  yaooc_jmpbuf_t* unhandled_jmpbuf_;
-};
-yaooc_jmpbuf_t* yaooc_current_jmpbuf(void);
-void yaooc_exception_handled(void);
-void yaooc_exception_unhandled(void);
+/* Prototypes for yaooc_exception class protected items*/
 
-yaooc_exception_thread_t* yaooc_exception_thread_create(void);
-void yaooc_exception_thread_destroy(yaooc_exception_thread_t*);
 
-yaooc_jmpbuf_t* yaooc_jmpbuf_new(void);
-//void yaooc_jmpbuf_pop(yaooc_exception_thread_t*);
+/*  End YAOOC PreProcessor generated content */
 
-void yaooc_jmpbuf_destroy(yaooc_jmpbuf_t*);
-yaooc_jmpbuf_t* yaooc_jmpbuf_top(void);
-void yaooc_uncaught_exception(const char*,yaooc_size_type,yaooc_exception_pointer);
-void yaooc_jmpbuf_dump(yaooc_exception_thread_t* et);
+
+yaooc_exception_pointer yaooc_exception_current_exception_thrown();
+
+void yaooc_exception_remove_jmpbuf(pthread_t);
+void yaooc_exception_thread_list_remove_exception_thread(pthread_t);
+#define YAOOC_THREAD_CLEANUP yaooc_exception_thread_list_remove_exception_thread(pthread_self());
 
 /*
   Macros/routines to implement TRY/CATCH
 */
-yaooc_jmpbuf_t* setup_jmpbuf_for_exeception(void *,const char*,yaooc_size_type);
-pointer yaooc_exception_garbage_bag_save(pointer);
+void yaooc_exception_handled();
 
-#define EGB_SAVE(ptr) yaooc_exception_garbage_bag_save(ptr)
+jmp_buf* yaooc_jmpbuf_new(void);
 
-#define TRY if(setjmp(yaooc_jmpbuf_new()->jb_) == 0) { \
-    do {
+void __throw__(pointer);
+bool __catch__(const char*);
+void __rethrow_last_exception__();
+pointer yaooc_exception_pointer_bag_save(pointer);
+void yaooc_exception_pointer_bag_clear();
+void yaooc_exception_pointer_bag_delete();
+
+typedef struct yaooc_exception_thread_jmpbuf_node_s yaooc_exception_thread_jmpbuf_node_t;
+yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_list_find_jmpbuf(pthread_t);
+
+#define EPB_SAVE(ptr) yaooc_exception_pointer_bag_save(ptr)
+#define EPB_CLEAR  yaooc_exception_pointer_bag_clear(ptr)
+#define EPB_DELETE yaooc_exception_pointer_bag_delete(ptr)
 
 /*
-  setup the exception and throw (long jump)
+  throw an exception
 */
 #define THROW(e) \
-    longjmp(setup_jmpbuf_for_exeception(e,__FILE__,__LINE__)->jb_,1); \
+    __throw__(e);
 
-/*
-  Before "else if", no exception thrown or exception handled.
-  adjust exception stack.
-  After "else if", exception just thrown or not handled
-    * if preceeding section was a try, an exception was thrown
-    * if preceeding section was a catch, exception was unhandled
-*/
+#define TRY if(setjmp(*yaooc_jmpbuf_new()) == 0) { \
+    do {
+
 #define CATCH(exception_type,e) \
+    /* No exception thrown or exception was caught in preceding block */ \
     } while(0); \
     yaooc_exception_handled(); \
-  } else if(M(yaooc_current_jmpbuf()->exception_thrown_,is_descendent,# exception_type "_t")) {  do { \
-    exception_type ## _const_pointer e=(exception_type ## _const_pointer)yaooc_current_jmpbuf()->exception_thrown_;\
+  } else  \
+      /* Exception thrown not caught by preceding block. Check if it should be caught here */ \
+  if(__catch__(# exception_type "_t")) {  do { \
+    exception_type ## _const_pointer e=(exception_type ## _const_pointer)yaooc_exception_current_exception_thrown();
 
-/*
-  Before "else if":
-    Same as CATCH
-  After "else if";
-    Exception not handled.  Throw same exception to next level
-*/
 #define ETRY \
     } while(0); \
+    /* No exception thrown or exception was caught in preceding block */ \
     yaooc_exception_handled(); \
 } else  {\
-    yaooc_exception_unhandled(); \
-    setup_jmpbuf_for_exeception(NULL,NULL,0); \
-    longjmp(yaooc_current_jmpbuf()->jb_,1); \
+    /* Exception not caught by any catch block in the TRY/ETRY section -- rethrow */ \
+    __rethrow_last_exception__(); \
 }
-
-#define YAOOC_EXCEPTION_CLASS_MEMBERS \
-  { \
-    yaooc_exception_isa, \
-    yaooc_exception_is_descendent, \
-    yaooc_object_swap \
-  }, \
-  yaooc_exception_what \
 
 #endif

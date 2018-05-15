@@ -56,7 +56,7 @@ bool simple_object_less_than_compare(const_pointer v1,const_pointer v2)
 
 DEFINE_TYPE_INFO(simple_object,simple_object_default_ctor,simple_object_dtor,
     simple_object_copy_ctor,simple_object_assign,simple_object_less_than_compare,
-      NULL,NULL)
+      NULL,NULL,NULL,NULL)
 
 
 void simple_object_ctor(pointer p,va_list args)

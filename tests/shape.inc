@@ -9,6 +9,7 @@ class_table(shape)
   void (*virtual_dtor)(pointer);
   void (*virtual_copy_ctor)(pointer,const_pointer);
   void (*virtual_assign)(pointer,const_pointer);
+  bool (*virtual_less_than_compare)(const_pointer,const_pointer);
   double (*area)(const_pointer);
 };
 
@@ -46,17 +47,24 @@ void shape_assign(pointer d,const_pointer s)
   M(((shape_pointer)d),virtual_assign,s);
 }
 
+bool shape_virtual_less_than_compare(const_pointer p1,const_pointer p2)
+{
+  if(optr)
+    optr+=sprintf(optr,"SLT:");
+  return M((shape_const_pointer)p1,virtual_less_than_compare,p2);
+}
+
 /*
   Class table for shape is NULL because no items of type shape will be called.
 */
 
-DEFINE_TYPE_INFO(shape,shape_default_ctor,shape_dtor,shape_copy_ctor,shape_assign,NULL,NULL,NULL)
+DEFINE_TYPE_INFO(shape,shape_default_ctor,shape_dtor,shape_copy_ctor,shape_assign,shape_virtual_less_than_compare,NULL,NULL,NULL,NULL)
 /*
   Circle is derived from shape
 */
 class_table(circle)
 {
-  shape_class_members_t;
+  shape_class_table_t;
   void (*set_radius)(pointer p,double v);
 };
 
@@ -139,25 +147,31 @@ void circle_ctor_radius(pointer p,va_list args)
   circle_set_radius(p,va_arg(args,double));
 }
 
-circle_class_members_t circle_class_members=
+bool circle_less_than_compare(const_pointer p1,const_pointer p2)
 {
-  {
-    circle_virtual_dtor,
-    circle_virtual_copy_ctor,
-    circle_virtual_assign,
-    circle_area
-  },
-    circle_set_radius
+  if(optr)
+    optr+=sprintf(optr,"CIRLT:");
+  return M((shape_const_pointer)p1,area) < M((shape_const_pointer)p2,area);
+}
+
+circle_class_table_t circle_class_table=
+{
+  .virtual_dtor = circle_virtual_dtor,
+  .virtual_copy_ctor = circle_virtual_copy_ctor,
+  .virtual_assign = circle_virtual_assign,
+  .virtual_less_than_compare = circle_less_than_compare,
+  .area = circle_area,
+  .set_radius = circle_set_radius
 };
 
-DEFINE_TYPE_INFO(circle,circle_default_ctor,NULL,NULL,NULL,NULL,&circle_class_members,shape)
+DEFINE_TYPE_INFO(circle,circle_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&circle_class_table,shape)
 
 /*
   Square is derived from shape
 */
 class_table(square)
 {
-  shape_class_members_t;
+  shape_class_table_t;
   void (*set_length)(pointer,double);
 };
 
@@ -216,31 +230,37 @@ void square_ctor_length(pointer p,va_list args)
   square_set_length(p,va_arg(args,double));
 }
 
-square_class_members_t square_class_members=
+bool square_less_than_compare(const_pointer p1,const_pointer p2)
 {
-  {
-    square_virtual_dtor,
-    square_virtual_copy_ctor,
-    square_virtual_assign,
-    square_area
-  },
-    square_set_length
+  if(optr)
+    optr+=sprintf(optr,"SQLT:");
+  return M((shape_const_pointer)p1,area) < M((shape_const_pointer)p2,area);
+}
+
+square_class_table_t square_class_table=
+{
+  .virtual_dtor = square_virtual_dtor,
+  .virtual_copy_ctor = square_virtual_copy_ctor,
+  .virtual_assign = square_virtual_assign,
+  .virtual_less_than_compare = square_less_than_compare,
+  .area = square_area,
+  .set_length = square_set_length
 };
 
-DEFINE_TYPE_INFO(square,square_default_ctor,NULL,NULL,NULL,NULL,&square_class_members,shape)
+DEFINE_TYPE_INFO(square,square_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&square_class_table,shape)
 
 /*
   Rectangle is derived from square
 */
 class_table(rectangle)
 {
-  square_class_members_t;
+  square_class_table_t;
   void (*set_width)(pointer,double);
 };
 
 class_instance(rectangle)
 {
-  square_instance_members_t;
+  square_class_instance_t;
   double width_;
 };
 
@@ -300,20 +320,24 @@ void rectangle_ctor_length_width(pointer p,va_list args)
   rectangle_set_width(p,width);
 }
 
-rectangle_class_members_t rectangle_class_members =
+bool rectangle_less_than_compare(const_pointer p1,const_pointer p2)
 {
-  {
-    {
-      rectangle_virtual_dtor,
-      rectangle_virtual_copy_ctor,
-      rectangle_virtual_assign,
-      rectangle_area
-    },
-      square_set_length
-  },
-  rectangle_set_width
+  if(optr)
+    optr+=sprintf(optr,"RLT:");
+  return M((shape_const_pointer)p1,area) < M((shape_const_pointer)p2,area);
+}
+
+rectangle_class_table_t rectangle_class_table =
+{
+  .virtual_dtor = rectangle_virtual_dtor,
+  .virtual_copy_ctor = rectangle_virtual_copy_ctor,
+  .virtual_assign = rectangle_virtual_assign,
+  .virtual_less_than_compare = rectangle_less_than_compare,
+  .area = rectangle_area,
+  .set_length = square_set_length,
+  .set_width = rectangle_set_width
 };
 
-DEFINE_TYPE_INFO(rectangle,rectangle_default_ctor,NULL,NULL,NULL,NULL,&rectangle_class_members,square)
+DEFINE_TYPE_INFO(rectangle,rectangle_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&rectangle_class_table,square)
 
 #endif

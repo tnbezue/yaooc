@@ -1,153 +1,166 @@
-#include <yaooc/json_parser.h>
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#include <string.h>
+#include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <ctype.h>
+#include <yaooc/json_parser.h>
 
-void json_pair_default_ctor(pointer p)
+/*  Begin YAOOC PreProcessor generated content */
+
+/* Private items for yaooc_json_parser */
+
+/* Protected items for yaooc_json_parser */
+
+
+/* Typeinfo for yaooc_json_parser */
+/* Constructors for yaooc_json_parser */
+
+/* Class table methods for yaooc_json_parser */
+yaooc_json_value_pointer yaooc_json_parser_parse_json_null(pointer p)
 {
-  json_pair_pointer this=p;
-  this->key=NULL;
-  this->value=NULL;
-}
-
-void json_pair_dtor(pointer p)
-{
-  json_pair_pointer this=p;
-  if(this->key)
-    delete(this->key);
-  if(this->value)
-    delete(this->value);
-}
-
-DEFINE_TYPE_INFO(json_pair,json_pair_default_ctor,json_pair_dtor,NULL,NULL,NULL,NULL,NULL)
-
-void json_parser_default_ctor(pointer p)
-{
-//  json_parser_pointer this=p;
-  yaooc_base_parser_default_ctor(p);
-}
-
-void json_parser_swap(pointer p,pointer o)
-{
-  swap_object(p,o,sizeof(json_parser_t));
-}
-
-json_value_pointer json_parser_jnull(pointer p)
-{
-  json_parser_pointer this=p;
-  json_value_pointer ret=NULL;
-  if(M(this,str,"null")) {
-    ret=new(json_null);
+  yaooc_json_parser_pointer this=p;
+  yaooc_json_value_t* ret=NULL;
+  if(M(this,str,"null").end_) {
+    ret=new(yaooc_json_null);
   }
   return ret;
 }
 
-json_value_pointer json_parser_jbool(pointer p)
+yaooc_json_value_pointer yaooc_json_parser_parse_json_bool(pointer p)
 {
-  json_parser_pointer this=p;
-  json_value_pointer ret=NULL;
-  if(M(this,str,"true")) {
-    ret=new_ctor(json_bool,json_bool_ctor_bool,true);
-  } else if(M(this,str,"false")) {
-    ret=new_ctor(json_bool,json_bool_ctor_bool,false);
+  yaooc_json_parser_pointer this=p;
+  yaooc_json_value_t* ret=NULL;
+  if(M(this,str,"true").end_) {
+    ret=new_ctor(yaooc_json_bool,yaooc_json_bool_ctor_bool,true);
+  } else if(M(this,str,"false").end_) {
+    ret=new_ctor(yaooc_json_bool,yaooc_json_bool_ctor_bool,false);
   }
   return ret;
 }
 
-json_value_pointer json_parser_jinteger(pointer p)
+yaooc_json_value_pointer yaooc_json_parser_parse_json_integer(pointer p)
 {
-  json_parser_pointer this=p;
-  json_value_pointer ret=NULL;
+  yaooc_json_parser_pointer this=p;
+  yaooc_json_value_t* ret=NULL;
   yaooc_terminal_t r=M(this,integer);
   if(r.end_) {
-    char* text=M(&r,get_text);
-    ret=new_ctor(json_integer,json_integer_ctor_int,atoll(text));
-    delete(text);
+//    char* text=M(&r,get_text);
+    ret=new_ctor(yaooc_json_integer,yaooc_json_integer_ctor_int,atoll(r.beg_));
+//    delete(text);
   }
   return ret;
 }
 
-json_value_pointer json_parser_jreal(pointer p)
+yaooc_json_value_pointer yaooc_json_parser_parse_json_real(pointer p)
 {
-  json_parser_pointer this=p;
-  json_value_pointer ret=NULL;
+  yaooc_json_parser_pointer this=p;
+  yaooc_json_value_t* ret=NULL;
   yaooc_terminal_t r=M(this,real);
   if(r.end_) {
-    char* text=M(&r,get_text);
-    ret=new_ctor(json_real,json_real_ctor_real,atof(text));
-    delete(text);
+    ret=new_ctor(yaooc_json_real,yaooc_json_real_ctor_real,atof(r.beg_));
   }
   return ret;
 }
 
-json_value_pointer json_parser_jstring(pointer p)
+yaooc_json_value_pointer yaooc_json_parser_parse_json_string(pointer p)
 {
-  json_parser_pointer this=p;
-  json_value_pointer ret=NULL;
+  yaooc_json_parser_pointer this=p;
+  yaooc_json_value_t* ret=NULL;
   yaooc_terminal_t r=M(this,double_quoted_string);
   if(r.end_) {
-    char* text=M(&r,get_text);
-    ret=new_ctor(json_string,json_string_ctor_ccs,text);
-    delete(text);
+//    char* text=M(&r,get_text);
+    ret=new_ctor(yaooc_json_string,yaooc_json_string_ctor_ccs_size,r.beg_,r.end_-r.beg_);
+//    delete(text);
   } else if((r=M(this,ident)).end_) {
-    char* text=M(&r,get_text);
-    ret=new_ctor(json_string,json_string_ctor_ccs,text);
-    delete(text);
+//    char* text=M(&r,get_text);
+    ret=new_ctor(yaooc_json_string,yaooc_json_string_ctor_ccs_size,r.beg_,r.end_-r.beg_);
+//    delete(text);
   }
   return ret;
 }
 
-json_value_pointer json_parser_jarray(pointer p)
+yaooc_json_value_pointer yaooc_json_parser_parse_json_array(pointer p)
 {
-  json_parser_pointer this=p;
-  json_value_pointer ret=NULL;
-  json_value_pointer value;
-  if(M(this,chr,'[')) {
-    ret=new(json_array);
-    while((value=M(this,jvalue))!=NULL) {
-      M((json_array_pointer)ret,add,value);
+  yaooc_json_parser_pointer this=p;
+  yaooc_json_value_t* ret=NULL;
+  yaooc_json_value_t* value;
+  if(M(this,chr,'[').end_) {
+    ret=new(yaooc_json_array);
+    while((value=M(this,parse_json_value))!=NULL) {
+      M((yaooc_json_array_pointer)ret,insert,value);
       delete(value);
-      if(!M(this,chr,','))
+      if(!M(this,chr,',').end_)
         break;
     };
-    if(!M(this,chr,']')) {
+    if(!M(this,chr,']').end_) {
       /* FIX ME */
       /* Should abort */
     }
   }
   return ret;
 }
+typedef struct {
+  yaooc_json_string_t* key;
+  yaooc_json_value_t* value;
+} yaooc_json_pair_t;
 
-json_pair_pointer json_parser_jpair(pointer p)
+yaooc_json_pair_t yaooc_json_parser_parse_json_pair(pointer p)
 {
-  json_parser_pointer this=p;
-  json_pair_pointer ret=new(json_pair);
+  yaooc_json_parser_pointer this=p;
+  yaooc_json_pair_t ret = { NULL,NULL};
   M(this,rule_start);
-  if((ret->key=(json_string_pointer)M(this,jstring)) != NULL && M(this,chr,':') && (ret->value=M(this,jvalue))!=NULL) {
+  ret.key=(yaooc_json_string_pointer)M(this,parse_json_string);
+  if(ret.key && M(this,chr,':').end_) {
+    ret.value=M(this,parse_json_value);
+  }
+  if(ret.value) {
     M(this,rule_success);
   } else {
     M(this,rule_fail);
-    delete(ret);
-    ret=NULL;
+    if(ret.key) delete(ret.key);
+    /*
+      Need to mark as error
+    */
+    ret.key=NULL;
   }
   return ret;
 }
 
-json_value_pointer json_parser_jobject(pointer p)
+yaooc_json_value_pointer yaooc_json_parser_parse_json_object(pointer p)
 {
-  json_parser_pointer this=p;
-  json_value_pointer ret=NULL;
-  if(M(this,chr,'{')) {
-    ret=new(json_object);
-    json_pair_pointer jp;
-    while((jp=M(this,jpair))!=NULL) {
-      M((json_object_pointer)ret,insert,jp->key,jp->value);
-      delete(jp);
-      if(!M(this,chr,','))
+  yaooc_json_parser_pointer this=p;
+  yaooc_json_value_t* ret=NULL;
+  if(M(this,chr,'{').end_) {
+    ret=new(yaooc_json_object);
+    yaooc_json_pair_t jp;
+    while((jp=yaooc_json_parser_parse_json_pair(this)).key!=NULL) {
+      M((yaooc_json_object_pointer)ret,insert,jp.key,jp.value);
+      delete(jp.key);
+      delete(jp.value);
+      jp.key=NULL;
+      jp.value=NULL;
+      if(!M(this,chr,',').end_)
         break;
     }
-    if(!M(this,chr,'}')) {
+    if(!M(this,chr,'}').end_) {
       /* FIX ME */
       /* Should return error */
     }
@@ -155,33 +168,29 @@ json_value_pointer json_parser_jobject(pointer p)
   return ret;
 }
 
-json_value_pointer json_parser_jvalue(pointer p)
+yaooc_json_value_pointer yaooc_json_parser_parse_json_value(pointer p)
 {
-  json_parser_pointer this=p;
-  json_value_pointer ret=NULL;
-  if((ret=M(this,jobject))==NULL)
-    if((ret=M(this,jarray))==NULL)
-      if((ret=M(this,jbool))==NULL)
-        if((ret=M(this,jnull))==NULL)
-          if((ret=M(this,jstring))==NULL)
-            if((ret=M(this,jinteger))==NULL)
-              ret=M(this,jreal);
-
+  yaooc_json_parser_pointer this=p;
+  yaooc_json_value_t* ret=NULL;
+  if((ret=M(this,parse_json_object))==NULL)
+    if((ret=M(this,parse_json_array))==NULL)
+      if((ret=M(this,parse_json_bool))==NULL)
+        if((ret=M(this,parse_json_null))==NULL)
+          if((ret=M(this,parse_json_string))==NULL)
+            if((ret=M(this,parse_json_integer))==NULL)
+              ret=M(this,parse_json_real);
   return ret;
 }
 
-json_value_pointer json_parser_parse_string(pointer p,const char * str)
+yaooc_json_value_pointer yaooc_json_parser_parse_string(pointer p,const char* str)
 {
-  json_parser_pointer this=p;
-  json_value_pointer ret=NULL;
+  yaooc_json_parser_pointer this=p;
+  yaooc_json_value_t* ret=NULL;
   if(str) {
     M(this,set_parse_string,str);
-    M(this,set_crlf_as_whitespace,true);
-    M(this,set_c_comment_as_whitespace,true);
-    M(this,set_cpp_comment_as_whitespace,true);
-    M(this,set_shell_comment_as_whitespace,true);
+    M(this,set_whitespace_types,CRLF|C_COMMENT|CPP_COMMENT|SHELL_COMMENT);
     M(this,whitespace);
-    ret=M(this,jvalue);
+    ret=M(this,parse_json_value);
     if(*this->current_pos_!=0)
       puts("Error parsing file");
   }
@@ -191,13 +200,13 @@ json_value_pointer json_parser_parse_string(pointer p,const char * str)
 #ifndef _WIN32
 #define	O_BINARY 0
 #endif
-json_value_pointer json_parser_parse_file(pointer p,const char * filename)
+yaooc_json_value_pointer yaooc_json_parser_parse_file(pointer p,const char* file)
 {
-  json_parser_pointer this=p;
-  json_value_pointer ret=NULL;
+  yaooc_json_parser_pointer this=p;
+  yaooc_json_value_t* ret=NULL;
   struct stat st;
-  if(stat(filename,&st)==0 && S_ISREG(st.st_mode)) {
-    int fh=open(filename,O_RDONLY|O_BINARY);
+  if(stat(file,&st)==0 && S_ISREG(st.st_mode)) {
+    int fh=open(file,O_RDONLY|O_BINARY);
 		if(fh > 0) {
 			char* buffer=(char*)MALLOC(st.st_size+1);
 			read(fh,buffer,st.st_size);
@@ -211,20 +220,59 @@ json_value_pointer json_parser_parse_file(pointer p,const char * filename)
   return ret;
 }
 
-json_parser_class_members_t json_parser_class_members = {
-   { YAOOC_BASE_PARSER_CLASS_MEMBERS },
-  (json_value_pointer (*)(pointer)) json_parser_jnull,
-  (json_value_pointer (*)(pointer)) json_parser_jbool,
-  (json_value_pointer (*)(pointer)) json_parser_jinteger,
-  (json_value_pointer (*)(pointer)) json_parser_jreal,
-  (json_value_pointer (*)(pointer)) json_parser_jstring,
-  (json_value_pointer (*)(pointer)) json_parser_jarray,
-  (json_pair_pointer (*)(pointer)) json_parser_jpair,
-  (json_value_pointer (*)(pointer)) json_parser_jobject,
-  (json_value_pointer (*)(pointer)) json_parser_jvalue,
-  (json_value_pointer (*)(pointer,const char *)) json_parser_parse_string,
-  (json_value_pointer (*)(pointer,const char *)) json_parser_parse_file,
+
+/* Class table for yaooc_json_parser */
+yaooc_json_parser_class_table_t yaooc_json_parser_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaooc_base_parser_class_table,
+  .isa = (const char* (*) (const_pointer p)) yaooc_json_parser_isa,
+  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_json_parser_is_descendant,
+  .swap = (void (*) (pointer p,pointer)) yaooc_json_parser_swap,
+  .set_parse_string = (void (*) (pointer,const char*)) yaooc_json_parser_set_parse_string,
+  .rule_start = (void (*) (pointer p)) yaooc_json_parser_rule_start,
+  .rule_success = (void (*) (pointer p)) yaooc_json_parser_rule_success,
+  .rule_fail = (void (*) (pointer p)) yaooc_json_parser_rule_fail,
+  .eos = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_eos,
+  .string_until_chrs = (yaooc_terminal_t (*) (pointer p,const char*)) yaooc_json_parser_string_until_chrs,
+  .string_while_chrs = (yaooc_terminal_t (*) (pointer p,const char*)) yaooc_json_parser_string_while_chrs,
+  .string_until_eol = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_string_until_eol,
+  .shell_comment = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_shell_comment,
+  .c_comment = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_c_comment,
+  .cpp_comment = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_cpp_comment,
+  .custom_whitespace = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_custom_whitespace,
+  .set_whitespace_types = (void (*) (pointer p,uint32_t)) yaooc_json_parser_set_whitespace_types,
+  .get_whitespace_types = (uint32_t (*) (pointer p)) yaooc_json_parser_get_whitespace_types,
+  .whitespace = (int (*) (pointer p)) yaooc_json_parser_whitespace,
+  .chr = (yaooc_terminal_t (*) (pointer p,char)) yaooc_json_parser_chr,
+  .chr_choices = (int (*) (pointer p,const char*)) yaooc_json_parser_chr_choices,
+  .str = (yaooc_terminal_t (*) (pointer p,const char*)) yaooc_json_parser_str,
+  .str_choices = (int (*) (pointer p,...)) yaooc_json_parser_str_choices,
+  .digits = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_digits,
+  .hexdigits = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_hexdigits,
+  .integer = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_integer,
+  .hexinteger = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_hexinteger,
+  .real = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_real,
+  .ident = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_ident,
+  .regex = (yaooc_terminal_t (*) (pointer p,const char*,uint32_t,uint32_t)) yaooc_json_parser_regex,
+  .quoted_string = (yaooc_terminal_t (*) (pointer p,char)) yaooc_json_parser_quoted_string,
+  .single_quoted_string = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_single_quoted_string,
+  .double_quoted_string = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_double_quoted_string,
+  .bare_string = (yaooc_terminal_t (*) (pointer p)) yaooc_json_parser_bare_string,
+  .string_until_matching_chr = (yaooc_terminal_t (*) (pointer p,char,char)) yaooc_json_parser_string_until_matching_chr,
+  .parse_json_null = (yaooc_json_value_pointer (*) (pointer p)) yaooc_json_parser_parse_json_null,
+  .parse_json_bool = (yaooc_json_value_pointer (*) (pointer p)) yaooc_json_parser_parse_json_bool,
+  .parse_json_integer = (yaooc_json_value_pointer (*) (pointer p)) yaooc_json_parser_parse_json_integer,
+  .parse_json_real = (yaooc_json_value_pointer (*) (pointer p)) yaooc_json_parser_parse_json_real,
+  .parse_json_string = (yaooc_json_value_pointer (*) (pointer p)) yaooc_json_parser_parse_json_string,
+  .parse_json_array = (yaooc_json_value_pointer (*) (pointer p)) yaooc_json_parser_parse_json_array,
+  .parse_json_object = (yaooc_json_value_pointer (*) (pointer p)) yaooc_json_parser_parse_json_object,
+  .parse_json_value = (yaooc_json_value_pointer (*) (pointer p)) yaooc_json_parser_parse_json_value,
+  .parse_string = (yaooc_json_value_pointer (*) (pointer p,const char*)) yaooc_json_parser_parse_string,
+  .parse_file = (yaooc_json_value_pointer (*) (pointer p,const char*)) yaooc_json_parser_parse_file,
+  .result = (yaooc_base_parser_result_t (*) (const_pointer)) yaooc_base_parser_result,
 };
 
-DEFINE_TYPE_INFO(json_parser,json_parser_default_ctor,NULL,NULL,NULL,NULL,&json_parser_class_members,yaooc_base_parser)
 
+DEFINE_TYPE_INFO(yaooc_json_parser,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+				&yaooc_json_parser_class_table,yaooc_base_parser)
+/*  End YAOOC PreProcessor generated content */

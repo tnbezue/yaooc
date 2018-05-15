@@ -1,148 +1,171 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <string.h>
 #include <stdio.h>
 #include <yaooc/ordered_array_container.h>
-#ifdef __YAOOC_BOUNDS_CHECKING__
-#include <assert.h>
-#endif
 
-yaooc_ordered_array_container_find_result_t yaooc_ordered_array_container_find_private(const_pointer p,const_pointer value)
+/*  Begin YAOOC PreProcessor generated content */
+
+/* Private items for yaooc_ordered_array_container */
+
+/* Protected items for yaooc_ordered_array_container */
+
+yaooc_ordered_array_container_find_result_t yaooc_ordered_array_container_find_protected(const_pointer p,const_pointer value)
 {
-	yaooc_ordered_array_container_const_pointer this=p;
-	yaooc_ordered_array_container_find_result_t fr;
-	fr.found_=false;
-//	fr.position_=(iterator)yaooc_ordered_array_container_cend(p);
-	yaooc_size_type element_size=this->type_info_->type_size_;
-	yaooc_size_type lower=0;
-	yaooc_size_type upper=this->size_-1;
-	yaooc_size_type middle,position=0;
-//	lt_compare lt_function=get_lt_cmp(this->type_info_);
-	while(lower <= upper && upper != (yaooc_size_type)-1) {
-		middle=(lower+upper)>>1;
-		void* middle_ptr=this->array_+element_size*middle;
-		debug(DEBUG_CONTAINER) {
-			printf("lower: %d middle: %d upper: %d %p\n",lower,middle,upper,middle_ptr);
-			fflush(stdout);
-		}
-		if(op_lt_static(middle_ptr,value,this->type_info_)) {
-			lower=middle+1;
-			position=lower;
-		} else if(op_lt_static(value,middle_ptr,this->type_info_)) {
-			upper=middle-1;
-			position=middle;
-		} else {
-			fr.found_=true;
-			/*
-				Make sure first value in container returned
-			*/
-			while(middle > 0) {
+  yaooc_ordered_array_container_const_pointer this=p;
+  yaooc_ordered_array_container_find_result_t ret;
+  ret.found_=false;
+  ret.position_=AT(this,0);
+//  size_t element_size=TYPE_SIZE(this);
+  size_t lower=0,upper=SIZE(this)-1,middle=0,position=0;
+  less_than_compare lt_cmp=get_lt_cmp(this->type_info_);
+  while(lower <= upper && upper != (size_t)-1) {
+    middle=(lower+upper)>>1;
+    pointer middle_ptr=AT(this,middle);
+    if(lt_cmp(middle_ptr,value)) {
+      lower=middle+1;
+      position=lower;
+    } else if(lt_cmp(value,middle_ptr)) {
+      upper=middle-1;
+      position=middle;
+    } else {
+      ret.found_=true;
+      /*
+        Make sure value found is the first in container
+      */
+
+      while(middle > 0) {
         middle--;
-				middle_ptr=this->array_+element_size*middle;
-				if(op_lt_static(middle_ptr,value,this->type_info_)) {
+        if(lt_cmp(AT(this,middle),value)) {
           middle++;
-					break;
+          break;
         }
-			}
-			position=middle;
-			break;
-		}
-	}
-	fr.position_=(iterator)yaooc_ordered_array_container_at((pointer)p,position);
-	return fr;
+      }
+      position=middle;
+      break;
+    }
+  }
+  ret.position_=AT(this,position);
+  return ret;
 }
+
+const char* yaooc_ordered_array_container_isa(const_pointer p) { return "yaooc_ordered_array_container_t"; }
 
 iterator yaooc_ordered_array_container_find(const_pointer p,const_pointer value)
 {
-	yaooc_ordered_array_container_find_result_t fr=yaooc_ordered_array_container_find_private(p,value);
-	return fr.found_ ? fr.position_ : (iterator)CEND(p);
+  yaooc_ordered_array_container_find_result_t fr=yaooc_ordered_array_container_find_protected(p,value);
+	return fr.found_ ? fr.position_ : END(p);
 }
 
 /*
-const_iterator yaooc_ordered_array_container_cfind(const_pointer p,const_pointer value)
-{
-	yaooc_ordered_array_container_find_result_t fr=yaooc_ordered_array_container_find_private(p,value);
-	return fr.found_ ? fr.position_ : CEND(p);
-}
+  Since this is an ordered array.  pos is ignored.  Keep it as argument so it is compatible with
+  other containers.
 */
-iterator yaooc_ordered_array_container_insert_n(pointer p,const_iterator pos,yaooc_size_type n,const_pointer value)
-{
-	/*
-		Note: argument pos should be begin <= pos <= end.  However, this may not be the position where value is inserted
-	*/
-	yaooc_ordered_array_container_pointer this=p;
-#ifdef __YAOOC_BOUNDS_CHECKING__
-	yaooc_private_const_iterator cbegin=CBEGIN(p);
-	assert(cbegin <= (yaooc_private_const_iterator)(pos) && (yaooc_private_const_iterator)(pos) <= (yaooc_private_const_iterator)CEND(p) && "Insert position out of range");
-#endif
-	/*
-		Do find after increase capacity because increase capacity (realloc) may move data array
-	*/
-	yaooc_ordered_array_container_increase_capacity(p,n);
-	yaooc_ordered_array_container_find_result_t fr=yaooc_ordered_array_container_find_private(p,value);
-	yaooc_array_container_insert_n_private(this,INDEX(this,fr.position_),n,value);
-	return fr.position_;
-}
-
 iterator yaooc_ordered_array_container_insert(pointer p,const_iterator pos,const_pointer value)
 {
-	return yaooc_ordered_array_container_insert_n(p,pos,1,value);
+  yaooc_ordered_array_container_find_result_t ret=yaooc_ordered_array_container_find_protected(p,value);
+//  size_t ofs=INDEX(p,ret.position_);
+  return yaooc_array_container_insertn(p,ret.position_,1,value);
+//  return AT(p,ofs);
+}
+
+iterator yaooc_ordered_array_container_insertn(pointer p,const_iterator pos,size_t n,const_pointer value)
+{
+  yaooc_ordered_array_container_find_result_t ret=yaooc_ordered_array_container_find_protected(p,value);
+//  size_t index=INDEX(p,ret.position_);
+  return yaooc_array_container_insertn(p,ret.position_,n,value);
+//  return AT(p,index);
 }
 
 iterator yaooc_ordered_array_container_insert_range(pointer p,const_iterator pos,const_iterator f,const_iterator l)
 {
-	yaooc_ordered_array_container_pointer this=p;
-#ifdef __YAOOC_BOUNDS_CHECKING__
-	yaooc_private_iterator ptr=(yaooc_private_iterator)pos;
-  assert((yaooc_private_const_iterator)yaooc_ordered_array_container_begin(this) <= ptr && ptr <= (yaooc_private_const_iterator)yaooc_ordered_array_container_end(this) && "Insert position out of range");
-#endif
-	yaooc_private_const_iterator first=f;
-	yaooc_private_const_iterator last=l;
-#ifdef __YAOOC_BOUNDS_CHECKING__
-	assert(first <= last && "First > last for insert");
-#endif
-//	yaooc_size_type ofs=ptr-(yaooc_private_const_iterator)yaooc_ordered_array_container_begin(this);
-	yaooc_size_type element_size=this->type_info_->type_size_;
-	yaooc_size_type n=(last-first)/element_size;
-	yaooc_ordered_array_container_increase_capacity(this,n);
-//	ptr=(yaooc_private_iterator)yaooc_ordered_array_container_begin(this)+ofs;
-	iterator rpos=NULL;
-	for(;first!=last;first+=element_size) {
-		yaooc_ordered_array_container_find_result_t fr=yaooc_ordered_array_container_find_private(p,first);
-		memmove(fr.position_+element_size,fr.position_,END(this)-fr.position_);
-		real_newp_array_copy_static(fr.position_,this->type_info_,first,1);
-		this->size_++;
-	}
-	return rpos;
+  yaooc_private_iterator first=(yaooc_private_iterator)f;
+  yaooc_private_iterator last=(yaooc_private_iterator)l;
+  size_t index=(size_t)-1;
+  for(;first!=last;first+=TYPE_SIZE(p)) {
+    iterator temp=yaooc_ordered_array_container_insert(p,pos,first);
+    if(index == (size_t)-1)
+      index=INDEX(p,temp);
+  }
+  return AT(p,index == (size_t)-1 ? SIZE(p) : index);
 }
 
-void yaooc_ordered_array_container_resize(pointer p,yaooc_size_type n,const_pointer value)
+size_t yaooc_ordered_array_container_erase_value(pointer p,const_pointer value)
 {
-	yaooc_ordered_array_container_pointer this=p;
-	if(n>this->size_) {
-		yaooc_ordered_array_container_insert_n(p,yaooc_ordered_array_container_end(this),n-this->size_,value);
-	} else {
-		yaooc_ordered_array_container_erase_range(this,(yaooc_private_iterator)yaooc_ordered_array_container_begin(this)+n*this->type_info_->type_size_,yaooc_ordered_array_container_end(this));
-	}
+  size_t ret=0;
+  yaooc_ordered_array_container_find_result_t fr=yaooc_ordered_array_container_find_protected(p,value);
+  if(fr.found_) {
+    less_than_compare lt_cmp=get_lt_cmp(TYPE_INFO(p));
+    yaooc_private_const_iterator first=fr.position_;
+    yaooc_private_const_iterator last=fr.position_+TYPE_SIZE(p);
+    while(last < END(p)) {
+      if(lt_cmp(fr.position_,value))
+        break;
+      last+=TYPE_SIZE(p);
+    };
+    ret=DISTANCE(TYPE_INFO(p),first,last);
+    yaooc_array_container_erase_range(p,first,last);
+  }
+  return ret;
 }
 
-yaooc_size_type yaooc_ordered_array_container_erase_value(pointer p,const_pointer value)
+void yaooc_ordered_array_container_resize_value(pointer p,size_t n,const_pointer value)
 {
-	yaooc_ordered_array_container_pointer this=p;
-	yaooc_size_type n_erased=0;
-	yaooc_ordered_array_container_find_result_t fr=yaooc_ordered_array_container_find_private(this,value);
-	if(fr.found_) {
-		yaooc_size_type j,i=INDEX(this,fr.position_);
-		n_erased=1;
-		for(j=i+1;j<this->size_;j++) {
-			if(op_ne_static(AT(this,j),value,this->type_info_))
-				break;
-			n_erased++;
-		}
-		yaooc_array_container_erase_range(this,AT(this,i),AT(this,i+n_erased));
-	}
-	return n_erased;
+  yaooc_ordered_array_container_pointer this=p;
+  if(n<SIZE(this)) {
+    yaooc_array_container_erase_range(p,AT(p,n),END(p));
+  } else {
+    yaooc_ordered_array_container_find_result_t fr=yaooc_ordered_array_container_find_protected(p,value);
+    yaooc_array_container_insertn(p,fr.position_,n-SIZE(p),value);
+  }
 }
 
-ISA_IMPLEMENTATION(yaooc_ordered_array_container,yaooc_array_container)
+void yaooc_ordered_array_container_resize(pointer p,size_t n)
+{
+  yaooc_private_pointer temp=__new_array(TYPE_INFO(p),1);
+  yaooc_ordered_array_container_resize_value(p,n,temp);
+  delete(temp);
+}
 
-DEFINE_TYPE_INFO(yaooc_ordered_array_container,NULL,NULL,NULL,NULL,NULL,
-        NULL,yaooc_array_container)
+/* Typeinfo for yaooc_ordered_array_container */
+
+/* Constructors for yaooc_ordered_array_container */
+
+/* Class table methods for yaooc_ordered_array_container */
+
+/* Class table for yaooc_ordered_array_container */
+yaooc_ordered_array_container_class_table_t yaooc_ordered_array_container_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table,
+  .isa = (const char* (*) (const_pointer p)) yaooc_ordered_array_container_isa,
+  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_ordered_array_container_is_descendant,
+  .swap = (void (*) (pointer p,pointer)) yaooc_ordered_array_container_swap,
+  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
+  .size = (size_t (*) (const_pointer p)) yaooc_ordered_array_container_size,
+  .capacity = (size_t (*) (const_pointer p)) yaooc_ordered_array_container_capacity,
+  .empty = (bool (*) (const_pointer p)) yaooc_ordered_array_container_empty,
+  .begin = (iterator (*) (const_pointer p)) yaooc_ordered_array_container_begin,
+  .end = (iterator (*) (const_pointer p)) yaooc_ordered_array_container_end,
+
+};
+
+
+DEFINE_TYPE_INFO(yaooc_ordered_array_container,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+			&yaooc_ordered_array_container_class_table,yaooc_array_container)
+/*  End YAOOC PreProcessor generated content */

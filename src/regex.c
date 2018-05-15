@@ -1,91 +1,243 @@
-#include <yaooc/regex.h>
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
 
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#include <stdio.h>
+#include <string.h>
+#include <yaooc/regex.h>
+#include <yaooc/stream.h>
+
+/*  Begin YAOOC PreProcessor generated content */
+
+/* Private items for yaooc_matchdata */
+
+/* Protected items for yaooc_matchdata */
+
+
+/* Typeinfo for yaooc_matchdata */
 void yaooc_matchdata_default_ctor(pointer p)
 {
   yaooc_matchdata_pointer this=p;
-  this->subject_=new(yaooc_string);
-  this->match_data_=NULL;
+  this->ovector_=NULL;
+  this->subject_=NULL;
+  this->match_result_=-1;
+  this->n_captures_=0;
   this->match_flags_=0;
 }
 
 void yaooc_matchdata_dtor(pointer p)
 {
   yaooc_matchdata_pointer this=p;
-  delete(this->subject_);
-  if(this->match_data_)
-    pcre2_match_data_free(this->match_data_);
+  if(this->ovector_)
+    FREE(this->ovector_);
+  if(this->subject_)
+    FREE(this->subject_);
 }
 
 void yaooc_matchdata_copy_ctor(pointer d,const_pointer s)
 {
   yaooc_matchdata_default_ctor(d);
-  //yaooc_matchdata_assign(d,s); /* Don't allow match data to be copied */
+  yaooc_matchdata_assign(d,s);
 }
 
 void yaooc_matchdata_assign(pointer d,const_pointer s)
 {
-//  yaooc_matchdata_pointer dst=d;
-//  yaooc_matchdata_const_pointer src=s;
-//  assign_static(dst->subject_,src->subject_,yaooc_string_ti);
+  yaooc_matchdata_pointer this=d;
+  yaooc_matchdata_const_pointer src=s;
+  if(this->ovector_)
+    FREE(this->ovector_);
+  if(this->subject_)
+    FREE(this->subject_);
+  this->n_captures_=src->n_captures_;
+  this->match_flags_=src->match_flags_;
+  this->match_result_=src->match_result_;
+  if(src->ovector_) {
+    size_t size=this->n_captures_*sizeof(regmatch_t);
+    this->ovector_=MALLOC(size);
+    memcpy(this->ovector_,src->ovector_,size);
+  } else
+    this->ovector_=NULL;
+  this->subject_ = src->subject_ ? STRDUP(src->subject_) : NULL;
 }
 
-ISA_IMPLEMENTATION(yaooc_matchdata,yaooc_object)
+/* Constructors for yaooc_matchdata */
 
-char* yaooc_matchdata_at(pointer p,uint32_t i)
+/* Class table methods for yaooc_matchdata */
+const char* yaooc_matchdata_isa(const_pointer p) { return "yaooc_matchdata_t"; }
+
+void yaooc_matchdata_swap(pointer p,pointer o)
 {
   yaooc_matchdata_pointer this=p;
-  char* ret=NULL;
-  if(this->match_data_) {
-    PCRE2_SIZE length;
-    if(pcre2_substring_length_bynumber(this->match_data_,i,&length)==0) {
-      ret=new_array(char,++length);
-      pcre2_substring_copy_bynumber(this->match_data_,i,(PCRE2_UCHAR*)ret,&length);
+  yaooc_matchdata_pointer other=o;
+  SWAP(regmatch_t *,this->ovector_,other->ovector_);
+  SWAP(char*,this->subject_,other->subject_);
+  SWAP(int,this->match_result_,other->match_result_);
+  SWAP(int,this->n_captures_,other->n_captures_);
+  SWAP(int,this->match_flags_,other->match_flags_);
+}
+
+yaooc_string_pointer yaooc_matchdata_at(const_pointer p,size_t i)
+{
+  yaooc_matchdata_const_pointer this=p;
+  yaooc_string_pointer ret=new(yaooc_string);
+  if(this->ovector_  && this->match_result_==0 && i>= 0 && i < this->n_captures_) {
+    M(ret,insertn,0,this->subject_+this->ovector_[i].rm_so,this->ovector_[i].rm_eo-this->ovector_[i].rm_so);
+  }
+  return ret;
+}
+
+yaooc_string_pointer yaooc_matchdata_exec(pointer p,const char* str)
+{
+  yaooc_matchdata_pointer this=p;
+  yaooc_string_pointer ret=new(yaooc_string);
+  if(str) {
+    regex_t re;
+    M(ret,set,str);
+//    tre_regcomp(&re,"\\$([0-9]+)|\\$\\{([0-9]+)\\}",REG_EXTENDED);
+    regcomp(&re,"\\$([0-9]+)|\\$\\{([0-9]+)\\}",REG_EXTENDED);
+    regmatch_t ov[3];
+    int ofs=0;
+    while(regexec(&re,M(ret,c_str)+ofs,3,ov,0) == 0) {
+      if((ofs !=0 || ov[0].rm_so !=0) && *(M(ret,c_str)+ofs+ov[0].rm_so-1) == '\\') {
+        M(ret,erase,ofs+ov[0].rm_so-1);
+        ofs+=ov[0].rm_eo-1;
+      } else {
+        int iov=ov[1].rm_so == -1 ? 2 : 1;
+        int i=atoi(M(ret,c_str)+ofs+ov[iov].rm_so);
+        printf("YY -- %d %d X%.5sX\n",iov,i,M(ret,c_str)+ofs+ov[iov].rm_so);
+        const char* repstr;
+        int l;
+        if(i < this->n_captures_) {
+          repstr=this->subject_+this->ovector_[i].rm_so;
+          l=this->ovector_[i].rm_eo-this->ovector_[i].rm_so;
+        } else {
+          repstr="";
+          l=0;
+        }
+        debug_printf("MM -- %d %d %d %d\n",i,ofs+ov[0].rm_so,ov[0].rm_eo-ov[0].rm_so,l);
+        M(ret,replacen,ofs+ov[0].rm_so,ov[0].rm_eo-ov[0].rm_so,repstr,l);
+        ofs+=l;
+      }
     }
   }
   return ret;
 }
 
-yaooc_string_const_pointer yaooc_matchdata_subject(const_pointer p)
-{
-  return ((yaooc_matchdata_const_pointer)p)->subject_;
-}
-
-bool yaooc_matchdata_good(const_pointer p)
-{
-  return ((yaooc_matchdata_const_pointer)p)->match_data_!=NULL;
-}
-
-bool yaooc_matchdata_bad(const_pointer p)
-{
-  return ((yaooc_matchdata_const_pointer)p)->match_data_==NULL;
-}
-
-uint32_t yaooc_matchdata_size(const_pointer p)
+const char* yaooc_matchdata_subject(const_pointer p)
 {
   yaooc_matchdata_const_pointer this=p;
-  return this->match_data_ ? pcre2_get_ovector_count(this->match_data_) : 0;
+  return this->subject_;
 }
 
-yaooc_matchdata_class_members_t yaooc_matchdata_class_members = { YAOOC_MATCHDATA_CLASS_MEMBERS };
+bool yaooc_matchdata_bool(const_pointer p)
+{
+  return ((yaooc_matchdata_const_pointer)p)->match_result_==0;
+}
 
-DEFINE_TYPE_INFO(yaooc_matchdata,yaooc_matchdata_default_ctor,yaooc_matchdata_dtor,yaooc_matchdata_copy_ctor,yaooc_matchdata_assign,NULL,&yaooc_matchdata_class_members,yaooc_object)
+size_t yaooc_matchdata_size(const_pointer p)
+{
+  yaooc_matchdata_const_pointer this=p;
+  return this->match_result_==0 ? this->n_captures_ : 0;
+}
 
-void yaooc_regex_compile_pattern(yaooc_regex_pointer);
 
+/* Class table for yaooc_matchdata */
+yaooc_matchdata_class_table_t yaooc_matchdata_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+  .isa = (const char* (*) (const_pointer p)) yaooc_matchdata_isa,
+  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_matchdata_is_descendant,
+  .swap = (void (*) (pointer p,pointer)) yaooc_matchdata_swap,
+  .at = (yaooc_string_pointer (*) (const_pointer p,size_t)) yaooc_matchdata_at,
+  .exec = (yaooc_string_pointer (*) (pointer p,const char*)) yaooc_matchdata_exec,
+  .subject = (const char* (*) (const_pointer p)) yaooc_matchdata_subject,
+  .bool = (bool (*) (const_pointer p)) yaooc_matchdata_bool,
+  .size = (size_t (*) (const_pointer p)) yaooc_matchdata_size,
+};
+
+
+DEFINE_TYPE_INFO(yaooc_matchdata,yaooc_matchdata_default_ctor,yaooc_matchdata_dtor,yaooc_matchdata_copy_ctor,
+			yaooc_matchdata_assign,NULL,NULL,NULL,&yaooc_matchdata_class_table,yaooc_object)
+
+
+/* Private items for yaooc_regex */
+void yaooc_regex_compile(pointer p)
+{
+  yaooc_regex_pointer this=p;
+  this->re_=MALLOC(sizeof(regex_t));
+  this->compile_result_=regcomp(this->re_,this->pattern_,this->compile_flags_);
+  if(this->compile_result_ != 0) {
+    regfree(this->re_);
+    FREE(this->re_);
+  }
+}
+
+#define min(x,y) ((x)<(y)) ? (x) : (y)
+int yaooc_regex_regexec(const regex_t* re,const char* subject,int ofs,size_t n,regmatch_t* ov,int eflags)
+{
+  int result=regexec(re,subject+ofs,n,ov,eflags);
+  if(result == 0 && ofs > 0) {
+    size_t i;
+    n=min(re->re_nsub+1,n);
+    for(i=0;i<n;i++) {
+      ov[i].rm_so+=ofs;
+      ov[i].rm_eo+=ofs;
+    }
+  }
+  return result;
+}
+
+bool yaooc_regex_match_private(yaooc_regex_const_pointer this,yaooc_matchdata_pointer md,int offset)
+{
+  bool ret=false;
+  if(this->re_) {
+    if((md->match_result_=yaooc_regex_regexec(this->re_,md->subject_,offset,md->n_captures_,md->ovector_,0)) == 0) {
+      md->n_captures_=this->re_->re_nsub+1;
+      ret=true;
+    } else {
+      /* Match failed, indicate no matches found */
+/*      free(md->ovector_);
+      md->ovector_=NULL;*/
+      md->n_captures_=0;
+    }
+  }
+  return ret;
+}
+/* Protected items for yaooc_regex */
+
+
+/* Typeinfo for yaooc_regex */
 void yaooc_regex_default_ctor(pointer p)
 {
   yaooc_regex_pointer this=p;
   this->re_=NULL;
-  this->pattern_=new(yaooc_string);
+  this->pattern_=NULL;
   this->compile_flags_=0;
+  this->compile_result_=-1;
 }
 
 void yaooc_regex_dtor(pointer p)
 {
   yaooc_regex_pointer this=p;
-  if(this->re_!=NULL)
-    pcre2_code_free(this->re_);
-  delete(this->pattern_);
+  if(this->re_) {
+    regfree(this->re_);
+    FREE(this->re_);
+  }
+  if(this->pattern_)
+    FREE(this->pattern_);
 }
 
 void yaooc_regex_copy_ctor(pointer d,const_pointer s)
@@ -96,102 +248,94 @@ void yaooc_regex_copy_ctor(pointer d,const_pointer s)
 
 void yaooc_regex_assign(pointer d,const_pointer s)
 {
-  yaooc_regex_pointer dst=d;
   yaooc_regex_const_pointer src=s;
-/*  if(dst->re_) {
-    pcre2_code_free(this->re_);
-    dst->re_=NULL;
-  }*/
-  real_assign_static(dst->pattern_,src->pattern_,yaooc_string_ti);
-  dst->compile_flags_=src->compile_flags_;
-  yaooc_regex_compile_pattern(dst);
+  yaooc_regex_set_pattern_flags(d,src->pattern_,src->compile_flags_);
 }
 
-ISA_IMPLEMENTATION(yaooc_regex,yaooc_object)
+/* Constructors for yaooc_regex */
+void yaooc_regex_ctor_ccs_int(pointer p,va_list args)
+{
+  const char* pattern=va_arg(args,const char*);
+  int flags=va_arg(args,int);
+  yaooc_regex_default_ctor(p);
+  yaooc_regex_set_pattern_flags(p,pattern,flags);
+}
 
-bool yaooc_regex_match_private(yaooc_regex_pointer,yaooc_matchdata_pointer,PCRE2_SIZE);
-
-void yaooc_regex_set_pattern(pointer p,const char * pat,int flags)
+/* Class table methods for yaooc_regex */
+void yaooc_regex_set_pattern_flags(pointer p,const char* pattern,int flags)
 {
   yaooc_regex_pointer this=p;
-  M(this->pattern_,set,pat);
+  yaooc_regex_dtor(p);
   this->compile_flags_=flags;
-  yaooc_regex_compile_pattern(this);
+  this->compile_result_=-1;
+  if(pattern) {
+    this->pattern_=STRDUP(pattern);
+    yaooc_regex_compile(p);
+  }
 }
 
-yaooc_string_const_pointer yaooc_regex_get_pattern(const_pointer p)
+const char* yaooc_regex_get_pattern(const_pointer p)
 {
-  return ((yaooc_regex_const_pointer)p)->pattern_;
+  yaooc_regex_const_pointer this=p;
+  return this->pattern_;
+}
+
+void yaooc_regex_set_flags(pointer p,int flags)
+{
+  yaooc_regex_pointer this=p;
+  this->compile_flags_=flags;
 }
 
 int yaooc_regex_get_flags(const_pointer p)
 {
-  return ((yaooc_regex_const_pointer)p)->compile_flags_;
+  yaooc_regex_const_pointer this=p;
+  return this->compile_flags_;
 }
 
-yaooc_matchdata_pointer yaooc_regex_match(pointer p,const char * subject,uint32_t match_flags)
+yaooc_matchdata_pointer yaooc_regex_match(pointer p,const char* subject,int match_flags)
 {
   yaooc_regex_pointer this=p;
   yaooc_matchdata_pointer ret=new(yaooc_matchdata);
-  if(this->re_) {
-    ret->match_data_=pcre2_match_data_create_from_pattern(this->re_,NULL);
-    M(ret->subject_,set,subject);
-    ret->match_flags_=match_flags;
+  if(this->compile_result_==0) {
+    ret->n_captures_=this->re_->re_nsub+1;
+    ret->ovector_=MALLOC(sizeof(regmatch_t)*ret->n_captures_);
+    ret->subject_=STRDUP(subject);
     yaooc_regex_match_private(this,ret,0);
   }
   return ret;
 }
 
-bool yaooc_regex_match_next(pointer p,pointer s)
-{
-  yaooc_matchdata_pointer md=s;
-  if(md->match_data_ != NULL) {
-    PCRE2_SIZE* ovector=pcre2_get_ovector_pointer(md->match_data_);
-    return yaooc_regex_match_private(p,md,ovector[1]);
-  }
-  return false;
-}
-
-bool yaooc_regex_good(const_pointer p)
-{
-  return ((yaooc_regex_const_pointer)p)->re_!=NULL;
-}
-
-bool yaooc_regex_bad(const_pointer p)
-{
-  return ((yaooc_regex_const_pointer)p)->re_==NULL;
-}
-
-void yaooc_regex_ctor_pat_flags(pointer p,va_list args)
+bool yaooc_regex_match_next(pointer p,yaooc_matchdata_pointer md)
 {
   yaooc_regex_pointer this=p;
-  const char * pat=va_arg(args,const char *);
-  int compile_flags=va_arg(args,int);
-  yaooc_regex_default_ctor(this);
-  yaooc_regex_set_pattern(this,pat,compile_flags);
-};
-
-void yaooc_regex_compile_pattern(yaooc_regex_pointer this)
-{
-  int errorcode;
-  PCRE2_SIZE erroroffset;
-  if(M(this->pattern_,size)>0)
-    this->re_=pcre2_compile((PCRE2_SPTR)M(this->pattern_,c_str),PCRE2_ZERO_TERMINATED,this->compile_flags_,&errorcode,&erroroffset,NULL);
-}
-
-bool yaooc_regex_match_private(yaooc_regex_pointer this,yaooc_matchdata_pointer md,PCRE2_SIZE offset)
-{
-  if(this->re_) {
-    if(pcre2_match(this->re_,(PCRE2_SPTR)M(md->subject_,c_str),PCRE2_ZERO_TERMINATED,offset,md->match_flags_,md->match_data_,NULL) < 0) {
-      /* Match failed, destroy match data */
-      pcre2_match_data_free(md->match_data_);
-      md->match_data_=NULL;
-    }
+  if(md->match_result_ == 0) {
+    return yaooc_regex_match_private(this,md,md->ovector_[0].rm_eo);
   }
   return false;
 }
 
-yaooc_regex_class_members_t yaooc_regex_class_members = { YAOOC_REGEX_CLASS_MEMBERS };
+bool yaooc_regex_bool(const_pointer p)
+{
+  yaooc_regex_const_pointer this=p;
+  return this->compile_result_==0;
+}
 
-DEFINE_TYPE_INFO(yaooc_regex,yaooc_regex_default_ctor,yaooc_regex_dtor,yaooc_regex_copy_ctor,yaooc_regex_assign,NULL,&yaooc_regex_class_members,yaooc_object)
+/* Class table for yaooc_regex */
+yaooc_regex_class_table_t yaooc_regex_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+  .isa = (const char* (*) (const_pointer p)) yaooc_regex_isa,
+  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_regex_is_descendant,
+  .swap = (void (*) (pointer p,pointer)) yaooc_regex_swap,
+  .set_pattern_flags = (void (*) (pointer p,const char*,int)) yaooc_regex_set_pattern_flags,
+  .get_pattern = (const char* (*) (const_pointer p)) yaooc_regex_get_pattern,
+  .get_flags = (int (*) (const_pointer p)) yaooc_regex_get_flags,
+  .match = (yaooc_matchdata_pointer (*) (pointer p,const char*,int)) yaooc_regex_match,
+  .match_next = (bool (*) (pointer p,yaooc_matchdata_pointer)) yaooc_regex_match_next,
+  .bool = (bool (*) (const_pointer p)) yaooc_regex_bool,
+};
 
+
+DEFINE_TYPE_INFO(yaooc_regex,yaooc_regex_default_ctor,yaooc_regex_dtor,yaooc_regex_copy_ctor,yaooc_regex_assign,
+		NULL,NULL,NULL,&yaooc_regex_class_table,yaooc_object)
+/*  End YAOOC PreProcessor generated content */

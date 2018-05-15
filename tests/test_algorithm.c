@@ -1,9 +1,25 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <yaooc/algorithm.h>
-#include <yaooc/string.h>
 #include <time.h>
 #include "test_harness.h"
 
@@ -11,42 +27,49 @@
 void test_find()
 {
 	TESTCASE("Find");
-	int32_t ary[] = { 10, 20, 30 , 40 , 50 };
+	int_t ary[] = { 10, 20, 30 , 40 , 50 };
 	int n=ARRAY_SIZE(ary);
-	int32_t val=30;
-	int32_t* iptr=yaooc_find(int32_ti,ary,ary+n,&val);
+	int_t val=30;
+	int_t* iptr=yaooc_find(int,ary,ary+n,&val);
 	TEST("30 found in '{ 10, 20, 30 , 40 , 50 }'",iptr != (ary+n) && *iptr == 30);
+  TEST("iptr not equal to end",iptr != ary+n);
+  printf("%p %p %p\n",ary,iptr,ary+n);
+  val=25;
+	iptr=yaooc_find(int,ary,ary+n,&val);
+	TEST("25 not found in '{ 10, 20, 30 , 40 , 50 }'",iptr == (ary+n));
+  printf("%p %p %p\n",ary,iptr,ary+n);
 }
 
 void test_copy()
 {
 	char msg[256];
 	TESTCASE("Copy");
-	int32_t ary1[] = { 10, 20, 30 , 40 , 50 };
+	int_t ary1[] = { 10, 20, 30 , 40 , 50 };
 	int n=ARRAY_SIZE(ary1);
-	int32_t* ary2=new_array(int32,n);
-	memset(ary2,0,n*sizeof(int32_t));
+	int_t* ary2=new_array(int,n);
+	memset(ary2,0,n*sizeof(int_t));
 	int i;
 	for(i=0;i<n;i++) {
 		sprintf(msg,"Before copy ary2[%d]==0",i);
 		TEST(msg,ary2[i]==0);
 	}
-	yaooc_copy(int32_ti,ary1,ary1+n,ary2);
+	yaooc_copy(int,ary1,ary1+n,ary2);
 	for(i=0;i<n;i++) {
 		sprintf(msg,"After copy ary2[%d]==ary1[%d]",i,i);
 		TEST(msg,ary2[i]==ary1[i]);
 	}
+  delete(ary2);
 }
-
 void test_fill()
 {
+#if 0
 	char msg[256];
   TESTCASE("FILL");
 	int n=5;
-	int32_t* ary2=new_array(int32,n);
-  int32_t value=37;
-	memset(ary2,0,n*sizeof(int32_t));
-  yaooc_fill(int32_ti,ary2,ary2+n,&value);
+	int_t* ary2=new_array(int,n);
+  int_t value=37;
+	memset(ary2,0,n*sizeof(int_t));
+  yaooc_fill(int,ary2,ary2+n,&value);
 	int i;
 	for(i=0;i<n;i++) {
 		sprintf(msg,"ary2[%d]==37",i);
@@ -57,7 +80,7 @@ void test_fill()
   yaooc_string_t str;
   newp(&str,yaooc_string);
   M(&str,set,"Testing");
-  yaooc_fill(yaooc_string_ti,str_ary,str_ary+5,&str);
+  yaooc_fill(yaooc_string,str_ary,str_ary+5,&str);
 
   for(i=0;i<5;i++) {
     sprintf(msg,"str_ary[%d] is \"Testing\"",i);
@@ -65,26 +88,27 @@ void test_fill()
   }
   deletep(&str,yaooc_string);
   delete(str_ary);
+#endif
 }
 
 void double_fun(void* ptr)
 {
-	*(int32_t*)ptr <<= 1;
+	*(int_t*)ptr <<= 1;
 }
 
 void test_for_each()
 {
 	char msg[256];
 	TESTCASE("For Each");
-	int32_t ary1[] = { 10, 20, 30 , 40 , 50 };
+	int_t ary1[] = { 10, 20, 30 , 40 , 50 };
 	int n=ARRAY_SIZE(ary1);
-	int32_t ary2[] = { 10, 20, 30 , 40 , 50 };
+	int_t ary2[] = { 10, 20, 30 , 40 , 50 };
 	int i;
 	for(i=0;i<n;i++) {
 		sprintf(msg,"Before for each ary1[%d]==%d",i,ary1[i]);
 		TEST(msg,ary1[i]==ary2[i]);
 	}
-	yaooc_for_each(int32_ti,ary1,ary1+n,double_fun);
+	yaooc_for_each(int,ary1,ary1+n,double_fun);
 	for(i=0;i<n;i++) {
 		sprintf(msg,"After for each ary1[%d]==%d",i,ary2[i]<<1);
 		TEST(msg,ary1[i]==ary2[i]<<1);
@@ -96,41 +120,41 @@ void test_for_each()
 void test_count()
 {
 	TESTCASE("Count");
-	int32_t ary1[] = { 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 };
+	int_t ary1[] = { 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 };
 	int n=ARRAY_SIZE(ary1);
-	int32_t val=1;
-	TEST("5 1's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count(int32_ti,ary1,ary1+n,&val)==5);
+	int_t val=1;
+	TEST("5 1's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count(int,ary1,ary1+n,&val)==5);
 	val=2;
-	TEST("4 2's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count(int32_ti,ary1,ary1+n,&val)==4);
+	TEST("4 2's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count(int,ary1,ary1+n,&val)==4);
 	val=3;
-	TEST("3 3's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count(int32_ti,ary1,ary1+n,&val)==3);
+	TEST("3 3's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count(int,ary1,ary1+n,&val)==3);
 	val=4;
-	TEST("2 4's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count(int32_ti,ary1,ary1+n,&val)==2);
+	TEST("2 4's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count(int,ary1,ary1+n,&val)==2);
 	val=5;
-	TEST("1 5 in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count(int32_ti,ary1,ary1+n,&val)==1);
+	TEST("1 5 in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count(int,ary1,ary1+n,&val)==1);
 }
 
-int32_t count_if_val;
+int_t count_if_val;
 bool cmp_fun(const void* ptr)
 {
-	return *(int32_t*)ptr==count_if_val;
+	return *(int_t*)ptr==count_if_val;
 }
 
 void test_count_if()
 {
 	TESTCASE("Count if");
-	int32_t ary1[] = { 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 };
+	int_t ary1[] = { 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 };
 	int n=ARRAY_SIZE(ary1);
 	count_if_val=1;
-	TEST("5 1's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count_if(int32_ti,ary1,ary1+n,cmp_fun)==5);
+	TEST("5 1's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count_if(int,ary1,ary1+n,cmp_fun)==5);
 	count_if_val=2;
-	TEST("4 2's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count_if(int32_ti,ary1,ary1+n,cmp_fun)==4);
+	TEST("4 2's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count_if(int,ary1,ary1+n,cmp_fun)==4);
 	count_if_val=3;
-	TEST("3 3's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count_if(int32_ti,ary1,ary1+n,cmp_fun)==3);
+	TEST("3 3's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count_if(int,ary1,ary1+n,cmp_fun)==3);
 	count_if_val=4;
-	TEST("2 4's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count_if(int32_ti,ary1,ary1+n,cmp_fun)==2);
+	TEST("2 4's in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count_if(int,ary1,ary1+n,cmp_fun)==2);
 	count_if_val=5;
-	TEST("1 5 in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count_if(int32_ti,ary1,ary1+n,cmp_fun)==1);
+	TEST("1 5 in '{ 1 , 1, 2 , 1 , 2,  3 , 1, 2, 3, 4, 1, 2, 3, 4, 5 }'",yaooc_count_if(int,ary1,ary1+n,cmp_fun)==1);
 }
 
 test_function tests[]=

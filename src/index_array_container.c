@@ -1,293 +1,321 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <string.h>
 #include <stdio.h>
 #include <yaooc/index_array_container.h>
-#ifdef __YAOOC_BOUNDS_CHECKING__
-#include <assert.h>
-#endif
 
-static container_private_class_methods_t index_container_private_class_methods=
-{
-  yaooc_array_container_size_needed,
-  yaooc_index_array_container_increase_capacity
-};
+/*  Begin YAOOC PreProcessor generated content */
 
-bool yaooc_index_array_container_increase_capacity(pointer p,yaooc_size_type n)
+/* Private items for yaooc_index_array_container */
+
+/* Protected items for yaooc_index_array_container */
+bool yaooc_index_array_container_increase_capacity(pointer p,size_t n)
 {
-  debug(DEBUG_CONTAINER) {
-    puts("Index container increase capacity");
+  yaooc_index_array_container_pointer this=p;
+  bool ret=yaooc_array_container_increase_capacity(p,n);
+  if(ret) {
+    this->indexes_=REALLOC(this->indexes_,CAPACITY(p)*sizeof(yaooc_index_array_container_index_t));
   }
-	bool rc;
-	if((rc=yaooc_array_container_increase_capacity(p,n))) {
-		yaooc_index_array_container_pointer this=p;
-		this->index_=(yaooc_size_type*)REALLOC(this->index_,this->capacity_*sizeof(yaooc_size_type));
-    debug(DEBUG_CONTAINER) {
-      printf("Increasing index capacity %d\n",this->capacity_);
-      printf("Index address %p\n",this->index_);
+  return ret;
+}
+
+yaooc_index_array_container_find_result_t yaooc_index_array_container_find_protected(const_pointer p,const_pointer value)
+{
+  yaooc_index_array_container_const_pointer this=p;
+  yaooc_index_array_container_find_result_t ret = { 0, false };
+  size_t lower=0,upper=this->size_-1,middle;
+  less_than_compare lt_cmp=get_lt_cmp(this->type_info_);
+  while(lower <= upper && upper != (size_t)-1) {
+    middle=(lower+upper)>>1;
+    const_pointer middle_value=AT_I(this,middle);
+    if(lt_cmp(middle_value,value)) {
+      lower=middle+1;
+      ret.lower_index_=lower;
+    } else if(lt_cmp(value,middle_value)) {
+      upper=middle-1;
+      ret.lower_index_=middle;
+    } else {
+      /*
+        Find the range of element in container
+      */
+//      ret.lower_index_=middle;
+//      ret.upper_index_=middle;
+      size_t idx=middle-1;
+      for(;idx>=0 && idx != (size_t)-1;idx--) {
+        if(lt_cmp(AT_I(this,idx),value))
+          break;
+      }
+      ret.lower_index_=idx+1;
+      for(idx=middle+1;idx<SIZE(this);idx++) {
+        if(lt_cmp(value,AT_I(this,idx)))
+          break;
+      }
+      ret.upper_index_=idx-1;
+      ret.found_=true;
+      break;
     }
-	}
-	return rc;
+  }
+  return ret;
 }
 
-void yaooc_index_array_container_reserve(pointer p,yaooc_size_type n)
-{
-	yaooc_index_array_container_pointer this=p;
-	if(n > this->capacity_)
-		yaooc_index_array_container_increase_capacity(this,n-this->size_);
-}
-
-void yaooc_index_array_container_resize(pointer p,yaooc_size_type new_size,const_pointer value)
-{
-	yaooc_index_array_container_pointer this=p;
-	if(new_size > this->size_) {
-		yaooc_index_array_container_insert_n(this,yaooc_array_container_end(this),new_size-this->size_,value);
-	} else {
-		yaooc_index_array_container_erase_range(this,AT(this,new_size),AT(this,this->size_));
-	}
-}
-
-void yaooc_index_array_container_ctor(pointer p,va_list args)
+void yaooc_index_array_container_insert_index(pointer p,size_t pos,size_t n,size_t value,size_t size)
 {
   yaooc_index_array_container_pointer this=p;
-  call_constructor(this,yaooc_array_container_ctor,va_arg(args,const type_info_t*));
-  this->private_class_table_=&index_container_private_class_methods;
-	this->index_=NULL;
-}
-
-#ifndef __YAOOC_USE_GC__
-void yaooc_index_array_container_dtor(pointer p)
-{
-	yaooc_index_array_container_pointer this=p;
-  debug(DEBUG_CONTAINER) {
-    printf("Deleting index at address %p\n",this->index_);
+  size_t i;
+  size_t n_ge_value=size-value;
+  for(i=0;i<size && n_ge_value>0;i++) {
+    if(this->indexes_[i] >= value) {
+      this->indexes_[i]+=n;
+      n_ge_value--;
+    }
   }
-	if(this->index_) FREE(this->index_);
-}
-#else
-#define yaooc_index_array_container_dtor NULL
-#endif
-
-void yaooc_index_array_container_assign(pointer d,const_pointer s)
-{
-	yaooc_index_array_container_pointer dst=d;
-  /*
-    Note: yaooc_array_container_assign calls class method increase capacity (which is
-    yaooc_index_array_container_increase_capacity) so index is properly sized.
-  */
-	yaooc_array_container_assign(d,s);
-	yaooc_index_array_container_const_pointer src=s;
-	memcpy(dst->index_,src->index_,dst->size_*sizeof(yaooc_size_type));
+  memmove(this->indexes_+pos+n,this->indexes_+pos,(size -pos)*sizeof(yaooc_index_array_container_index_t));
+  for(i=0;i<n;i++)
+    this->indexes_[pos++]=value++;
 }
 
-void yaooc_index_array_container_copy_ctor(pointer d,const_pointer s)
-{
-	yaooc_index_array_container_const_pointer src=s;
-	call_constructor(d,yaooc_index_array_container_ctor,src->type_info_);
-	yaooc_index_array_container_assign(d,s);
-}
-
-DEFINE_TYPE_INFO(yaooc_index_array_container,yaooc_array_container_default_ctor,
-        yaooc_index_array_container_dtor,yaooc_index_array_container_copy_ctor,yaooc_index_array_container_assign,
-        NULL,NULL,yaooc_array_container)
-
-yaooc_index_array_container_find_result_t
-yaooc_index_array_container_private_find(yaooc_index_array_container_const_pointer this,const_pointer value)
-{
-	yaooc_index_array_container_find_result_t fr = { 0,false};
-	if(this->size_ > 0) {
-		yaooc_size_type lower=0,upper=this->size_-1,middle;
-		while(lower <= upper && upper != (yaooc_size_type)-1) {
-			middle=(lower+upper)>>1;
-			const_pointer middle_value=(const_pointer)I_AT(this,middle);
-			if(op_lt_static(middle_value,value,this->type_info_)) {
-				lower=middle+1;
-				fr.index_=lower;
-			} else if (op_lt_static(value,middle_value,this->type_info_)) {
-				upper=middle-1;
-				fr.index_=middle;
-			} else {
-				fr.found_=true;
-				/* Make sure to return the first one */
-				while(middle > 0) {
-          middle--;
-					if(op_lt_static(I_AT(this,middle),value,this->type_info_)) {
-						middle++;
-						break;
-					}
-				}
-				fr.index_=middle;
-				break;
-			}
-		}
-	}
-	return fr;
-}
-
-iterator yaooc_index_array_container_find(const_pointer p,const_pointer value)
-{
-	yaooc_index_array_container_const_pointer this=p;
-	yaooc_index_array_container_find_result_t fr=yaooc_index_array_container_private_find(this,value);
-	if(fr.found_)
-		return this->array_+this->index_[fr.index_]*this->type_info_->type_size_;
-	return yaooc_array_container_end((pointer)this);
-}
-
-const_iterator yaooc_index_array_container_cfind(const_pointer p,const_pointer value)
-{
-	return yaooc_index_array_container_find(p,value);
-}
-
-void yaooc_insert_index(pointer p,yaooc_size_type pos,yaooc_size_type n,yaooc_size_type size,yaooc_size_type value)
+void yaooc_index_array_container_remove_index(pointer p,size_t pos,size_t n)
 {
   yaooc_index_array_container_pointer this=p;
-	/*
-		Add n to every index that is greater or equal to value
-	*/
-  debug(DEBUG_CONTAINER) {
-    puts("inserting index");
+  size_t i,j;
+  size_t lower=pos;
+  size_t upper=pos+n;
+  size_t new_size=SIZE(p)-1;
+  for(j=lower;j<upper;j++) {
+    size_t n_gt_index=new_size-this->indexes_[j];
+    for(i=0; i<lower && n_gt_index > 0;i++) {
+      if(this->indexes_[i] > this->indexes_[j]) {
+        this->indexes_[i]--;
+        n_gt_index--;
+      }
+    }
+    for(i=j+1; i<SIZE(p) && n_gt_index > 0;i++) {
+      if(this->indexes_[i] > this->indexes_[j]) {
+        this->indexes_[i]--;
+        n_gt_index--;
+      }
+    }
+    new_size--;
   }
-	yaooc_size_type i;
-	yaooc_size_type n_gt_value=size-value;
-	for(i=0;i<size && n_gt_value>0;i++) {
-		if(this->index_[i] >= value) {
-			this->index_[i]+=n;
-			n_gt_value--;
-		}
-	}
-	memmove(this->index_+pos+n,this->index_+pos,(size-pos)*sizeof(yaooc_size_type));
-	for(i=0;i<n;i++)
-		this->index_[pos++]=value++;
+  memmove(this->indexes_+pos,this->indexes_+pos+n,(SIZE(p)-pos-n)*sizeof(yaooc_index_array_container_index_t));
 }
 
-/*
-	All checks have been perform, array and ordered index have sufficient capacity, just do insert
-*/
-void yaooc_index_array_container_private_insert(pointer p,yaooc_private_const_iterator pos,yaooc_size_type n,const_pointer value)
+void yaooc_index_array_container_remove_fixed_index(pointer p,size_t value,size_t n)
 {
-	yaooc_index_array_container_pointer this=p;
-	yaooc_array_container_insert_n(this,pos,n,value);
-}
-
-iterator yaooc_index_array_container_insert_n(pointer p,const_iterator pos,yaooc_size_type n,const_pointer value)
-{
-	yaooc_index_array_container_pointer this=p;
-	yaooc_private_const_iterator ypos=pos;
-#ifdef __YAOOC_BOUNDS_CHECKING__
-	assert(CBEGIN(this) <= ypos && ypos <= CEND(this) && "Container insert position out of range");
-#endif
-	yaooc_index_array_container_find_result_t fr=yaooc_index_array_container_private_find(p,value);
-	yaooc_size_type index=(ypos-(char*)BEGIN(this))/this->type_info_->type_size_;
-	yaooc_index_array_container_increase_capacity(this,n);
-	yaooc_insert_index(this,fr.index_,1,this->size_,index);
-	yaooc_array_container_insert_n_private(this,index,n,value);
-	return AT(this,index);
+  yaooc_index_array_container_pointer this=p;
+  size_t i,j;
+  size_t save_size=SIZE(p);
+  for(j=0;j<n;j++) {
+    for(i=0;i<SIZE(p);i++) {
+      if(value == this->indexes_[i])
+        break;
+    }
+    yaooc_index_array_container_remove_index(p,i,1);
+    this->size_--;
+  }
+  this->size_=save_size;
 }
 
 iterator yaooc_index_array_container_insert(pointer p,const_iterator pos,const_pointer value)
 {
-	return yaooc_index_array_container_insert_n(p,pos,1,value);
+  return yaooc_index_array_container_insertn(p,pos,1,value);
+}
+
+iterator yaooc_index_array_container_insertn(pointer p,const_iterator pos,size_t n,const_pointer val)
+{
+  size_t cur_size=SIZE(p);
+  size_t idx=INDEX(p,pos);
+  yaooc_index_array_container_find_result_t fr=yaooc_index_array_container_find_protected(p,val);
+  iterator ret=yaooc_array_container_insertn(p,pos,n,val);
+  yaooc_index_array_container_insert_index(p,fr.lower_index_,n,idx,cur_size);
+  return ret;
 }
 
 iterator yaooc_index_array_container_insert_range(pointer p,const_iterator pos,const_iterator f,const_iterator l)
 {
-	yaooc_index_array_container_pointer this=p;
-	yaooc_private_const_iterator first=f;
-	yaooc_private_const_iterator last=l;
-	yaooc_private_const_iterator ipos=pos;
-#ifdef __YAOOC_BOUNDS_CHECKING__
-	assert(first <= last && "First greater than last");
-	assert(CBEGIN(this) <= ipos && ipos <= CEND(this) && "Container insert position out of range");
-#endif
-	yaooc_size_type index=(ipos-this->array_)/this->type_info_->type_size_;
-	yaooc_size_type n = (last - first)/this->type_info_->type_size_;
-	yaooc_index_array_container_increase_capacity(this,n);
-	ipos=(char*)BEGIN(this) + index*this->type_info_->type_size_;
-	iterator rpos=(iterator) ipos;
-	for(;first!=last;first+=this->type_info_->type_size_,ipos+=this->type_info_->type_size_) {
-		yaooc_index_array_container_insert_n(this,ipos,1,first);
-	}
-	return rpos;
+//  yaooc_index_array_container_pointer this=p;
+//  size_t n = DISTANCE(TYPE_INFO(p),f,l);
+  size_t idx=INDEX(p,pos);
+  yaooc_private_const_iterator first=f;
+  yaooc_private_const_iterator last=l;
+//  yaooc_private_iterator ipos=AT(p,idx);
+  for(;first < last;first+=TYPE_SIZE(p),idx++) {
+    yaooc_index_array_container_find_result_t fr=yaooc_index_array_container_find_protected(p,first);
+    size_t cur_size=SIZE(p);
+    yaooc_array_container_insert(p,AT(p,idx),first);
+    yaooc_index_array_container_insert_index(p,fr.lower_index_,1,idx,cur_size);
+  }
+  return AT(p,idx);
 }
 
-void yaooc_index_array_container_erase_index(pointer p,yaooc_size_type index,yaooc_size_type oi_size)
+iterator yaooc_index_array_container_find(const_pointer p,const_pointer value)
 {
-	yaooc_index_array_container_pointer this=p;
-#ifdef __YAOOC_BOUNDS_CHECKING__
-	assert(index < oi_size && "Index out of range in yaooc_index_array_container_erase_index");
-#endif
-	yaooc_size_type i,pos=-1;
-	for(i=0;i<oi_size;i++)
-		if(this->index_[i]==index) {
-			pos=i;
-			break;
-		}
-#ifdef __YAOOC_BOUNDS_CHECKING__
-	assert(pos != (yaooc_size_type)-1 && "Index not found in yaooc_index_array_container_erase_index");
-#endif
-	// decrement all indexes greater than index
-	yaooc_size_type n_gt_index=oi_size-index;
-	for(i=0;i<oi_size && n_gt_index>0;i++) {
-		if(this->index_[i]>index) {
-			this->index_[i]--;
-			n_gt_index--;
-		}
-	}
-	memmove(this->index_+pos,this->index_+pos+1,(oi_size-pos-1)*sizeof(yaooc_size_type));
+  yaooc_index_array_container_find_result_t fr=yaooc_index_array_container_find_protected(p,value);
+  return fr.found_ ? AT_I(p,fr.lower_index_) : END(p);
 }
 
-iterator yaooc_index_array_container_erase(pointer p,iterator pos)
+iterator yaooc_index_array_container_erase(pointer p,const_iterator pos)
 {
-	yaooc_index_array_container_pointer this=p;
-#ifdef __YAOOC_BOUNDS_CHECKING__
-	assert((pointer)BEGIN(this) <= pos && pos < (pointer)END(this) && "Pos out of range in yaooc_index_array_container_erase");
-#endif
-	yaooc_size_type index=((char*)pos - this->array_)/this->type_info_->type_size_;
-	yaooc_array_container_erase(p,pos);
-	yaooc_index_array_container_erase_index(this,index,this->size_+1);
-	return pos;
+//  yaooc_index_array_container_pointer this=p;
+/*  size_t ofs=INDEX(p,pos);
+  yaooc_index_array_container_remove_index(p,ofs);
+  yaooc_array_container_erase_range(p,pos,pos+TYPE_SIZE(p));
+  return (iterator)pos;*/
+  return yaooc_index_array_container_erase_range(p,pos,((yaooc_private_const_iterator)pos)+TYPE_SIZE(p));
+//  return (iterator)pos;
 }
 
-iterator yaooc_index_array_container_erase_range(pointer p,iterator first,iterator last)
+int cmp_size_t(const void* a,const void* b)
 {
-/*
-	Have to erase one at a time because index array may not have consecutive items
-*/
-	yaooc_index_array_container_pointer this=p;
-#ifdef __YAOOC_BOUNDS_CHECKING__
-	assert(first <= last && "First greater than last in yaooc_index_array_container_erase_range");
-	assert(BEGIN(this) <= (char*)first && (char*)last < END(this) && "Container erase position out of range");
-#endif
-	yaooc_size_type n=((char*)last - (char*)first)/this->type_info_->type_size_;
-	yaooc_size_type i;
-	for(i=0;i<n;i++)
-		yaooc_index_array_container_erase(this,first);
-	return first;
+  if(*(size_t*)a < *(size_t*)b)
+    return -1;
+  if(*(size_t*)a > *(size_t*)b)
+    return 1;
+  return 0;
+}
+
+size_t yaooc_index_array_container_erase_value(pointer p,const_pointer value)
+{
+  yaooc_index_array_container_pointer this=p;
+  size_t n_del=0;
+  yaooc_index_array_container_find_result_t fr=yaooc_index_array_container_find_protected(p,value);
+  if(fr.found_) {
+    size_t i,j;
+    n_del = fr.upper_index_-fr.lower_index_+1;
+    size_t * indexes=__new_array(size_ti,n_del);
+    for(j=0,i=fr.lower_index_;i<=fr.upper_index_;j++,i++) {
+      indexes[j]=this->indexes_[i];
+    }
+    qsort(indexes,n_del,sizeof(size_t),cmp_size_t);
+    yaooc_index_array_container_remove_index(p,fr.lower_index_,n_del);
+    for(j=n_del-1;j>=0 && j!=(size_t)-1;j--)
+      yaooc_array_container_erase_range(p,AT(p,indexes[j]),AT(p,indexes[j]+1));
+    delete(indexes);
+  }
+  return n_del;
+}
+
+iterator yaooc_index_array_container_erase_range(pointer p,const_iterator f,const_iterator l)
+{
+//  yaooc_index_array_container_pointer this=p;
+  size_t n=DISTANCE(TYPE_INFO(p),f,l);
+  size_t idx=INDEX(p,f);
+  yaooc_index_array_container_remove_fixed_index(p,idx,n);
+  return yaooc_array_container_erase_range(p,f,l);
+}
+
+void yaooc_index_array_container_resize_value(pointer p,size_t n,const_pointer value)
+{
+  if(n<SIZE(p)) {
+    yaooc_index_array_container_erase_range(p,AT(p,n),END(p));
+  } else {
+    yaooc_index_array_container_insertn(p,END(p),n-SIZE(p),value);
+  }
+}
+
+void yaooc_index_array_container_resize(pointer p,size_t n)
+{
+  pointer temp=__new_array(TYPE_INFO(p),1);
+  yaooc_index_array_container_resize_value(p,n,temp);
+  delete(temp);
 }
 
 void yaooc_index_array_container_shrink_to_fit(pointer p)
 {
-	yaooc_index_array_container_pointer this=p;
-	yaooc_size_type old_cap=this->capacity_;
-	yaooc_array_container_shrink_to_fit(p);
-	if(old_cap != this->capacity_) {
-		this->index_=(yaooc_size_type*)REALLOC(this->index_,this->capacity_*sizeof(yaooc_size_type));
-	}
+  yaooc_index_array_container_pointer this=p;
+  size_t old_capacity=this->capacity_;
+  yaooc_array_container_shrink_to_fit(p);
+  if(this->capacity_ != old_capacity)
+    this->indexes_=REALLOC(this->indexes_,this->capacity_*sizeof(yaooc_index_array_container_index_t));
 }
 
-void yaooc_index_array_container_swap(pointer p,pointer o)
+void yaooc_index_array_container_reserve(pointer p,size_t n)
 {
   yaooc_index_array_container_pointer this=p;
-  yaooc_index_array_container_pointer other=o;
-  yaooc_array_container_swap(p,o);
-  SWAP(yaooc_size_type*,this->index_,other->index_);
+  size_t old_capacity=this->capacity_;
+  yaooc_array_container_reserve(p,n);
+  if(this->capacity_ != old_capacity)
+    this->indexes_=REALLOC(this->indexes_,this->capacity_*sizeof(yaooc_index_array_container_index_t));
 }
 
-void yaooc_index_array_container_print_indexes(pointer p,FILE* out)
+iterator yaooc_index_array_container_at_i(const_pointer p,size_t i)
+{
+  return AT_I(p,i);
+}
+
+/* Typeinfo for yaooc_index_array_container */
+
+void yaooc_index_array_container_dtor(pointer p)
 {
   yaooc_index_array_container_pointer this=p;
-  yaooc_size_type i;
-  for(i=0;i<this->size_;i++)
-    fprintf(out,"%d ",this->index_[i]);
-  fprintf(out,"\n");
+  if(this->indexes_ != NULL)
+    FREE(this->indexes_);
 }
 
-ISA_IMPLEMENTATION(yaooc_index_array_container,yaooc_array_container)
+void yaooc_index_array_container_copy_ctor(pointer d,const_pointer s)
+{
+  call_constructor(d,yaooc_index_array_container_ctor_ti,TYPE_INFO(s));
+  yaooc_index_array_container_assign(d,s);
+}
+
+void yaooc_index_array_container_assign(pointer d,const_pointer s)
+{
+  yaooc_index_array_container_pointer dst=d;
+  yaooc_index_array_container_const_pointer src=s;
+  yaooc_array_container_assign(d,s);
+  memcpy(dst->indexes_,src->indexes_,dst->size_*sizeof(size_t));
+}
+
+/* Constructors for yaooc_index_array_container */
+void yaooc_index_array_container_ctor_ti(pointer p,va_list args)
+{
+  yaooc_index_array_container_pointer this=p;
+  call_constructor(p,yaooc_array_container_ctor_ti,va_arg(args,const type_info_t*));
+  this->indexes_=NULL;
+}
+
+/* Class table methods for yaooc_index_array_container */
+const char* yaooc_index_array_container_isa(const_pointer p) { return "yaooc_index_array_container_t"; }
+
+void yaooc_index_array_container_swap(pointer p1,pointer p2)
+{
+  yaooc_array_container_swap(p1,p2);
+  SWAP(yaooc_index_array_container_index_t*,((yaooc_index_array_container_pointer)p1)->indexes_,((yaooc_index_array_container_pointer)p2)->indexes_);
+}
+
+/* Class table for yaooc_index_array_container */
+yaooc_index_array_container_class_table_t yaooc_index_array_container_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table,
+  .isa = (const char* (*) (const_pointer p)) yaooc_index_array_container_isa,
+  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_index_array_container_is_descendant,
+  .swap = (void (*) (pointer p,pointer)) yaooc_index_array_container_swap,
+  .increase_capacity = (bool (*) (pointer,size_t))yaooc_index_array_container_increase_capacity,
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
+  .size = (size_t (*) (const_pointer p)) yaooc_index_array_container_size,
+  .capacity = (size_t (*) (const_pointer p)) yaooc_index_array_container_capacity,
+  .empty = (bool (*) (const_pointer p)) yaooc_index_array_container_empty,
+  .begin = (iterator (*) (const_pointer p)) yaooc_index_array_container_begin,
+  .end = (iterator (*) (const_pointer p)) yaooc_index_array_container_end,
+};
+
+
+DEFINE_TYPE_INFO(yaooc_index_array_container,NULL,yaooc_index_array_container_dtor,yaooc_index_array_container_copy_ctor,
+		yaooc_index_array_container_assign,NULL,NULL,NULL,&yaooc_index_array_container_class_table,yaooc_array_container)
+
+/*  End YAOOC PreProcessor generated content */

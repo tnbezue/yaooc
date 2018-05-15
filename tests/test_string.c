@@ -1,3 +1,20 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -27,8 +44,8 @@ void test_construtor()
 	TEST("Capacity is 32",M(s3,capacity) == 32);
 	TEST("matched original",strncmp(M(s3,c_str),temp,30) == 0);
 
-	yaooc_string_t* s4=new_ctor(yaooc_string,yaooc_string_ctor_chr_n,'c',10);
-//	printf("%zu %zu %s\n",M(s4,size),M(s4,capacity),M(s4,c_str));
+	yaooc_string_t* s4=new_ctor(yaooc_string,yaooc_string_ctor_n_chr,10,'c');
+	printf("%zu %zu %s\n",M(s4,size),M(s4,capacity),M(s4,c_str));
 	TEST("Size is 10",M(s4,size) == 10);
 	TEST("Capacity is 16",M(s4,capacity) == 16);
 	TEST("matched 10 c's'",strcmp(M(s4,c_str),"cccccccccc") == 0);
@@ -104,29 +121,41 @@ void test_set()
 
 void test_erase()
 {
-	yaooc_string_t* s1=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"This is a test string");
+	yaooc_string_pointer s1=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"This is a test string");
+//  yaooc_string_const_iterator epos=M(s1,begin)+8;
 
-	M(s1,erase,4,5);
-	TEST("Erase",strcmp(M(s1,c_str),"This test string")==0);
-	TEST("Size is 16",M(s1,size)==16);
+  TESTCASE("Erase");
+	M(s1,erase,8);
+	TEST("Erase 'a'",strcmp(M(s1,c_str),"This is  test string")==0);
+	TEST("Size is 16",M(s1,size)==20);
 /*	M(s1,erase,20,10);
 	TEST("Erase",strcmp(M(s1,c_str),"This test string")==0);
 	TEST("Size is 16",M(s1,size)==16);
 	M(s1,erase,20,yaooc_string_npos);
 	TEST("Erase",strcmp(M(s1,c_str),"This test string")==0);
 	TEST("Size is 16",M(s1,size)==16);*/
-	M(s1,erase,8,-1);
-//	printf("*** %s %zu ****\n",M(s1,c_str),M(s1,size));
+	M(s1,erasen,8,yaooc_string_npos);
+	printf("*** X%sX %zu ****\n",M(s1,c_str),M(s1,size));
   puts(M(s1,c_str));
-	TEST("Erase",strcmp(M(s1,c_str),"This tes")==0);
+	TEST("Erase",strcmp(M(s1,c_str),"This is ")==0);
 	puts(M(s1,c_str));
 	TEST("Size is 8",M(s1,size)==8);
-	M(s1,erase,0,1);
-	TEST("Erase",strcmp(M(s1,c_str),"his tes")==0);
+	M(s1,erasen,0,1);
+	TEST("Erase",strcmp(M(s1,c_str),"his is ")==0);
 	TEST("Size is 7",M(s1,size)==7);
 
 //	printf("*** %s %zu ****\n",M(s1,c_str),M(s1,size));
   delete(s1);
+}
+
+void test_replace()
+{
+  yaooc_string_pointer s=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"This is a test");
+  M(s,replacen,5,2,"was",3);
+  TEST("Replace 'is' with 'was'",strcmp(M(s,c_str),"This was a test")==0);
+  M(s,replacen,0,200,"Replace entire string",500);
+  TEST("Replace entire string",strcmp(M(s,c_str),"Replace entire string")==0);
+  delete(s);
 }
 
 void test_up_down()
@@ -135,9 +164,9 @@ void test_up_down()
 	const char* temp_upper="ABCDEFGH";
 	const char* temp_lower="abcdefgh";
 
-	yaooc_string_pointer s=new(yaooc_string);
+	yaooc_string_t* s=new(yaooc_string);
 	TEST("String is emtpy",M(s,size) == 0);
-	yaooc_string_pointer s_new=M(s,upcase);
+	yaooc_string_t* s_new=M(s,upcase);
 	TEST("Upper case of empty string is empty string",M(s_new,size) == 0);
   delete(s_new);
 	s_new=M(s,downcase);
@@ -161,13 +190,14 @@ void test_up_down()
 void test_trim()
 {
 	const char* temp="   this is a test    ";
-	yaooc_string_pointer s=new_ctor(yaooc_string,yaooc_string_ctor_ccs,temp);
-  yaooc_string_pointer s_new=M(s,ltrim);
+	yaooc_string_t* s=new_ctor(yaooc_string,yaooc_string_ctor_ccs,temp);
+  yaooc_string_t* s_new=M(s,ltrim);
 	TEST("ltrim: s_new='this is a test    '",strcmp(M(s_new,c_str),"this is a test    ")==0);
   delete(s_new);
 
 	s_new=M(s,rtrim);
 	TEST("rtrim: s_new='   this is a test'",strcmp(M(s_new,c_str),"   this is a test")==0);
+  printf("*** X%sX\n",M(s_new,c_str));
   delete(s_new);
 
 	s_new=M(s,trim);
@@ -179,19 +209,32 @@ void test_trim()
 	const char* temp2="Does not need trimming";
 	s=new_ctor(yaooc_string,yaooc_string_ctor_ccs,temp2);
   s_new=M(s,ltrim);
-	TEST("ltrim of string that does not need ltrimming is same string",op_eq_static(s,s_new,yaooc_string_ti));
+	TEST("ltrim of string that does not need ltrimming is same string",op_eq_static(s,s_new,yaooc_string));
   delete(s_new);
 
   s_new=M(s,rtrim);
-	TEST("rtrim of string that does not need rtrimming is same string",op_eq_static(s,s_new,yaooc_string_ti));
+	TEST("rtrim of string that does not need rtrimming is same string",op_eq_static(s,s_new,yaooc_string));
   delete(s_new);
 
   s_new=M(s,trim);
-	TEST("trim of string that does not need trimming is same string",op_eq_static(s,s_new,yaooc_string_ti));
+	TEST("trim of string that does not need trimming is same string",op_eq_static(s,s_new,yaooc_string));
   delete(s_new);
   delete(s);
-}
 
+  s=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"                    ");
+  s_new=M(s,ltrim);
+  TEST("ltrim of all blank string has size 0",M(s_new,size)==0);
+  TEST("ltrim of all blank string is ''",strcmp(M(s_new,c_str),"")==0);
+  delete(s_new);
+
+  s_new=M(s,rtrim);
+  TEST("rtrim of all blank string has size 0",M(s_new,size)==0);
+  TEST("ltrim of all blank string is ''",strcmp(M(s_new,c_str),"")==0);
+  delete(s_new);
+
+  delete(s);
+}
+#if 0
 void test_squeeze()
 {
 	char* temp="thiiiiiiis is aaaaaaa         teeeeeeeeesssssssssst";
@@ -223,7 +266,7 @@ void test_squeeze()
 
   delete(s1);
 }
-
+#endif
 void test_find()
 {
 	const char* str=
@@ -232,7 +275,7 @@ void test_find()
  "needle.  What needle?  The needle in the haystack.  Can someone find the needle?  Who found the needle";
 
 	yaooc_string_t* s1=new_ctor(yaooc_string,yaooc_string_ctor_ccs,str);
-	yaooc_size_type pos=M(s1,findstr,"Needle",0);
+	size_t pos=M(s1,findstr,"Needle",0);
 	TEST("findstr(\"Needle\",0) == npos",pos==yaooc_string_npos);
 	pos=M(s1,findstr,"needle",0);
 	TEST("findstr(\"needle\",0) found at 0",pos==0);
@@ -242,14 +285,14 @@ void test_find()
 	TEST("findstr(\"needle\",28) found at 73",pos==73);
 
 	pos=M(s1,rfindstr,"needle",yaooc_string_npos);
-  printf("Z%dZ\n",pos);
+  printf("Z%zuZ\n",pos);
 	TEST("rfindstr(\"needle\",string_npos) found at 96",pos==96);
 	pos=M(s1,rfindstr,"needle",97);
 	TEST("rfindstr(\"needle\",97) found at 73",pos==73);
 	pos=M(s1,rfindstr,"needle",60);
 	TEST("rfindstr(\"needle\",27) found at 27",pos==27);
 	pos=M(s1,rfindstr,"needle",5);
-	TEST("rfindstr(\"needle\",5) found at 0",pos==0);
+	TEST("rfindstr(\"needle\",5) not found ",pos==yaooc_string_npos);
 	pos=M(s1,rfindstr,"needle",4);
 	TEST("rfindstr(\"needle\",27) not found",pos==yaooc_string_npos);
 
@@ -264,13 +307,13 @@ void test_find()
 	TEST("findchr('h',83) found at 83",pos==83);
 	pos=M(s1,findchr,'h',94);
 	TEST("findchr('h',94) not found",pos==yaooc_string_npos);
-
 	pos=M(s1,rfindchr,'H',yaooc_string_npos);
 	TEST("rfindchr('H',string_npos) not found",pos==yaooc_string_npos);
 	pos=M(s1,rfindchr,'h',yaooc_string_npos);
 	TEST("rfindchr('h',string_npos) found at 93",pos==93);
-	pos=M(s1,rfindchr,'h',93);
-	TEST("rfindchr('h',33) found at 93",pos==93);
+	pos=M(s1,rfindchr,'h',33);
+	TEST("rfindchr('h',33) found at 24",pos==24);
+	printf("**** %zu\n",pos);
 	pos=M(s1,rfindchr,'h',92);
 	TEST("rfindchr('h',92) found at 83",pos==83);
 	pos=M(s1,rfindchr,'h',9);
@@ -285,10 +328,10 @@ void test_iterator()
 	yaooc_string_t* s1=new(yaooc_string);
 
 	TEST("Begin of empty sting is same as end",M(s1,begin)==M(s1,end));
-	TEST("Const Begin of empty sting is same as const end",M(s1,cbegin)==M(s1,cend));
+	TEST("Const Begin of empty sting is same as const end",M(s1,begin)==M(s1,end));
 
 	M(s1,append,"The rain in spain falls mainly in Spain");
-	yaooc_string_const_iterator i = M(s1,cbegin);
+	yaooc_string_const_iterator i = M(s1,begin);
 	optr=output;
 	for(i= M(s1,begin);i!= M(s1,end);optr++,i++)
 		*optr=*i;
@@ -313,12 +356,12 @@ void test_resize_shrink()
 	TEST("Length size is same size as temp string",M(s1,size)==strlen(temp));
 	TEST("Capacity is 128",M(s1,capacity)==128);
 
-	M(s1,resize,strlen(temp),'a');
+	M(s1,resize_value,strlen(temp),'a');
 	TEST("Resize to same length does not change length",M(s1,size)==strlen(temp));
 	TEST("Resize to same length does not change capacity",M(s1,capacity)==128);
 	TEST("Resize to same length does not change string",strcmp(M(s1,c_str),temp)==0);
 
-	M(s1,resize,100,'a');
+	M(s1,resize_value,100,'a');
 	TEST("Resize to greater than length but less than capacity: Size=100",M(s1,size)==100);
 	TEST("Resize to greater than length but less than capacity: Capacity=128",M(s1,capacity)==128);
 	yaooc_string_t* s2=M(s1,substr,0,strlen(temp));
@@ -330,7 +373,7 @@ void test_resize_shrink()
 				strcmp(M(s2,c_str),"aaaaaaaaaaaaaaaaaaaaaaa")==0);
   delete(s2);
 
-	M(s1,resize,150,'b');
+	M(s1,resize_value,150,'b');
 	TEST("Resize to greater than capacity",M(s1,size)==150);
 	TEST("Resize to greater than capacity",M(s1,capacity)==256);
 	s2=M(s1,substr,0,strlen(temp));
@@ -342,23 +385,25 @@ void test_resize_shrink()
 				strcmp(M(s2,c_str),"aaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")==0);
 
 	M(s1,shrink_to_fit);
-	TEST("Shrink to fit doesn't change size",M(s1,size)==150);
-	TEST("Shrink to fit doesn't change cpacity",M(s1,capacity)==256);
+	TEST("After shrink size is 150",M(s1,size)==150);
+	TEST("Capacity is 150",M(s1,capacity)==150);
 	TEST("String not changed",strcmp(M(s1,c_str),"This should be a long string.  I would make it longer but I'm tired of typingaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")==0);
 
-	M(s1,resize,100,'a');
+  printf("&&&&&  %zu %zu %s\n",M(s1,size),M(s1,capacity),M(s1,c_str));
+	M(s1,resize_value,100,'a');
 	TEST("Resize to 100 changes size to 100",M(s1,size)==100);
-	TEST("Resize to 100 does not change capacity",M(s1,capacity)==256);
+	TEST("Resize to 100 does not change capacity",M(s1,capacity)==150);
+  printf("&&&&&  %zu %zu %s\n",M(s1,size),M(s1,capacity),M(s1,c_str));
 	TEST("String changed",strcmp(M(s1,c_str),"This should be a long string.  I would make it longer but I'm tired of typingaaaaaaaaaaaaaaaaaaaaaaa")==0);
 
 	M(s1,shrink_to_fit);
-	TEST("Shrink to fit doesn't change size",M(s1,size)==100);
-	TEST("Shrink change capacity to 128",M(s1,capacity)==128);
+	TEST("After shrink size is 100",M(s1,size)==100);
+	TEST("capacity to 100",M(s1,capacity)==100);
 	TEST("String not changed",strcmp(M(s1,c_str),"This should be a long string.  I would make it longer but I'm tired of typingaaaaaaaaaaaaaaaaaaaaaaa")==0);
 
-	M(s1,resize,0,'b');
+	M(s1,resize_value,0,'b');
 	TEST("Resize string to 0 length.  Size is 0",M(s1,size)==0);
-	TEST("Resize string to 0 length.  Capacity is 128",M(s1,capacity)==128);
+	TEST("Resize string to 0 length.  Capacity is 100",M(s1,capacity)==100);
 	TEST("Resize string to 0 length.  sting is ''",strcmp(M(s1,c_str),"")==0);
 
 	M(s1,shrink_to_fit);
@@ -370,6 +415,21 @@ void test_resize_shrink()
   delete(s2);
 }
 
+void test_split()
+{
+  TESTCASE("Split");
+  yaooc_string_pointer str=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"This  is   a    test    ");
+  yaooc_string_vector_pointer sv=M(str,split," ",3);
+  TEST("Array size is 4",M(sv,size)==4);
+  printf("%zu\n",M(sv,size));
+  yaooc_string_vector_const_iterator isv;
+  for(isv=M(sv,begin);isv!=M(sv,end);isv++) {
+    printf("%s\n",M(isv,c_str));
+  }
+  delete(str);
+  delete(sv);
+}
+
 test_function tests[]=
 {
 	test_construtor,
@@ -377,12 +437,14 @@ test_function tests[]=
 	test_append,
   test_set,
 	test_erase,
+  test_replace,
 	test_up_down,
 	test_trim,
-	test_squeeze,
+//	test_squeeze,
 	test_find,
 	test_iterator,
-	test_resize_shrink
+	test_resize_shrink,
+  test_split
 };
 
 STD_MAIN(tests)

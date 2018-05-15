@@ -27,15 +27,16 @@ static char* make_string_from_number(int x)
 }
 
 class_table(demo) {
-  yaooc_object_class_members_t;
+  yaooc_object_class_table_t;
 	void(*say)(demo_const_pointer);
 	void(*setx)(demo_pointer,int);
 };
 
 class_instance(demo)
 {
-	int x;
+  yaooc_object_class_instance_t;
 	char* str;
+	int x;
 };
 
 class(demo);
@@ -109,23 +110,21 @@ void demo_swap(pointer p1,pointer p2)
   SWAP(int,this1->x,this2->x)
 }
 
-#define DEMO_CLASS_MEMBERS \
-  { \
-    demo_isa, \
-    demo_is_descendent, \
-    demo_swap \
-  }, \
-	demo_say, \
-	demo_setx \
-
-/*const char* demo_isa(const_pointer p) { return "demo_t"; } */
-ISA_IMPLEMENTATION(demo,yaooc_object)
-
-demo_class_members_t demo_class_members=
+const char* demo_isa(const_pointer p)
 {
-  DEMO_CLASS_MEMBERS
+  return "demo_t";
+}
+
+demo_class_table_t demo_class_table=
+{
+  .parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+  .isa = demo_isa,
+  .is_descendant = yaooc_object_is_descendant,
+  .swap = demo_swap,
+  .say = demo_say,
+  .setx = demo_setx
 };
 
 DEFINE_TYPE_INFO(demo,demo_default_ctor,demo_dtor,demo_copy_ctor,demo_assign,
-	 demo_less_than_compare,(const class_table_t*)&demo_class_members,yaooc_object)
+	 demo_less_than_compare,NULL,NULL,(const class_table_t*)&demo_class_table,yaooc_object)
 

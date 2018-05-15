@@ -1,3 +1,20 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -5,6 +22,7 @@
 #include <yaooc/memory.h>
 #include <yaooc/garbage_bag.h>
 #include <yaooc/vector.h>
+#include <yaooc/algorithm.h>
 #include "test_harness.h"
 
 typedef struct
@@ -96,8 +114,8 @@ void test_tmpl()
 	delete(spDemo2);
 }
 
-VECTOR_DEFINITION(demo_shared_ptr)
-VECTOR_IMPLEMENTATION(demo_shared_ptr)
+VECTOR_DEFINITION(demo_shared_ptr,demo_shared_ptr_vector)
+VECTOR_IMPLEMENTATION(demo_shared_ptr,demo_shared_ptr_vector)
 
 void test_vector()
 {
@@ -124,8 +142,8 @@ void test_vector()
 SHARED_PTR_DEFINITION(shape)
 SHARED_PTR_IMPLEMENTATION(shape)
 
-VECTOR_DEFINITION(shape_shared_ptr)
-VECTOR_IMPLEMENTATION(shape_shared_ptr)
+VECTOR_DEFINITION(shape_shared_ptr,shape_shared_ptr_vector)
+VECTOR_IMPLEMENTATION(shape_shared_ptr,shape_shared_ptr_vector)
 
 void test_polymorphism()
 {
@@ -159,6 +177,18 @@ void test_polymorphism()
     printf("%lg\n",M(ssp,area));
   }
   TEST("Reported areas are: Circle Area=82.5803 : Square area=13.1044 : Rectangle Area=39.7761",strcmp(output,"Circle Area=82.5803 : Square area=13.1044 : Rectangle Area=39.7761 : ")==0);
+  shape_shared_ptr_pointer sq=new_ctor(shape_shared_ptr,shape_shared_ptr_ctor_ptr,
+        new_ctor(square,square_ctor_length,3.62));
+  optr=output; *optr=0;
+  shape_shared_ptr_pointer item=yaooc_find(shape_shared_ptr_ti,M(sspv,cbegin),M(sspv,cend),sq);
+  bool found=item!=M(sspv,cend);
+  TEST("Item found",found);
+  if(found)
+    TEST("Values ==",M(M(sq,cget),area)==M(M(item,cget),area));
+  M((square_pointer)M(sq,get),set_length,20.0);
+  item=yaooc_find(shape_shared_ptr_ti,M(sspv,cbegin),M(sspv,cend),sq);
+  TEST("Item not found",item==M(sspv,cend));
+  delete(sq);
   optr=output;
   delete(sspv);
   TEST("Delete vector report Shape virtual dtor, circle virtual dtor, shape virtual dtor, square virtual dtor, shape virtual dtor, rectangle virtual dtor, ",strcmp(output,"SVD:CVD:SVD:SQVD:SVD:RVD:")==0); printf("X%sX\n",output);

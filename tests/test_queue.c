@@ -1,3 +1,20 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -7,22 +24,22 @@
 #include <time.h>
 #include "test_harness.h"
 
-QUEUE_DEFINITION(int64)  /* Normally in header file */
-QUEUE_IMPLEMENTATION(int64) /* Normally in c source file (.c) */
+QUEUE_DEFINITION(long,long_queue)  /* Normally in header file */
+QUEUE_IMPLEMENTATION(long,long_queue) /* Normally in c source file (.c) */
 
-void test_int64()
+void test_long()
 {
-	int64_queue_pointer si64=new(int64_queue);
-	int64_t numbers[]={ 9,10, -2, 44, 55};
-	size_t n=sizeof(numbers)/sizeof(numbers[0]);
+	long_queue_pointer slong=new(long_queue);
+	long_t numbers[]={ 9,10, -2, 44, 55};
+	size_t n=ARRAY_SIZE(numbers);
 	size_t i;
 	for(i=0;i<n;i++)
-		M(si64,push,numbers+i);
-	int64_queue_const_iterator ivi;
-	for(ivi=M(si64,begin);ivi!=M(si64,end);ivi++)
-		printf("%ld ",*ivi);
+		M(slong,push,numbers+i);
+	long_queue_const_iterator ivi;
+	for(ivi=M(slong,begin);ivi!=M(slong,end);ivi++)
+		printf("%lld ",*ivi);
 	puts("\n");
-	delete(si64);
+	delete(slong);
 }
 
 void test_string_queue()
@@ -31,7 +48,7 @@ void test_string_queue()
 
 test_function tests[]=
 {
-	test_int64,
+	test_long,
   test_string_queue
 };
 

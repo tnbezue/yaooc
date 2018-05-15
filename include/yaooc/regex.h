@@ -1,113 +1,126 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #ifndef __REGEX_INCLUDED__
 #define __REGEX_INCLUDED__
 
-#define PCRE2_CODE_UNIT_WIDTH 8
-#include <yaooc/object.h>
 #include <yaooc/string.h>
-#include <pcre2.h>
+#ifdef __YAOOC_USE_TRE__
+#include <tre/regex.h>
+#else
+#include <regex.h>
+#endif
+/*  Begin YAOOC PreProcessor generated content */
 
-class_table(yaooc_matchdata) {
-  yaooc_object_class_members_t;
-  char* (*at)(pointer,uint32_t);
-  yaooc_string_const_pointer (*subject)(const_pointer);
-  bool (*good)(const_pointer);
-  bool (*bad)(const_pointer);
-  uint32_t (*size)(const_pointer);
+/*
+  Class definition for yaooc_matchdata
+*/
+class_table(yaooc_matchdata)
+{
+  yaooc_object_class_table_t;
+  yaooc_string_pointer (*at)(const_pointer,size_t);
+  yaooc_string_pointer (*exec)(pointer,const char*);
+  const char* (*subject)(const_pointer);
+  bool (*bool)(const_pointer);
+  size_t (*size)(const_pointer);
 };
 
-class_instance(yaooc_matchdata) {
-  yaooc_object_instance_members_t;
-  yaooc_string_pointer subject_;
-  pcre2_match_data * match_data_;
-  uint32_t match_flags_;
+class_instance(yaooc_matchdata)
+{
+  yaooc_object_class_instance_t;
+  regmatch_t* ovector_;
+  char* subject_;
+  int match_result_;
+  int n_captures_;
+  int match_flags_;
 };
 
 class(yaooc_matchdata);
-ISA_DEFINITION(yaooc_matchdata,yaooc_object)
-
-/* Type info */
+/* Prototypes for yaooc_matchdata type info */
 void yaooc_matchdata_default_ctor(pointer);
 void yaooc_matchdata_dtor(pointer);
 void yaooc_matchdata_copy_ctor(pointer,const_pointer);
 void yaooc_matchdata_assign(pointer,const_pointer);
 
+/* Constructors for yaooc_matchdata */
 
-/* Class member functions */
-ISA_DEFINITION(yaooc_matchdata,yaooc_object)
-char* yaooc_matchdata_at(pointer,uint32_t);
-yaooc_string_const_pointer yaooc_matchdata_subject(const_pointer);
-bool yaooc_matchdata_good(const_pointer);
-bool yaooc_matchdata_bad(const_pointer);
-uint32_t yaooc_matchdata_size(const_pointer);
+/* Prototypes for yaooc_matchdata class table*/
+const char* yaooc_matchdata_isa(const_pointer);
+#define yaooc_matchdata_is_descendant yaooc_object_is_descendant
+void yaooc_matchdata_swap(pointer,pointer);
+yaooc_string_pointer yaooc_matchdata_at(const_pointer,size_t);
+yaooc_string_pointer yaooc_matchdata_exec(pointer,const char*);
+const char* yaooc_matchdata_subject(const_pointer);
+bool yaooc_matchdata_bool(const_pointer);
+size_t yaooc_matchdata_size(const_pointer);
 
-/* Protected members */
+/* Prototypes for yaooc_matchdata class instance*/
 
-#define YAOOC_MATCHDATA_CLASS_MEMBERS \
-  { \
-    yaooc_matchdata_isa, \
-    yaooc_matchdata_is_descendent, \
-    yaooc_object_swap \
-  }, \
-  (char* (*)(pointer,uint32_t)) yaooc_matchdata_at,\
-  (yaooc_string_const_pointer (*)(const_pointer)) yaooc_matchdata_subject,\
-  (bool (*)(const_pointer)) yaooc_matchdata_good,\
-  (bool (*)(const_pointer)) yaooc_matchdata_bad,\
-  (uint32_t (*)(const_pointer)) yaooc_matchdata_size,\
+/* Prototypes for yaooc_matchdata class protected items*/
 
-class_table(yaooc_regex) {
-  yaooc_object_class_members_t;
-  void (*set_pattern)(pointer,const char *,int);
-  yaooc_string_const_pointer (*get_pattern)(const_pointer);
+
+/*
+  Class definition for yaooc_regex
+*/
+class_table(yaooc_regex)
+{
+  yaooc_object_class_table_t;
+  void (*set_pattern_flags)(pointer,const char*,int);
+  const char* (*get_pattern)(const_pointer);
   int (*get_flags)(const_pointer);
-  yaooc_matchdata_pointer (*match)(pointer,const char *,int);
-  bool (*match_next)(pointer,pointer);
-  bool (*good)(const_pointer);
-  bool (*bad)(const_pointer);
+  yaooc_matchdata_pointer (*match)(pointer,const char*,int);
+  bool (*match_next)(pointer,yaooc_matchdata_pointer);
+  bool (*bool)(const_pointer);
 };
 
-class_instance(yaooc_regex) {
-  yaooc_object_instance_members_t;
-  pcre2_code * re_;
+class_instance(yaooc_regex)
+{
+  yaooc_object_class_instance_t;
+  regex_t* re_;
+  char* pattern_;
   int compile_flags_;
-  yaooc_string_pointer pattern_;
+  int compile_result_;
 };
 
 class(yaooc_regex);
-
-/* Type info */
+/* Prototypes for yaooc_regex type info */
 void yaooc_regex_default_ctor(pointer);
 void yaooc_regex_dtor(pointer);
 void yaooc_regex_copy_ctor(pointer,const_pointer);
 void yaooc_regex_assign(pointer,const_pointer);
 
-/* Constructors */
-void yaooc_regex_ctor_pat_flags(pointer,va_list);
+/* Constructors for yaooc_regex */
+void yaooc_regex_ctor_ccs_int(pointer,va_list);
 
-/* Class member functions */
-ISA_DEFINITION(yaooc_regex,yaooc_object)
-void yaooc_regex_set_pattern(pointer,const char *,int);
-yaooc_string_const_pointer yaooc_regex_get_pattern(const_pointer);
+/* Prototypes for yaooc_regex class table*/
+#define yaooc_regex_isa yaooc_object_isa
+#define yaooc_regex_is_descendant yaooc_object_is_descendant
+#define yaooc_regex_swap yaooc_object_swap
+void yaooc_regex_set_pattern_flags(pointer,const char*,int);
+const char* yaooc_regex_get_pattern(const_pointer);
 int yaooc_regex_get_flags(const_pointer);
-yaooc_matchdata_pointer yaooc_regex_match(pointer,const char *,uint32_t);
-bool yaooc_regex_match_next(pointer,pointer);
-bool yaooc_regex_good(const_pointer);
-bool yaooc_regex_bad(const_pointer);
+yaooc_matchdata_pointer yaooc_regex_match(pointer,const char*,int);
+bool yaooc_regex_match_next(pointer,yaooc_matchdata_pointer);
+bool yaooc_regex_bool(const_pointer);
 
-/* Protected members */
+/* Prototypes for yaooc_regex class instance*/
 
-#define YAOOC_REGEX_CLASS_MEMBERS \
-  { \
-    yaooc_regex_isa, \
-    yaooc_regex_is_descendent, \
-    yaooc_object_swap \
-  }, \
-  (void (*)(pointer,const char *,int)) yaooc_regex_set_pattern,\
-  (yaooc_string_const_pointer (*)(const_pointer)) yaooc_regex_get_pattern,\
-  (int (*)(const_pointer)) yaooc_regex_get_flags,\
-  (yaooc_matchdata_pointer (*)(pointer,const char *,int)) yaooc_regex_match,\
-  (bool (*)(pointer,pointer)) yaooc_regex_match_next,\
-  (bool (*)(const_pointer)) yaooc_regex_good,\
-  (bool (*)(const_pointer)) yaooc_regex_bad,\
+/* Prototypes for yaooc_regex class protected items*/
 
+/*  End YAOOC PreProcessor generated content */
 
 #endif
