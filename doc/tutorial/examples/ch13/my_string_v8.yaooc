@@ -1,0 +1,83 @@
+#include "object.yaooc"
+
+class my_string : yaooc_object
+{
+    my_string();
+    ~my_string();
+    my_string(my_string);
+    operator=();
+    operator<();
+    operator<<();
+		operator>>();
+
+    my_string_ctor_ccs_n(const char* s,size_t n);
+    my_string_ctor_ccs(const char* s);
+    my_string_ctor_chr_n(int ch,size_t n);
+
+    table:
+      const size_t my_string_n_pos = -1;
+      const char* isa() const;
+      void swap(pointer o);
+      const char* get() const;
+      const char* c_str() const = my_string_get;
+      void set(const char* s);
+      my_string_pointer substr(size_t beg,size_t n);
+      void insert(size_t pos,const char* s);
+      void insertn(size_t pos,const char* s,size_t n);
+      void erase(size_t pos,size_t n);
+      void append(const char* s);
+      void appendn(const char* s,size_t n);
+      const char* find(const char* s) const;
+      const char* rfind(const char* s) const;
+      const char* find_chr(char ch) const;
+      const char* rfind_chr(char ch) const;
+      char * at(size_t i);
+      size_t size() const;
+
+    instance:
+      char * str;
+
+    protected:
+      void insert_space(size_t pos,size_t n);
+      void erase_space(size_t pos,size_t n);
+
+    private:
+      size_t allocate_space(size_t n);
+
+    table:
+      size_t length() const = my_string_size;
+      char* begin() const = my_string_get;
+      char* end() const;
+};
+
+#include <exception.yaooc>
+
+/*
+  Exceptions for my string.
+*/
+class my_string_exception : yaooc_exception {
+    my_string_exception();
+    ~my_string_exception();
+    my_string_exception_ctor_ccs(const char* msg);
+
+  table:
+    const char* what() const;
+
+  instance:
+    char * what_;
+};
+
+class my_string_insert_exception : my_string_exception
+{
+    my_string_insert_exception();
+};
+
+class my_string_erase_exception : my_string_exception
+{
+    my_string_erase_exception();
+};
+
+class my_string_at_exception : my_string_exception
+{
+    my_string_at_exception();
+};

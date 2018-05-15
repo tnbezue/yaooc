@@ -1,0 +1,80 @@
+
+/* C and C++ comments can be used */
+
+/* my_string.yaooc */
+#include "object.yaooc"
+
+class my_string : yaooc_object
+{
+    /*
+      Type info methods.
+      Prototypes in header and templates in C source file will be generated
+      If not specified, NULL will be used
+    */
+    my_string();    /* default constructor. */
+    ~my_string();   /* destructor */
+    my_string(my_string);     /* copy constructor */
+    operator=();   /* assignment */
+    operator<();   /* less than compare */
+    operator<<();   /* to stream */
+		operator>>();   /* from stream */
+    /*
+      Constructors
+      Prototypes will be created in header file.
+      Templates will be created in C source file.
+    */
+    my_string_ctor_ccs_n(const char* s,size_t n);
+    my_string_ctor_ccs(const char* s);
+    my_string_ctor_chr_n(int ch,size_t n);
+
+    /*
+      Will create class_table(my_string) and method prototypes in header file.
+      Will create templates for methods and my_string_class_table in C source file
+    */
+
+    table:
+      const size_t my_string_n_pos = -1;                             /* variable in class table. */
+      const char* isa() const;                                       /* Override yaooc_object isa method */
+      void swap(pointer o);                                          /* Override yaooc_object swap method */
+      const char* get() const;                                       /* returns string value */
+      const char* c_str() const = my_string_get;                     /* same as get */
+      void set(const char* s);                                       /* Sets string */
+      my_string_pointer substr(size_t beg,size_t n);                 /* Return new string object created from substring of this string */
+      void insert(size_t pos,const char* s);                         /* Insert string at position */
+      void insertn(size_t pos,const char* s,size_t n);               /* Insert n chars from string at position */
+      void erase(size_t pos,size_t n);                               /* Erase n chars starting at pos */
+      void append(const char* s);                                    /* Append string */
+      void appendn(const char* s,size_t n);                          /* Append n characters from string */
+      const char* find(const char* s) const;                         /* return pointer to first occurance of substring s in this string */
+      const char* rfind(const char* s) const;                        /* return pointer to last occurance of substring s in this string */
+      const char* find_chr(char ch) const;                           /* return pointer to last occurance of character ch in this string */
+      const char* rfind_chr(char ch) const;                          /* return pointer to last occurance of character ch in this string */
+      char * at(size_t i);                                           /* Return pointer to character at index i */
+      size_t size() const;                                           /* Return size of string */
+
+    /*
+      Will create the class_instance(my_string).
+    */
+    instance:
+      char * str;                                                    /* The string */
+
+    /*
+      Protected methods and variables will have prototypes in header file and templates in C source file.
+      Methods and variables are meant to be used by this class and available for use by derieved classes.
+    */
+    protected:
+      void insert_space(size_t pos,size_t n);                        /* Insert space in string */
+      void erase_space(size_t pos,size_t n);                         /* erase space in string */
+
+    /*
+      Private methods and variables are meant for use only by this class.  They will be declared as
+      static in the C source file.
+    */
+    private:
+      size_t allocate_space(size_t n);                               /* Allocates space to hold string */
+
+    table: /* More things to add to table */
+      size_t length() const = my_string_size;                        /* Same as size */
+      char* begin() const = my_string_get;                           /* Return beginning of string. Same as get */
+      char* end() const;                                             /* Returns end of string */
+};

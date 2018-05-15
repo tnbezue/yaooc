@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom Class</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Custom Class</h2>
+<p>
+Over the next few chapters a custom class will be created.  The class will be a simple string class.
+This is meant to show the features of YAOOC rather than good programming practice.
+</p>
+<p>
+A custom class starts with a structure.  For the simple string class (let's call it my_string), it is as follows:
+</p>
+<pre><code>
+  typedef struct my_string_s my_string_t;
+  struct my_string_s {
+    char* str;
+  };
+</code></pre>
+<p>
+While structures can be defined using the above, it's better to use the macros provided by YAOOC.
+</p>
+<pre><code>
+  class_(my_string) {
+    char* str;
+  };
+</code></pre>
+
+<p>
+The "class_" (note the underscore) macro creates the same structure.  However, it defines
+some additional types.  The following types are created for my_string.
+</p>
+<pre><code>
+  typedef struct my_string_s my_string_t;
+  typedef my_string_t* my_string_pointer;
+  typedef const my_string_t* my_string_const_pointer;
+</code></pre>
+<p>
+In YAOOC, using my_string_pointer is preferred to using my_string_t* (likewise for const version).
+</p>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Type Info</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<p>
+The type info structure is the key to YAOOC. Every type must have a type info structure -- even POD types like char or int.
+</p>
+<pre>
+<code>
+  typedef struct typeinfo_s typeinfo_t;
+  struct typeinfo_s {
+  	size_t size;
+  	void (*default_constructor)(pointer) ;
+  	void (*destructor)(pointer);
+  	void (*copy_constructor)(pointer,const_pointer);
+  	void (*assignment)(pointer,const_pointer);
+  	bool (*less_than_compare)(const_pointer,const_pointer);
+  	const class_table_t* class_table;
+  	const type_info_t* parent;
+  };
+</code>
+<p>
+Size is the size of of the type.  It must be non-zero. 
+</p>
+All items can be NULL (or zero) except size.  Size must be greater than 0.
+<p>
+As in C++, the default constructor initializes the object. After memory is allocated for the object, the
+default constructor is called with a pointer to the allocated memory.
+</p>
+<pre>
+  void yaooc_string_default_ctor(pointer p)
+  {
+    yaooc_string_pointer this=p;
+    this->array_=malloc(16);
+    this->capacity_=16;
+    this->size_=0;
+    this->array_[0]=0;
+  }
+</pre>
+<p>
+As in C++, the destructor is called before memory is freed.  The destructor is called with a pointer to the memory to be freed.
+</p>
+<pre>
+  void yaooc_string_dtor(pointer p)
+  {
+    free(this->array_);
+  }
+</pre>
+<p>
+Yes, since this is the default constructor, other constructors can be used.
+</p>
+<p>
+As in C++, the copy constructor creates a new object by copying an existing object.  The copy constructor is called with a pointer
+to newly allocated memory and a constant pointer to the existing object.
+</p>
+<pre>
+  void yaooc_string_copy_ctor(pointer p,const pointer s)
+  {
+    yaooc_string_pointer this=p;
+    yaooc_string_pointer src=s;
+    this->capacity_=src->capacity_;
+    this->size_=src->size_;
+    this->array_=malloc(this->capacity_);
+    strcpy(this->array_,src->array_);
+  }
+</pre>
+<p>
+The assignment function assigns one object to another (this is operator= in c++).  The assignment function is called with a pointer
+to object to be and a constant pointer to the object.
+</p>
+<pre>
+  void yaooc_string_assign(pointer p,const_pointer s)
+  {
+    free((yaooc_string_pointer)p->array_);
+    yaooc_string_copy_ctor(p,s);
+  }
+</pre>
+<p>
+The less than compare function compares two objects and returns true if the first is less than the second. 
+</p>
+<pre>
+  bool yaooc_string_less_than_compare(const_pointer p1,const_pointer p2)
+  {
+    return strcmp(((yaooc_string_const_pointer)p1)->array_,((yaooc_string_const_pointer)p2)->array_) < 0;
+  }
+</pre>
+<p>
+The class table is a structure which contains the methods for the class.  These methods are available to all instances
+of this class.  Normally this structure contains methods but can contain data definitions as well. 
+</p>
+<pre>
+  class_table(yaooc_string)
+  {
+    const char* (*insert)(pointer,const char*);
+    size_t (*size)(const_pointer);
+    const char* (*c_str)(const_pointer);
+    const size_t npos; 
+  };
+</pre>
+<p>
+More information on class tables is contained in the <a href="custom_objects.html">custom objects</a> section.
+</p>
+<p>
+Parent is a pointer to the parent type info structure.  More information on parent usage is contained in the <a href="custom_objects.html">custom objects</a> section.
+</p>
+<p>
+Type info structures are provided for POD types -- char, int, long, long long, double, and int(8/16/32/64)_t.  Unsigned versions of the same are also provided.    
+</p>
+</pre>
+</div>
+</div>
+</div>
+</body>
+</html>

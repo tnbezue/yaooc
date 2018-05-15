@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Class Table and Instance</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Class Table and Instance</h2>
+<p>
+In this chapter the my_string class will be improved by adding two class methods.
+</p>
+<p>
+In YAOOC, classes are divided into two parts -- instance and table.  The class instance has variables (and methods) whose values are unique to a particular instance.
+The class table has methods (and variables) that are shared by every instance of the class. YAOOC provides macros for creating the instance and table separately -- then combining into a single class. 
+</p>
+<p>
+The class table is defined by using the class_table macro.  The methods will be added in the class table.
+The get method returns a pointer to the string and the set method sets the string.
+</p>
+<pre><code>
+  class_table(my_string) {
+    const char* (*get)(const_pointer);
+    void (*set)(pointer,const char*);
+  };
+</code></pre>
+<p>
+The instance is created using the class_instance macro.  For my_string class, the instance will be the same as defined with the class_ macro.
+</p>
+<pre><code>
+  class_instance(my_string) {
+    char* str;
+  };
+</code></pre>
+<p>
+To combine the table and instance parts, use the class (without underscore) macro.
+</p>
+<pre><code>
+  class(my_string);
+</code></pre>
+<p>
+FYI, now that the above three macros have been introduced, you will have very little use for the "class_" (with underscore) macro.
+</p>
+<p>
+For the my_string class, the following code is created by the above three macros:
+</p>
+<pre><code>
+  typedef struct my_string_s my_string_t;
+  typedef my_string_t* my_string_pointer;
+  typedef const my_string_t* my_string_const_pointer;
+  typedef struct my_string_class_table_s my_string_class_table_t;
+  typedef struct my_string_class_instance_s my_string_class_instance_t;
+  struct my_string_class_table_s {
+    const char* (*get)(const_pointer);
+    void (*set)(pointer,const char*);
+  };
+  struct my_string_s {
+    const my_string_class_table_t* class_table_;
+    my_string_class_instance_t;
+  };
+</code></pre>
+<p>
+A pointer to the class table is the first member of the combined class.  When new creates an instance of the class, it will set this variable to the
+variable found in the type info structure -- so a constructor will have access to the class methods.  NEVER use memset(this,0,sizeof(T)) to initialize an instance.
+Doing so will destroy the value of class_table_;
+</p>
+<p>
+The methods for my_string class are:
+</p>
+<pre><code>
+  const char* my_string_get(const_pointer p)
+  {
+    return ((my_string_const_pointer)p)->str;
+  }
+  
+  void my_string_set(pointer p,const char* s)
+  {
+    my_string_pointer this=p;
+    my_string_dtor(this);
+    this->str = s==NULL ? NULL : strdup(s);
+  }
+</code></pre>
+<p>
+The class table is then defined as:
+</p>
+<pre><code>
+  my_string_class_table_t my_string_class_table =
+  {
+    .get = my_string_get,
+    .set = my_string_set
+  };
+</code></pre>
+<p>
+And DEFINE_TYPE_INFO should now contain a pointer to class table
+</p>
+<pre><code>
+  DEFINE_TYPE_INFO(my_string,my_string_default_ctor,my_string_dtor,my_string_copy_ctor,my_string_assign,my_string_less_than_compare,NULL,NULL,&my_string_class_table,NULL);
+</code></pre>
+<p>
+To call a class table method, use ptr->class_table_->method(ptr,args). For example, to call the get method.
+</p>
+<pre><code>
+  ptr->class_table_->set(ptr,"This is a test");
+  printf("%s\n",ptr->class_table_->get(ptr));
+</code></pre>
+Calling methods in this fashion becomes cumbersome after a few uses.
+YAOOC provides the M macro (M for method) to make calling methods easier. It is usage is M(ptr,method,args). The args portion is optional.
+</p>
+<pre><code>
+  M(ptr,set,"This is a test");
+  printf("%s\n",M(ptr,get));
+</code></pre>
+<p>
+Another macro that will have an occasional use is class_forward.  class_forward defines the same types that the class macro defined except for the underlying structure.   
+</p>
+<pre><code>
+  class_forward(class_name);
+</code></pre>
+<h3>Naming Convention</h3>
+<p>
+Class method names use the class name appended with underscore and method name. The class table variable name is the class name appended with "_class_table".
+</p>
+
+</div>
+</div>
+</div>
+</body>
+</html>

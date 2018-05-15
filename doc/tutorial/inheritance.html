@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Yaooc PreProcessor</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Inheritance</h2>
+<p>
+Inheritance is done by specifying the parent class table type in the class table definition and 
+the parent class instance table type in the class instance definition.  All classes should be a descendant
+of yaooc_object.  The following shows how to have my_string class inherit from yaooc_object.
+</p>
+<pre>
+<code>
+  class_table(my_string) {
+    yaooc_object_class_table_t;
+    const char* (*get)(const_pointer);
+    void (*set)(pointer,const char*);
+  };
+
+  class_instance(my_string) {
+    yaooc_object_class_instance_t;
+    char* str;
+  };
+
+</code>
+</pre>
+<p>
+yaooc_object has zero instance members and has four table entries -- one variable and three methods. They are:
+</p>
+<pre><code>
+  const class_table_t* parent_class_table_;  /* Pointer to parent class table */
+  const char * (*isa)(const_pointer);       /* Return the name of the class */
+  bool (*is_descendant)(const_pointer,const char*);  /* true if specified this class is a descendant of specified class */
+  void (*swap)(pointer,pointer); /* Swaps contents of instances */
+</code></pre>
+<p>
+The parent class table should always be specified.  The isa method should be overridden so that it returns the class name.
+The is_descendant method should not be overridden -- with the parent class table specified, it can properly determine if a
+class is a descendant of another.  The swap method should be overridden as needed -- the yaooc_object version does nothing. 
+</p>
+<p>
+For the my_string class, the following methods will override the ones defined in yaooc_object.
+</p>
+<pre><code>
+  const char* my_string_isa(const_pointer p) { return "my_string_t"; }
+
+  void my_string_swap(pointer p,pointer o)
+  {
+    my_string_pointer this=p;
+    my_string_pointer other=o;
+    SWAP(char*,this->str,other->str);
+  }
+</code></pre>
+<p>
+The class table and DEFINE_TYPE_INFO for my_string will be:
+</p>
+<pre><code>
+  my_string_class_table_t my_string_class_table =
+  {
+    .parent_class_table_=(const class_table_t*) &yaooc_object_class_table,
+    .isa = my_string_isa,
+    .is_descendant=yaooc_object_is_descendant,
+    .swap = my_string_swap,
+    .get = my_string_get,
+    .set = my_string_set
+  };
+  DEFINE_TYPE_INFO(my_string,my_string_default_ctor,my_string_dtor,my_string_copy_ctor,my_string_assign,my_string_less_than_compare,my_string_to_stream,my_string_from_stream,&my_string_class_table,yaooc_object)
+</code></pre>
+
+<p>
+When a class is inherited from another, the behavior of the type info methods is altered slightly.
+</p>
+<h3>Default Constructor</h3>
+<p>
+If the default constructor for a derived class is defined, new will use it to initialize the object.  If the default constructor is not
+defined (NULL), then the parent default constructor is used.  If the parent default constructor is not defined, it's parent is used. This is continued until
+a non NULL default constructor is found or the root of the inheritance tree is reached.  If a non NULL default constructor is not found,
+no action is taken and a pointer to the allocated memory is returned. 
+</p>
+<h3>Destructor</h3>
+<p>
+When an object is deleted, every destructor in reverse order of inheritance is called (unless the destructor is NULL).
+</p>
+<h3>Copy Constructor</h3>
+<p>
+The new_copy method behaves as new does with the default constructor.  It traverses the inheritance tree until a non NULL copy constructor is found and uses
+it to copy the object.  If a non NULL copy constructor is not found, then the object is copied (using memcpy) to the target object.  
+</p>
+<h3>Assignment</h3>
+<p>
+The assign method behaves just as the new_copy does.  It traverses the inheritance tree until a non NULL assignment method is found and uses
+it to assign one object to the other.  If a non NULL assignment method is not found, then the object is copied (using memcpy) to the target object.
+</p>
+<h3>Less than compare</h3>
+<p>
+Comparison methods will traverse the inheritance tree until a non NULL less than compare method is found and use it to compare the objects.
+If a non NULL less than compare method is not found, then the comparison will be as if the method returned false. 
+</p>
+<h3>To/From stream</h3>
+<p>
+The inheritance tree is traversed until a non NULL method is found.  If a non NULL method is not found, an exception is thrown (more on exceptions later).
+</p>
+
+<h3>Calling Parent Method</h3>
+<p>
+There are a few ways to call a parent method.  See the test_object.c file in the tests directory.  The best method is demostrated here -- 
+using parent class table via the class table parent_class_table entry. To call the isa method for the parent class, use:
+</p>
+<pre><code>
+  #define my_string_parent_class_table ((yaooc_object_class_table_t*)(my_string_class_table.parent_class_table_))
+  ...
+  my_string_pointer sp=new(my_string);
+  M(cout,printf,"my_string_parent class is %s\n",my_string_parent_class_table->isa(sp));
+</code></pre>
+
+</div>
+</div>
+</div>
+</body>
+</html>

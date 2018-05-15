@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Yaooc PreProcessor</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Map</h2>
+<p>
+There are three flavors of maps in YAOOC -- mini_map, map, and ordered_map.  The difference between them is the underlying container.
+</p>
+<p>
+mini_map uses the unique_array container.  Since search is sequential, it's best for when the size of the map is relatively small (or infreqent search/insertion).  Items
+are maintained in insertion order and will be iterated in insertion order.
+</p>
+<p>
+map uses the unique index array container.  Because of the index, search and insertion is much faster (for very large size more than 100 x faster).  Should be used for larger map sizes.
+There is additional memory overhead because of the index (4*capacity bytes). Items are maintained in insertion order and will be iterated in insertion order.
+If in doubt, use map instead of mini_map.
+</p>
+<p>
+unordered_map uses unique ordered array_container.  Should be used when a sorted map is desired.  Search speed is better than mini_map and about the same for map.  Insertion speed
+is faster than mini_map but slower than map.  Items are maintained in sorted order and will be iterated in sorted order.
+</p>
+<p>
+To use mini_map, in header file specify:
+</p>
+<pre><code>
+   #include &lt;yaooc/map.h&gt;
+   ..
+   MINI_MAP_DEFINITION(K,V,N)
+</code></pre>
+<p>
+In C source file specify:
+</p>
+<pre><code>
+   ...
+   MINI_MAP_IMPLEMENTATION(K,V,N)
+</code></pre>
+
+<p>
+To use map, in header file specify:
+</p>
+<pre><code>
+   #include &lt;yaooc/map.h&gt;
+   ..
+   MAP_DEFINITION(K,V,N)
+</code></pre>
+<p>
+In C source file specify:
+</p>
+<pre><code>
+   ...
+   MAP_IMPLEMENTATION(K,V,N)
+</code></pre>
+<p>
+To use ordered_map, in header file specify:
+</p>
+<pre><code>
+   #include &lt;yaooc/ordered_map.h&gt;
+   ..
+   ORDERED_MAP_DEFINITION(K,V,N)
+</code></pre>
+<p>
+In C source file specify:
+</p>
+<pre><code>
+   ...
+   ORDERED_MAP_IMPLEMENTATION(K,V,N)
+</code></pre>
+
+<p>
+K is the key type, V is the value type, and N is the type for the map.  The following types are created:
+</p>
+
+<div class="divTable">
+<div class="divTableBody">
+<div class="divTableRow">
+<div class="divTableHead">Type</div>
+<div class="divTableHead">Description</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">N</div>
+<div class="divTableCell">The map type name</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">N_pointer</div>
+<div class="divTableCell">Pointer to instance of map type name</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">N_const_pointer</div>
+<div class="divTableCell">Constant pointer to instance of map type name</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">N_iterator</div>
+<div class="divTableCell">Iterator for instance of map type name</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">N_const_iterator</div>
+<div class="divTableCell">Constant iterator for instance of map type name</div>
+</div>
+
+
+</div>
+</div>
+
+
+<h3>Methods</h3>
+<p>
+Map inherits the array methods and defines the following additional methods.
+</p>
+
+<div class="divTable">
+<div class="divTableBody">
+<div class="divTableRow">
+<div class="divTableHead">method</div>
+<div class="divTableHead">Description</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">iterator insert(const_pointer key,const_pointer value)</div>
+<div class="divTableCell">Insert key/value pair.  If key already exists, the existing value is replaced with new value<br>Equivalent to C++ map operator[]</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">pointer at(const_pointer k)</div>
+<div class="divTableCell">Pointer to value of entry with key k</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">iterator find(const_pointer key)</div>
+<div class="divTableCell">Finds key/value pair for key.</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">iterator erase(const_iterator pos)</div>
+<div class="divTableCell">Remove item at pos and returns iterator to item following item removed.</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">iterator erase_range(const_iterator first,const_iterator last)</div>
+<div class="divTableCell">Remove items from first to last and return iterator to next element</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">iterator erase_key(const_pointer k)</div>
+<div class="divTableCell">Remove item with key and return iterator to next element</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">void reserve(size_t new_cap)</div>
+<div class="divTableCell">Increase capacity to new_cap.  If new_cap less than capacity, do nothing</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">void shrink_to_fit()</div>
+<div class="divTableCell">Shrinks capacity to size</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">void clear()</div>
+<div class="divTableCell">Remove all items from vector</div>
+</div>
+
+</div>
+</div>
+
+
+<p>
+To create a vector containing object of my_string type, use VECTOR_DEFINITION in the header file.
+</p>
+<pre><code>
+  #include &lt;yaooc/vector.h&gt;
+  ...
+  VECTOR_DEFINITION(my_string,my_string_vector)
+  ...
+</code></pre>
+<p>
+And use VECTOR_IMPLEMENTATION in C source file.
+</p>
+<pre><code>
+  ...
+  VECTOR_IMPLEMENTATION(my_string,my_string_vector)
+  ...
+</code></pre>
+
+
+</div>
+</div>
+</div>
+</body>
+</html>

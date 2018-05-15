@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hello World</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Hello Word</h2>
+<p>
+Let's get started with the classic hello world program.
+</p>
+<pre><code>
+  #include &lt;string.h&gt;
+  #include &lt;stdio.h&gt;
+  #include &lt;yaooc/new.h&gt;
+
+  int main(int argc,char* argv)
+  {
+    char* str=new_array(char,128);
+    strcpy(str,"Hello world!");
+    printf("%s\n",str);
+    delete(str);
+  }
+</code></pre>
+<p>
+Compile using gcc:
+</p>
+<pre><code>
+  gcc `yaooc-config --cflags` hello_world.c `yaooc-config --libs` -o hello_world
+</code></pre>
+<p>
+The "new_array" method allocates space for an array of elements of the specified type -- in this case, 128 characters.  The allocated
+space can be used as it normally would.  The "delete" method frees the space allocated by "new_array".  "new_array" and "delete"
+do a lot more than what is demonstrated here.  The complete workings will be revealed in later chapters.
+</p>
+<h3>Naming Convention</h3>
+<p>
+Type names end with "_t". In the hello world example, new_array expects there to be a char_t type.
+YAOOC has supplied typedefs for common POD types which are shown in table below. However, in almost every case, the "_t" portion
+will not have to be specified. Note in the hello world program, "char" was used rather than "char_t".
+The macros used in YAOOC will append the "_t" where needed.
+</p>
+
+<p>Plain old data (POD) types used in YAOOC are shown in table below.</p>
+
+<div class="divTable">
+<div class="divTableBody">
+<div class="divTableRow">
+<div class="divTableHead">Type</div>
+<div class="divTableHead">Description</div>
+<div class="divTableHead">Size in bytes</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">char_t</div>
+<div class="divTableCell">Signed character</div>
+<div class="divTableCell">1</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">uchar_t</div>
+<div class="divTableCell">Unsigned character</div>
+<div class="divTableCell">1</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">short_t</div>
+<div class="divTableCell">Signed short</div>
+<div class="divTableCell">2</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">ushort_t</div>
+<div class="divTableCell">Unsigned short</div>
+<div class="divTableCell">2</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">int_t</div>
+<div class="divTableCell">Signed integer</div>
+<div class="divTableCell">4</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">uint_t</div>
+<div class="divTableCell">Unsigned integer</div>
+<div class="divTableCell">4</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">long_t</div>
+<div class="divTableCell">Signed long</div>
+<div class="divTableCell">8 (on 32 and 64 bit systems)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">ulong_t</div>
+<div class="divTableCell">Unsigned long</div>
+<div class="divTableCell">8 (on 32 and 64 bit systems)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">double_t</div>
+<div class="divTableCell">Double precision floating point</div>
+<div class="divTableCell">8</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">size_t</div>
+<div class="divTableCell">Size type</div>
+<div class="divTableCell">4 (32 bit system) 8 (64 bit system)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">pointer</div>
+<div class="divTableCell">void *</div>
+<div class="divTableCell">4 (32 bit system) 8 (64 bit system)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">const_pointer</div>
+<div class="divTableCell">const void *</div>
+<div class="divTableCell">4 (32 bit system) 8 (64 bit system)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">iterator</div>
+<div class="divTableCell">void *</div>
+<div class="divTableCell">4 (32 bit system) 8 (64 bit system)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">const_iterator</div>
+<div class="divTableCell">const void *</div>
+<div class="divTableCell">4 (32 bit system) 8 (64 bit system)</div>
+</div>
+
+
+</div>
+</div>
+
+
+<p>
+YAOOC makes extensive use of pointer and const_pointer types (note that both do not have "_t") as types for method parameters.
+This is done to avoid the many compiler warnings that would be generated -- at the expense of type safety. 
+</p>
+
+</ul>
+</p>
+</div>
+</div>
+</div>
+</body>
+</html>

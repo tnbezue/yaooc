@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom Type Info</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Custom Class Type Info</h2>
+<p>
+Now that the my_string structure has been defined, the next step is to define the type info structure.
+</p>
+<h3>Default constructor</h3>
+<p>
+The default constructor initilizes the memory that has been allocated.
+A pointer to the newly allocated memory will be passed as an argument to the default constructor.
+If the default constructor is NULL, then no initialization is done and a pointer to allocated memory is returned.
+The following is the default constructor for my_string class.
+</p>
+<pre><code>
+  void my_string_default_ctor(pointer p)
+  {
+    my_string_pointer this=p;
+    this->str=NULL;
+  }
+</code></pre>
+<p>
+Using the YAOOC naming convention, the name of the default constructor should be class name (as specified in the class_ macro)
+appended with "_default_ctor".  In our case, it's "my_string_default_ctor".
+</p>
+<p>
+The default constructor is used when new is called.
+</p>
+<pre><code>
+  my_string_pointer sp = new(my_string);
+</code></pre>
+<h3>Destructor</h3>
+<p>
+The destructor is called when delete is used.  It is called before the memory is freed.  If the destructor is NULL, no action is taken.
+By naming convention, the name of the destructor should be class name appended with "_dtor".
+</p>
+<pre><code>
+  void my_string_dtor(pointer p)
+  {
+    my_string_pointer this=p;
+    if(this->str)
+      free(this->str);
+  }
+</code></pre>
+<h3>Copy constructor</h3>
+<p>The copy constructor creates a new object from an existing object.  The first argument is the newly allocated memory.
+The second argument is the existing object.    If the copy constructor is NULL, then the source object is copied
+(using memcpy) to the target object.  By naming convention, the name of the copy constructor should be class name appended with "_copy_ctor".
+</p>
+<pre><code>
+  void my_string_copy_ctor(pointer p,const_pointer s)
+  {
+    my_string_default_ctor(p);
+    my_string_assign(p,s);
+  }
+</code></pre>
+<p>
+For many objects, the copy constructor can use default constructor to initialize the target object followed by a call to the assignment function.
+The copy constructor is called when new_copy is used.
+</p>
+<pre><code>
+  my_string_pointer sp1=new(my_string);
+  ...
+  my_string_pointer sp2=new_copy(sp1);
+</code></pre>
+<h3>Assigment</h3>
+<p>
+The assignment method assigns one object to another.  The first argument is the object to be assigned.  The second argument is the source object.
+If the assignment method is NULL, then the source object is copied (using memcpy) to the target object.
+The name by naming convention is the class name appended with "_assign".
+</p>
+<pre><code>
+  void my_string_assign(pointer p,const_pointer s)
+  {
+    my_string_pointer this=p;
+    my_string_const_pointer src=s;
+    my_string_dtor(p);
+    this->str=src->str==NULL ? NULL : strdup(src->str);
+  }
+</code></pre>
+<p>
+In YAOOC, assignment is done using the assign method.  Assigning using the equal operator does not work as it does in C++. 
+</p>
+<pre><code>
+  my_string_pointer p1=new(my_string);
+  my_string_pointer p2=new(my_string);
+  ....
+  p2=p1; /* Although valid C code, most likely not what was intended */
+  assign(p2,p1); /* Will perform assignment as specified by assign method */
+</code></pre>
+<p>
+Note that both objects in assignment must be initialized.  The following most likely will cause the program to crash:
+</p>
+<pre><code>
+  my_string_pointer p1=new(my_string);
+  my_string_pointer p2;
+  assign(p2,p1);
+</code></pre>
+<p>
+In the above case, rather than assign, the new_copy method should be used.
+</p>
+<h3>Less than compare</h3>
+If comparisons (==, !=, <, <=, >, >=) of objects of this class type will be performed, then less than compare method should be defined.  The two arguments are constant
+pointers to the objects to be compared.  If the less than compare method is not defined,
+then it would be as if the method return false -- thus, all items of this type would be equal.
+The method name is class name appended with "_less_than_compare".
+<pre><code>
+  bool my_string_less_than_compare(const_pointer p1,const_pointer p2)
+  {
+    my_string_const_pointer bsp1 = p1;
+    my_string_const_pointer bsp2 = p2;
+    if(bsp1->str == NULL) {
+      if(bsp2->str == NULL)
+        return false; /* both NULL, equal -- NULL is not less than NULL */
+      else
+        return true; /* 1st is NULL, second is not.  NULL is less than not NULL */
+    } else if(bsp2 == NULL)
+      return false; /* 1st is not NULL, second is NULL. Not NULL is not less than NULL */
+    return strcmp(bsp1->str,bsp2->str) < 0; /* Both not null, compare the strings */
+  }
+</code></pre>
+<div class="divTable">
+<div class="divTableBody">
+<div class="divTableRow">
+<div class="divTableHead">Description</div>
+<div class="divTableHead">Operator</div>
+<div class="divTableHead">YAOOC method</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Equal to</div>
+<div class="divTableCell">==</div>
+<div class="divTableCell">op_eq</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Equal to</div>
+<div class="divTableCell">!=</div>
+<div class="divTableCell">op_ne</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Less than</div>
+<div class="divTableCell"><</div>
+<div class="divTableCell">op_lt</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Less than or equal to</div>
+<div class="divTableCell"><=</div>
+<div class="divTableCell">op_le</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Greater than</div>
+<div class="divTableCell">></div>
+<div class="divTableCell">op_gt</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Greater than or equal to</div>
+<div class="divTableCell">>=</div>
+<div class="divTableCell">op_ge</div>
+</div>
+</div>
+</div>
+
+<h3>Type Info Structure</h3>
+The class table, parent, to/from stream type info entries will be covered in later chapters.  The type info structure for my_string sting is now:
+<pre><code>
+  const type_info_t __my_string_ti =
+  {
+    sizeof(my_string_t),
+    my_string_default_ctor,
+    my_string_dtor,
+    my_string_copy_ctor,
+    my_string_assign,
+    my_string_less_than_compare,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+  };
+  const type_info_t* my_string_ti=&__my_string_ti;
+</code></pre>
+
+<p>
+Since creation of type info structures is so common, using the DEFINE_TYPE_INFO macro is much easier to use
+</p>
+<pre><code>
+  DEFINE_TYPE_INFO(my_string,my_string_default_ctor,my_string_dtor,my_string_copy_ctor,my_string_assign,my_string_less_than_compare,NULL,NULL,NULL,NULL)
+</code></pre>
+<p>
+Now let's give the my_string class a try.  Adding the following main program will demonstrate it. 
+</p>
+<pre><code>
+  int main(int argc,char* argv[])
+  {
+    /* Create a new my_string using default ctor */
+    my_string_pointer sp1=new(my_string);
+
+    /* Assign value to sp1 */
+    sp1->str=strdup("This is a sp1 test string");
+  
+    /* Using copy ctor to create another simple string */
+    my_string_pointer sp2=new_copy(sp1);
+    sp2->str[12]='2';
+  
+    /* Create a new string and assign sp2 value to it.  Same as using copy ctor */
+    /* Note that sp3=sp2 should not be used.  Assignment method should be used */
+    my_string_pointer sp3=new(my_string);
+    assign(sp3,sp2);
+    sp3->str[12]='3';
+  
+    printf("%s\n",sp1->str);
+    printf("%s\n",sp2->str);
+    printf("%s\n",sp3->str);
+
+    /*
+      Comparing objects.  Can not use ==, !=, <, <=, > , or >=.
+      Use op_eq, op_ne, op_lt, op_le, op_gt, and op_ge
+    */
+    printf("sp1 %s sp2\n",op_eq(sp1,sp2) ? "is equal" : "is not equal");
+    printf("sp1 %s sp2\n",op_ne(sp1,sp2) ? "is not equal" : "is equal");
+    printf("sp1 %s sp2\n",op_lt(sp1,sp2) ? "is less than" : "is not less than");
+    printf("sp1 %s sp2\n",op_le(sp1,sp2) ? "is less than or equal to" : "is not less than nor equal to");
+    printf("sp1 %s sp2\n",op_gt(sp1,sp2) ? "is greater than" : "is not greater than");
+    printf("sp1 %s sp2\n",op_ge(sp1,sp2) ? "is greater than or equal to" : "is not greater than nor equal to");
+
+    /* Delete allocated objects */
+    delete(sp1);
+    delete(sp2);
+    delete(sp3);
+  }
+</code></pre>
+
+</div>
+</div>
+</div>
+</body>
+</html>

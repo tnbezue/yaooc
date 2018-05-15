@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Memory Layout</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Memory Layout</h2>
+
+<p>
+Before continuing the development of the my_string class, it's helpful to understand how memory is allocated by YAOOC new.
+When an object (or array of objects) is allocated, additional memory is allocated for a pointer to type information and the number of
+elements allocated.  This memory layout is shown below. 
+</p>
+<div class="divTable">
+<div class="divTableBody">
+<div class="divTableRow">
+<div class="divTableCell">Pointer to type info structure (type_info_t*)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Number of elements allocated (size_t)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableHead">1st element (new returns pointer to this element)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">2nd element</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">...</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">nth element</div>
+</div>
+</div>
+</div>
+
+<p>
+The overhead is 8 bytes for a 32 bit system and 16 bytes for a 64 bit system.  Note that this is per allocation -- not per element.  
+If a single character is allocated, 9 (or 17) bytes will actually be allocated.  An array of 100,000 characters would require 100,008 (or 100,016) bytes. 
+</p>
+<p>
+This dynamic memory allocation scheme allows the type info to be readily available for any method that uses it. For example, the assign method
+can access the type info to apply the appropriate assignment method.  Likewise, the delete method can determine the the destructor and number
+of elements to delete. 
+</p>
+<p>
+The assign and comparison methods (presented in previous chapters) can work for a single element (or the first element).  But it can not be used for the second or greater
+element.  There are "static" versions of assign and comparison to address this issue.  The element type is included as an argument to the static versions. 
+</p>
+
+<div class="divTable">
+<div class="divTableBody">
+<div class="divTableRow">
+<div class="divTableHead">Method</div>
+<div class="divTableHead">Purpose</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">assign_static(p1,p2,T)</div>
+<div class="divTableCell">Assign object of type T pointed to by p1 to object of type T pointed to by p2</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">op_eq_static(p1,p2,T)</div>
+<div class="divTableCell">Compares if objects of type T pointer to by p1 and p2 are equal</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">op_ne_static(p1,p2,T)</div>
+<div class="divTableCell">Compares if objects of type T pointer to by p1 and p2 are not equal</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">op_lt_static(p1,p2,T)</div>
+<div class="divTableCell">Compares if object p1 is less than p2.  Both objects are of type T</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">op_le_static(p1,p2,T)</div>
+<div class="divTableCell">Compares if object p1 is less than or equal to p2.  Both objects are of type T</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">op_gt_static(p1,p2,T)</div>
+<div class="divTableCell">Compares if object p1 is greater than p2.  Both objects are of type T</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">op_ge_static(p1,p2,T)</div>
+<div class="divTableCell">Compares if object p1 is greater than or equal to p2.  Both objects are of type T</div>
+</div>
+</div>
+</div>
+
+<p>
+For example, to compare if two my_string objects are equal, use:
+</p>
+<pre><code>
+  if(op_eq_static(p1,p2,my_string))
+    puts("Equal");
+</code></pre>
+
+</div>
+</div>
+</div>
+</body>
+</html>

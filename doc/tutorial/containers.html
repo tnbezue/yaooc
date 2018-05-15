@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Yaooc PreProcessor</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Containers</h2>
+<p>
+Another feature of C++ that is implemented in YAOOC is containers -- vector, map, set, etc. One goal of YAOOC is to use similar
+iterators as C++ (increment and decrement using ++ or --).  The only structure in C that allows this is an array.  Therefore,
+the base class for vector, map, set, etc is an array.  The table below shows the array type that are implemented in YAOOC.
+</p>
+
+
+<div class="divTable">
+<div class="divTableBody">
+<div class="divTableRow">
+<div class="divTableHead">Array type</div>
+<div class="divTableHead">Description</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">array_container</div>
+<div class="divTableCell">Random access array container</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">unique_array_container</div>
+<div class="divTableCell">Random access array container where values are unique</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">ordered_array_container</div>
+<div class="divTableCell">Ordered random array access container</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">unique_ordered_array_container</div>
+<div class="divTableCell">Ordered random array access container where values are unique</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">index_array_container</div>
+<div class="divTableCell">Random access array container with shadow index such that array[index[i]] (i=0 to n) will be ordered</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">unique_index_array_container</div>
+<div class="divTableCell">Random access indexed array container where values are unique</div>
+</div>
+</div>
+</div>
+
+<p>
+These containers are used to implement higher level containers such as vector or map. 
+Items that are contained in the array should have the less than compare type info method defined.
+The storage of the container is handled automatically, being expanded and contracted as needed.
+Any iterators for an array may be invalidated when an item is inserted.  
+</p>
+
+<p>
+The array_container is good for storing items that are appended to the end.    As the size increases, so does search time.
+</p>
+<p>
+The unique_array_container is the same as array_container except items are unique.  As with array_container, as size
+increases, so does search time.  Insert time also increases since array must be searched before insert.
+</p>
+<p>
+The ordered_array_container keeps items in an ordered fashion.  Since items are ordered, search times are decreases.  Insert
+times may increase if items are not entered in order. 
+</p>
+<p>
+The unique_ordered_array_container keeps items in an ordered fashion and eliminates duplicate items.
+</p>
+<p>
+The index_array_container maintains a shadow index array such that array[index[i]] (i=0 to size) will be ordered.  This
+allows items to be added to end of main array and move the index array.  The index array uses 4 byte integers so the time required
+to maintain the order of the index array is much less than trying to maintain the order of the main array. The index also
+allows much faster searches. 
+</p>
+<p>
+The unique_index_array_container is the same as index_array_container except values are unique.
+</p>
+
+<h3>Methods</h3>
+<p>The following methods are defined by array.</p>
+
+<div class="divTable">
+<div class="divTableBody">
+<div class="divTableRow">
+<div class="divTableHead">method</div>
+<div class="divTableHead">Description</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">size_t size()</div>
+<div class="divTableCell">Current size of array</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">size_t capacity()</div>
+<div class="divTableCell">Current capacity of array</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">bool empty()</div>
+<div class="divTableCell">True if size is 0</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">iterator begin()</div>
+<div class="divTableCell">iterator to beginning of array</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">iterator end()</div>
+<div class="divTableCell">iterator to end of array</div>
+</div>
+
+</div>
+</div>
+
+
+<h3>Iterators</h3>
+An iterator and const_iterator is available for derived classes.  Caution should be used when 
+For example, if array is an integer array, the iterators i and j are not equal. 
+<pre><code>
+  iterator i = M(array,begin)+5;
+  iterator j = M(array,at,5)
+</code></pre>
+<p>
+Since begin returns a generic iterator (void *), begin + 5 would be just 5 bytes beyond beginning of array -- which is most likely not what was intended.
+The at method will return 5*sizeof(int) bytes beyond beginning of array -- which is probably what was intented.
+</p>
+</div>
+</div>
+</div>
+</body>
+</html>
