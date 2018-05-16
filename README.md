@@ -7,17 +7,17 @@ As the name suggests, YAOOC is another framework to make C a bit more like C++ -
     /* Plain old data */
     char* string=new_array(char,128);
     strcpy(string,"Testing");
-    /* and any other string functions (strcat, strdup, etc) */
+    /* and any other string functions (strcat, strchr, etc) */
     delete(string);
 
     /* Containers */
-    VECTOR(long); /* Vector of longs */
-    long_vector lv=new(long_vector);
-    long i;
+    VECTOR(long,long_vector);  /*  Vector of longs */
+    long_vector_pointer lv=new(long_vector);
+    long_t i;
     for(i=0;i<100;i++)
-      M(lv,push_back_v,i)
+      M(lv,push_back,&i)
     long_vector_const_iterator ilv; /* const iterator for long vector */
-    for(ilv=M(lv,cbegin);ilv!=M(lv,cend);ilv++)
+    for(ilv=M(lv,begin);ilv!=M(lv,end);ilv++)
       printf("%ld ",*ilv);
     delete(lv);
 
@@ -27,12 +27,15 @@ As the name suggests, YAOOC is another framework to make C a bit more like C++ -
       double d;
       char* string;
     };
-    MAP(yaooc_string,custom); /* Can be used in container */
+		/* Can be used in container */
+    MAP(yaooc_string,custom,yaooc_string_custom_map);
     yaooc_string_custom_map_pointer mymap=new(yaooc_string_custom_map);
-    M(mymap,insert,str,new(custom));
+    custom_pointer cp=new(custom);
+    ....
+    M(mymap,insert,str,cp);
     ...
     yaooc_string_custom_map_const_iterator i;
-    CFOR_EACH(i,mymap) { /* same as for (i=M(mymap,cbegin);i!=M(mymap,cend);i++) */
+    FOR_EACH(i,mymap) { /* same as for (i=M(mymap,begin);i!=M(mymap,end);i++) */
       printf("%s %d %lf %s\n",M(i->first,c_str),i->second.x,i->second.y,i->second.string);
     }
     delete(mymap);
@@ -44,5 +47,7 @@ As the name suggests, YAOOC is another framework to make C a bit more like C++ -
 * Multiple constructors
 * Inheritance
 * Polymorphism
-* Containers (string, vector, map, etc)
+* String class
+* Containers (vector, map, etc)
 * Exceptions
+* Streams (cout, cin, cerr)
