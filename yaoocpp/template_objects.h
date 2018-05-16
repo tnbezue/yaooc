@@ -1,413 +1,289 @@
+/*
+		Copyright (C) 2016-2018  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #ifndef __TEMPLATE_OBJECTS_INCLUDED__
 #define __TEMPLATE_OBJECTS_INCLUDED__
 
-#include <yaooc/vector.h>
-#include <yaooc/string.h>
+#include <stdio.h>
+#include <yaooc/object.h>
 #include <yaooc/memory.h>
+#include <yaooc/string.h>
+#include <yaooc/vector.h>
+#include <yaooc/fstream.h>
 
-//SHARED_PTR_DEFINITION(yaooc_string)
+class_forward(yaoocpp_item);
+DYNAMIC_POINTER_DEFINITION(yaoocpp_item,yaoocpp_item_ptr);
+VECTOR_DEFINITION(yaoocpp_item_ptr,yaoocpp_item_ptr_vector);
+
+#define DEFINED_IN_CURRENT_CLASS 1
+#define DEFINED_IN_PARENT_CLASS (1<<1)
+#define OVERRIDEN_IN_CURRENT_CLASS (1<<2)
+
+/*  Begin YAOOC PreProcessor generated content */
+
 
 /*
-  Item defintion is base for all elements in definition file
+  Class definition for yaoocpp_item
 */
-class_table(item_definition)
+class_table(yaoocpp_item)
 {
-  yaooc_object_class_members_t;
+  yaooc_object_class_table_t;
   void (*virtual_dtor)(pointer);
-  void (*virtual_copy_ctor)(pointer,const_pointer);
-  void (*virtual_assign)(pointer,const_pointer);
-  void (*print_to_header_class)(const_pointer,FILE* out);
-  void (*print_to_header_prototype)(const_pointer,FILE* out);
-  void (*print_to_header_define)(const_pointer,FILE* out);
-  void (*print_to_source)(const_pointer,FILE* out);
-  void(*dump)(const_pointer,FILE* out,int);
+  bool (*virtual_less_than_compare)(const_pointer,const_pointer);
+  void (*dump)(const_pointer,yaooc_ofstream_pointer);
+  void (*print_prototype)(const_pointer,yaooc_ofstream_pointer);
+  void (*print_implementation)(const_pointer,yaooc_ofstream_pointer);
+  void (*print_class_prototype)(const_pointer,yaooc_ofstream_pointer);
+  void (*print_class_implementation)(const_pointer,yaooc_ofstream_pointer);
 };
 
-class_instance(item_definition)
+class_instance(yaoocpp_item)
 {
+  yaooc_object_class_instance_t;
+  unsigned int flags_;
 };
 
-class(item_definition);
-ISA_DEFINITION(item_definition,yaooc_object)
+class(yaoocpp_item);
+/* Prototypes for yaoocpp_item type info */
+void yaoocpp_item_default_ctor(pointer);
+void yaoocpp_item_dtor(pointer);
+void yaoocpp_item_copy_ctor(pointer,const_pointer);
+void yaoocpp_item_assign(pointer,const_pointer);
+bool yaoocpp_item_less_than_compare(const_pointer,const_pointer);
 
-void item_definition_default_ctor(pointer);
-void item_definition_dtor(pointer);
-void item_definition_copy_ctor(pointer,const_pointer);
-void item_definition_assign(pointer,const_pointer);
-/*void item_definition_print_to_header_class_table(const_pointer,FILE*);
-void item_definition_print_to_header_instance(const_pointer,FILE*);
-void item_definition_print_to_header_prototype(const_pointer,FILE*);
-void item_definition_print_to_header_define(const_pointer,FILE*);
-void item_definition_print_to_source(const_pointer,FILE*);
-void item_definition_dump(const_pointer,FILE*,int);*/
+/* Constructors for yaoocpp_item */
 
-#define ITEM_DEFINITION_CLASS_MEMBERS \
-  { \
-    item_definition_isa, \
-    item_definition_is_descendent, \
-    yaooc_object_swap \
-  }, \
-    NULL, \
-    NULL, \
-    NULL, \
-    NULL, \
-    NULL, \
-    NULL, \
-    NULL, \
-    NULL
+/* Prototypes for yaoocpp_item class table*/
+const char* yaoocpp_item_isa(const_pointer);
+#define yaoocpp_item_is_descendant yaooc_object_is_descendant
+#define yaoocpp_item_swap yaooc_object_swap
 
-SHARED_PTR_DEFINITION(item_definition)
-VECTOR_DEFINITION(item_definition_shared_ptr)
+/* Prototypes for yaoocpp_item class instance*/
 
-/*
-  A variable, argument, or function type definition
-*/
-class_table(type_definition)
-{
-  item_definition_class_members_t;
-  void (*set)(pointer,const char*);
-};
-
-class_instance(type_definition)
-{
-  yaooc_string_t type_string_;
-};
-
-class(type_definition);
-
-ISA_DEFINITION(type_definition,item_definition)
-void type_definition_default_ctor(pointer);
-void type_definition_virtual_dtor(pointer);
-void type_definition_virtual_copy_ctor(pointer,const_pointer);
-void type_definition_virtual_assign(pointer,const_pointer);
-void type_definition_print_to_header(const_pointer,FILE*);
-/*void type_definition_print_to_header_instance(const_pointer,FILE*);
-void type_definition_print_to_header_prototype(const_pointer,FILE*);
-void type_definition_print_to_header_define(const_pointer,FILE*);*/
-void type_definition_print_to_source(const_pointer,FILE*);
-void type_definition_dump(const_pointer,FILE*,int);
-void type_definition_set(pointer,const char*);
-
-#define TYPE_DEFINITION_CLASS_MEMBERS \
-  { \
-    { \
-      type_definition_isa, \
-      type_definition_is_descendent, \
-      yaooc_object_swap \
-    }, \
-      type_definition_virtual_dtor, \
-      type_definition_virtual_copy_ctor, \
-      type_definition_virtual_assign, \
-      type_definition_print_to_header, \
-      type_definition_print_to_header, \
-      type_definition_print_to_header, \
-      type_definition_print_to_source, \
-      type_definition_dump \
-  }, \
-  type_definition_set
-
-/*
-  Arg definition
-*/
-class_table(arg_definition)
-{
-  item_definition_class_members_t;
-  type_definition_const_pointer (*type)(const_pointer);
-  void (*set)(pointer,const char*,const char*); /* type_definition_const_pointer,yaooc_string_shared_ptr_const_pointer */
-};
-
-class_instance(arg_definition)
-{
-  type_definition_pointer type_;
-  yaooc_string_t name_;
-};
-
-class(arg_definition);
-ISA_DEFINITION(arg_definition,item_definition)
-void arg_definition_default_ctor(pointer);
-void arg_definition_virtual_dtor(pointer);
-void arg_definition_virtual_copy_ctor(pointer,const_pointer);
-void arg_definition_virtual_assign(pointer,const_pointer);
-void arg_definition_print_to_header_class(const_pointer,FILE*);
-void arg_definition_print_to_header_prototype(const_pointer,FILE*);
-void arg_definition_print_to_source(const_pointer,FILE*);
-void arg_definition_dump(const_pointer,FILE*,int);
-type_definition_const_pointer arg_definition_type(const_pointer);
-void arg_definition_set(pointer,const char*,const char*);
-void arg_definition_ctor_type_name(pointer,va_list);
-
-#define ARG_DEFINITION_CLASS_MEMBERS \
-  { \
-    { \
-      arg_definition_isa, \
-      arg_definition_is_descendent, \
-      yaooc_object_swap \
-    }, \
-    arg_definition_virtual_dtor, \
-    arg_definition_virtual_copy_ctor, \
-    arg_definition_virtual_assign, \
-    arg_definition_print_to_header_class, \
-    arg_definition_print_to_header_prototype, \
-    NULL, /* Won't need in define */ \
-    arg_definition_print_to_source, \
-    arg_definition_dump \
-  }, \
-  arg_definition_type, \
-  arg_definition_set
+/* Prototypes for yaoocpp_item class protected items*/
 
 
 /*
-  Variable definition -- decendent of argument.  Variable adds default value and printed different
-  in header and source
+  Class definition for yaoocpp_argument
 */
-class_table(variable_definition)
+class_table(yaoocpp_argument)
 {
-  item_definition_class_members_t;
-  void (*set)(pointer,const char*,const char*,const char*); /* type_definition_const_pointer,yaooc_string_shared_ptr_const_pointer */
+  yaoocpp_item_class_table_t;
+  const char* (*type) (const_pointer);
+  const char* (*name) (const_pointer);
 };
 
-class_instance(variable_definition)
+class_instance(yaoocpp_argument)
 {
-  arg_definition_instance_members_t;
-  yaooc_string_t default_value_;
+  yaoocpp_item_class_instance_t;
+  yaooc_string_t* name_;
+  yaooc_string_t* type_;
 };
 
-class(variable_definition);
-ISA_DEFINITION(variable_definition,arg_definition)
-void variable_definition_default_ctor(pointer);
-void variable_definition_virtual_dtor(pointer);
-void variable_definition_virtual_copy_ctor(pointer,const_pointer);
-void variable_definition_virtual_assign(pointer,const_pointer);
-void variable_definition_print_to_header_class(const_pointer,FILE*);
-/*void variable_definition_print_to_header_instance(const_pointer,FILE*);*/
-void variable_definition_print_to_header_prototype(const_pointer,FILE*);
-void variable_definition_print_to_header_define(const_pointer,FILE*);
-void variable_definition_print_to_source(const_pointer,FILE*);
-void variable_definition_dump(const_pointer,FILE*,int);
-void variable_definition_set(pointer,const char*,const char*,const char*);
-void variable_definition_ctor_type_name_default_value(pointer,va_list);
+class(yaoocpp_argument);
+/* Prototypes for yaoocpp_argument type info */
+void yaoocpp_argument_default_ctor(pointer);
+void yaoocpp_argument_copy_ctor(pointer,const_pointer);
+void yaoocpp_argument_assign(pointer,const_pointer);
 
-#define VARIABLE_DEFINITION_CLASS_MEMBERS \
-  { \
-    { \
-      variable_definition_isa, \
-      variable_definition_is_descendent, \
-      yaooc_object_swap \
-    }, \
-      variable_definition_virtual_dtor, \
-      variable_definition_virtual_copy_ctor, \
-      variable_definition_virtual_assign, \
-      variable_definition_print_to_header_class, \
-      variable_definition_print_to_header_prototype, \
-      variable_definition_print_to_header_define, \
-      variable_definition_print_to_source, \
-      variable_definition_dump \
-  }, \
-  variable_definition_set
+/* Constructors for yaoocpp_argument */
+
+/* Prototypes for yaoocpp_argument class table*/
+const char* yaoocpp_argument_isa(const_pointer);
+#define yaoocpp_argument_is_descendant yaoocpp_item_is_descendant
+#define yaoocpp_argument_swap yaoocpp_item_swap
+void yaoocpp_argument_virtual_dtor(pointer);
+bool yaoocpp_argument_virtual_less_than_compare(const_pointer,const_pointer);
+void yaoocpp_argument_dump(const_pointer,yaooc_ofstream_pointer);
+const char* yaoocpp_argument_type(const_pointer);
+const char* yaoocpp_argument_name(const_pointer);
+
+/* Prototypes for yaoocpp_argument class instance*/
+
+/* Prototypes for yaoocpp_argument class protected items*/
+
 
 /*
-  Constructor definition (other than default and copy) -- descendent of
+  Class definition for yaoocpp_variable
 */
-//VECTOR_DEFINITION(arg_definition)
-
-class_table(constructor_definition)
+class_table(yaoocpp_variable)
 {
-  item_definition_class_members_t;
-  void (*add_arg)(pointer,const_pointer);
+  yaoocpp_argument_class_table_t;
+  const char* (*default_value)(const_pointer);
 };
 
-class_instance(constructor_definition)
+class_instance(yaoocpp_variable)
 {
-  yaooc_string_t prefix_;
-  yaooc_string_t name_;
-  item_definition_shared_ptr_vector_pointer args_;
+  yaoocpp_argument_class_instance_t;
+  yaooc_string_t* default_value_;
 };
 
-class(constructor_definition);
-ISA_DEFINITION(constructor_definition,item_definition)
-void constructor_definition_default_ctor(pointer);
-void constructor_definition_virtual_dtor(pointer);
-void constructor_definition_virtual_copy_ctor(pointer,const_pointer);
-void constructor_definition_virtual_assign(pointer,const_pointer);
-void constructor_definition_print_to_header_class(const_pointer,FILE*);
-void constructor_definition_print_to_header_instance(const_pointer,FILE*);
-void constructor_definition_print_to_header_prototype(const_pointer,FILE*);
-void constructor_definition_print_to_header_define(const_pointer,FILE*);
-void constructor_definition_print_to_source(const_pointer,FILE*);
-void constructor_definition_dump(const_pointer,FILE*,int);
-void constructor_definition_add_arg(pointer,const_pointer);
+class(yaoocpp_variable);
+/* Prototypes for yaoocpp_variable type info */
+void yaoocpp_variable_default_ctor(pointer);
+void yaoocpp_variable_copy_ctor(pointer,const_pointer);
+void yaoocpp_variable_assign(pointer,const_pointer);
 
-#define CONSTRUCTOR_DEFINITION_CLASS_MEMBERS \
-  { \
-    { \
-      constructor_definition_isa, \
-      constructor_definition_is_descendent, \
-      yaooc_object_swap \
-    }, \
-      constructor_definition_virtual_dtor, \
-      constructor_definition_virtual_copy_ctor, \
-      constructor_definition_virtual_assign, \
-      constructor_definition_print_to_header_class, \
-      constructor_definition_print_to_header_prototype, \
-      constructor_definition_print_to_header_define, \
-      constructor_definition_print_to_source, \
-      constructor_definition_dump \
-  }, \
-  constructor_definition_add_arg
+/* Constructors for yaoocpp_variable */
+
+/* Prototypes for yaoocpp_variable class table*/
+const char* yaoocpp_variable_isa(const_pointer);
+#define yaoocpp_variable_is_descendant yaoocpp_argument_is_descendant
+#define yaoocpp_variable_swap yaoocpp_argument_swap
+void yaoocpp_variable_virtual_dtor(pointer);
+bool yaoocpp_variable_virtual_less_than_compare(const_pointer,const_pointer);
+void yaoocpp_variable_dump(const_pointer,yaooc_ofstream_pointer);
+const char* yaoocpp_variable_default_value(const_pointer);
+
+/* Prototypes for yaoocpp_variable class instance*/
+
+/* Prototypes for yaoocpp_variable class protected items*/
+
 
 /*
-  A method definition -- a descendent of constructor
+  Class definition for yaoocpp_constructor
 */
-class_table(method_definition)
+class_table(yaoocpp_constructor)
 {
-  constructor_definition_class_members_t;
+  yaoocpp_item_class_table_t;
 };
 
-class_instance(method_definition)
+class_instance(yaoocpp_constructor)
 {
-  constructor_definition_instance_members_t;
-  type_definition_pointer return_type_;
-  yaooc_string_t implementation_function_;
+  yaoocpp_item_class_instance_t;
+  yaooc_string_t* name_;
+  yaoocpp_item_ptr_vector_t* arguments_;
+  yaooc_string_t* implementation_method_;
+  yaooc_string_t* prefix_;
+};
+
+class(yaoocpp_constructor);
+/* Prototypes for yaoocpp_constructor type info */
+void yaoocpp_constructor_default_ctor(pointer);
+void yaoocpp_constructor_copy_ctor(pointer,const_pointer);
+void yaoocpp_constructor_assign(pointer,const_pointer);
+
+/* Constructors for yaoocpp_constructor */
+
+/* Prototypes for yaoocpp_constructor class table*/
+const char* yaoocpp_constructor_isa(const_pointer);
+#define yaoocpp_constructor_is_descendant yaoocpp_item_is_descendant
+#define yaoocpp_constructor_swap yaoocpp_item_swap
+void yaoocpp_constructor_virtual_dtor(pointer);
+bool yaoocpp_constructor_virtual_less_than_compare(const_pointer,const_pointer);
+void yaoocpp_constructor_dump(const_pointer,yaooc_ofstream_pointer);
+void yaoocpp_constructor_print_prototype(const_pointer,yaooc_ofstream_pointer);
+void yaoocpp_constructor_print_definition(const_pointer,yaooc_ofstream_pointer);
+
+/* Prototypes for yaoocpp_constructor class instance*/
+
+/* Prototypes for yaoocpp_constructor class protected items*/
+
+
+/*
+  Class definition for yaoocpp_method
+*/
+class_table(yaoocpp_method)
+{
+  yaoocpp_constructor_class_table_t;
+};
+
+class_instance(yaoocpp_method)
+{
+  yaoocpp_constructor_class_instance_t;
+  yaooc_string_t* type_;
   bool is_const_;
 };
 
-class(method_definition);
-ISA_DEFINITION(method_definition,constructor_definition)
-void method_definition_default_ctor(pointer);
-void method_definition_virtual_dtor(pointer);
-void method_definition_virtual_copy_ctor(pointer,const_pointer);
-void method_definition_virtual_assign(pointer,const_pointer);
-void method_definition_print_to_header_class(const_pointer,FILE*);
-void method_definition_print_to_header_prototype(const_pointer,FILE*);
-void method_definition_print_to_header_define(const_pointer,FILE*);
-void method_definition_print_to_source(const_pointer,FILE*);
-void method_definition_dump(const_pointer,FILE*,int);
-void method_definition_add_arg(pointer,const_pointer);
-#define METHOD_DEFINITION_CLASS_MEMBERS \
-  { \
-    { \
-      { \
-        method_definition_isa, \
-        method_definition_is_descendent, \
-        yaooc_object_swap \
-      }, \
-        method_definition_virtual_dtor, \
-        method_definition_virtual_copy_ctor, \
-        method_definition_virtual_assign, \
-        method_definition_print_to_header_class, \
-        method_definition_print_to_header_prototype, \
-        method_definition_print_to_header_define, \
-        method_definition_print_to_source, \
-        method_definition_dump \
-    }, \
-    constructor_definition_add_arg \
-  }
+class(yaoocpp_method);
+/* Prototypes for yaoocpp_method type info */
+void yaoocpp_method_default_ctor(pointer);
+void yaoocpp_method_copy_ctor(pointer,const_pointer);
+void yaoocpp_method_assign(pointer,const_pointer);
+
+/* Constructors for yaoocpp_method */
+
+/* Prototypes for yaoocpp_method class table*/
+const char* yaoocpp_method_isa(const_pointer);
+#define yaoocpp_method_is_descendant yaoocpp_constructor_is_descendant
+#define yaoocpp_method_swap yaoocpp_constructor_swap
+void yaoocpp_method_virtual_dtor(pointer);
+bool yaoocpp_method_virtual_less_than_compare(const_pointer,const_pointer);
+void yaoocpp_method_dump(const_pointer,yaooc_ofstream_pointer);
+void yaoocpp_method_print_prototype(const_pointer,yaooc_ofstream_pointer);
+void yaoocpp_method_print_definition(const_pointer,yaooc_ofstream_pointer);
+
+/* Prototypes for yaoocpp_method class instance*/
+
+/* Prototypes for yaoocpp_method class protected items*/
 
 
 /*
-  A member (table, private, protected) definition
+  Class definition for yaoocpp_class
 */
-class_table(member_definition)
+class_table(yaoocpp_class)
 {
-  item_definition_class_members_t;
-  void(*add_item)(pointer,const_pointer);
+  yaoocpp_item_class_table_t;
+  void (*print_to_header)(const_pointer,yaooc_ofstream_pointer);
+  void (*print_to_source)(const_pointer,yaooc_ofstream_pointer);
 };
 
-class_instance(member_definition)
+class_instance(yaoocpp_class)
 {
-  item_definition_shared_ptr_vector_pointer items_;
-  bool print_variable_members_;
-};
-
-class(member_definition);
-ISA_DEFINITION(member_definition,item_definition)
-void member_definition_default_ctor(pointer);
-void member_definition_virtual_dtor(pointer);
-void member_definition_virtual_copy_ctor(pointer,const_pointer);
-void member_definition_virtual_assign(pointer,const_pointer);
-void member_definition_print_to_header_class(const_pointer,FILE*);
-/*void member_definition_print_to_header_instance(const_pointer,FILE*);*/
-void member_definition_print_to_header_prototype(const_pointer,FILE*);
-void member_definition_print_to_header_define(const_pointer,FILE*);
-void member_definition_print_to_source(const_pointer,FILE*);
-void member_definition_dump(const_pointer,FILE*,int);
-void member_definition_add_item(pointer,const_pointer);
-#define MEMBER_DEFINITION_CLASS_MEMBERS \
-  { \
-    { \
-      member_definition_isa, \
-      member_definition_is_descendent, \
-      yaooc_object_swap \
-    }, \
-      member_definition_virtual_dtor, \
-      member_definition_virtual_copy_ctor, \
-      member_definition_virtual_assign, \
-      member_definition_print_to_header_class, \
-      member_definition_print_to_header_prototype, \
-      member_definition_print_to_header_define, \
-      member_definition_print_to_source, \
-      member_definition_dump \
-  }, \
-  member_definition_add_item
-
-
-/*
-  Class definition
-
-VECTOR_DEFINITION(method_definition)
-*/
-class_table(class_definition)
-{
-  item_definition_class_members_t;
-  void (*add_constructor)(pointer,const_pointer);
-};
-
-class_instance(class_definition)
-{
-  yaooc_string_t name_;
-  yaooc_string_t parent_name_;
-/*  item_definition_shared_ptr_vector_pointer constructors_;*/
-  member_definition_pointer constructors_;
-  member_definition_pointer table_;
-  member_definition_pointer private_;
-  member_definition_pointer protected_;
-  member_definition_pointer instance_;
+  yaoocpp_item_class_instance_t;
+  yaoocpp_class_t* parent_;
+  yaooc_string_t* name_;
+  yaoocpp_item_ptr_vector_t* constructors_;
+  yaoocpp_item_ptr_vector_t* table_;
+  yaoocpp_item_ptr_vector_t* instance_;
+  yaoocpp_item_ptr_vector_t* private_;
+  yaoocpp_item_ptr_vector_t* protected_;
   bool has_default_ctor_;
   bool has_dtor_;
   bool has_copy_ctor_;
-  bool has_assignment_;
-  bool has_lt_compare_;
+  bool has_assign_;
+  bool has_lt_cmp_;
+	bool has_to_stream_;
+	bool has_from_stream_;
+  bool defined_in_top_level_file_;
 };
 
-class(class_definition);
-ISA_DEFINITION(class_definition,item_definition)
-void class_definition_default_ctor(pointer);
-void class_definition_virtual_dtor(pointer);
-void class_definition_virtual_copy_ctor(pointer,const_pointer);
-void class_definition_virtual_assign(pointer,const_pointer);
-void class_definition_print_to_header_class(const_pointer,FILE*);
-void class_definition_print_to_header_prototype(const_pointer,FILE*);
-void class_definition_print_to_header_define(const_pointer,FILE*);
-void class_definition_print_to_source(const_pointer,FILE*);
-void class_definition_dump(const_pointer,FILE*,int);
-void class_definition_add_constructor(pointer,const_pointer);
+class(yaoocpp_class);
+/* Prototypes for yaoocpp_class type info */
+void yaoocpp_class_default_ctor(pointer);
+void yaoocpp_class_copy_ctor(pointer,const_pointer);
+void yaoocpp_class_assign(pointer,const_pointer);
 
-#define CLASS_DEFINITION_CLASS_MEMBERS \
-  { \
-    { \
-      class_definition_isa, \
-      class_definition_is_descendent, \
-      yaooc_object_swap \
-    }, \
-      class_definition_virtual_dtor, \
-      class_definition_virtual_copy_ctor, \
-      class_definition_virtual_assign, \
-      class_definition_print_to_header_class, \
-      class_definition_print_to_header_prototype, \
-      class_definition_print_to_header_define, \
-      class_definition_print_to_source, \
-      class_definition_dump \
-  }, \
-  class_definition_add_constructor
+/* Constructors for yaoocpp_class */
+
+/* Prototypes for yaoocpp_class class table*/
+const char* yaoocpp_class_isa(const_pointer);
+#define yaoocpp_class_is_descendant yaoocpp_item_is_descendant
+#define yaoocpp_class_swap yaoocpp_item_swap
+void yaoocpp_class_virtual_dtor(pointer);
+bool yaoocpp_class_virtual_less_than_compare(const_pointer,const_pointer);
+void yaoocpp_class_dump(const_pointer,yaooc_ofstream_pointer);
+void yaoocpp_class_print_to_header(const_pointer,yaooc_ofstream_pointer);
+void yaoocpp_class_print_to_source(const_pointer,yaooc_ofstream_pointer);
+
+/* Prototypes for yaoocpp_class class instance*/
+
+/* Prototypes for yaoocpp_class class protected items*/
+
+/*  End YAOOC PreProcessor generated content */
 
 #endif
