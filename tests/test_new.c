@@ -209,35 +209,35 @@ void test_copy()
 	delete(dy);
 }
 
-typedef struct {
+class_(base) {
 	int x;
-} base_t;
+};
 
 void base_default_ctor(pointer p)
 {
   ((base_t*)p)->x = 0;
-  if(optr) sprintf(optr,"BDC0");
+  if(optr) optr+=sprintf(optr,"BDC0");
 }
 
 void base_dtor(pointer p)
 {
-  if(optr) sprintf(optr,"BDT%d",((base_t*)p)->x);
+  if(optr) optr+=sprintf(optr,"BDT%d",((base_t*)p)->x);
 }
 
 void base_assign(pointer dst,const_pointer src) {
-  if(optr) sprintf(optr,"BAS%d-%d",((const base_t*)dst)->x,((const base_t*)src)->x);
+  if(optr) optr+=sprintf(optr,"BAS%d-%d",((const base_t*)dst)->x,((const base_t*)src)->x);
   ((base_t*)dst)->x = ((const base_t*)src)->x;
 }
 void base_copy_ctor(pointer dst,const_pointer src)
 {
-  if(optr) sprintf(optr,"BCC%d-%d",((const base_t*)dst)->x,((const base_t*)src)->x);
   base_default_ctor(dst);
+  if(optr) optr+=sprintf(optr,"BCC%d-%d",((const base_t*)dst)->x,((const base_t*)src)->x);
   base_assign(dst,src);
 }
 
 bool base_less_than_compare(const_pointer v1,const_pointer v2)
 {
-  if(optr) sprintf(optr,"BLTC%d-%d",((const base_t*)v1)->x,((const base_t*)v2)->x);
+  if(optr) optr+=sprintf(optr,"BLTC%d-%d",((const base_t*)v1)->x,((const base_t*)v2)->x);
   return ((const base_t*)v1)->x < ((const base_t*)v2)->x;
 }
 DEFINE_TYPE_INFO(base,base_default_ctor,base_dtor,base_copy_ctor,base_assign,base_less_than_compare,
@@ -245,21 +245,15 @@ DEFINE_TYPE_INFO(base,base_default_ctor,base_dtor,base_copy_ctor,base_assign,bas
 
 void base_ctor_int(pointer p,va_list args)
 {
-  /*
-    The base constructor can be called by here (well, anywhere).  But in most cases, it's not what's
-    desired.
-
-    base_default_ctor(p);
-  */
   int x=va_arg(args,int);
-  if(optr) sprintf(optr,"BCTI%d",x);
+  if(optr) optr+=sprintf(optr,"BCTI%d",x);
   ((base_t*)p)->x=x;
 }
 
-typedef struct {
+class_(derived) {
 	base_t;
 	int y;
-} derived_t;
+};
 
 void derived_default_ctor(pointer p)
 {
@@ -303,10 +297,10 @@ void derived_ctor_int_int(pointer p,va_list args)
   ((derived_t*)p)->y=y;
 }
 
-typedef struct {
+class_(derived2) {
 	derived_t;
 	int z;
-} derived2_t;
+};
 
 void derived2_default_ctor(pointer p)
 {
@@ -395,64 +389,53 @@ void test_derived_dtor()
   DELETE(b,d,d2);
 }
 
-/*
-int xx=0;
-char* dtor_ptr;
-void base_default_ctor2(pointer p) { ((base_t*)p)->x = xx++; }
-void base_copy_ctor2(pointer dst,const_pointer src) { ((base_t*)dst)->x = ((const base_t*)src)->x; }
-void base_dtor2(pointer p) { dtor_ptr+=sprintf(dtor_ptr,"%d ",((base_t*)p)->x); }
-void base_ctor2(pointer p,va_list args) { ((base_t*)p)->x = va_arg(args,int) + xx++; }
-const type_info_t __base2_ti=
+
+void print_base_array(base_const_pointer b)
 {
-	sizeof(base_t),
-	base_default_ctor2,
-	base_dtor2,
-	base_copy_ctor2,
-	NULL,
-	NULL,
-	NULL,
-	NULL
-};
+	size_t i,n=get_n_elem(b);
+	optr=output;
+	for(i=0;i<n;i++)
+		optr+=sprintf(optr,"%d ",b[i].x);
+}
 
 typedef const base_t* base_const_iterator;
-
 void test_renew()
 {
-	char* ptr=output;
-	const type_info_t* ti=&__base2_ti;
-	base_t* b1 = new_array(ti,5);
-	base_const_iterator bi;
-	for(bi=b1;bi!=b1+5;bi++)
-		ptr+=sprintf(ptr,"%d ",bi->x);
-	TEST("Output is '0 1 2 3 4 '",strcmp(output,"0 1 2 3 4 ")==0);
-	b1=renew_array(b1,10);
-	ptr=output;
-	for(bi=b1;bi!=b1+10;bi++)
-		ptr+=sprintf(ptr,"%d ",bi->x);
-	TEST("Output is '0 1 2 3 4 5 6 7 8 9 '",strcmp(output,"0 1 2 3 4 5 6 7 8 9 ")==0);
-	b1=renew_array_copy(b1,15,b1+4);
-	ptr=output;
-	for(bi=b1;bi!=b1+15;bi++)
-		ptr+=sprintf(ptr,"%d ",bi->x);
-	TEST("Output is '0 1 2 3 4 5 6 7 8 9 4 4 4 4 4 '",strcmp(output,"0 1 2 3 4 5 6 7 8 9 4 4 4 4 4 ")==0);
-	b1=renew_array_ctor(b1,20,base_ctor2,100);
-	ptr=output;
-	for(bi=b1;bi!=b1+20;bi++)
-		ptr+=sprintf(ptr,"%d ",bi->x);
-	TEST("Output is '0 1 2 3 4 5 6 7 8 9 4 4 4 4 4 110 111 112 113 114 '",strcmp(output,"0 1 2 3 4 5 6 7 8 9 4 4 4 4 4 110 111 112 113 114 ")==0);
-	dtor_ptr=output;
-	b1=renew_array_ctor(b1,15,base_ctor2,100);
-	TEST("Output is '110 111 112 113 114 '",strcmp(output,"110 111 112 113 114 ")==0);
-	dtor_ptr=output;
-	b1=renew_array_copy(b1,10,b1+4);
-	TEST("Output is '4 4 4 4 4 '",strcmp(output,"4 4 4 4 4 ")==0);
-	dtor_ptr=output;
-	b1=renew_array(b1,5);
-	TEST("Output is '5 6 7 8 9 '",strcmp(output,"5 6 7 8 9 ")==0);
-	dtor_ptr=output;
-	delete(b1);
+	optr=output;
+	base_t* b=new_array(base,10);
+	TEST("New array of 10 elements: Ctor called 10",strcmp(output,"BDC0BDC0BDC0BDC0BDC0BDC0BDC0BDC0BDC0BDC0")==0);
+	TEST("N elements is 10",get_n_elem(b)==10);
+	print_base_array(b);
+	TEST("Values are all zero",strcmp(output,"0 0 0 0 0 0 0 0 0 0 ")==0);
+
+	base_t* b_old=b;
+	b=renew_array(b,10);
+	TEST("Renew of same size changes nothing",b_old == b);
+
+	optr=output;
+	b=renew_array(b,5);
+	TEST("Renew to 5. Dtor called 5 times",strcmp(output,"BDT0BDT0BDT0BDT0BDT0")==0);
+	TEST("N elements is 5",get_n_elem(b)==5);
+
+	base_t* temp=new_ctor(base,base_ctor_int,12);
+	optr=output;
+	b=renew_array_copy(b,10,temp);
+	TEST("5 objects added (copied) to end",strcmp(output,"BDC0BCC0-12BAS0-12BDC0BCC0-12BAS0-12BDC0BCC0-12BAS0-12BDC0BCC0-12BAS0-12BDC0BCC0-12BAS0-12")==0);
+	TEST("Size is 10",get_n_elem(b)==10);
+	print_base_array(b);
+	TEST("Values 5 zeros and 5 12's",strcmp(output,"0 0 0 0 0 12 12 12 12 12 ")==0);
+
+	optr=output;
+	b=renew_array_ctor(b,15,base_ctor_int,33);
+	TEST("5 objects added (constructed) to end",strcmp(output,"BCTI33BCTI33BCTI33BCTI33BCTI33")==0);
+	TEST("Size is 15",get_n_elem(b)==15);
+	print_base_array(b);
+	TEST("Values 5 zeros, 5 12's, and 5 33's",strcmp(output,"0 0 0 0 0 12 12 12 12 12 33 33 33 33 33 ")==0);
+
+	delete(temp);
+	delete(b);
 }
-*/
+
 
 test_function tests[]=
 {
@@ -462,7 +445,7 @@ test_function tests[]=
 	test_operators,
 	test_copy,
 	test_derived_dtor,
-/*	test_renew, */
+	test_renew,
 };
 
 STD_MAIN(tests)

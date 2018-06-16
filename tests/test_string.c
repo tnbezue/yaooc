@@ -430,6 +430,46 @@ void test_split()
   delete(sv);
 }
 
+void test_match()
+{
+	TESTCASE("Match");
+	yaooc_string_pointer str=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"This is a test");
+	TEST("Does not match /IS/",M(str,match,"/IS/")==false);
+	TEST("Does match /IS/i",M(str,match,"/IS/i")==true);
+	delete(str);
+}
+
+void test_sub()
+{
+	TESTCASE("Sub");
+	yaooc_string_pointer str=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"This is a test");
+	M(str,sub_," is"," was");
+	TEST("'is' repaced with 'was'",strcmp(M(str,c_str),"This was a test")==0);
+
+	M(str,set,"This   is a test");
+	puts(M(str,c_str));
+	M(str,sub_," "," "); // Replace multiple spaces with single space */
+	TEST("Multiple consecutive spaces replaced with single space",strcmp(M(str,c_str),"This is a test")==0);
+	puts(M(str,c_str));
+	delete(str);
+}
+
+void test_gsub()
+{
+	TESTCASE("Gsub");
+	yaooc_string_pointer str=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"This is a test");
+	M(str,gsub_,"/is/i","was");
+	TEST("'is' repaced with 'was'",strcmp(M(str,c_str),"Thwas was a test")==0);
+
+	M(str,set,"This<this will>is<be>a<replaced>test");
+	M(str,gsub_,"/<.*?>/"," ");
+	TEST("Replace things in < > with a single space",strcmp(M(str,c_str),"This is a test")==0);
+	M(str,set,"aaaaa");
+	M(str,gsub_,"a","ab");
+	TEST("replace 'a' with 'ab'",strcmp(M(str,c_str),"ababababab")==0);
+	delete(str);
+}
+
 test_function tests[]=
 {
 	test_construtor,
@@ -444,7 +484,10 @@ test_function tests[]=
 	test_find,
 	test_iterator,
 	test_resize_shrink,
-  test_split
+  test_split,
+	test_match,
+	test_sub,
+	test_gsub,
 };
 
 STD_MAIN(tests)

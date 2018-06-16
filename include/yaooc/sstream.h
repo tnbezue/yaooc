@@ -30,7 +30,9 @@ class_table(yaooc_istringstream)
 {
   yaooc_istream_class_table_t;
   const char* (*c_str)(const_pointer);
-  void (*clear)(pointer);
+  void (*reset)(pointer);
+	void (*set)(pointer,const char*);
+	void (*setn)(pointer,const char*,size_t);
 };
 #define yaooc_istringstream_parent_class_table ((yaooc_istream_class_table_t*)(yaooc_istringstream_class_table.parent_class_table_))
 
@@ -57,6 +59,7 @@ const char* yaooc_istringstream_isa(const_pointer);
 #define yaooc_istringstream_to_s yaooc_istream_to_s
 #define yaooc_istringstream_eof yaooc_istream_eof
 #define yaooc_istringstream_seek yaooc_istream_seek
+#define yaooc_istringstream_stream yaooc_istream_stream
 #define yaooc_istringstream_tell yaooc_istream_tell
 #define yaooc_istringstream_bool yaooc_istream_bool
 #define yaooc_istringstream_scanf yaooc_istream_scanf
@@ -64,7 +67,9 @@ const char* yaooc_istringstream_isa(const_pointer);
 #define yaooc_istringstream_read yaooc_istream_read
 #define yaooc_istringstream_gets yaooc_istream_gets
 const char* yaooc_istringstream_c_str(const_pointer);
-void yaooc_istringstream_clear(pointer);
+void yaooc_istringstream_reset(pointer);
+void yaooc_istringstream_set(pointer,const char*);
+void yaooc_istringstream_setn(pointer,const char*,size_t);
 
 /* Prototypes for yaooc_istringstream protected members */
 
@@ -76,7 +81,7 @@ class_table(yaooc_ostringstream)
 {
   yaooc_ostream_class_table_t;
   const char* (*c_str)(const_pointer);
-  void (*clear)(pointer);
+  void (*reset)(pointer);
 };
 #define yaooc_ostringstream_parent_class_table ((yaooc_ostream_class_table_t*)(yaooc_ostringstream_class_table.parent_class_table_))
 
@@ -103,12 +108,13 @@ const char* yaooc_ostringstream_isa(const_pointer);
 #define yaooc_ostringstream_seek yaooc_ostream_seek
 #define yaooc_ostringstream_tell yaooc_ostream_tell
 #define yaooc_ostringstream_bool yaooc_ostream_bool
+#define yaooc_ostringstream_stream yaooc_ostream_stream
 #define yaooc_ostringstream_printf yaooc_ostream_printf
 #define yaooc_ostringstream_vprintf yaooc_ostream_vprintf
 #define yaooc_ostringstream_write yaooc_ostream_write
 #define yaooc_ostringstream_puts yaooc_ostream_puts
 const char* yaooc_ostringstream_c_str(const_pointer);
-void yaooc_ostringstream_clear(pointer);
+void yaooc_ostringstream_reset(pointer);
 
 /* Prototypes for yaooc_ostringstream protected members */
 

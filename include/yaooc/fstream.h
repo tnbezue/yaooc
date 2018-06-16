@@ -56,6 +56,7 @@ const char* yaooc_ifstream_isa(const_pointer);
 #define yaooc_ifstream_seek yaooc_istream_seek
 #define yaooc_ifstream_tell yaooc_istream_tell
 #define yaooc_ifstream_bool yaooc_istream_bool
+#define yaooc_ifstream_stream yaooc_istream_stream
 #define yaooc_ifstream_scanf yaooc_istream_scanf
 #define yaooc_ifstream_vscanf yaooc_istream_vscanf
 #define yaooc_ifstream_read yaooc_istream_read
@@ -100,6 +101,7 @@ const char* yaooc_ofstream_isa(const_pointer);
 #define yaooc_ofstream_seek yaooc_ostream_seek
 #define yaooc_ofstream_tell yaooc_ostream_tell
 #define yaooc_ofstream_bool yaooc_ostream_bool
+#define yaooc_ofstream_stream yaooc_ostream_stream
 #define yaooc_ofstream_printf yaooc_ostream_printf
 #define yaooc_ofstream_vprintf yaooc_ostream_vprintf
 #define yaooc_ofstream_write yaooc_ostream_write

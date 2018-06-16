@@ -2,6 +2,23 @@
 #define __REGEX_YAOOC_INCLUDED__
 
 #include "object.yaooc"
+#include "exception.yaooc"
+
+class yaooc_regex_exception : yaooc_exception {
+		yaooc_regex_exception();
+		~yaooc_regex_exception();
+		yaooc_regex_exception(yaooc_regex_exception);
+		operator=();
+		yaooc_regex_exception_ctor_ccs(const char* s);
+
+	table:
+		void swap(pointer o);
+		const char* isa() const;
+		const char* what() const;
+	instance:
+		char* what_;
+
+};
 
 class yaooc_matchdata : yaooc_object {
     yaooc_matchdata();
@@ -21,7 +38,6 @@ class yaooc_matchdata : yaooc_object {
     char* subject_;
     int match_result_;
     int n_captures_;
-    int match_flags_;
 };
 
 class yaooc_regex : yaooc_object {
