@@ -19,7 +19,6 @@
 
 
 
-
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -96,7 +95,8 @@ build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = tests/test_algorithm$(EXEEXT) \
 	tests/test_array_container$(EXEEXT) \
-	tests/test_base_parser$(EXEEXT) tests/test_exception$(EXEEXT) \
+	tests/test_base_parser$(EXEEXT) tests/test_date_time$(EXEEXT) \
+	tests/test_exception$(EXEEXT) \
 	tests/test_index_array_container$(EXEEXT) \
 	tests/test_json$(EXEEXT) tests/test_json_parser$(EXEEXT) \
 	tests/test_map$(EXEEXT) tests/test_memory$(EXEEXT) \
@@ -158,19 +158,19 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
-	"$(DESTDIR)$(bindir)" "$(DESTDIR)$(htmldir)" \
-	"$(DESTDIR)$(pkgincludedir)"
+	"$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 lib_libyaooc_la_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_lib_libyaooc_la_OBJECTS = src/algorithm.lo src/array_container.lo \
-	src/base_parser.lo src/exception.lo src/fstream.lo \
-	src/index_array_container.lo src/integer.lo src/json.lo \
-	src/json_parser.lo src/memory.lo src/new.lo src/object.lo \
-	src/ordered_array_container.lo src/pair.lo src/pod_array.lo \
-	src/pointer_bag.lo src/queue.lo src/real.lo src/regex.lo \
-	src/sstream.lo src/stack.lo src/stream.lo src/string.lo \
-	src/thread.lo src/types.lo src/unique_array_container.lo \
+	src/base_parser.lo src/date_time.lo src/exception.lo \
+	src/fstream.lo src/index_array_container.lo src/integer.lo \
+	src/json.lo src/json_parser.lo src/memory.lo src/new.lo \
+	src/object.lo src/ordered_array_container.lo src/pair.lo \
+	src/pod_array.lo src/pointer_bag.lo src/queue.lo src/real.lo \
+	src/regex.lo src/sstream.lo src/stack.lo src/stream.lo \
+	src/string.lo src/thread.lo src/types.lo \
+	src/unique_array_container.lo \
 	src/unique_index_array_container.lo \
 	src/unique_ordered_array_container.lo src/vector.lo
 lib_libyaooc_la_OBJECTS = $(am_lib_libyaooc_la_OBJECTS)
@@ -196,6 +196,10 @@ tests_test_base_parser_SOURCES = tests/test_base_parser.c
 tests_test_base_parser_OBJECTS = tests/test_base_parser.$(OBJEXT)
 tests_test_base_parser_LDADD = $(LDADD)
 tests_test_base_parser_DEPENDENCIES =
+tests_test_date_time_SOURCES = tests/test_date_time.c
+tests_test_date_time_OBJECTS = tests/test_date_time.$(OBJEXT)
+tests_test_date_time_LDADD = $(LDADD)
+tests_test_date_time_DEPENDENCIES =
 tests_test_exception_SOURCES = tests/test_exception.c
 tests_test_exception_OBJECTS = tests/test_exception.$(OBJEXT)
 tests_test_exception_LDADD = $(LDADD)
@@ -357,31 +361,31 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_array_container.c tests/test_base_parser.c \
-	tests/test_exception.c tests/test_index_array_container.c \
-	tests/test_json.c tests/test_json_parser.c tests/test_map.c \
-	tests/test_memory.c tests/test_new.c tests/test_number.c \
-	tests/test_object.c tests/test_ordered_array_container.c \
-	tests/test_ordered_map.c tests/test_ordered_set.c \
-	tests/test_pair.c tests/test_pod_array.c \
-	tests/test_pointer_bag.c tests/test_queue.c tests/test_regex.c \
-	tests/test_set.c tests/test_stack.c tests/test_stream.c \
-	tests/test_string.c tests/test_thread.c \
-	tests/test_unique_array_container.c \
+	tests/test_date_time.c tests/test_exception.c \
+	tests/test_index_array_container.c tests/test_json.c \
+	tests/test_json_parser.c tests/test_map.c tests/test_memory.c \
+	tests/test_new.c tests/test_number.c tests/test_object.c \
+	tests/test_ordered_array_container.c tests/test_ordered_map.c \
+	tests/test_ordered_set.c tests/test_pair.c \
+	tests/test_pod_array.c tests/test_pointer_bag.c \
+	tests/test_queue.c tests/test_regex.c tests/test_set.c \
+	tests/test_stack.c tests/test_stream.c tests/test_string.c \
+	tests/test_thread.c tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c \
 	tests/test_vector.c $(yaoocpp_yaoocpp_SOURCES)
 DIST_SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_array_container.c tests/test_base_parser.c \
-	tests/test_exception.c tests/test_index_array_container.c \
-	tests/test_json.c tests/test_json_parser.c tests/test_map.c \
-	tests/test_memory.c tests/test_new.c tests/test_number.c \
-	tests/test_object.c tests/test_ordered_array_container.c \
-	tests/test_ordered_map.c tests/test_ordered_set.c \
-	tests/test_pair.c tests/test_pod_array.c \
-	tests/test_pointer_bag.c tests/test_queue.c tests/test_regex.c \
-	tests/test_set.c tests/test_stack.c tests/test_stream.c \
-	tests/test_string.c tests/test_thread.c \
-	tests/test_unique_array_container.c \
+	tests/test_date_time.c tests/test_exception.c \
+	tests/test_index_array_container.c tests/test_json.c \
+	tests/test_json_parser.c tests/test_map.c tests/test_memory.c \
+	tests/test_new.c tests/test_number.c tests/test_object.c \
+	tests/test_ordered_array_container.c tests/test_ordered_map.c \
+	tests/test_ordered_set.c tests/test_pair.c \
+	tests/test_pod_array.c tests/test_pointer_bag.c \
+	tests/test_queue.c tests/test_regex.c tests/test_set.c \
+	tests/test_stack.c tests/test_stream.c tests/test_string.c \
+	tests/test_thread.c tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c \
 	tests/test_vector.c $(yaoocpp_yaoocpp_SOURCES)
@@ -390,7 +394,6 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-DATA = $(html_DATA)
 HEADERS = $(pkginclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -497,7 +500,7 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
 YAOOC_MAJOR_VERSION = 1
-YAOOC_MINOR_VERSION = 0
+YAOOC_MINOR_VERSION = 3
 YAOOC_PATCH_LEVEL = @YAOOC_PATCH_LEVEL@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -551,15 +554,58 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-YAOOC_PATCH_VERSION = 0
+YAOOC_PATCH_VERSION = 1
 AM_CFLAGS = -I$(top_srcdir)/include
 AM_LDFLAGS = -L$(top_srcdir)/lib -pthread
 ACLOCAL_AMFLAGS = -I m4
-EXTRA_DIST = yaooc-config doc
+DOC_FILES = doc/tutorial/map.html \
+doc/tutorial/type_info.html \
+doc/tutorial/pointer_bag.html \
+doc/tutorial/streams.html \
+doc/tutorial/vector.html \
+doc/tutorial/memory_layout.html \
+doc/tutorial/placement_new_delete.html \
+doc/tutorial/new_delete.html \
+doc/tutorial/constructors.html \
+doc/tutorial/inheritance.html \
+doc/tutorial/examples/ch17/my_string_vector.c \
+doc/tutorial/examples/ch17/my_string_vector.h \
+doc/tutorial/examples/ch08/my_string_v3.c \
+doc/tutorial/examples/ch07/my_string_v2.c \
+doc/tutorial/examples/ch02/hello_world.c \
+doc/tutorial/examples/ch10/my_string_v5.c \
+doc/tutorial/examples/ch18/my_string_map.h \
+doc/tutorial/examples/ch18/my_string_map.c \
+doc/tutorial/examples/ch09/my_string_v4.c \
+doc/tutorial/examples/ch15/my_string_v9.h \
+doc/tutorial/examples/ch15/my_string_v9.c \
+doc/tutorial/examples/ch06/my_string_v1.c \
+doc/tutorial/examples/ch12/my_string_v7.c \
+doc/tutorial/examples/ch12/my_string_v7.h \
+doc/tutorial/examples/ch13/my_string_v8.h \
+doc/tutorial/examples/ch13/my_string_v8.c \
+doc/tutorial/examples/ch11/my_string_v6.h \
+doc/tutorial/examples/ch11/my_string_v6.c \
+doc/tutorial/containers.html \
+doc/tutorial/custom_type_info.html \
+doc/tutorial/type_info_revisited.html \
+doc/tutorial/custom_class.html \
+doc/tutorial/exceptions.html \
+doc/tutorial/hello_world.html \
+doc/tutorial/yaoocpp.html \
+doc/tutorial/index.html \
+doc/tutorial/class_table_instance.html \
+doc/tutorial/yaooc.js \
+doc/tutorial/yaooc.css
+
+EXTRA_DIST = yaooc-config.in ${DOC_FILES} tests/test_harness.h tests/demo_def.inc \
+  tests/shape.inc tests/simple_object.inc tests/test_utils.inc
+
 lib_LTLIBRARIES = lib/libyaooc.la
 lib_libyaooc_la_SOURCES = src/algorithm.c \
 src/array_container.c \
 src/base_parser.c \
+src/date_time.c \
 src/exception.c \
 src/fstream.c \
 src/index_array_container.c \
@@ -591,6 +637,7 @@ lib_libyaooc_la_LDFLAGS = -version-info $(YAOOC_MAJOR_VERSION):$(YAOOC_MINOR_VER
 pkginclude_HEADERS = include/yaooc/algorithm.h \
 include/yaooc/array_container.h \
 include/yaooc/base_parser.h \
+include/yaooc/date_time.h \
 include/yaooc/exception.h \
 include/yaooc/fstream.h \
 include/yaooc/index_array_container.h \
@@ -623,52 +670,7 @@ include/yaooc/unique_ordered_array_container.h \
 include/yaooc/vector.h \
 include/yaooc/yaooc_debug.h
 
-html_DATA = doc/tutorial/class_table_instance.html \
-doc/tutorial/constructors.html \
-doc/tutorial/containers.html \
-doc/tutorial/custom_class.html \
-doc/tutorial/custom_type_info.html \
-doc/tutorial/exceptions.html \
-doc/tutorial/hello_world.html \
-doc/tutorial/inheritance.html \
-doc/tutorial/introduction.html \
-doc/tutorial/map.html \
-doc/tutorial/memory_layout.html \
-doc/tutorial/new_delete.html \
-doc/tutorial/placement_new_delete.html \
-doc/tutorial/pointer_bag.html \
-doc/tutorial/preface.html \
-doc/tutorial/streams.html \
-doc/tutorial/type_info.html \
-doc/tutorial/type_info_revisited.html \
-doc/tutorial/vector.html \
-doc/tutorial/yaoocpp.html \
-doc/tutorial/yaooc.js \
-doc/tutorial/yaooc.css \
-doc/tutorial/examples/ch02/hello_world.c \
-doc/tutorial/examples/ch06/my_string_v1.c \
-doc/tutorial/examples/ch07/my_string_v2.c \
-doc/tutorial/examples/ch08/my_string_v3.c \
-doc/tutorial/examples/ch09/my_string_v4.c \
-doc/tutorial/examples/ch10/my_string_v5.c \
-doc/tutorial/examples/ch11/my_string_v6.c \
-doc/tutorial/examples/ch11/my_string_v6.c.template \
-doc/tutorial/examples/ch11/my_string_v6.h \
-doc/tutorial/examples/ch11/my_string_v6.h.template \
-doc/tutorial/examples/ch11/my_string_v6.yaooc \
-doc/tutorial/examples/ch12/my_string_v7.c \
-doc/tutorial/examples/ch12/my_string_v7.h \
-doc/tutorial/examples/ch13/my_string_v8.c \
-doc/tutorial/examples/ch13/my_string_v8.h \
-doc/tutorial/examples/ch13/my_string_v8.yaooc \
-doc/tutorial/examples/ch15/my_string_v9.c \
-doc/tutorial/examples/ch15/my_string_v9.h \
-doc/tutorial/examples/ch17/my_string_vector.c \
-doc/tutorial/examples/ch17/my_string_vector.h \
-doc/tutorial/examples/ch18/my_string_map.c \
-doc/tutorial/examples/ch18/my_string_map.h
-
-LDADD = -L$(top_srcdir)/lib -lyaooc -ltre
+LDADD = -L$(top_srcdir)/lib -lyaooc
 bin_SCRIPTS = yaooc-config
 yaoocpp_yaoocpp_SOURCES = yaoocpp/yaoocpp.c yaoocpp/class_parser.c \
         yaoocpp/template_objects.c  yaoocpp/class_parser.h \
@@ -759,6 +761,7 @@ src/algorithm.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/array_container.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/base_parser.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/date_time.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/exception.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/fstream.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/index_array_container.lo: src/$(am__dirstamp) \
@@ -878,6 +881,12 @@ tests/test_base_parser.$(OBJEXT): tests/$(am__dirstamp) \
 tests/test_base_parser$(EXEEXT): $(tests_test_base_parser_OBJECTS) $(tests_test_base_parser_DEPENDENCIES) $(EXTRA_tests_test_base_parser_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test_base_parser$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_base_parser_OBJECTS) $(tests_test_base_parser_LDADD) $(LIBS)
+tests/test_date_time.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test_date_time$(EXEEXT): $(tests_test_date_time_OBJECTS) $(tests_test_date_time_DEPENDENCIES) $(EXTRA_tests_test_date_time_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test_date_time$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_date_time_OBJECTS) $(tests_test_date_time_LDADD) $(LIBS)
 tests/test_exception.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1099,6 +1108,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/algorithm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/array_container.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/base_parser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/date_time.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/fstream.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/index_array_container.Plo@am__quote@
@@ -1128,6 +1138,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_algorithm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_array_container.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_base_parser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_date_time.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_exception.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_index_array_container.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_json.Po@am__quote@
@@ -1194,27 +1205,6 @@ clean-libtool:
 
 distclean-libtool:
 	-rm -f libtool config.lt
-install-htmlDATA: $(html_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(html_DATA)'; test -n "$(htmldir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(htmldir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(htmldir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(htmldir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(htmldir)" || exit $$?; \
-	done
-
-uninstall-htmlDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(html_DATA)'; test -n "$(htmldir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(htmldir)'; $(am__uninstall_files_from_dir)
 install-pkgincludeHEADERS: $(pkginclude_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(pkginclude_HEADERS)'; test -n "$(pkgincludedir)" || list=; \
@@ -1462,12 +1452,11 @@ distcleancheck: distclean
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(SCRIPTS) $(DATA) \
-		$(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(SCRIPTS) $(HEADERS)
 install-binPROGRAMS: install-libLTLIBRARIES
 
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(htmldir)" "$(DESTDIR)$(pkgincludedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -1531,7 +1520,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-htmlDATA install-pkgincludeHEADERS
+install-data-am: install-pkgincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -1581,8 +1570,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS \
-	uninstall-htmlDATA uninstall-libLTLIBRARIES \
-	uninstall-pkgincludeHEADERS
+	uninstall-libLTLIBRARIES uninstall-pkgincludeHEADERS
 
 .MAKE: check-am install-am install-strip
 
@@ -1597,14 +1585,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS \
 	install install-am install-binPROGRAMS install-binSCRIPTS \
 	install-data install-data-am install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
-	install-htmlDATA install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
+	install-info install-info-am install-libLTLIBRARIES \
+	install-man install-pdf install-pdf-am \
 	install-pkgincludeHEADERS install-ps install-ps-am \
 	install-strip installcheck installcheck-am installdirs \
 	maintainer-clean maintainer-clean-generic mostlyclean \
 	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
 	pdf pdf-am ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-binSCRIPTS uninstall-htmlDATA \
+	uninstall-binPROGRAMS uninstall-binSCRIPTS \
 	uninstall-libLTLIBRARIES uninstall-pkgincludeHEADERS
 
 .PRECIOUS: Makefile
