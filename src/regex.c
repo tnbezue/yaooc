@@ -21,6 +21,76 @@
 #include <yaooc/stream.h>
 
 /*  Begin YAOOC PreProcessor generated content */
+/* yaooc_regex_exception private members */
+
+/* yaooc_regex_exception type info members */
+void yaooc_regex_exception_default_ctor(pointer p)
+{
+  yaooc_regex_exception_pointer this=p;
+	this->what_=NULL;
+}
+
+void yaooc_regex_exception_dtor(pointer p)
+{
+  yaooc_regex_exception_pointer this=p;
+	if(this->what_)
+		FREE(this->what_);
+}
+
+void yaooc_regex_exception_copy_ctor(pointer p,const_pointer s)
+{
+	yaooc_regex_exception_default_ctor(p);
+	yaooc_regex_exception_assign(p,s);
+}
+
+void yaooc_regex_exception_assign(pointer p,const_pointer s)
+{
+  yaooc_regex_exception_pointer this=p;
+  yaooc_regex_exception_const_pointer src=s;
+	yaooc_regex_exception_dtor(this);
+	this->what_=src->what_ ? STRDUP(src->what_) : NULL;
+}
+
+
+
+/* Constructors for yaooc_regex_exception */
+void yaooc_regex_exception_ctor_ccs(pointer p,va_list args)
+{
+  yaooc_regex_exception_pointer this=p;
+  const char* s = va_arg(args,const char*);
+	this->what_=s ? STRDUP(s) : NULL;
+}
+
+
+/* yaooc_regex_exception protected members */
+
+/* Class table methods for yaooc_regex_exception */
+const char* yaooc_regex_exception_isa(const_pointer p) { return "yaooc_regex_exception_t"; }
+
+void yaooc_regex_exception_swap(pointer p,pointer o)
+{
+  yaooc_regex_exception_pointer this=p;
+	yaooc_regex_exception_pointer other=o;
+	SWAP(char*,this->what_,other->what_);
+}
+
+const char* yaooc_regex_exception_what(const_pointer p)
+{
+	return ((yaooc_regex_exception_const_pointer)p)->what_;
+}
+
+/* Class table for yaooc_regex_exception */
+yaooc_regex_exception_class_table_t yaooc_regex_exception_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
+  .isa = (const char* (*) (const_pointer)) yaooc_regex_exception_isa,
+  .is_descendant = (bool (*) (const_pointer,const char*)) yaooc_exception_is_descendant,
+  .swap = (void (*) (pointer,pointer)) yaooc_regex_exception_swap,
+  .what = (const char* (*) (const_pointer)) yaooc_regex_exception_what,
+};
+
+DEFINE_TYPE_INFO(yaooc_regex_exception,yaooc_regex_exception_default_ctor,yaooc_regex_exception_dtor,yaooc_regex_exception_copy_ctor,yaooc_regex_exception_assign,NULL,NULL,NULL,&yaooc_regex_exception_class_table,yaooc_exception)
+
 
 /* Private items for yaooc_matchdata */
 
@@ -35,7 +105,7 @@ void yaooc_matchdata_default_ctor(pointer p)
   this->subject_=NULL;
   this->match_result_=-1;
   this->n_captures_=0;
-  this->match_flags_=0;
+//  this->match_flags_=0;
 }
 
 void yaooc_matchdata_dtor(pointer p)
@@ -62,7 +132,7 @@ void yaooc_matchdata_assign(pointer d,const_pointer s)
   if(this->subject_)
     FREE(this->subject_);
   this->n_captures_=src->n_captures_;
-  this->match_flags_=src->match_flags_;
+//  this->match_flags_=src->match_flags_;
   this->match_result_=src->match_result_;
   if(src->ovector_) {
     size_t size=this->n_captures_*sizeof(regmatch_t);
@@ -86,7 +156,7 @@ void yaooc_matchdata_swap(pointer p,pointer o)
   SWAP(char*,this->subject_,other->subject_);
   SWAP(int,this->match_result_,other->match_result_);
   SWAP(int,this->n_captures_,other->n_captures_);
-  SWAP(int,this->match_flags_,other->match_flags_);
+//  SWAP(int,this->match_flags_,other->match_flags_);
 }
 
 yaooc_string_pointer yaooc_matchdata_at(const_pointer p,size_t i)
@@ -178,7 +248,7 @@ void yaooc_regex_compile(pointer p)
 {
   yaooc_regex_pointer this=p;
   this->re_=MALLOC(sizeof(regex_t));
-  this->compile_result_=regcomp(this->re_,this->pattern_,this->compile_flags_);
+  this->compile_result_=regcomp(this->re_,this->pattern_,this->compile_flags_|REG_EXTENDED);
   if(this->compile_result_ != 0) {
     regfree(this->re_);
     FREE(this->re_);
@@ -246,10 +316,14 @@ void yaooc_regex_copy_ctor(pointer d,const_pointer s)
   yaooc_regex_assign(d,s);
 }
 
-void yaooc_regex_assign(pointer d,const_pointer s)
+void yaooc_regex_assign(pointer p,const_pointer s)
 {
+//	yaooc_regex_pointer this=p;
   yaooc_regex_const_pointer src=s;
-  yaooc_regex_set_pattern_flags(d,src->pattern_,src->compile_flags_);
+/*	this->pattern_=src->pattern_ ? STRDUP(src->pattern_) : NULL;
+	this->compile_flags_=src->compile_flags_;
+	yaooc_regex_compile(this);*/
+  yaooc_regex_set_pattern_flags(p,src->pattern_,src->compile_flags_);
 }
 
 /* Constructors for yaooc_regex */

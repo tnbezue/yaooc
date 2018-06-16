@@ -19,7 +19,7 @@
 #define __YAOOC_PAIR_INCLUDED__
 
 #include <yaooc/new.h>
-
+#include <string.h>
 /*
 	Pair definition
 
@@ -51,7 +51,7 @@ extern const type_info_t* const N ## _ti;
 void  N ## _default_ctor(pointer p) \
 { \
 	N ## _t * this=p; \
-	newp((pointer)&this->first,K); \
+	newp((pointer)(&this->first),K); \
 	newp(&this->second,V); \
 } \
 void N ## _dtor(pointer p) \

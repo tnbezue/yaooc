@@ -62,6 +62,7 @@ void student_info_default_ctor(pointer p)
 
 void student_info_dtor(pointer p)
 {
+	puts("Delete si");
   student_info_pointer this=p;
   deletep(&this->lname_,yaooc_string);
   deletep(&this->fname_,yaooc_string);
@@ -165,6 +166,7 @@ void test_basic()
     printf("%d %s %s %d\n",i->first,M(&p->lname_,c_str),M(&p->fname_,c_str),p->score_);
   }
 //  yaooc_index_container_print_indexes(student_info_map,stdout);
+	puts("Deleting map");
 	delete(student_info_map);
 
 }

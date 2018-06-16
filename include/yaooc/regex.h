@@ -19,12 +19,48 @@
 #define __REGEX_INCLUDED__
 
 #include <yaooc/string.h>
+#include <yaooc/exception.h>
 #ifdef __YAOOC_USE_TRE__
 #include <tre/regex.h>
 #else
 #include <regex.h>
 #endif
 /*  Begin YAOOC PreProcessor generated content */
+
+/*
+  Class definition for yaooc_regex_exception
+*/
+class_table(yaooc_regex_exception)
+{
+  yaooc_exception_class_table_t;
+};
+#define yaooc_regex_exception_parent_class_table ((yaooc_exception_class_table_t*)(yaooc_regex_exception_class_table.parent_class_table_))
+
+class_instance(yaooc_regex_exception)
+{
+  yaooc_exception_class_instance_t;
+  char* what_;
+};
+
+class(yaooc_regex_exception);
+
+/* Prototypes for yaooc_regex_exception type info */
+void yaooc_regex_exception_default_ctor(pointer);
+void yaooc_regex_exception_dtor(pointer);
+void yaooc_regex_exception_copy_ctor(pointer,const_pointer);
+void yaooc_regex_exception_assign(pointer,const_pointer);
+
+/* Prototypes for yaooc_regex_exception constructors */
+void yaooc_regex_exception_ctor_ccs(pointer,va_list);
+
+/* Prototypes for yaooc_regex_exception class table */
+const char* yaooc_regex_exception_isa(const_pointer);
+#define yaooc_regex_exception_is_descendant yaooc_exception_is_descendant
+void yaooc_regex_exception_swap(pointer,pointer);
+const char* yaooc_regex_exception_what(const_pointer);
+
+/* Prototypes for yaooc_regex_exception protected members */
+
 
 /*
   Class definition for yaooc_matchdata
@@ -46,7 +82,6 @@ class_instance(yaooc_matchdata)
   char* subject_;
   int match_result_;
   int n_captures_;
-  int match_flags_;
 };
 
 class(yaooc_matchdata);

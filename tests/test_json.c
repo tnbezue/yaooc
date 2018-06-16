@@ -57,12 +57,12 @@ void test_bool()
   TEST("Default value is false",M(jb,get)==false);
   M(jb,set,true);
   TEST("Set value is true",M(jb,get)==true);
-  M(os,clear);
+  M(os,reset);
   M(jb,print,os);
   TEST("Print to string is 'true'",strcmp(M(os,c_str),"true")==0);
   M(jb,set,false);
   TEST("Set value to false",M(jb,get)==false);
-  M(os,clear);
+  M(os,reset);
   M(jb,print,os);
   TEST("Print to string is 'false'",strcmp(M(os,c_str),"false")==0);
   M(jb,set,true);
@@ -83,7 +83,7 @@ void test_integer()
   TEST("Print to string is '0'",strcmp(M(os,c_str),"0")==0);
   M(ji,set,872345234);
   TEST("Set to 872345234",M(ji,get)==872345234);
-  M(os,clear);
+  M(os,reset);
   M(ji,print,os);
   TEST("Print to string is '872345234'",strcmp(M(os,c_str),"872345234")==0);
 //  M(ji,clear);
@@ -103,7 +103,7 @@ void test_real()
   TEST("print to sring is '0'",strcmp(M(os,c_str),"0")==0);
   M(jr,set,3.1415);
   TEST("Value is pi",M(jr,get)==3.1415);
-  M(os,clear);
+  M(os,reset);
   M(jr,print,os);
   TEST("Print to string is '3.1415'",strcmp(M(os,c_str),"3.1415")==0);
 //  M(jr,clear);
@@ -125,7 +125,7 @@ void test_string()
   printf("X%sX\n",M(os,c_str));
   M(js,set,"Testing");
   TEST("Value set to 'Testing'",strcmp(M(js,get),"Testing")==0);
-  M(os,clear);
+  M(os,reset);
   M(js,print,os);
   TEST("Print to string is '\"Testing\"'",strcmp(M(os,c_str),"\"Testing\"")==0);
   M(js,clear);
@@ -153,7 +153,7 @@ void test_array()
   M(ja,insert,js);
   puts("Adding integer and string");
   TEST("Size is 2",M(ja,size)==2);
-  M(os,clear);
+  M(os,reset);
   M(ja,print,os);
   TEST("Print to string is '[1234,\"1234\"]'",strcmp(M(os,c_str),"[1234,\"1234\"]")==0);
   yaooc_json_array_pointer ja2=new(yaooc_json_array);
@@ -162,7 +162,7 @@ void test_array()
   M(ja,insert,ja2);
   puts("Add array of integer and string");
   TEST("Size is 3",M(ja,size)==3);
-  M(os,clear);
+  M(os,reset);
   M(ja,print,os);
 //  puts(M(os,c_str));
   TEST("Print to string is '[1234,\"1234\",[1234,\"1234\"]]'",strcmp(M(os,c_str),"[1234,\"1234\",[1234,\"1234\"]]")==0);
@@ -204,7 +204,7 @@ void test_object()
   yaooc_json_real_pointer jr=new_ctor(yaooc_json_real,yaooc_json_real_ctor_real,3.1415);
   M(jo,insert,js,jr);
   TEST("Size is 1",M(jo,size)==1);
-  M(os,clear);
+  M(os,reset);
   M(jo,print,os);
   printf("X%sX\n",M(os,c_str));
   TEST("Print to string is '{\"pi\":3.1415}'",strcmp(M(os,c_str),"{\"pi\":3.1415}")==0);
@@ -228,7 +228,7 @@ void test_object()
     M(ja,insert,jo);
     delete(jo);
   }
-  M(os,clear);
+  M(os,reset);
   M(ja,print,os);
   TEST("print to string output same as result",strcmp(M(os,c_str),result)==0);
 

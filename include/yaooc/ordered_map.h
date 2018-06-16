@@ -64,7 +64,9 @@ N ## _iterator N ## _insert(pointer p,const K ## _t* k,const V ## _t* v) \
     __newp_array_copy_static((pointer)&pair.first,K ## _ti,k,1); \
     __newp_array_copy_static(&pair.second,V ## _ti,v,1); \
     ptr = yaooc_unique_ordered_array_container_insert(p,END(p),&pair); \
-  } \
+		__deletep_array((pointer)&pair.first,K ## _ti,1); \
+    __deletep_array(&pair.second,V ## _ti,1); \
+ } \
   return ptr; \
 } \
 size_t N ## _erase_key(pointer p,const K ## _t* k) \

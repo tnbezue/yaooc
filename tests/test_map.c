@@ -177,6 +177,10 @@ const char* str1="rpkjeiuhvlocynwtqdagzmfbxs";
 const char* str2="fzhcvtdkjpoxgyenluqrmawsib";
 const char* str3="vgztaiqfsphnjkydbxruewmocl";
 const char* str4="iufkyowzvmhljbsrxqgacnpted";
+/*const char *str1="khaxftwgdruinlcmoeqpjbzsvy";
+const char *str2="dhqypibsezntkfouxjlcwramvg";
+const char *str3="wtbaefdqucijhxkypovrzsmlgn";
+const char *str4="vnioqutyzsxcrgmbhljwpfkaed";*/
 
 void test_big()
 {
