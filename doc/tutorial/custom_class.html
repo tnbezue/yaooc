@@ -44,17 +44,19 @@ While structures can be defined using the above, it's better to use the macros p
 </code></pre>
 
 <p>
-The "class_" (note the underscore) macro creates the same structure.  However, it defines
-some additional types.  The following types are created for my_string.
+The "class_" (note the underscore) macro creates the same structure.  However, it creates additional
+code to define type info structure.  For my_string class, the following code is created:
 </p>
 <pre><code>
   typedef struct my_string_s my_string_t;
   typedef my_string_t* my_string_pointer;
   typedef const my_string_t* my_string_const_pointer;
+  extern type_info_t __my_string_ti;
+  extern const type_info_t* const my_string_ti;
+  struct my_string_s {
+    char* str;
+  };
 </code></pre>
-<p>
-In YAOOC, using my_string_pointer is preferred to using my_string_t* (likewise for const version).
-</p>
 </div>
 </div>
 </div>

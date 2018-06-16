@@ -123,6 +123,7 @@ int main(int argc,char* argv[])
 	M(msg,set,"Using stream");
 	M(cout,stream,msg,endl,sp1,endl,sp2,endl,sp3,endl,NULL);
 
+	M(cout,printf,"\nEnter an integer\n");
 	M(cin,stream,sp1,NULL);
 	M(cout,printf,"You entered \"%s\"\n",sp1->str);
 

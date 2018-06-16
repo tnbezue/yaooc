@@ -25,11 +25,12 @@
 In this chapter the my_string class will be improved by adding two class methods.
 </p>
 <p>
-In YAOOC, classes are divided into two parts -- instance and table.  The class instance has variables (and methods) whose values are unique to a particular instance.
-The class table has methods (and variables) that are shared by every instance of the class. YAOOC provides macros for creating the instance and table separately -- then combining into a single class. 
+In YAOOC, classes are divided into two parts -- table and instance. The class table has methods (and variables) that are shared
+ by every instance of the class.  The class instance has variables (and methods) whose values are unique to a particular instance.
+ YAOOC provides macros for creating the table and instance separately -- then combining into a single class. 
 </p>
 <p>
-The class table is defined by using the class_table macro.  The methods will be added in the class table.
+The class table is defined by using the class_table macro.  
 The get method returns a pointer to the string and the set method sets the string.
 </p>
 <pre><code>
@@ -68,6 +69,9 @@ For the my_string class, the following code is created by the above three macros
     const char* (*get)(const_pointer);
     void (*set)(pointer,const char*);
   };
+  struct my_string_instance_s {
+    char* str;
+  };
   struct my_string_s {
     const my_string_class_table_t* class_table_;
     my_string_class_instance_t;
@@ -75,11 +79,11 @@ For the my_string class, the following code is created by the above three macros
 </code></pre>
 <p>
 A pointer to the class table is the first member of the combined class.  When new creates an instance of the class, it will set this variable to the
-variable found in the type info structure -- so a constructor will have access to the class methods.  NEVER use memset(this,0,sizeof(T)) to initialize an instance.
+class_table_ value in the type info structure -- therefore, constructors have access to the class methods.  NEVER use memset(this,0,sizeof(T)) to initialize an instance.
 Doing so will destroy the value of class_table_;
 </p>
 <p>
-The methods for my_string class are:
+The method names should be the class name appended with underscore and name used in class table.  The methods for my_string class are:
 </p>
 <pre><code>
   const char* my_string_get(const_pointer p)
@@ -94,6 +98,9 @@ The methods for my_string class are:
     this->str = s==NULL ? NULL : strdup(s);
   }
 </code></pre>
+<p>
+Note that the first argument to methods is a pointer the object.
+</p>
 <p>
 The class table is then defined as:
 </p>
@@ -111,29 +118,25 @@ And DEFINE_TYPE_INFO should now contain a pointer to class table
   DEFINE_TYPE_INFO(my_string,my_string_default_ctor,my_string_dtor,my_string_copy_ctor,my_string_assign,my_string_less_than_compare,NULL,NULL,&my_string_class_table,NULL);
 </code></pre>
 <p>
-To call a class table method, use ptr->class_table_->method(ptr,args). For example, to call the get method.
+To call a class table method, use ptr->class_table_->method(ptr,args). For example,
 </p>
 <pre><code>
   ptr->class_table_->set(ptr,"This is a test");
   printf("%s\n",ptr->class_table_->get(ptr));
 </code></pre>
 Calling methods in this fashion becomes cumbersome after a few uses.
-YAOOC provides the M macro (M for method) to make calling methods easier. It is usage is M(ptr,method,args). The args portion is optional.
+YAOOC provides the M macro (M for method) to make calling methods easier. The syntax is M(ptr,method,args). The args portion is optional.
 </p>
 <pre><code>
   M(ptr,set,"This is a test");
   printf("%s\n",M(ptr,get));
 </code></pre>
 <p>
-Another macro that will have an occasional use is class_forward.  class_forward defines the same types that the class macro defined except for the underlying structure.   
+Another macro that will have an occasional use is class_forward.  class_forward defines the same types that the class macro defined except for the structures.   
 </p>
 <pre><code>
   class_forward(class_name);
 </code></pre>
-<h3>Naming Convention</h3>
-<p>
-Class method names use the class name appended with underscore and method name. The class table variable name is the class name appended with "_class_table".
-</p>
 
 </div>
 </div>

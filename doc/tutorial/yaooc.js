@@ -6,9 +6,8 @@ document.write('\
 </div>\
 ');
 }
-function menu() {
 var menu_items = [
-  ["preface","Preface"],
+  ["index","Index"],
   ["hello_world","Hello World"],
   ["new_delete","New/Delete"],
   ["type_info","Type Info"],
@@ -27,6 +26,7 @@ var menu_items = [
   ["vector","Vector"],
   ["map","Map"],
 ];
+function menu() {
 document.write('\
 <div id="menu">\
 <ul id="menu_list">\
@@ -52,4 +52,9 @@ document.write('\
 </ul>\
 </div>\
 ');
+}
+
+function index_menu()
+{
+
 }

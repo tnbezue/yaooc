@@ -23,8 +23,9 @@
 <h2>Placement New and Delete</h2>
 
 <p>
-In C++, there is placement new which initializes previous allocated memory.  YAOOC also provides placement new and delete.
-C++ does not provide a placement delete but can be simulated by directly calling the destructor (ptr->~T()).
+In the previous chapter, static objects were introduced.  This chapter will introduce placement new to initialize
+static objects and a placement delete to destroy these objects. 
+Note that C++ does not provide a placement delete but can be simulated by directly calling the destructor (ptr->~T()).
 </p>
 <div class="divTable">
 <div class="divTableBody">
@@ -67,7 +68,7 @@ Use newp_copy_static (below) to initialize from static object
 </div>
 <div class="divTableRow">
 <div class="divTableCell">Initialize new object using specified constructor to initialize the object</div>
-<div class="divTableCell">new T(args);</div>
+<div class="divTableCell">new (ptr) T(args);</div>
 <div class="divTableCell">newp_ctor(ptr,T,ctor,args);</div>
 </div>
 <div class="divTableRow">
@@ -75,6 +76,17 @@ Use newp_copy_static (below) to initialize from static object
 <div class="divTableCell">N/A</div>
 <div class="divTableCell">newp_array_ctor(ptr,T,n,ctor,args);</div>
 </div>
+<div class="divTableRow">
+<div class="divTableCell">Destory single object of type T</div>
+<div class="divTableCell">N/A</div>
+<div class="divTableCell">deletep(ptr,T);</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Destory array N objects of type T</div>
+<div class="divTableCell">N/A</div>
+<div class="divTableCell">deletep_array(ptr,T,N);</div>
+</div>
+
 </div>
 </div>
 

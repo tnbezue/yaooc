@@ -50,14 +50,10 @@ do a lot more than what is demonstrated here.  The complete workings will be rev
 </p>
 <h3>Naming Convention</h3>
 <p>
-Type names end with "_t". In the hello world example, new_array expects there to be a char_t type.
-YAOOC has supplied typedefs for common POD types which are shown in table below. However, in almost every case, the "_t" portion
-will not have to be specified. Note in the hello world program, "char" was used rather than "char_t".
-The macros used in YAOOC will append the "_t" where needed.
+Type names end with "_t".  YAOOC has defined types with the "_t" appended for POD types (see table below).
+When using the macros provided by YAOOC, the "_t" portion should not be specified -- YAOOC macros will append the "_t" where needed.
+Note that in the hello world program, "char" was used rather than "char_t".
 </p>
-
-<p>Plain old data (POD) types used in YAOOC are shown in table below.</p>
-
 <div class="divTable">
 <div class="divTableBody">
 <div class="divTableRow">
@@ -142,8 +138,8 @@ The macros used in YAOOC will append the "_t" where needed.
 
 
 <p>
-YAOOC makes extensive use of pointer and const_pointer types (note that both do not have "_t") as types for method parameters.
-This is done to avoid the many compiler warnings that would be generated -- at the expense of type safety. 
+YAOOC makes extensive use of pointer and const_pointer (note that both do not have "_t") as types for method parameters.
+This is done to avoid the many compiler warnings that would be generated. 
 </p>
 
 </ul>

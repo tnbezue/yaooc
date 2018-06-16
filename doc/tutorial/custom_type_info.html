@@ -26,10 +26,8 @@ Now that the my_string structure has been defined, the next step is to define th
 </p>
 <h3>Default constructor</h3>
 <p>
-The default constructor initilizes the memory that has been allocated.
-A pointer to the newly allocated memory will be passed as an argument to the default constructor.
-If the default constructor is NULL, then no initialization is done and a pointer to allocated memory is returned.
-The following is the default constructor for my_string class.
+New allocates memory for the object and calls the default constructor with a pointer to the allocated memory.
+If the default constructor is NULL, then no initialization is done. The following is the default constructor for my_string class.
 </p>
 <pre><code>
   void my_string_default_ctor(pointer p)
@@ -42,12 +40,6 @@ The following is the default constructor for my_string class.
 Using the YAOOC naming convention, the name of the default constructor should be class name (as specified in the class_ macro)
 appended with "_default_ctor".  In our case, it's "my_string_default_ctor".
 </p>
-<p>
-The default constructor is used when new is called.
-</p>
-<pre><code>
-  my_string_pointer sp = new(my_string);
-</code></pre>
 <h3>Destructor</h3>
 <p>
 The destructor is called when delete is used.  It is called before the memory is freed.  If the destructor is NULL, no action is taken.
@@ -64,7 +56,7 @@ By naming convention, the name of the destructor should be class name appended w
 <h3>Copy constructor</h3>
 <p>The copy constructor creates a new object from an existing object.  The first argument is the newly allocated memory.
 The second argument is the existing object.    If the copy constructor is NULL, then the source object is copied
-(using memcpy) to the target object.  By naming convention, the name of the copy constructor should be class name appended with "_copy_ctor".
+(using memcpy) to the target object.  The name of the copy constructor should be class name appended with "_copy_ctor".
 </p>
 <pre><code>
   void my_string_copy_ctor(pointer p,const_pointer s)
@@ -86,7 +78,7 @@ The copy constructor is called when new_copy is used.
 <p>
 The assignment method assigns one object to another.  The first argument is the object to be assigned.  The second argument is the source object.
 If the assignment method is NULL, then the source object is copied (using memcpy) to the target object.
-The name by naming convention is the class name appended with "_assign".
+The name of the assignment method should be the class name appended with "_assign".
 </p>
 <pre><code>
   void my_string_assign(pointer p,const_pointer s)
@@ -120,7 +112,7 @@ In the above case, rather than assign, the new_copy method should be used.
 </p>
 <h3>Less than compare</h3>
 If comparisons (==, !=, <, <=, >, >=) of objects of this class type will be performed, then less than compare method should be defined.  The two arguments are constant
-pointers to the objects to be compared.  If the less than compare method is not defined,
+pointers to the objects to be compared.  If the less than compare method is not defined (NULL),
 then it would be as if the method return false -- thus, all items of this type would be equal.
 The method name is class name appended with "_less_than_compare".
 <pre><code>
@@ -138,6 +130,9 @@ The method name is class name appended with "_less_than_compare".
     return strcmp(bsp1->str,bsp2->str) < 0; /* Both not null, compare the strings */
   }
 </code></pre>
+<p>
+As with assignment, the normal comparison operators can not be used in YAOOC.  The following table shows the methods to use for comparison.
+</p>
 <div class="divTable">
 <div class="divTableBody">
 <div class="divTableRow">

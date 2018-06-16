@@ -21,11 +21,10 @@
 <div id="content" class="content">
 <div style="overflow-y: scroll; height:900px">
 <h2>Memory Layout</h2>
-
 <p>
-Before continuing the development of the my_string class, it's helpful to understand how memory is allocated by YAOOC new.
-When an object (or array of objects) is allocated, additional memory is allocated for a pointer to type information and the number of
-elements allocated.  This memory layout is shown below. 
+Before continuing with the my_string class, it's helpful to understand how memory allocation is handled in YAOOC. 
+When an object (or array of objects) is allocated, additional memory is allocated for a pointer to type info structure and the number of
+objects allocated.  This memory layout is shown below. 
 </p>
 <div class="divTable">
 <div class="divTableBody">
@@ -55,13 +54,14 @@ The overhead is 8 bytes for a 32 bit system and 16 bytes for a 64 bit system.  N
 If a single character is allocated, 9 (or 17) bytes will actually be allocated.  An array of 100,000 characters would require 100,008 (or 100,016) bytes. 
 </p>
 <p>
-This dynamic memory allocation scheme allows the type info to be readily available for any method that uses it. For example, the assign method
-can access the type info to apply the appropriate assignment method.  Likewise, the delete method can determine the the destructor and number
+This memory allocation scheme allows the type info to be readily available for any method that uses it. For example, the assign method
+can access the type info to apply the appropriate assignment method.  Likewise, the delete method can determine the destructor and number
 of elements to delete. 
 </p>
 <p>
-The assign and comparison methods (presented in previous chapters) can work for a single element (or the first element).  But it can not be used for the second or greater
-element.  There are "static" versions of assign and comparison to address this issue.  The element type is included as an argument to the static versions. 
+The assign and comparison methods (presented in previous chapters) only work for a single allocated object.  They do
+not work for objects created on the stack -- nor the second or greater element in an array.  These objects will be referred to as static objects.
+There are special versions of assign and comparison that are used with static objects.  The class type is included as an argument to the static versions. 
 </p>
 
 <div class="divTable">
@@ -107,6 +107,43 @@ For example, to compare if two my_string objects are equal, use:
 <pre><code>
   if(op_eq_static(p1,p2,my_string))
     puts("Equal");
+</code></pre>
+<p>
+YAOOC provides a method that is not available in C++ -- renew. Renew is to new as realloc is to malloc. ptr is a pointer memory that was
+previously allocated with new (unlike realloc, it cannot be NULL). The following table shows the forms of renew.
+</p>
+<div class="divTable">
+<div class="divTableBody">
+<div class="divTableRow">
+<div class="divTableHead">Method</div>
+<div class="divTableHead">Description</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">renew_array(ptr,N)</div>
+<div class="divTableCell">Reallocates memory at ptr for N elements by appending elements created using the default constructor</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">renew_array_copy(ptr,N,src);</div>
+<div class="divTableCell">Reallocates memory at ptr for N elements. Appended elements are a copy of src object</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">renew_array_ctor(ptr,N,ctor,args);</div>
+<div class="divTableCell">Reallocates memory at ptr for N elements. Appended elements are constructed using ctor</div>
+</div>
+</div>
+</div>
+
+<p>
+The above table only presents the case where N is greater than the current allocation.  If, in the above cases, N is less than the current allocation,
+the destructor is called for each element removed before memory is reallocated.  If N is the same as the current allocation, no action is taken.
+</p>
+
+<pre><code>
+  my_string_t* demo=new_array(my_string,32); /* Initial size is 32 */
+  ...
+  demo=renew(demo,128); /* Increase capacity to 128 elements */
+  ...
+  demo=renew(demo,16); /* Decrease capacity to 16 elements */
 </code></pre>
 
 </div>

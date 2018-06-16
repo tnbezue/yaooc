@@ -23,9 +23,10 @@
 <h2>
 New/Delete
 </h2>
-<p>C++ has many forms of new.  The following table shows a few C++ forms of new and the corresponding YAOOC method.
-In the table, T is the type, n is the number of elements to create, ref is reference to existing object,
-ptr is pointer to existing object, ctor is a constructor, and args are zero or more arguments. 
+<p>In C++, the syntax of new is changed to achieve different results.  C does not have this luxury -- a different method
+has to be used to achieve different results.  The following table shows a few C++ forms of new and the corresponding C method
+provided in YAOOC. In the table, T is the type, n is the number of elements to create, ref is reference to existing object,
+ptr is pointer to existing object, ctor is a constructor, and args are one or more arguments. 
 </p>
 
 <div class="divTable">
@@ -81,7 +82,7 @@ Delete has two forms as shown in table below
 <div class="divTableRow">
 <div class="divTableCell">Delete single object</div>
 <div class="divTableCell">delete ptr;</div>
-<div class="divTableCell">delete(ptr);;</div>
+<div class="divTableCell">delete(ptr);</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">Delete array of objects</div>
@@ -91,9 +92,14 @@ Delete has two forms as shown in table below
 </div>
 </div>
 <p>
-Do not mix new/delete with malloc/free.  You can use malloc/free in a program that uses YAOOC.  However, do not call free on an object created with new.  Likewise,
-do not use delete for memory allocated with malloc.  More on this in later chapters.
+Yes, in YAOOC, delete is used to delete a single object or an array of objects.  However, if symmetry is desired,
+delete_array can be used	.
 </p>
+<p>
+Do not mix new/delete with malloc/free.  You can use malloc/free in a program that uses YAOOC.  Do not call free on an object created with new.  Likewise,
+do not use delete for memory allocated with malloc.
+</p>
+
 </div>
 </div>
 </div>

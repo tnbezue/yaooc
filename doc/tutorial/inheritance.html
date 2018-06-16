@@ -42,7 +42,7 @@ of yaooc_object.  The following shows how to have my_string class inherit from y
 </code>
 </pre>
 <p>
-yaooc_object has zero instance members and has four table entries -- one variable and three methods. They are:
+yaooc_object has no instance members.  It has four table entries -- one variable and three methods. They are:
 </p>
 <pre><code>
   const class_table_t* parent_class_table_;  /* Pointer to parent class table */
@@ -65,7 +65,9 @@ For the my_string class, the following methods will override the ones defined in
   {
     my_string_pointer this=p;
     my_string_pointer other=o;
-    SWAP(char*,this->str,other->str);
+    char* temp=this->str;
+    this->str=other->str;
+    other->str=temp;
   }
 </code></pre>
 <p>
@@ -92,11 +94,12 @@ When a class is inherited from another, the behavior of the type info methods is
 If the default constructor for a derived class is defined, new will use it to initialize the object.  If the default constructor is not
 defined (NULL), then the parent default constructor is used.  If the parent default constructor is not defined, it's parent is used. This is continued until
 a non NULL default constructor is found or the root of the inheritance tree is reached.  If a non NULL default constructor is not found,
-no action is taken and a pointer to the allocated memory is returned. 
+no action is taken. 
 </p>
 <h3>Destructor</h3>
 <p>
-When an object is deleted, every destructor in reverse order of inheritance is called (unless the destructor is NULL).
+When an object is deleted, every destructor in reverse order of inheritance (the child destructor, the parent destructor, the parents' parent destructor, etc)
+until the root class is reached.
 </p>
 <h3>Copy Constructor</h3>
 <p>
@@ -120,8 +123,8 @@ The inheritance tree is traversed until a non NULL method is found.  If a non NU
 
 <h3>Calling Parent Method</h3>
 <p>
-There are a few ways to call a parent method.  See the test_object.c file in the tests directory.  The best method is demostrated here -- 
-using parent class table via the class table parent_class_table entry. To call the isa method for the parent class, use:
+There are a few ways to call a parent method.  See the test_object.c file in the tests directory.  The best method is demonstrated here -- 
+using parent class table via the class table parent_class_table entry. For example, to call the isa method for the parent class, use:
 </p>
 <pre><code>
   #define my_string_parent_class_table ((yaooc_object_class_table_t*)(my_string_class_table.parent_class_table_))

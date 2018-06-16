@@ -92,16 +92,15 @@ The entries can be specified in any order.
 </p>
 <h3>Constructors</h3>
 <p>
-The constructors section identifies the constructors that will be available for this class.
+The constructors section identifies the constructors that will be available for this class. Constructors should 
+begin with the class_name and followed by "_ctor_" and one or more valid identifier characters. It is suggested to
+use abbreviated types or variable names to complete the constructor name. Note the names of the my_string
+constructors for example.
 </p>
-<ul>
-<li>Constructors should begin with the class_name and followed by "_ctor_" and
-one or more valid identifier characters. 
-</li>
-<li>
-Pointer to object to initialize is automatically added as first argument.   
-</li>
-</ul>
+<p> 
+The constructor should specify a parenthesized list of arguments for the constructor.
+A pointer to object to initialize is automatically added as first argument thus should not be specified.
+</p>   
 <p>
 Items for type info and constructors can be intermixed.  That is, definition order could be default constructor,
 addition constructors, then remaining type info entries.  Or any other order.  However, the type info and constructor
@@ -153,7 +152,7 @@ Items in instance section follow the same rules as the table section -- with a f
 Only new items can be added to instance -- methods can not be overridden. 
 </li>
 <li>
-Values and implementation methods are ignored for instance members.
+Values and implementation methods are ignored for instance members. These must be specified after the object has been created -- perhaps in the constructor.
 </li>
 </ul>
 <h3>Protected</h3>
@@ -165,6 +164,7 @@ They are meant to be helpers to class and derived classes.
 <p>
 Private members are defined as static in the C source file.  Can only be used by the class being created.
 </p>
+<h3>Improved my_string class</h3>
 <p>
 Since YAOOCPP does much of the tedious work, a more robust string class can be created.  This example is meant to show features
 of YAOOCPP rather than good programming practice.

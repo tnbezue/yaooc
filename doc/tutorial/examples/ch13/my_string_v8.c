@@ -448,7 +448,7 @@ int main(int argc,char* argv[])
     printf("My string exception thrown: %s\n",M(mse,what));
   } CATCH(yaooc_exception,ye) {
     printf("Generic exception thrown\n");
-    M(ye,what);
+    M(ye,what); /* Just to avoid unused variable warning */
   } ETRY
 
 }

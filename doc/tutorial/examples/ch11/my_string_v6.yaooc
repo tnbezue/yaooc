@@ -1,7 +1,8 @@
+#ifndef __MY_STRING_YAOOC_INCLUDED__
+#define __MY_STRING_YAOOC_INCLUDED__
 
 /* C and C++ comments can be used */
 
-/* my_string.yaooc */
 #include "object.yaooc"
 
 class my_string : yaooc_object
@@ -53,14 +54,14 @@ class my_string : yaooc_object
       size_t size() const;                                           /* Return size of string */
 
     /*
-      Will create the class_instance(my_string).
+      Instance members
     */
     instance:
       char * str;                                                    /* The string */
 
     /*
       Protected methods and variables will have prototypes in header file and templates in C source file.
-      Methods and variables are meant to be used by this class and available for use by derieved classes.
+      Methods and variables are meant to be used by this class and available for use by derived classes.
     */
     protected:
       void insert_space(size_t pos,size_t n);                        /* Insert space in string */
@@ -78,3 +79,5 @@ class my_string : yaooc_object
       char* begin() const = my_string_get;                           /* Return beginning of string. Same as get */
       char* end() const;                                             /* Returns end of string */
 };
+
+#endif

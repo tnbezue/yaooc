@@ -99,7 +99,9 @@ void my_string_swap(pointer p,pointer o)
 {
   my_string_pointer this=p;
   my_string_pointer other=o;
-  SWAP(char*,this->str,other->str);
+	char* temp=this->str;
+	this->str=other->str;
+	other->str=temp;
 }
 
 const char* my_string_get(const_pointer p)
