@@ -132,9 +132,14 @@ pointer renew_array(pointer,size_t); // new objects initilized with default cons
 pointer renew_array_copy(pointer,size_t,const_pointer); // new objets copied from const_pointer
 pointer renew_array_ctor(pointer,size_t,constructor,...); // new objects initialized using constructor
 
-#define get_memory_header(ptr) ((memory_header_t*)((char*)(ptr) - offsetof(memory_header_t,ptr_)))
-#define get_type_info(ptr) (get_memory_header(ptr)->type_info_)
-#define get_n_elem(ptr) (get_memory_header(ptr)->n_elem_)
+/*
+#define renew(P,N) renew_array(P,N)
+#define renew_copy(P,N,CP) renew_array_copy(P,N,CP)
+#define renew_ctor(P,N,CTOR,...) renew_array_ctor(P,N,CTOR,__VA_ARGS__)
+*/
+#define get_memory_header(ptr) ( ptr ? ((memory_header_t*)((char*)(ptr) - offsetof(memory_header_t,ptr_))) : NULL)
+#define get_type_info(ptr) ( ptr ? (get_memory_header(ptr)->type_info_) : NULL)
+#define get_n_elem(ptr) ( ptr ? (get_memory_header(ptr)->n_elem_) : 0 )
 default_constructor get_default_ctor(const type_info_t*);
 bool has_destructor(const type_info_t*);
 copy_constructor get_copy_ctor(const type_info_t*);
@@ -160,9 +165,9 @@ void delete_array(pointer);
 #define deletep_array(P,T,N) __deletep_array(P,T ## _ti,N)
 void __deletep_array(pointer,const type_info_t*,size_t);
 
-void delete_list(pointer,...);
-#define DELETE(p,...) delete_list(p, ## __VA_ARGS__ , NULL)
-
+void __delete_list(pointer,...);
+#define DELETE(p,...) __delete_list(p, ## __VA_ARGS__ , NULL)
+#define delete_list(p,...) __delete_list(p, ## __VA_ARGS__ , NULL)
 /*
   Calls a contructor.  Meant to be used in contructors other than default or copy constructor.
 */

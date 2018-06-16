@@ -287,7 +287,7 @@ void delete_array(void* ptr)
 	}
 }
 
-void delete_list(void* ptr,...)
+void __delete_list(void* ptr,...)
 {
   if(ptr) {
     delete(ptr);
@@ -302,72 +302,62 @@ void delete_list(void* ptr,...)
 /*
 	**************** Renew ***************
 */
-typedef struct {
-	iterator ptr; // pointer to beginning of array to be returned by calling function
-	iterator dst; // pointer to where new members added -- NULL if no elements are added
-	const type_info_t* ti;
-	size_t	n;		// number of new elements
-} renew_info_t;
-renew_info_t renew_private(pointer old_ptr,size_t n_new)
+memory_header_t* reallocate_memory(pointer old_ptr,size_t n)
 {
-	renew_info_t ri;
-	memory_header_t* mh_old=get_memory_header(old_ptr);
+	memory_header_t* mh=get_memory_header(old_ptr);
 	/* If the same size, renew not needed */
-	if(n_new == mh_old->n_elem_) {
-		ri.ptr=mh_old->ptr_;
-		ri.dst=NULL;
-		ri.n=0;
-	} else {
-		size_t n_copy;
+	if(n != mh->n_elem_) {
 #ifdef __YAOOC_USE_GC__
-    GC_register_finalizer(mh_old, 0, 0, 0, 0);  // Remove finalizer from old allocated memory
+    GC_register_finalizer(mh, 0, 0, 0, 0);  // Remove finalizer from old allocated memory
 #endif
-		memory_header_t* mh_new=allocate_memory(mh_old->type_info_,n_new);
-		ri.ptr=mh_new->ptr_;
-		ri.ti=mh_new->type_info_;
-		if(n_new < mh_old->n_elem_) {
-			__deletep_array(mh_old->ptr_+n_new*mh_old->type_info_->type_size_,mh_old->type_info_,mh_old->n_elem_-n_new);
-			ri.dst=NULL;
-			ri.n=0;
-			n_copy=n_new;
-		} else {
-			ri.dst=mh_new->ptr_+mh_old->n_elem_*mh_old->type_info_->type_size_;
-			ri.n=n_new-mh_old->n_elem_;
-			n_copy=mh_old->n_elem_;
+		/*
+			If shrinking array, delete items at end and adjust size.
+			If increasing array, calling routine must intialize addition space and adjust size
+		*/
+		if(n < mh->n_elem_) {
+			__deletep_array(mh->ptr_+n*mh->type_info_->type_size_,mh->type_info_,mh->n_elem_-n);
+			mh->n_elem_=n;
 		}
-		memcpy(mh_new->ptr_,old_ptr,n_copy*mh_new->type_info_->type_size_);
+		mh=REALLOC(mh,n*mh->type_info_->type_size_+offsetof(memory_header_t,ptr_));
+#ifdef __YAOOC_USE_GC__
+  if(has_destructor(mh->type_info_))
+    GC_register_finalizer(mh, __yaooc_gc_finalizer__, 0, 0, 0);
+#endif
 	}
-	return ri;
+	return mh;
 }
 
 pointer renew_array(pointer ptr,size_t n)
 {
-	renew_info_t ri=renew_private(ptr,n);
-	if(ri.dst) {
-		__newp_array(ri.dst,ri.ti,ri.n);
+	memory_header_t* mh=reallocate_memory(ptr,n);
+	if(n > mh->n_elem_) {
+		__newp_array(mh->ptr_+mh->n_elem_*mh->type_info_->type_size_,mh->type_info_,n-mh->n_elem_);
+		mh->n_elem_=n;
 	}
-	return ri.ptr;
+	return mh->ptr_;
 }
 
 pointer renew_array_copy(pointer ptr,size_t n,const_pointer src)
 {
-	renew_info_t ri=renew_private(ptr,n);
-	if(ri.dst) {
-		__newp_array_copy_static(ri.dst,ri.ti,src,ri.n);
+	memory_header_t* mh=reallocate_memory(ptr,n);
+	if(n > mh->n_elem_) {
+		__newp_array_copy_static(mh->ptr_+mh->n_elem_*mh->type_info_->type_size_,mh->type_info_,src,n-mh->n_elem_);
+		mh->n_elem_=n;
 	}
-	return ri.ptr;
+	return mh->ptr_;
 }
 
 pointer renew_array_ctor(pointer ptr,size_t n,constructor ctor,...)
 {
-	renew_info_t ri=renew_private(ptr,n);
-	if(ri.dst) {
+	memory_header_t* mh=reallocate_memory(ptr,n);
+	if(n > mh->n_elem_) {
 		va_list args;
 		va_start(args,ctor);
-		new_ctor_private(ri.dst,ri.ti,ri.n,ctor,args);
+		new_ctor_private(mh->ptr_+mh->n_elem_*mh->type_info_->type_size_,mh->type_info_,n-mh->n_elem_,ctor,args);
 		va_end(args);
+		mh->n_elem_=n;
 	}
-	return ri.ptr;
+	return mh->ptr_;
 }
 
 /*
