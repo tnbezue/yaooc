@@ -32,7 +32,7 @@ One of the most notable C++ features is input and output stream.  For example:
 </code></pre>
 <p>
 In YAOOC, this behavior is also implemented.  If a class is to use I/O streams, the to_stream and from_stream methods have to be implemented.
-If the class is used in a stream and to/from stream methods are not defined, an exception is thrown.
+If the class is used in a stream and to/from stream methods are not defined, an exception (more on exceptions later) is thrown.
 </p>
 <p>
 The arguments for the to_stream method is a const_pointer to object and a pointer to stream.  For the my_string class, the to_stream method is:  

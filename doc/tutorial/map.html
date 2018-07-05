@@ -34,7 +34,7 @@ There is additional memory overhead because of the index (4*capacity bytes). Ite
 If in doubt, use map instead of mini_map.
 </p>
 <p>
-unordered_map uses unique ordered array_container.  Should be used when a sorted map is desired.  Search speed is better than mini_map and about the same for map.  Insertion speed
+ordered_map uses unique ordered array_container.  Should be used when a sorted map is desired.  Search speed is better than mini_map and about the same for map.  Insertion speed
 is faster than mini_map but slower than map.  Items are maintained in sorted order and will be iterated in sorted order.
 </p>
 <p>
@@ -95,7 +95,7 @@ K is the key type, V is the value type, and N is the type for the map.  The foll
 <div class="divTableHead">Description</div>
 </div>
 <div class="divTableRow">
-<div class="divTableCell">N</div>
+<div class="divTableCell">N_t</div>
 <div class="divTableCell">The map type name</div>
 </div>
 <div class="divTableRow">
