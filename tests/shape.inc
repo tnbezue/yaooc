@@ -4,7 +4,7 @@
 /*
   Shape is base class
 */
-class_table(shape)
+yaooc_class_table(shape)
 {
   void (*virtual_dtor)(pointer);
   void (*virtual_copy_ctor)(pointer,const_pointer);
@@ -13,11 +13,11 @@ class_table(shape)
   double (*area)(const_pointer);
 };
 
-class_instance(shape)
+yaooc_class_instance(shape)
 {
 };
 
-class(shape);
+yaooc_class(shape);
 
 void shape_default_ctor(pointer p)
 {
@@ -47,7 +47,7 @@ void shape_assign(pointer d,const_pointer s)
   M(((shape_pointer)d),virtual_assign,s);
 }
 
-bool shape_virtual_less_than_compare(const_pointer p1,const_pointer p2)
+bool shape_less_than_compare(const_pointer p1,const_pointer p2)
 {
   if(optr)
     optr+=sprintf(optr,"SLT:");
@@ -58,22 +58,22 @@ bool shape_virtual_less_than_compare(const_pointer p1,const_pointer p2)
   Class table for shape is NULL because no items of type shape will be called.
 */
 
-DEFINE_TYPE_INFO(shape,shape_default_ctor,shape_dtor,shape_copy_ctor,shape_assign,shape_virtual_less_than_compare,NULL,NULL,NULL,NULL)
+DEFINE_TYPE_INFO(shape,Y,Y,Y,Y,Y,N,N,N,NULL)
 /*
   Circle is derived from shape
 */
-class_table(circle)
+yaooc_class_table(circle)
 {
   shape_class_table_t;
   void (*set_radius)(pointer p,double v);
 };
 
-class_instance(circle)
+yaooc_class_instance(circle)
 {
   double radius_;
 };
 
-class(circle);
+yaooc_class(circle);
 
 /*
   Need a default constructor for derived classes
@@ -164,23 +164,23 @@ circle_class_table_t circle_class_table=
   .set_radius = circle_set_radius
 };
 
-DEFINE_TYPE_INFO(circle,circle_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&circle_class_table,shape)
+DEFINE_TYPE_INFO(circle,Y,N,N,N,N,N,N,Y,shape)
 
 /*
   Square is derived from shape
 */
-class_table(square)
+yaooc_class_table(square)
 {
   shape_class_table_t;
   void (*set_length)(pointer,double);
 };
 
-class_instance(square)
+yaooc_class_instance(square)
 {
   double length_;
 };
 
-class(square);
+yaooc_class(square);
 
 void square_default_ctor(pointer p)
 {
@@ -247,24 +247,24 @@ square_class_table_t square_class_table=
   .set_length = square_set_length
 };
 
-DEFINE_TYPE_INFO(square,square_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&square_class_table,shape)
+DEFINE_TYPE_INFO(square,Y,N,N,N,N,N,N,Y,shape)
 
 /*
   Rectangle is derived from square
 */
-class_table(rectangle)
+yaooc_class_table(rectangle)
 {
   square_class_table_t;
   void (*set_width)(pointer,double);
 };
 
-class_instance(rectangle)
+yaooc_class_instance(rectangle)
 {
   square_class_instance_t;
   double width_;
 };
 
-class(rectangle);
+yaooc_class(rectangle);
 
 void rectangle_default_ctor(pointer p)
 {
@@ -338,6 +338,6 @@ rectangle_class_table_t rectangle_class_table =
   .set_width = rectangle_set_width
 };
 
-DEFINE_TYPE_INFO(rectangle,rectangle_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&rectangle_class_table,square)
+DEFINE_TYPE_INFO(rectangle,Y,N,N,N,N,N,N,Y,square)
 
 #endif

@@ -31,17 +31,17 @@ typedef struct {
 /*
   Class definition for yaooc_ordered_array_container
 */
-class_table(yaooc_ordered_array_container)
+yaooc_class_table(yaooc_ordered_array_container)
 {
   yaooc_array_container_class_table_t;
 };
 
-class_instance(yaooc_ordered_array_container)
+yaooc_class_instance(yaooc_ordered_array_container)
 {
   yaooc_array_container_class_instance_t;
 };
 
-class(yaooc_ordered_array_container);
+yaooc_class(yaooc_ordered_array_container);
 /* Prototypes for yaooc_ordered_array_container type info */
 
 /* Constructors for yaooc_ordered_array_container */

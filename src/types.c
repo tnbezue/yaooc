@@ -17,14 +17,14 @@
 
 #include <yaooc/types.h>
 #include <yaooc/new.h>
+#include <yaooc/macros.h>
 #include <string.h>
 /*
   Type info for POD
 */
 #define POD_TYPE_INFO_IMPLEMENTATION(T) \
 bool T ## _less_than_compare(const T ## _t * v1,const T ## _t * v2) { return *v1 < *v2; } \
-DEFINE_TYPE_INFO(T,NULL,NULL,NULL,NULL,(less_than_compare)T ## _less_than_compare, \
-			T ## _to_stream, T ## _from_stream,NULL,NULL)
+__DEFINE_TYPE_INFO__(T,NULL,NULL,NULL,NULL,(less_than_compare)T ## _less_than_compare,(to_stream)T ## _to_stream,(from_stream) T ## _from_stream,NULL,NULL)
 
 POD_TYPE_INFO_IMPLEMENTATION(char)
 POD_TYPE_INFO_IMPLEMENTATION(uchar)
@@ -43,5 +43,4 @@ bool yaooc_ccs_less_than_compare(const_pointer p1,const_pointer p2)
 	return strcmp(p1,p2) < 0;
 }
 
-DEFINE_TYPE_INFO(yaooc_ccs,NULL,NULL,NULL,NULL,(less_than_compare)yaooc_ccs_less_than_compare, \
-			yaooc_ccs_to_stream, yaooc_ccs_from_stream,NULL,NULL)
+DEFINE_TYPE_INFO(yaooc_ccs,N,N,N,N,Y,Y,Y,N,NULL)

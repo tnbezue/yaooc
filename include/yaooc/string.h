@@ -22,15 +22,15 @@
 
 typedef char* yaooc_string_iterator;
 typedef const char* yaooc_string_const_iterator;
-class_forward(yaooc_regex);
-class_forward(yaooc_string_vector);
+yaooc_class_forward(yaooc_regex);
+yaooc_class_forward(yaooc_string_vector);
 
 /*  Begin YAOOC PreProcessor generated content */
 
 /*
   Class definition for yaooc_string
 */
-class_table(yaooc_string)
+yaooc_class_table(yaooc_string)
 {
   yaooc_pod_array_class_table_t;
   yaooc_string_iterator (*at)(const_pointer,size_t);
@@ -75,12 +75,12 @@ class_table(yaooc_string)
   const char* (*c_str)(const_pointer);
 };
 
-class_instance(yaooc_string)
+yaooc_class_instance(yaooc_string)
 {
   yaooc_pod_array_class_instance_t;
 };
 
-class(yaooc_string);
+yaooc_class(yaooc_string);
 /* Prototypes for yaooc_string type info */
 void yaooc_string_default_ctor(pointer);
 void yaooc_string_dtor(pointer);

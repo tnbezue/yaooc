@@ -35,20 +35,20 @@ void dump_map(student_info_const_pointer this,FILE* out)
 }
 */
 
-class_table(student_info)
+yaooc_class_table(student_info)
 {
   yaooc_object_class_table_t;
   uint_t (*score)(const_pointer);
 };
 
-class_instance(student_info)
+yaooc_class_instance(student_info)
 {
   yaooc_string_t lname_;
   yaooc_string_t fname_;
   uint_t score_;
 };
 
-class(student_info);
+yaooc_class(student_info);
 
 const char* student_info_isa(const_pointer p) { return "student_info_t"; }
 
@@ -96,9 +96,7 @@ student_info_class_table_t student_info_class_table = {
   .score = student_info_score
 };
 
-DEFINE_TYPE_INFO(student_info,student_info_default_ctor,
-      student_info_dtor,student_info_copy_ctor,student_info_assign,NULL,NULL,NULL,
-      &student_info_class_table,yaooc_object)
+DEFINE_TYPE_INFO(student_info,Y,Y,Y,Y,N,N,N,Y,yaooc_object)
 
 void student_info_ctor(pointer p,va_list args)
 {

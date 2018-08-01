@@ -11,7 +11,7 @@
 /*
   Class definition for my_string
 */
-class_table(my_string)
+yaooc_class_table(my_string)
 {
   yaooc_object_class_table_t;
   const size_t my_string_n_pos;
@@ -36,13 +36,13 @@ class_table(my_string)
 };
 #define my_string_parent_class_table ((yaooc_object_class_table_t*)(my_string_class_table.parent_class_table_))
 
-class_instance(my_string)
+yaooc_class_instance(my_string)
 {
   yaooc_object_class_instance_t;
   char* str;
 };
 
-class(my_string);
+yaooc_class(my_string);
 
 /* Prototypes for my_string type info */
 void my_string_default_ctor(pointer);
@@ -88,19 +88,19 @@ void my_string_erase_space(pointer,size_t,size_t);
 /*
   Class definition for my_string_exception
 */
-class_table(my_string_exception)
+yaooc_class_table(my_string_exception)
 {
   yaooc_exception_class_table_t;
 };
 #define my_string_exception_parent_class_table ((yaooc_exception_class_table_t*)(my_string_exception_class_table.parent_class_table_))
 
-class_instance(my_string_exception)
+yaooc_class_instance(my_string_exception)
 {
   yaooc_exception_class_instance_t;
   char* what_;
 };
 
-class(my_string_exception);
+yaooc_class(my_string_exception);
 
 /* Prototypes for my_string_exception type info */
 void my_string_exception_default_ctor(pointer);
@@ -121,18 +121,18 @@ const char* my_string_exception_what(const_pointer);
 /*
   Class definition for my_string_insert_exception
 */
-class_table(my_string_insert_exception)
+yaooc_class_table(my_string_insert_exception)
 {
   my_string_exception_class_table_t;
 };
 #define my_string_insert_exception_parent_class_table ((my_string_exception_class_table_t*)(my_string_insert_exception_class_table.parent_class_table_))
 
-class_instance(my_string_insert_exception)
+yaooc_class_instance(my_string_insert_exception)
 {
   my_string_exception_class_instance_t;
 };
 
-class(my_string_insert_exception);
+yaooc_class(my_string_insert_exception);
 
 /* Prototypes for my_string_insert_exception type info */
 void my_string_insert_exception_default_ctor(pointer);
@@ -151,18 +151,18 @@ const char* my_string_insert_exception_isa(const_pointer);
 /*
   Class definition for my_string_erase_exception
 */
-class_table(my_string_erase_exception)
+yaooc_class_table(my_string_erase_exception)
 {
   my_string_exception_class_table_t;
 };
 #define my_string_erase_exception_parent_class_table ((my_string_exception_class_table_t*)(my_string_erase_exception_class_table.parent_class_table_))
 
-class_instance(my_string_erase_exception)
+yaooc_class_instance(my_string_erase_exception)
 {
   my_string_exception_class_instance_t;
 };
 
-class(my_string_erase_exception);
+yaooc_class(my_string_erase_exception);
 
 /* Prototypes for my_string_erase_exception type info */
 void my_string_erase_exception_default_ctor(pointer);
@@ -181,18 +181,18 @@ const char* my_string_erase_exception_isa(const_pointer);
 /*
   Class definition for my_string_at_exception
 */
-class_table(my_string_at_exception)
+yaooc_class_table(my_string_at_exception)
 {
   my_string_exception_class_table_t;
 };
 #define my_string_at_exception_parent_class_table ((my_string_exception_class_table_t*)(my_string_at_exception_class_table.parent_class_table_))
 
-class_instance(my_string_at_exception)
+yaooc_class_instance(my_string_at_exception)
 {
   my_string_exception_class_instance_t;
 };
 
-class(my_string_at_exception);
+yaooc_class(my_string_at_exception);
 
 /* Prototypes for my_string_at_exception type info */
 void my_string_at_exception_default_ctor(pointer);

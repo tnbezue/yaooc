@@ -89,7 +89,7 @@ yaooc_regex_exception_class_table_t yaooc_regex_exception_class_table =
   .what = (const char* (*) (const_pointer)) yaooc_regex_exception_what,
 };
 
-DEFINE_TYPE_INFO(yaooc_regex_exception,yaooc_regex_exception_default_ctor,yaooc_regex_exception_dtor,yaooc_regex_exception_copy_ctor,yaooc_regex_exception_assign,NULL,NULL,NULL,&yaooc_regex_exception_class_table,yaooc_exception)
+DEFINE_TYPE_INFO(yaooc_regex_exception,Y,Y,Y,Y,N,N,N,Y,yaooc_exception)
 
 
 /* Private items for yaooc_matchdata */
@@ -239,8 +239,7 @@ yaooc_matchdata_class_table_t yaooc_matchdata_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_matchdata,yaooc_matchdata_default_ctor,yaooc_matchdata_dtor,yaooc_matchdata_copy_ctor,
-			yaooc_matchdata_assign,NULL,NULL,NULL,&yaooc_matchdata_class_table,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_matchdata,Y,Y,Y,Y,N,N,N,Y,yaooc_object)
 
 
 /* Private items for yaooc_regex */
@@ -410,6 +409,5 @@ yaooc_regex_class_table_t yaooc_regex_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_regex,yaooc_regex_default_ctor,yaooc_regex_dtor,yaooc_regex_copy_ctor,yaooc_regex_assign,
-		NULL,NULL,NULL,&yaooc_regex_class_table,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_regex,Y,Y,Y,Y,N,N,N,Y,yaooc_object)
 /*  End YAOOC PreProcessor generated content */

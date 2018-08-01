@@ -89,9 +89,7 @@ yaooc_json_exception_class_table_t yaooc_json_exception_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_json_exception,yaooc_json_exception_default_ctor,yaooc_json_exception_dtor,
-      yaooc_json_exception_copy_ctor,yaooc_json_exception_assign,NULL,NULL,NULL,
-      &yaooc_json_exception_class_table,yaooc_exception)
+DEFINE_TYPE_INFO(yaooc_json_exception,Y,Y,Y,Y,N,N,N,Y,yaooc_exception)
 
 
 /* Private items for yaooc_json_value */
@@ -208,8 +206,7 @@ yaooc_json_value_class_table_t yaooc_json_value_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_json_value,yaooc_json_value_default_ctor,yaooc_json_value_dtor,yaooc_json_value_copy_ctor,
-		yaooc_json_value_assign,yaooc_json_value_less_than_compare,NULL,NULL,&yaooc_json_value_class_table,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_json_value,Y,Y,Y,Y,Y,N,N,Y,yaooc_object)
 /* Private items for yaooc_json_null */
 
 /* Protected items for yaooc_json_null */
@@ -286,8 +283,7 @@ yaooc_json_null_class_table_t yaooc_json_null_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_json_null,yaooc_json_null_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,
-			&yaooc_json_null_class_table,yaooc_json_value)
+DEFINE_TYPE_INFO(yaooc_json_null,Y,N,N,N,N,N,N,Y,yaooc_json_value)
 /* Private items for yaooc_json_bool */
 
 /* Protected items for yaooc_json_bool */
@@ -390,8 +386,7 @@ yaooc_json_bool_class_table_t yaooc_json_bool_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_json_bool,yaooc_json_bool_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,
-		&yaooc_json_bool_class_table,yaooc_json_value)
+DEFINE_TYPE_INFO(yaooc_json_bool,Y,N,N,N,N,N,N,Y,yaooc_json_value)
 /* Private items for yaooc_json_integer */
 
 /* Protected items for yaooc_json_integer */
@@ -491,8 +486,7 @@ yaooc_json_integer_class_table_t yaooc_json_integer_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_json_integer,yaooc_json_integer_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,
-			&yaooc_json_integer_class_table,yaooc_json_value)
+DEFINE_TYPE_INFO(yaooc_json_integer,Y,N,N,N,N,N,N,Y,yaooc_json_value)
 /* Private items for yaooc_json_real */
 
 /* Protected items for yaooc_json_real */
@@ -590,8 +584,7 @@ yaooc_json_real_class_table_t yaooc_json_real_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_json_real,yaooc_json_real_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,
-			&yaooc_json_real_class_table,yaooc_json_value)
+DEFINE_TYPE_INFO(yaooc_json_real,Y,N,N,N,N,N,N,Y,yaooc_json_value)
 /* Private items for yaooc_json_string */
 
 /* Protected items for yaooc_json_string */
@@ -724,8 +717,7 @@ yaooc_json_string_class_table_t yaooc_json_string_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_json_string,yaooc_json_string_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,
-			&yaooc_json_string_class_table,yaooc_json_value)
+DEFINE_TYPE_INFO(yaooc_json_string,Y,N,N,N,N,N,N,Y,yaooc_json_value)
 
 
 VECTOR_IMPLEMENTATION(yaooc_json_value,yaooc_json_value_array)
@@ -872,8 +864,7 @@ yaooc_json_array_class_table_t yaooc_json_array_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_json_array,yaooc_json_array_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,
-			&yaooc_json_array_class_table,yaooc_json_value)
+DEFINE_TYPE_INFO(yaooc_json_array,Y,N,N,N,N,N,N,Y,yaooc_json_value)
 
 
 
@@ -1025,6 +1016,5 @@ yaooc_json_object_class_table_t yaooc_json_object_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_json_object,yaooc_json_object_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,
-			&yaooc_json_object_class_table,yaooc_json_value)
+DEFINE_TYPE_INFO(yaooc_json_object,Y,N,N,N,N,N,N,Y,yaooc_json_value)
 /*  End YAOOC PreProcessor generated content */

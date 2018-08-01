@@ -82,8 +82,7 @@ yaooc_stream_exception_class_table_t yaooc_stream_exception_class_table =
   .what = (const char* (*) (const_pointer)) yaooc_stream_exception_what,
 };
 
-DEFINE_TYPE_INFO(yaooc_stream_exception,yaooc_stream_exception_default_ctor,yaooc_stream_exception_dtor,yaooc_stream_exception_copy_ctor,yaooc_stream_exception_assign,NULL,NULL,NULL,&yaooc_stream_exception_class_table,yaooc_exception)
-
+DEFINE_TYPE_INFO(yaooc_stream_exception,Y,Y,Y,Y,N,N,N,Y,yaooc_exception)
 
 /* yaooc_base_stream private members */
 
@@ -140,8 +139,7 @@ yaooc_base_stream_class_table_t yaooc_base_stream_class_table =
   .bool = (bool (*) (const_pointer)) yaooc_base_stream_bool,
 };
 
-DEFINE_TYPE_INFO(yaooc_base_stream,yaooc_base_stream_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,
-			&yaooc_base_stream_class_table,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_base_stream,Y,N,N,N,N,N,N,Y,yaooc_object)
 
 
 /* yaooc_istream private members */
@@ -224,8 +222,7 @@ yaooc_istream_class_table_t yaooc_istream_class_table =
   .gets = (char* (*) (pointer,char*,size_t)) yaooc_istream_gets,
 };
 
-DEFINE_TYPE_INFO(yaooc_istream,yaooc_istream_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,
-			&yaooc_istream_class_table,yaooc_base_stream)
+DEFINE_TYPE_INFO(yaooc_istream,Y,N,N,N,N,N,N,Y,yaooc_base_stream)
 
 
 /* yaooc_ostream private members */
@@ -332,8 +329,7 @@ yaooc_ostream_class_table_t yaooc_ostream_class_table =
   .puts = (void (*) (pointer,const char*)) yaooc_ostream_puts,
 };
 
-DEFINE_TYPE_INFO(yaooc_ostream,yaooc_ostream_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,
-			&yaooc_ostream_class_table,yaooc_base_stream)
+	DEFINE_TYPE_INFO(yaooc_ostream,Y,N,N,N,N,N,N,Y,yaooc_base_stream)
 
 /*  End YAOOC PreProcessor generated content */
 

@@ -26,20 +26,20 @@ static char* make_string_from_number(int x)
 	return ptr;
 }
 
-class_table(demo) {
+yaooc_class_table(demo) {
   yaooc_object_class_table_t;
 	void(*say)(demo_const_pointer);
 	void(*setx)(demo_pointer,int);
 };
 
-class_instance(demo)
+yaooc_class_instance(demo)
 {
   yaooc_object_class_instance_t;
 	char* str;
 	int x;
 };
 
-class(demo);
+yaooc_class(demo);
 
 int demo_counter=12;
 void demo_default_ctor(pointer p)
@@ -125,6 +125,5 @@ demo_class_table_t demo_class_table=
   .setx = demo_setx
 };
 
-DEFINE_TYPE_INFO(demo,demo_default_ctor,demo_dtor,demo_copy_ctor,demo_assign,
-	 demo_less_than_compare,NULL,NULL,(const class_table_t*)&demo_class_table,yaooc_object)
+DEFINE_TYPE_INFO(demo,Y,Y,Y,Y,Y,N,N,Y,yaooc_object)
 

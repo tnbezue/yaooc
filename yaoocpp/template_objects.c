@@ -78,7 +78,7 @@ yaoocpp_item_class_table_t yaoocpp_item_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaoocpp_item,yaoocpp_item_default_ctor,yaoocpp_item_dtor,yaoocpp_item_copy_ctor,yaoocpp_item_assign,yaoocpp_item_less_than_compare,NULL,NULL,&yaoocpp_item_class_table,yaooc_object)
+DEFINE_TYPE_INFO(yaoocpp_item,Y,Y,Y,Y,Y,N,N,Y,yaooc_object)
 
 DYNAMIC_POINTER_IMPLEMENTATION(yaoocpp_item,yaoocpp_item_ptr);
 VECTOR_IMPLEMENTATION(yaoocpp_item_ptr,yaoocpp_item_ptr_vector);
@@ -174,7 +174,7 @@ yaoocpp_argument_class_table_t yaoocpp_argument_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaoocpp_argument,yaoocpp_argument_default_ctor,NULL,yaoocpp_argument_copy_ctor,yaoocpp_argument_assign,NULL,NULL,NULL,&yaoocpp_argument_class_table,yaoocpp_item)
+DEFINE_TYPE_INFO(yaoocpp_argument,Y,N,Y,Y,N,N,N,Y,yaoocpp_item)
 /* Private items for yaoocpp_variable */
 
 /* Protected items for yaoocpp_variable */
@@ -277,7 +277,7 @@ yaoocpp_variable_class_table_t yaoocpp_variable_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaoocpp_variable,yaoocpp_variable_default_ctor,NULL,yaoocpp_variable_copy_ctor,yaoocpp_variable_assign,NULL,NULL,NULL,&yaoocpp_variable_class_table,yaoocpp_argument)
+DEFINE_TYPE_INFO(yaoocpp_variable,Y,N,Y,Y,N,N,N,Y,yaoocpp_argument)
 
 /* Private items for yaoocpp_constructor */
 
@@ -386,7 +386,7 @@ yaoocpp_constructor_class_table_t yaoocpp_constructor_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaoocpp_constructor,yaoocpp_constructor_default_ctor,NULL,yaoocpp_constructor_copy_ctor,yaoocpp_constructor_assign,NULL,NULL,NULL,&yaoocpp_constructor_class_table,yaoocpp_item)
+DEFINE_TYPE_INFO(yaoocpp_constructor,Y,N,Y,Y,N,N,N,Y,yaoocpp_item)
 /* Private items for yaoocpp_method */
 
 /* Protected items for yaoocpp_method */
@@ -528,7 +528,7 @@ yaoocpp_method_class_table_t yaoocpp_method_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaoocpp_method,yaoocpp_method_default_ctor,NULL,yaoocpp_method_copy_ctor,yaoocpp_method_assign,NULL,NULL,NULL,&yaoocpp_method_class_table,yaoocpp_constructor)
+DEFINE_TYPE_INFO(yaoocpp_method,Y,N,Y,Y,N,N,N,Y,yaoocpp_constructor)
 /* Private items for yaoocpp_class */
 
 /* Protected items for yaoocpp_class */
@@ -645,7 +645,7 @@ void yaoocpp_class_print_class_definition(const_pointer p,yaooc_ofstream_pointer
   M(out,printf,"\n/*\n"
       "  Class definition for %s\n"
       "*/\n"
-      "class_table(%s)\n"
+      "yaooc_class_table(%s)\n"
       "{\n",M(this->name_,c_str),M(this->name_,c_str));
 
   if(this->parent_) {
@@ -662,7 +662,7 @@ void yaoocpp_class_print_class_definition(const_pointer p,yaooc_ofstream_pointer
     M(out,printf,"#define %s_parent_class_table ((%s_class_table_t*)(%s_class_table.parent_class_table_))\n",
             M(this->name_,c_str),M(this->parent_->name_,c_str),M(this->name_,c_str));
 
-  M(out,printf,"\nclass_instance(%s)\n{\n",M(this->name_,c_str));
+  M(out,printf,"\nyaooc_class_instance(%s)\n{\n",M(this->name_,c_str));
   if(this->parent_) {
     M(out,printf,"  %s_class_instance_t;\n",M(this->parent_->name_,c_str));
   }
@@ -672,7 +672,7 @@ void yaoocpp_class_print_class_definition(const_pointer p,yaooc_ofstream_pointer
     }
   }
   M(out,printf,"};\n");
-  M(out,printf,"\nclass(%s);\n\n",M(this->name_,c_str));
+  M(out,printf,"\nyaooc_class(%s);\n\n",M(this->name_,c_str));
 }
 
 void yaoocpp_class_print_type_info_prototypes(const_pointer p,yaooc_ofstream_pointer out)
@@ -826,35 +826,14 @@ void yaoocpp_class_print_define_type_info(const_pointer p,yaooc_ofstream_pointer
 {
   yaoocpp_class_const_pointer this=p;
   M(out,printf,"DEFINE_TYPE_INFO(%s",M(this->name_,c_str));
-  if(this->has_default_ctor_)
-    M(out,printf,",%s_default_ctor",M(this->name_,c_str));
-  else
-    M(out,printf,",NULL");
-  if(this->has_dtor_)
-    M(out,printf,",%s_dtor",M(this->name_,c_str));
-  else
-    M(out,printf,",NULL");
-  if(this->has_copy_ctor_)
-    M(out,printf,",%s_copy_ctor",M(this->name_,c_str));
-  else
-    M(out,printf,",NULL");
-  if(this->has_assign_)
-    M(out,printf,",%s_assign",M(this->name_,c_str));
-  else
-    M(out,printf,",NULL");
-  if(this->has_lt_cmp_)
-    M(out,printf,",%s_less_than_compare",M(this->name_,c_str));
-  else
-    M(out,printf,",NULL");
-  if(this->has_to_stream_)
-    M(out,printf,",%s_to_stream",M(this->name_,c_str));
-  else
-    M(out,printf,",NULL");
-  if(this->has_from_stream_)
-    M(out,printf,",%s_from_stream",M(this->name_,c_str));
-  else
-    M(out,printf,",NULL");
-  M(out,printf,",&%s_class_table,%s)\n",M(this->name_,c_str),this->parent_ ? M(this->parent_->name_,c_str) : "NULL");
+	M(out,printf,",%c",(this->has_default_ctor_ ? 'Y' : 'N'));
+	M(out,printf,",%c",(this->has_dtor_ ? 'Y' : 'N'));
+	M(out,printf,",%c",(this->has_copy_ctor_ ? 'Y' : 'N'));
+	M(out,printf,",%c",(this->has_assign_ ? 'Y' : 'N'));
+	M(out,printf,",%c",(this->has_lt_cmp_ ? 'Y' : 'N'));
+	M(out,printf,",%c",(this->has_to_stream_ ? 'Y' : 'N'));
+	M(out,printf,",%c",(this->has_from_stream_ ? 'Y' : 'N'));
+  M(out,printf,",Y,%s)\n",this->parent_ ? M(this->parent_->name_,c_str) : "NULL");
 }
 
 void yaoocpp_class_print_to_source(const_pointer p,yaooc_ofstream_pointer out)
@@ -896,5 +875,5 @@ yaoocpp_class_class_table_t yaoocpp_class_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaoocpp_class,yaoocpp_class_default_ctor,NULL,yaoocpp_class_copy_ctor,yaoocpp_class_assign,NULL,NULL,NULL,&yaoocpp_class_class_table,yaoocpp_item)
+DEFINE_TYPE_INFO(yaoocpp_class,Y,N,Y,Y,N,N,N,Y,yaoocpp_item)
 /*  End YAOOC PreProcessor generated content */

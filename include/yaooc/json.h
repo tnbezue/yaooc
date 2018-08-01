@@ -26,8 +26,8 @@
 typedef enum { JSON_UNDEFINED=0, JSON_NULL, JSON_BOOL, JSON_INTEGER, JSON_REAL, JSON_STRING,
         JSON_ARRAY, JSON_OBJECT } yaooc_json_type_t;
 
-class_forward(yaooc_json_value_array)
-class_forward(yaooc_json_string_value_map)
+yaooc_class_forward(yaooc_json_value_array)
+yaooc_class_forward(yaooc_json_string_value_map)
 
 typedef union {
   bool    bool_;
@@ -43,18 +43,18 @@ typedef union {
 /*
   Class definition for yaooc_json_exception
 */
-class_table(yaooc_json_exception)
+yaooc_class_table(yaooc_json_exception)
 {
   yaooc_exception_class_table_t;
 };
 
-class_instance(yaooc_json_exception)
+yaooc_class_instance(yaooc_json_exception)
 {
   yaooc_exception_class_instance_t;
   char* exception_str_;
 };
 
-class(yaooc_json_exception);
+yaooc_class(yaooc_json_exception);
 /* Prototypes for yaooc_json_exception type info */
 void yaooc_json_exception_default_ctor(pointer);
 void yaooc_json_exception_dtor(pointer);
@@ -78,7 +78,7 @@ const char* yaooc_json_exception_what(const_pointer);
 /*
   Class definition for yaooc_json_value
 */
-class_table(yaooc_json_value)
+yaooc_class_table(yaooc_json_value)
 {
   yaooc_object_class_table_t;
   void (*virtual_dtor)(pointer);
@@ -89,14 +89,14 @@ class_table(yaooc_json_value)
   void (*print)(const_pointer,ostream_pointer);
 };
 
-class_instance(yaooc_json_value)
+yaooc_class_instance(yaooc_json_value)
 {
   yaooc_object_class_instance_t;
   yaooc_json_type_t type_;
   json_data_t;
 };
 
-class(yaooc_json_value);
+yaooc_class(yaooc_json_value);
 /* Prototypes for yaooc_json_value type info */
 void yaooc_json_value_default_ctor(pointer);
 void yaooc_json_value_dtor(pointer);
@@ -125,17 +125,17 @@ void yaooc_json_value_print(const_pointer,ostream_pointer);
 /*
   Class definition for yaooc_json_null
 */
-class_table(yaooc_json_null)
+yaooc_class_table(yaooc_json_null)
 {
   yaooc_json_value_class_table_t;
 };
 
-class_instance(yaooc_json_null)
+yaooc_class_instance(yaooc_json_null)
 {
   yaooc_json_value_class_instance_t;
 };
 
-class(yaooc_json_null);
+yaooc_class(yaooc_json_null);
 /* Prototypes for yaooc_json_null type info */
 void yaooc_json_null_default_ctor(pointer);
 void yaooc_json_null_copy_ctor(pointer,const_pointer);
@@ -160,19 +160,19 @@ void yaooc_json_null_print(const_pointer,ostream_pointer);
 /*
   Class definition for yaooc_json_bool
 */
-class_table(yaooc_json_bool)
+yaooc_class_table(yaooc_json_bool)
 {
   yaooc_json_value_class_table_t;
   void (*set)(pointer,bool);
   bool (*get)(const_pointer);
 };
 
-class_instance(yaooc_json_bool)
+yaooc_class_instance(yaooc_json_bool)
 {
   yaooc_json_value_class_instance_t;
 };
 
-class(yaooc_json_bool);
+yaooc_class(yaooc_json_bool);
 /* Prototypes for yaooc_json_bool type info */
 void yaooc_json_bool_default_ctor(pointer);
 void yaooc_json_bool_copy_ctor(pointer,const_pointer);
@@ -200,19 +200,19 @@ bool yaooc_json_bool_get(const_pointer);
 /*
   Class definition for yaooc_json_integer
 */
-class_table(yaooc_json_integer)
+yaooc_class_table(yaooc_json_integer)
 {
   yaooc_json_value_class_table_t;
   void (*set)(pointer,int64_t);
   int64_t (*get)(const_pointer);
 };
 
-class_instance(yaooc_json_integer)
+yaooc_class_instance(yaooc_json_integer)
 {
   yaooc_json_value_class_instance_t;
 };
 
-class(yaooc_json_integer);
+yaooc_class(yaooc_json_integer);
 /* Prototypes for yaooc_json_integer type info */
 void yaooc_json_integer_default_ctor(pointer);
 void yaooc_json_integer_copy_ctor(pointer,const_pointer);
@@ -240,19 +240,19 @@ int64_t yaooc_json_integer_get(const_pointer);
 /*
   Class definition for yaooc_json_real
 */
-class_table(yaooc_json_real)
+yaooc_class_table(yaooc_json_real)
 {
   yaooc_json_value_class_table_t;
   void (*set)(pointer,double);
   double (*get)(const_pointer);
 };
 
-class_instance(yaooc_json_real)
+yaooc_class_instance(yaooc_json_real)
 {
   yaooc_json_value_class_instance_t;
 };
 
-class(yaooc_json_real);
+yaooc_class(yaooc_json_real);
 /* Prototypes for yaooc_json_real type info */
 void yaooc_json_real_default_ctor(pointer);
 void yaooc_json_real_copy_ctor(pointer,const_pointer);
@@ -280,7 +280,7 @@ double yaooc_json_real_get(const_pointer);
 /*
   Class definition for yaooc_json_string
 */
-class_table(yaooc_json_string)
+yaooc_class_table(yaooc_json_string)
 {
   yaooc_json_value_class_table_t;
   void (*set)(pointer,const char*);
@@ -289,12 +289,12 @@ class_table(yaooc_json_string)
   void (*clear)(pointer);
 };
 
-class_instance(yaooc_json_string)
+yaooc_class_instance(yaooc_json_string)
 {
   yaooc_json_value_class_instance_t;
 };
 
-class(yaooc_json_string);
+yaooc_class(yaooc_json_string);
 /* Prototypes for yaooc_json_string type info */
 void yaooc_json_string_default_ctor(pointer);
 void yaooc_json_string_copy_ctor(pointer,const_pointer);
@@ -328,7 +328,7 @@ typedef yaooc_json_value_array_const_iterator yaooc_json_array_const_iterator;
 /*
   Class definition for yaooc_json_array
 */
-class_table(yaooc_json_array)
+yaooc_class_table(yaooc_json_array)
 {
   yaooc_json_value_class_table_t;
   yaooc_json_array_iterator (*insert)(pointer,pointer);
@@ -340,12 +340,12 @@ class_table(yaooc_json_array)
   yaooc_json_array_iterator (*end)(const_pointer);
 };
 
-class_instance(yaooc_json_array)
+yaooc_class_instance(yaooc_json_array)
 {
   yaooc_json_value_class_instance_t;
 };
 
-class(yaooc_json_array);
+yaooc_class(yaooc_json_array);
 /* Prototypes for yaooc_json_array type info */
 void yaooc_json_array_default_ctor(pointer);
 void yaooc_json_array_copy_ctor(pointer,const_pointer);
@@ -380,7 +380,7 @@ typedef yaooc_json_string_value_map_const_iterator yaooc_json_object_const_itera
 /*
   Class definition for yaooc_json_object
 */
-class_table(yaooc_json_object)
+yaooc_class_table(yaooc_json_object)
 {
   yaooc_json_value_class_table_t;
   yaooc_json_object_iterator (*insert)(pointer,const_pointer,const_pointer);
@@ -392,12 +392,12 @@ class_table(yaooc_json_object)
   yaooc_json_object_iterator (*end)(const_pointer);
 };
 
-class_instance(yaooc_json_object)
+yaooc_class_instance(yaooc_json_object)
 {
   yaooc_json_value_class_instance_t;
 };
 
-class(yaooc_json_object);
+yaooc_class(yaooc_json_object);
 /* Prototypes for yaooc_json_object type info */
 void yaooc_json_object_default_ctor(pointer);
 void yaooc_json_object_copy_ctor(pointer,const_pointer);

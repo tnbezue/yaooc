@@ -161,9 +161,7 @@ yaooc_unique_ptr_class_table_t yaooc_unique_ptr_class_table = {
   .reset = (void (*) (pointer p,pointer)) yaooc_unique_ptr_reset,
 };
 
-DEFINE_TYPE_INFO(yaooc_unique_ptr,yaooc_unique_ptr_default_ctor,yaooc_unique_ptr_dtor,
-		yaooc_unique_ptr_copy_ctor,yaooc_unique_ptr_assign,yaooc_unique_ptr_less_than_compare,
-		NULL,NULL,&yaooc_unique_ptr_class_table,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_unique_ptr,Y,Y,Y,Y,Y,N,N,Y,yaooc_object)
 /* Private members for yaooc_shared_ptr */
 
 /* Protected members for yaooc_shared_ptr */
@@ -188,7 +186,7 @@ static void yaooc_counter_ctor_ptr(pointer p,va_list args)
 	this->count_=1;
 }
 
-DEFINE_TYPE_INFO(yaooc_counter,yaooc_counter_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)
+DEFINE_TYPE_INFO(yaooc_counter,Y,N,N,N,N,N,N,N,NULL)
 
 void yaooc_shared_ptr_acquire(pointer p,yaooc_counter_t* c)
 {
@@ -313,7 +311,5 @@ yaooc_shared_ptr_class_table_t yaooc_shared_ptr_class_table = {
   .count = (size_t (*) (const_pointer p)) yaooc_shared_ptr_count,
 };
 
-DEFINE_TYPE_INFO(yaooc_shared_ptr,yaooc_shared_ptr_default_ctor,yaooc_shared_ptr_dtor,
-		yaooc_shared_ptr_copy_ctor,yaooc_shared_ptr_assign,yaooc_shared_ptr_less_than_compare,
-		NULL,NULL,&yaooc_shared_ptr_class_table,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_shared_ptr,Y,Y,Y,Y,Y,N,N,Y,yaooc_object)
 

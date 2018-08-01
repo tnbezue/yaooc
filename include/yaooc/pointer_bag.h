@@ -26,7 +26,7 @@
 /*
   Class definition for yaooc_pointer_bag
 */
-class_table(yaooc_pointer_bag)
+yaooc_class_table(yaooc_pointer_bag)
 {
   yaooc_pod_array_class_table_t;
   pointer (*push)(pointer,pointer);
@@ -36,12 +36,12 @@ class_table(yaooc_pointer_bag)
   void (*delete_all)(pointer);
 };
 
-class_instance(yaooc_pointer_bag)
+yaooc_class_instance(yaooc_pointer_bag)
 {
   yaooc_pod_array_class_instance_t;
 };
 
-class(yaooc_pointer_bag);
+yaooc_class(yaooc_pointer_bag);
 
 typedef pointer* pointer_bag_iterator;
 typedef const pointer* pointer_bag_const_iterator;

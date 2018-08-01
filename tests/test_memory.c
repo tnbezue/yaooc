@@ -22,7 +22,7 @@
 #include <yaooc/memory.h>
 #include "test_harness.h"
 
-class_(demo) {
+yaooc_struct(demo) {
 	int x;
 	int y;
 };
@@ -56,7 +56,7 @@ void demo_say(demo_const_pointer this)
   printf("X = %d  Y = %d\n",this->x,this->y);
 }
 
-DEFINE_TYPE_INFO(demo,demo_default_ctor,demo_dtor,NULL,NULL,NULL,NULL,NULL,NULL,NULL)
+DEFINE_TYPE_INFO(demo,Y,Y,N,N,N,N,N,N,NULL)
 
 DYNAMIC_POINTER_DEFINITION(demo,dynamic_demo)
 DYNAMIC_POINTER_IMPLEMENTATION(demo,dynamic_demo)

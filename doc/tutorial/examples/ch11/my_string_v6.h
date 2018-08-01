@@ -9,7 +9,7 @@
 /*
   Class definition for my_string
 */
-class_table(my_string)
+yaooc_class_table(my_string)
 {
   yaooc_object_class_table_t;
   const size_t my_string_n_pos;
@@ -34,13 +34,13 @@ class_table(my_string)
 };
 #define my_string_parent_class_table ((yaooc_object_class_table_t*)(my_string_class_table.parent_class_table_))
 
-class_instance(my_string)
+yaooc_class_instance(my_string)
 {
   yaooc_object_class_instance_t;
   char* str;
 };
 
-class(my_string);
+yaooc_class(my_string);
 
 /* Prototypes for my_string type info */
 void my_string_default_ctor(pointer);

@@ -15,8 +15,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef __NEW_INCLUDED__
-#define __NEW_INCLUDED__
+#ifndef __YAOOC_NEW_INCLUDED__
+#define __YAOOC_NEW_INCLUDED__
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -40,7 +40,7 @@
 #endif
 
 #include <yaooc/yaooc_debug.h>
-
+#include <yaooc/macros.h>
 /*
 	New
 
@@ -204,6 +204,7 @@ bool __op_le_static(const_pointer,const_pointer,const type_info_t*);
 #define op_ge_static(P,CP,T) __op_ge_static(P,CP,T ## _ti)
 #define op_lt_static(P,CP,T) __op_lt_static(P,CP,T ## _ti)
 #define op_le_static(P,CP,T) __op_le_static(P,CP,T ## _ti)
+#if 0
 /*
 	Forward declaration of a class
 */
@@ -279,14 +280,12 @@ type_info_t __ ## T ## _ti ={ \
 	.parent_ = (const type_info_t*)&__ ## PARENT ## _ti, \
 }; \
 const type_info_t* const T ## _ti = &__ ## T ## _ti;
-
 /*
   Utility macros/functions
 */
 
 #define SWAP(T,x,y) { T __temp__=x; x=y; y=__temp__; }
 
-char* yaooc_strdup(const char*);
 
 /*
   If object does not have a destructor (or will not have to use the destructor if one exists)
@@ -302,5 +301,8 @@ char* yaooc_strdup(const char*);
 
 
 #define DISTANCE(ti,first,last) ((((yaooc_private_const_iterator)last) - ((yaooc_private_const_iterator)first))/((const type_info_t*)ti)->type_size_)
+#endif
+
+char* yaooc_strdup(const char*);
 
 #endif

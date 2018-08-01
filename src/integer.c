@@ -109,8 +109,6 @@ yaooc_integer_class_table_t yaooc_integer_class_table =
   .get = (long (*) (const_pointer)) yaooc_integer_get,
 };
 
-DEFINE_TYPE_INFO(yaooc_integer,yaooc_integer_default_ctor,NULL,yaooc_integer_copy_ctor,
-		yaooc_integer_assign,yaooc_integer_less_than_compare,yaooc_integer_to_stream,
-		yaooc_integer_from_stream,&yaooc_integer_class_table,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_integer,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object)
 
 /*  End YAOOC PreProcessor generated content */

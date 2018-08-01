@@ -37,7 +37,7 @@ If the default constructor is NULL, then no initialization is done. The followin
   }
 </code></pre>
 <p>
-Using the YAOOC naming convention, the name of the default constructor should be class name (as specified in the class_ macro)
+Using the YAOOC naming convention, the name of the default constructor should be class name (as specified in the yaooc_struct macro)
 appended with "_default_ctor".  In our case, it's "my_string_default_ctor".
 </p>
 <h3>Destructor</h3>
@@ -54,9 +54,13 @@ By naming convention, the name of the destructor should be class name appended w
   }
 </code></pre>
 <h3>Copy constructor</h3>
-<p>The copy constructor creates a new object from an existing object.  The first argument is the newly allocated memory.
-The second argument is the existing object.    If the copy constructor is NULL, then the source object is copied
+<p>The copy constructor creates a new object from an existing object.  The first argument is a pointer to the newly allocated memory.
+The second argument is const_pointer to the existing object. If the copy constructor is NULL, then the source object is copied
 (using memcpy) to the target object.  The name of the copy constructor should be class name appended with "_copy_ctor".
+</p>
+<p>
+For many objects, the copy constructor can use default constructor to initialize the target object followed by a call to the assignment function.
+This technique will be used for the my_string class.
 </p>
 <pre><code>
   void my_string_copy_ctor(pointer p,const_pointer s)
@@ -66,7 +70,6 @@ The second argument is the existing object.    If the copy constructor is NULL, 
   }
 </code></pre>
 <p>
-For many objects, the copy constructor can use default constructor to initialize the target object followed by a call to the assignment function.
 The copy constructor is called when new_copy is used.
 </p>
 <pre><code>
@@ -76,7 +79,7 @@ The copy constructor is called when new_copy is used.
 </code></pre>
 <h3>Assigment</h3>
 <p>
-The assignment method assigns one object to another.  The first argument is the object to be assigned.  The second argument is the source object.
+The assignment method assigns one object to another.  The first argument is a pointer the object to be assigned.  The second argument is a const_pointer to the source object.
 If the assignment method is NULL, then the source object is copied (using memcpy) to the target object.
 The name of the assignment method should be the class name appended with "_assign".
 </p>
@@ -104,6 +107,7 @@ Note that both objects in assignment must be initialized.  The following most li
 </p>
 <pre><code>
   my_string_pointer p1=new(my_string);
+  ...
   my_string_pointer p2;
   assign(p2,p1);
 </code></pre>
@@ -124,14 +128,15 @@ The method name is class name appended with "_less_than_compare".
       if(bsp2->str == NULL)
         return false; /* both NULL, equal -- NULL is not less than NULL */
       else
-        return true; /* 1st is NULL, second is not.  NULL is less than not NULL */
+        return true; /* 1st is NULL, 2nd is not.  NULL is less than not NULL */
     } else if(bsp2 == NULL)
-      return false; /* 1st is not NULL, second is NULL. Not NULL is not less than NULL */
+      return false; /* 1st is not NULL, 2nd is NULL. Not NULL is not less than NULL */
     return strcmp(bsp1->str,bsp2->str) < 0; /* Both not null, compare the strings */
   }
 </code></pre>
 <p>
 As with assignment, the normal comparison operators can not be used in YAOOC.  The following table shows the methods to use for comparison.
+Each method takes two arguments -- pointers to the objects to compare.
 </p>
 <div class="divTable">
 <div class="divTableBody">
@@ -143,32 +148,32 @@ As with assignment, the normal comparison operators can not be used in YAOOC.  T
 <div class="divTableRow">
 <div class="divTableCell">Equal to</div>
 <div class="divTableCell">==</div>
-<div class="divTableCell">op_eq</div>
+<div class="divTableCell">op_eq(p1,p2)</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">Equal to</div>
 <div class="divTableCell">!=</div>
-<div class="divTableCell">op_ne</div>
+<div class="divTableCell">op_ne(p1,p2)</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">Less than</div>
 <div class="divTableCell"><</div>
-<div class="divTableCell">op_lt</div>
+<div class="divTableCell">op_lt(p1,p2)</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">Less than or equal to</div>
 <div class="divTableCell"><=</div>
-<div class="divTableCell">op_le</div>
+<div class="divTableCell">op_le(p1,p2)</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">Greater than</div>
 <div class="divTableCell">></div>
-<div class="divTableCell">op_gt</div>
+<div class="divTableCell">op_gt(p1,p2)</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">Greater than or equal to</div>
 <div class="divTableCell">>=</div>
-<div class="divTableCell">op_ge</div>
+<div class="divTableCell">op_ge(p1,p2)</div>
 </div>
 </div>
 </div>
@@ -193,10 +198,19 @@ The class table, parent, to/from stream type info entries will be covered in lat
 </code></pre>
 
 <p>
-Since creation of type info structures is so common, using the DEFINE_TYPE_INFO macro is much easier to use
+Since creation of type info structures is so common, the DEFINE_TYPE_INFO macro is much easier to use.  To use DEFINE_TYPE_INFO, the naming convention must be used.
 </p>
 <pre><code>
-  DEFINE_TYPE_INFO(my_string,my_string_default_ctor,my_string_dtor,my_string_copy_ctor,my_string_assign,my_string_less_than_compare,NULL,NULL,NULL,NULL)
+  DEFINE_TYPE_INFO(TYPE,HAS_DEFAULT_CTOR,HAS_DTOR,HAS_COPY_CTOR,HAS_ASSIGN,HAS_LESS_THAN_COMPARE,HAS_TO_STREAM,HAS_FROM_STREAM,HAS_CLASS_TABLE,PARENT)
+</code></pre>
+<p>
+TYPE is the type name -- without "_t".  The entries beginning with "HAS" require a Y or N entry to indicate if the type has the indicated method.  PARENT is the parent class -- also without "_t".
+</p>
+<p>
+The DEFINE_TYPE_INFO for my_string is:
+</p>
+<pre><code>
+  DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,N,N,N,NULL)
 </code></pre>
 <p>
 Now let's give the my_string class a try.  Adding the following main program will demonstrate it. 

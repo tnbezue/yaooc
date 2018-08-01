@@ -83,18 +83,18 @@ void test_basic()
   delete(d2);
 }
 
-class_table(base)
+yaooc_class_table(base)
 {
   yaooc_object_class_table_t;
   void (*do_something)(pointer);
 };
 #define base_parent_class_table ((yaooc_object_class_table_t*)(demo_class_table.parent_class_table_))
 
-class_instance(base)
+yaooc_class_instance(base)
 {
   yaooc_object_class_instance_t;
 };
-class(base);
+yaooc_class(base);
 
 const char* base_isa(const_pointer p) { return "base_t"; }
 int base_do_something_count=0;
@@ -110,19 +110,19 @@ base_class_table_t base_class_table =
   .swap = yaooc_object_swap,
   .do_something = base_do_something
 };
-DEFINE_TYPE_INFO(base,NULL,NULL,NULL,NULL,NULL,NULL,NULL,&base_class_table,yaooc_object)
+DEFINE_TYPE_INFO(base,N,N,N,N,N,N,N,Y,yaooc_object)
 
-class_table(derived1)
+yaooc_class_table(derived1)
 {
   base_class_table_t;
 };
 #define derived1_parent_class_table ((base_class_table_t*)(derived1_class_table.parent_class_table_))
 
-class_instance(derived1)
+yaooc_class_instance(derived1)
 {
   base_class_instance_t;
 };
-class(derived1);
+yaooc_class(derived1);
 
 const char* derived1_isa(const_pointer p) { return "derived1_t"; }
 int derived1_do_something_count=0;
@@ -163,21 +163,21 @@ derived1_class_table_t derived1_class_table =
   .swap = yaooc_object_swap,
   .do_something = derived1_do_something_bad
 };
-DEFINE_TYPE_INFO(derived1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,&derived1_class_table,base)
+DEFINE_TYPE_INFO(derived1,N,N,N,N,N,N,N,Y,base)
 
 
 
-class_table(derived2)
+yaooc_class_table(derived2)
 {
   derived1_class_table_t;
 };
 #define derived2_parent_class_table ((derived1_class_table_t*)(derived2_class_table.parent_class_table_))
 
-class_instance(derived2)
+yaooc_class_instance(derived2)
 {
   derived1_class_instance_t;
 };
-class(derived2);
+yaooc_class(derived2);
 
 const char* derived2_isa(const_pointer p) { return "derived2_t"; }
 int derived2_do_something_count=0;
@@ -197,7 +197,7 @@ derived2_class_table_t derived2_class_table =
   .swap = yaooc_object_swap,
   .do_something = derived2_do_something
 };
-DEFINE_TYPE_INFO(derived2,NULL,NULL,NULL,NULL,NULL,NULL,NULL,&derived2_class_table,derived1)
+DEFINE_TYPE_INFO(derived2,N,N,N,N,N,N,N,Y,derived1)
 
 void test_inheritance()
 {

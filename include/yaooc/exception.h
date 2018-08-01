@@ -27,18 +27,18 @@
 /*
   Class definition for yaooc_exception
 */
-class_table(yaooc_exception)
+yaooc_class_table(yaooc_exception)
 {
   yaooc_object_class_table_t;
   const char* (*what)(const_pointer);
 };
 
-class_instance(yaooc_exception)
+yaooc_class_instance(yaooc_exception)
 {
   yaooc_object_class_instance_t;
 };
 
-class(yaooc_exception);
+yaooc_class(yaooc_exception);
 
 /* Prototypes for yaooc_exception type info */
 

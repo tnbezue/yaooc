@@ -26,7 +26,7 @@
 /*
   Class definition for yaooc_integer
 */
-class_table(yaooc_integer)
+yaooc_class_table(yaooc_integer)
 {
   yaooc_object_class_table_t;
   void (*set)(pointer,long);
@@ -34,13 +34,13 @@ class_table(yaooc_integer)
 };
 #define yaooc_integer_parent_class_table ((yaooc_object_class_table_t*)(yaooc_integer_class_table.parent_class_table_))
 
-class_instance(yaooc_integer)
+yaooc_class_instance(yaooc_integer)
 {
   yaooc_object_class_instance_t;
   long value_;
 };
 
-class(yaooc_integer);
+yaooc_class(yaooc_integer);
 
 /* Prototypes for yaooc_integer type info */
 void yaooc_integer_default_ctor(pointer);

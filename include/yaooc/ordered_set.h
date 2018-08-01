@@ -21,41 +21,41 @@
 
 #include <yaooc/unique_ordered_array_container.h>
 
-#define ORDERED_SET_DEFINITION(T,N) \
-typedef const T ## _t* N ## _iterator; \
-typedef const T ## _t* N ## _const_iterator; \
-class_table(N) { \
+#define ORDERED_SET_DEFINITION(T,NAME) \
+typedef const T ## _t* NAME ## _iterator; \
+typedef const T ## _t* NAME ## _const_iterator; \
+yaooc_class_table(NAME) { \
 	yaooc_unique_ordered_array_container_class_table_t; \
-	N ## _iterator (*insert)(pointer,const T ## _t*); \
-	N ## _iterator (*insert_range)(pointer,const_iterator,const_iterator); \
-	N ## _iterator (*erase) (pointer,iterator); \
-	N ## _iterator (*erase_range) (pointer,iterator,iterator); \
-	N ## _iterator (*find)(const_pointer,const T ## _t*); \
+	NAME ## _iterator (*insert)(pointer,const T ## _t*); \
+	NAME ## _iterator (*insert_range)(pointer,const_iterator,const_iterator); \
+	NAME ## _iterator (*erase) (pointer,iterator); \
+	NAME ## _iterator (*erase_range) (pointer,iterator,iterator); \
+	NAME ## _iterator (*find)(const_pointer,const T ## _t*); \
 };\
-class_instance(N) \
+yaooc_class_instance(NAME) \
 {\
 	yaooc_unique_ordered_array_container_class_instance_t;\
 };\
-class(N);\
-const char* N ## _isa(const_pointer); \
-N ## _iterator N ## _insert(pointer,const T ## _t*); \
-N ## _iterator N ## _insert_range(pointer,const_iterator,const_iterator); \
-void N ## _default_ctor(pointer);
+yaooc_class(NAME);\
+const char* NAME ## _isa(const_pointer); \
+NAME ## _iterator NAME ## _insert(pointer,const T ## _t*); \
+NAME ## _iterator NAME ## _insert_range(pointer,const_iterator,const_iterator); \
+void NAME ## _default_ctor(pointer);
 
-#define ORDERED_SET_IMPLEMENTATION(T,N) \
-void N ## _default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor_ti,T ## _ti); } \
-const char* N ## _isa(const_pointer p) { return # N "_t"; } \
-N ## _iterator N ## _insert(pointer p,const T ## _t* v) \
+#define ORDERED_SET_IMPLEMENTATION(T,NAME) \
+void NAME ## _default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor_ti,T ## _ti); } \
+const char* NAME ## _isa(const_pointer p) { return # NAME "_t"; } \
+NAME ## _iterator NAME ## _insert(pointer p,const T ## _t* v) \
 { \
   return yaooc_unique_ordered_array_container_insert(p,END(p),v); \
 } \
-N ## _iterator N ## _insert_range(pointer p,const_iterator f,const_iterator l) \
+NAME ## _iterator NAME ## _insert_range(pointer p,const_iterator f,const_iterator l) \
 { \
   return yaooc_unique_ordered_array_container_insert_range(p,END(p),f,l); \
 } \
-N ## _class_table_t N ## _class_table = { \
+NAME ## _class_table_t NAME ## _class_table = { \
   .parent_class_table_ = (const class_table_t*)&yaooc_unique_ordered_array_container_class_table, \
-  .isa = N ## _isa, \
+  .isa = NAME ## _isa, \
   .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_object_is_descendant, \
   .swap = (void (*) (pointer p,pointer)) yaooc_array_container_swap, \
   .increase_capacity = (bool(*)(pointer,size_t)) yaooc_pod_array_increase_capacity, \
@@ -65,12 +65,12 @@ N ## _class_table_t N ## _class_table = { \
   .empty = (bool (*) (const_pointer p)) yaooc_array_container_empty, \
   .begin = (iterator (*) (const_pointer p)) yaooc_array_container_begin, \
   .end = (iterator (*) (const_pointer p)) yaooc_array_container_end, \
-  .insert = (N ## _iterator (*)(pointer,const T ## _t*)) N ## _insert, \
-  .insert_range = (N ## _iterator (*)(pointer,const_iterator,const_iterator)) N ## _insert_range, \
-  .erase = (N ## _iterator (*)(pointer,iterator)) yaooc_array_container_erase, \
-  .erase_range = (N ## _iterator (*)(pointer,iterator,iterator)) yaooc_array_container_erase_range, \
-  .find = (N ## _iterator (*) (const_pointer,const T ## _t*)) yaooc_ordered_array_container_find \
+  .insert = (NAME ## _iterator (*)(pointer,const T ## _t*)) NAME ## _insert, \
+  .insert_range = (NAME ## _iterator (*)(pointer,const_iterator,const_iterator)) NAME ## _insert_range, \
+  .erase = (NAME ## _iterator (*)(pointer,iterator)) yaooc_array_container_erase, \
+  .erase_range = (NAME ## _iterator (*)(pointer,iterator,iterator)) yaooc_array_container_erase_range, \
+  .find = (NAME ## _iterator (*) (const_pointer,const T ## _t*)) yaooc_ordered_array_container_find \
 };\
-DEFINE_TYPE_INFO(N,N ## _default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&N ## _class_table,yaooc_unique_ordered_array_container)
+DEFINE_TYPE_INFO(NAME,Y,N,N,N,N,N,N,Y,yaooc_unique_ordered_array_container)
 
 #endif

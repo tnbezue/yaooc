@@ -25,7 +25,7 @@
 #include "test_harness.h"
 
 int base_x=0;
-class_(demo) {
+yaooc_struct(demo) {
 	int x;
 };
 
@@ -60,8 +60,7 @@ bool demo_less_than_compare(const_pointer v1,const_pointer v2)
 	return ((demo_const_pointer)v1)->x < ((demo_const_pointer)v2)->x;
 }
 
-DEFINE_TYPE_INFO(demo,demo_default_ctor,demo_dtor,demo_copy_ctor,demo_assign,
-    demo_less_than_compare,NULL,NULL,NULL,NULL)
+DEFINE_TYPE_INFO(demo,Y,Y,Y,Y,Y,N,N,N,NULL)
 
 /*
   Demo constructor that takes a integer as an argument
@@ -209,7 +208,7 @@ void test_copy()
 	delete(dy);
 }
 
-class_(base) {
+yaooc_struct(base) {
 	int x;
 };
 
@@ -240,8 +239,7 @@ bool base_less_than_compare(const_pointer v1,const_pointer v2)
   if(optr) optr+=sprintf(optr,"BLTC%d-%d",((const base_t*)v1)->x,((const base_t*)v2)->x);
   return ((const base_t*)v1)->x < ((const base_t*)v2)->x;
 }
-DEFINE_TYPE_INFO(base,base_default_ctor,base_dtor,base_copy_ctor,base_assign,base_less_than_compare,
-    NULL,NULL,NULL,NULL);
+DEFINE_TYPE_INFO(base,Y,Y,Y,Y,Y,N,N,N,NULL);
 
 void base_ctor_int(pointer p,va_list args)
 {
@@ -250,7 +248,7 @@ void base_ctor_int(pointer p,va_list args)
   ((base_t*)p)->x=x;
 }
 
-class_(derived) {
+yaooc_struct(derived) {
 	base_t;
 	int y;
 };
@@ -285,8 +283,7 @@ void derived_copy_ctor(pointer dst,const_pointer src)
   derived_assign(dst,src);
 }
 
-DEFINE_TYPE_INFO(derived,derived_default_ctor,derived_dtor,derived_copy_ctor,derived_assign,
-    NULL,NULL,NULL,NULL,base)
+DEFINE_TYPE_INFO(derived,Y,Y,Y,Y,N,N,N,N,base)
 
 void derived_ctor_int_int(pointer p,va_list args)
 {
@@ -297,7 +294,7 @@ void derived_ctor_int_int(pointer p,va_list args)
   ((derived_t*)p)->y=y;
 }
 
-class_(derived2) {
+yaooc_struct(derived2) {
 	derived_t;
 	int z;
 };
@@ -332,8 +329,7 @@ void derived2_copy_ctor(pointer dst,const_pointer src)
   derived2_assign(dst,src);
 }
 
-DEFINE_TYPE_INFO(derived2,derived2_default_ctor,derived2_dtor,derived2_copy_ctor,derived2_assign,
-  NULL,NULL,NULL,NULL,derived)
+DEFINE_TYPE_INFO(derived2,Y,Y,Y,Y,N,N,N,N,derived)
 
 void derived2_ctor_int_int_int(pointer p,va_list args)
 {

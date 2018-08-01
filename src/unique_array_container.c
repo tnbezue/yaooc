@@ -101,5 +101,4 @@ yaooc_unique_array_container_class_table_t yaooc_unique_array_container_class_ta
 };
 
 
-DEFINE_TYPE_INFO(yaooc_unique_array_container,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-			&yaooc_unique_array_container_class_table,yaooc_array_container)
+DEFINE_TYPE_INFO(yaooc_unique_array_container,N,N,N,N,N,N,N,Y,yaooc_array_container)

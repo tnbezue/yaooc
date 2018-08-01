@@ -27,7 +27,7 @@
 /*
   Class definition for yaooc_date_time
 */
-class_table(yaooc_date_time)
+yaooc_class_table(yaooc_date_time)
 {
   yaooc_object_class_table_t;
   void (*set)(pointer,int);
@@ -44,13 +44,13 @@ class_table(yaooc_date_time)
 };
 #define yaooc_date_time_parent_class_table ((yaooc_object_class_table_t*)(yaooc_date_time_class_table.parent_class_table_))
 
-class_instance(yaooc_date_time)
+yaooc_class_instance(yaooc_date_time)
 {
   yaooc_object_class_instance_t;
   time_t time_;
 };
 
-class(yaooc_date_time);
+yaooc_class(yaooc_date_time);
 
 /* Prototypes for yaooc_date_time type info */
 void yaooc_date_time_default_ctor(pointer);

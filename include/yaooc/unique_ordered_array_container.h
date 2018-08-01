@@ -26,22 +26,22 @@
 /*
   Class definition for yaooc_unique_ordered_array_container
 */
-class_table(yaooc_unique_ordered_array_container)
+yaooc_class_table(yaooc_unique_ordered_array_container)
 {
   yaooc_ordered_array_container_class_table_t;
 };
 
-class_instance(yaooc_unique_ordered_array_container)
+yaooc_class_instance(yaooc_unique_ordered_array_container)
 {
   yaooc_ordered_array_container_class_instance_t;
 };
 
-class(yaooc_unique_ordered_array_container);
+yaooc_class(yaooc_unique_ordered_array_container);
 /* Prototypes for yaooc_unique_ordered_array_container type info */
 
 /* Constructors for yaooc_unique_ordered_array_container */
 
-/* Prototypes for yaooc_unique_ordered_array_container class table*/
+/* Prototypes for yaooc_unique_ordered_array_container yaooc_class table*/
 const char* yaooc_unique_ordered_array_container_isa(const_pointer);
 #define yaooc_unique_ordered_array_container_is_descendant yaooc_ordered_array_container_is_descendant
 #define yaooc_unique_ordered_array_container_swap yaooc_ordered_array_container_swap
@@ -51,9 +51,9 @@ const char* yaooc_unique_ordered_array_container_isa(const_pointer);
 #define yaooc_unique_ordered_array_container_begin yaooc_ordered_array_container_begin
 #define yaooc_unique_ordered_array_container_end yaooc_ordered_array_container_end
 
-/* Prototypes for yaooc_unique_ordered_array_container class instance*/
+/* Prototypes for yaooc_unique_ordered_array_container yaooc_class instance*/
 
-/* Prototypes for yaooc_unique_ordered_array_container class protected items*/
+/* Prototypes for yaooc_unique_ordered_array_container yaooc_class protected items*/
 iterator yaooc_unique_ordered_array_container_insert(pointer,const_iterator,const_pointer);
 iterator yaooc_unique_ordered_array_container_insertn(pointer,const_iterator,size_t,const_pointer);
 iterator yaooc_unique_ordered_array_container_insert_range(pointer,const_iterator,const_iterator,const_iterator);

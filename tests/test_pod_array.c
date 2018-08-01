@@ -89,7 +89,7 @@ sample_t input[] =
   { { 33UL, 55 }, 66, 237.0 },
   { { 919UL, 504 }, 248, 704 },
 };
-DEFINE_TYPE_INFO(sample,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)
+DEFINE_TYPE_INFO(sample,N,N,N,N,N,N,N,N,NULL)
 
 sample_t not_found = { { 33UL, 5} , 6, 23.72 };
 YAOOC_POD_ARRAY(sample,sample_pod_array)

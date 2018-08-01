@@ -233,18 +233,18 @@ void test_condition_variable_broadcast()
   delete(threads);
 }
 
-class_table(custom_exception)
+yaooc_class_table(custom_exception)
 {
   yaooc_exception_class_table_t;
 };
 
-class_instance(custom_exception)
+yaooc_class_instance(custom_exception)
 {
   yaooc_exception_class_instance_t;
   pthread_t id_;
 };
 
-class(custom_exception);
+yaooc_class(custom_exception);
 
 const char* custom_exception_isa(const_pointer p) { return "custom_exception_t"; }
 
@@ -265,8 +265,7 @@ custom_exception_class_table_t custom_exception_class_table=
   .what = (const char* (*) (const_pointer p)) yaooc_exception_what,
 };
 
-DEFINE_TYPE_INFO(custom_exception,custom_exception_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,
-      &custom_exception_class_table,yaooc_exception)
+DEFINE_TYPE_INFO(custom_exception,Y,N,N,N,N,N,N,Y,yaooc_exception)
 
 
 void* test_thread_exception(pointer p,void* data)

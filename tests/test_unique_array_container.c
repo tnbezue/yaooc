@@ -27,7 +27,7 @@
 typedef int_t* int_unique_container_iterator;
 typedef const int_t* int_unique_container_const_iterator;
 
-class_table(int_unique_container)
+yaooc_class_table(int_unique_container)
 {
   yaooc_unique_array_container_class_table_t;
   int_unique_container_iterator (*find)(const_pointer,const_pointer);
@@ -44,12 +44,12 @@ class_table(int_unique_container)
   iterator (*at)(const_pointer,size_t);
 };
 
-class_instance(int_unique_container)
+yaooc_class_instance(int_unique_container)
 {
 	yaooc_unique_array_container_class_instance_t;
 };
 
-class(int_unique_container);
+yaooc_class(int_unique_container);
 
 void int_unique_container_default_ctor(pointer d)
 {
@@ -83,8 +83,7 @@ int_unique_container_class_table_t int_unique_container_class_table=
 	.at = (iterator (*)(const_pointer,size_t))yaooc_array_container_at
 };
 
-DEFINE_TYPE_INFO(int_unique_container,int_unique_container_default_ctor,
-    NULL,NULL,NULL,NULL,NULL,NULL,&int_unique_container_class_table,yaooc_array_container)
+DEFINE_TYPE_INFO(int_unique_container,Y,N,N,N,N,N,N,Y,yaooc_array_container)
 
 void test_sizes()
 {
@@ -224,7 +223,7 @@ void test_erase()
 typedef simple_object_t* simple_object_unique_container_iterator;
 typedef const simple_object_t* simple_object_unique_container_const_iterator;
 
-class_table(simple_object_unique_container)
+yaooc_class_table(simple_object_unique_container)
 {
   yaooc_unique_array_container_class_table_t;
   simple_object_unique_container_iterator (*find)(const_pointer,const_pointer);
@@ -237,12 +236,12 @@ class_table(simple_object_unique_container)
   void (*shrink_to_fit)(pointer);
 };
 
-class_instance(simple_object_unique_container)
+yaooc_class_instance(simple_object_unique_container)
 {
 	yaooc_unique_array_container_class_instance_t;
 };
 
-class(simple_object_unique_container);
+yaooc_class(simple_object_unique_container);
 
 void simple_object_unique_container_default_ctor(pointer d)
 {
@@ -274,8 +273,7 @@ simple_object_unique_container_class_table_t simple_object_unique_container_clas
 	.shrink_to_fit = (void (*)(pointer))yaooc_array_container_shrink_to_fit,
 };
 
-DEFINE_TYPE_INFO(simple_object_unique_container,simple_object_unique_container_default_ctor,
-    NULL,NULL,NULL,NULL,NULL,NULL,&simple_object_unique_container_class_table,yaooc_unique_array_container)
+DEFINE_TYPE_INFO(simple_object_unique_container,Y,N,N,N,N,N,N,Y,yaooc_unique_array_container)
 
 void test_resize_shrink()
 {

@@ -25,7 +25,7 @@
 #include <yaooc/vector.h>
 #include <yaooc/fstream.h>
 
-class_forward(yaoocpp_item);
+yaooc_class_forward(yaoocpp_item);
 DYNAMIC_POINTER_DEFINITION(yaoocpp_item,yaoocpp_item_ptr);
 VECTOR_DEFINITION(yaoocpp_item_ptr,yaoocpp_item_ptr_vector);
 
@@ -39,7 +39,7 @@ VECTOR_DEFINITION(yaoocpp_item_ptr,yaoocpp_item_ptr_vector);
 /*
   Class definition for yaoocpp_item
 */
-class_table(yaoocpp_item)
+yaooc_class_table(yaoocpp_item)
 {
   yaooc_object_class_table_t;
   void (*virtual_dtor)(pointer);
@@ -51,13 +51,13 @@ class_table(yaoocpp_item)
   void (*print_class_implementation)(const_pointer,yaooc_ofstream_pointer);
 };
 
-class_instance(yaoocpp_item)
+yaooc_class_instance(yaoocpp_item)
 {
   yaooc_object_class_instance_t;
   unsigned int flags_;
 };
 
-class(yaoocpp_item);
+yaooc_class(yaoocpp_item);
 /* Prototypes for yaoocpp_item type info */
 void yaoocpp_item_default_ctor(pointer);
 void yaoocpp_item_dtor(pointer);
@@ -80,21 +80,21 @@ const char* yaoocpp_item_isa(const_pointer);
 /*
   Class definition for yaoocpp_argument
 */
-class_table(yaoocpp_argument)
+yaooc_class_table(yaoocpp_argument)
 {
   yaoocpp_item_class_table_t;
   const char* (*type) (const_pointer);
   const char* (*name) (const_pointer);
 };
 
-class_instance(yaoocpp_argument)
+yaooc_class_instance(yaoocpp_argument)
 {
   yaoocpp_item_class_instance_t;
   yaooc_string_t* name_;
   yaooc_string_t* type_;
 };
 
-class(yaoocpp_argument);
+yaooc_class(yaoocpp_argument);
 /* Prototypes for yaoocpp_argument type info */
 void yaoocpp_argument_default_ctor(pointer);
 void yaoocpp_argument_copy_ctor(pointer,const_pointer);
@@ -120,19 +120,19 @@ const char* yaoocpp_argument_name(const_pointer);
 /*
   Class definition for yaoocpp_variable
 */
-class_table(yaoocpp_variable)
+yaooc_class_table(yaoocpp_variable)
 {
   yaoocpp_argument_class_table_t;
   const char* (*default_value)(const_pointer);
 };
 
-class_instance(yaoocpp_variable)
+yaooc_class_instance(yaoocpp_variable)
 {
   yaoocpp_argument_class_instance_t;
   yaooc_string_t* default_value_;
 };
 
-class(yaoocpp_variable);
+yaooc_class(yaoocpp_variable);
 /* Prototypes for yaoocpp_variable type info */
 void yaoocpp_variable_default_ctor(pointer);
 void yaoocpp_variable_copy_ctor(pointer,const_pointer);
@@ -157,12 +157,12 @@ const char* yaoocpp_variable_default_value(const_pointer);
 /*
   Class definition for yaoocpp_constructor
 */
-class_table(yaoocpp_constructor)
+yaooc_class_table(yaoocpp_constructor)
 {
   yaoocpp_item_class_table_t;
 };
 
-class_instance(yaoocpp_constructor)
+yaooc_class_instance(yaoocpp_constructor)
 {
   yaoocpp_item_class_instance_t;
   yaooc_string_t* name_;
@@ -171,7 +171,7 @@ class_instance(yaoocpp_constructor)
   yaooc_string_t* prefix_;
 };
 
-class(yaoocpp_constructor);
+yaooc_class(yaoocpp_constructor);
 /* Prototypes for yaoocpp_constructor type info */
 void yaoocpp_constructor_default_ctor(pointer);
 void yaoocpp_constructor_copy_ctor(pointer,const_pointer);
@@ -197,19 +197,19 @@ void yaoocpp_constructor_print_definition(const_pointer,yaooc_ofstream_pointer);
 /*
   Class definition for yaoocpp_method
 */
-class_table(yaoocpp_method)
+yaooc_class_table(yaoocpp_method)
 {
   yaoocpp_constructor_class_table_t;
 };
 
-class_instance(yaoocpp_method)
+yaooc_class_instance(yaoocpp_method)
 {
   yaoocpp_constructor_class_instance_t;
   yaooc_string_t* type_;
   bool is_const_;
 };
 
-class(yaoocpp_method);
+yaooc_class(yaoocpp_method);
 /* Prototypes for yaoocpp_method type info */
 void yaoocpp_method_default_ctor(pointer);
 void yaoocpp_method_copy_ctor(pointer,const_pointer);
@@ -235,14 +235,14 @@ void yaoocpp_method_print_definition(const_pointer,yaooc_ofstream_pointer);
 /*
   Class definition for yaoocpp_class
 */
-class_table(yaoocpp_class)
+yaooc_class_table(yaoocpp_class)
 {
   yaoocpp_item_class_table_t;
   void (*print_to_header)(const_pointer,yaooc_ofstream_pointer);
   void (*print_to_source)(const_pointer,yaooc_ofstream_pointer);
 };
 
-class_instance(yaoocpp_class)
+yaooc_class_instance(yaoocpp_class)
 {
   yaoocpp_item_class_instance_t;
   yaoocpp_class_t* parent_;
@@ -262,7 +262,7 @@ class_instance(yaoocpp_class)
   bool defined_in_top_level_file_;
 };
 
-class(yaoocpp_class);
+yaooc_class(yaoocpp_class);
 /* Prototypes for yaoocpp_class type info */
 void yaoocpp_class_default_ctor(pointer);
 void yaoocpp_class_copy_ctor(pointer,const_pointer);

@@ -108,8 +108,6 @@ yaooc_real_class_table_t yaooc_real_class_table =
   .get = (double (*) (const_pointer)) yaooc_real_get,
 };
 
-DEFINE_TYPE_INFO(yaooc_real,yaooc_real_default_ctor,NULL,yaooc_real_copy_ctor,
-    yaooc_real_assign,yaooc_real_less_than_compare,yaooc_real_to_stream,yaooc_real_from_stream,
-		&yaooc_real_class_table,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_real,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object)
 
 /*  End YAOOC PreProcessor generated content */

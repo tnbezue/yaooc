@@ -3,7 +3,7 @@
 #include <yaooc/new.h>
 
 /* Normall, From here <--- */
-class_(my_string) {
+yaooc_struct(my_string) {
   char* str;
 };
 void my_string_default_ctor(pointer);
@@ -55,7 +55,7 @@ bool my_string_less_than_compare(const_pointer p1,const_pointer p2)
   return strcmp(bsp1->str,bsp2->str) < 0; /* Both not null, compare the strings */
 }
 
-DEFINE_TYPE_INFO(my_string,my_string_default_ctor,my_string_dtor,my_string_copy_ctor,my_string_assign,my_string_less_than_compare,NULL,NULL,NULL,NULL);
+DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,N,N,N,NULL);
 
 
 int main(int argc,char* argv[])

@@ -30,19 +30,19 @@
 /*
   Class definition for yaooc_regex_exception
 */
-class_table(yaooc_regex_exception)
+yaooc_class_table(yaooc_regex_exception)
 {
   yaooc_exception_class_table_t;
 };
 #define yaooc_regex_exception_parent_class_table ((yaooc_exception_class_table_t*)(yaooc_regex_exception_class_table.parent_class_table_))
 
-class_instance(yaooc_regex_exception)
+yaooc_class_instance(yaooc_regex_exception)
 {
   yaooc_exception_class_instance_t;
   char* what_;
 };
 
-class(yaooc_regex_exception);
+yaooc_class(yaooc_regex_exception);
 
 /* Prototypes for yaooc_regex_exception type info */
 void yaooc_regex_exception_default_ctor(pointer);
@@ -65,7 +65,7 @@ const char* yaooc_regex_exception_what(const_pointer);
 /*
   Class definition for yaooc_matchdata
 */
-class_table(yaooc_matchdata)
+yaooc_class_table(yaooc_matchdata)
 {
   yaooc_object_class_table_t;
   yaooc_string_pointer (*at)(const_pointer,size_t);
@@ -75,7 +75,7 @@ class_table(yaooc_matchdata)
   size_t (*size)(const_pointer);
 };
 
-class_instance(yaooc_matchdata)
+yaooc_class_instance(yaooc_matchdata)
 {
   yaooc_object_class_instance_t;
   regmatch_t* ovector_;
@@ -84,7 +84,7 @@ class_instance(yaooc_matchdata)
   int n_captures_;
 };
 
-class(yaooc_matchdata);
+yaooc_class(yaooc_matchdata);
 /* Prototypes for yaooc_matchdata type info */
 void yaooc_matchdata_default_ctor(pointer);
 void yaooc_matchdata_dtor(pointer);
@@ -111,7 +111,7 @@ size_t yaooc_matchdata_size(const_pointer);
 /*
   Class definition for yaooc_regex
 */
-class_table(yaooc_regex)
+yaooc_class_table(yaooc_regex)
 {
   yaooc_object_class_table_t;
   void (*set_pattern_flags)(pointer,const char*,int);
@@ -122,7 +122,7 @@ class_table(yaooc_regex)
   bool (*bool)(const_pointer);
 };
 
-class_instance(yaooc_regex)
+yaooc_class_instance(yaooc_regex)
 {
   yaooc_object_class_instance_t;
   regex_t* re_;
@@ -131,7 +131,7 @@ class_instance(yaooc_regex)
   int compile_result_;
 };
 
-class(yaooc_regex);
+yaooc_class(yaooc_regex);
 /* Prototypes for yaooc_regex type info */
 void yaooc_regex_default_ctor(pointer);
 void yaooc_regex_dtor(pointer);

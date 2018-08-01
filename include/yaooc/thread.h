@@ -36,7 +36,7 @@ typedef void* (*yaooc_thread_method) (pointer,void*);
 /*
   Class definition for yaooc_thread
 */
-class_table(yaooc_thread)
+yaooc_class_table(yaooc_thread)
 {
   yaooc_object_class_table_t;
   pthread_t (*id)(const_pointer);
@@ -48,7 +48,7 @@ class_table(yaooc_thread)
   bool (*start)(pointer,void*);
 };
 
-class_instance(yaooc_thread)
+yaooc_class_instance(yaooc_thread)
 {
   yaooc_object_class_instance_t;
   yaooc_thread_method method;
@@ -58,7 +58,7 @@ class_instance(yaooc_thread)
   bool request_exit_;
 };
 
-class(yaooc_thread);
+yaooc_class(yaooc_thread);
 /* Prototypes for yaooc_thread type info */
 void yaooc_thread_default_ctor(pointer);
 void yaooc_thread_dtor(pointer);
@@ -86,7 +86,7 @@ bool yaooc_thread_start(pointer,void*);
 /*
   Class definition for yaooc_mutex
 */
-class_table(yaooc_mutex)
+yaooc_class_table(yaooc_mutex)
 {
   yaooc_object_class_table_t;
   bool (*lock)(pointer);
@@ -94,13 +94,13 @@ class_table(yaooc_mutex)
   bool (*unlock)(pointer);
 };
 
-class_instance(yaooc_mutex)
+yaooc_class_instance(yaooc_mutex)
 {
   yaooc_object_class_instance_t;
   pthread_mutex_t mutex_;
 };
 
-class(yaooc_mutex);
+yaooc_class(yaooc_mutex);
 /* Prototypes for yaooc_mutex type info */
 void yaooc_mutex_default_ctor(pointer);
 void yaooc_mutex_dtor(pointer);
@@ -124,7 +124,7 @@ bool yaooc_mutex_unlock(pointer);
 /*
   Class definition for yaooc_condition_variable
 */
-class_table(yaooc_condition_variable)
+yaooc_class_table(yaooc_condition_variable)
 {
   yaooc_mutex_class_table_t;
   bool (*signal)(pointer);
@@ -133,13 +133,13 @@ class_table(yaooc_condition_variable)
   int (*timedwait)(pointer,double);
 };
 
-class_instance(yaooc_condition_variable)
+yaooc_class_instance(yaooc_condition_variable)
 {
   yaooc_mutex_class_instance_t;
   pthread_cond_t condition_variable_;
 };
 
-class(yaooc_condition_variable);
+yaooc_class(yaooc_condition_variable);
 /* Prototypes for yaooc_condition_variable type info */
 void yaooc_condition_variable_default_ctor(pointer);
 void yaooc_condition_variable_dtor(pointer);

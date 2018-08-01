@@ -761,9 +761,7 @@ yaooc_string_class_table_t yaooc_string_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_string,yaooc_string_default_ctor,NULL,yaooc_string_copy_ctor,yaooc_string_assign,
-			yaooc_string_less_than_compare,yaooc_string_to_stream,yaooc_string_from_stream,
-			&yaooc_string_class_table,yaooc_array_container)
+DEFINE_TYPE_INFO(yaooc_string,Y,N,Y,Y,Y,Y,Y,Y,yaooc_array_container)
 
 /* End */
 

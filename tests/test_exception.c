@@ -25,18 +25,18 @@
 #include "demo_def.inc"
 #include <pthread.h>
 
-class_table(demo_exception)
+yaooc_class_table(demo_exception)
 {
   yaooc_exception_class_table_t;
 };
 
-class_instance(demo_exception)
+yaooc_class_instance(demo_exception)
 {
   yaooc_exception_class_instance_t;
   char* msg_;
 };
 
-class(demo_exception);
+yaooc_class(demo_exception);
 
 void demo_exception_default_ctor(pointer p)
 {
@@ -70,8 +70,7 @@ demo_exception_class_table_t demo_exception_class_table =
 
 };
 
-DEFINE_TYPE_INFO(demo_exception,demo_exception_default_ctor,demo_exception_dtor,
-		NULL,NULL,NULL,NULL,NULL,&demo_exception_class_table,yaooc_exception)
+DEFINE_TYPE_INFO(demo_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception)
 
 void demo_exception_ctor_ccs(pointer p,va_list args)
 {
@@ -81,18 +80,18 @@ void demo_exception_ctor_ccs(pointer p,va_list args)
 
 /*  *** */
 
-class_table(demo2_exception)
+yaooc_class_table(demo2_exception)
 {
   yaooc_exception_class_table_t;
 };
 
-class_instance(demo2_exception)
+yaooc_class_instance(demo2_exception)
 {
   yaooc_exception_class_instance_t;
   char* msg_;
 };
 
-class(demo2_exception);
+yaooc_class(demo2_exception);
 
 void demo2_exception_default_ctor(pointer p)
 {
@@ -125,8 +124,7 @@ demo2_exception_class_table_t demo2_exception_class_table =
   .what = (const char*(*) (const_pointer)) demo2_exception_what,
 };
 
-DEFINE_TYPE_INFO(demo2_exception,demo2_exception_default_ctor,demo2_exception_dtor,NULL,NULL,NULL,
-		NULL,NULL,&demo2_exception_class_table,yaooc_exception)
+DEFINE_TYPE_INFO(demo2_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception)
 
 void demo2_exception_ctor_ccs(pointer p,va_list args)
 {
@@ -137,16 +135,16 @@ void demo2_exception_ctor_ccs(pointer p,va_list args)
 
 /* **** */
 
-class_table(uncaught_exception)
+yaooc_class_table(uncaught_exception)
 {
   yaooc_exception_class_table_t;
 };
-class_instance(uncaught_exception)
+yaooc_class_instance(uncaught_exception)
 {
   yaooc_exception_class_instance_t;
   char* msg_;
 };
-class(uncaught_exception);
+yaooc_class(uncaught_exception);
 
 
 void uncaught_exception_default_ctor(pointer p)
@@ -180,8 +178,7 @@ uncaught_exception_class_table_t uncaught_exception_class_table =
   .what = (const char*(*) (const_pointer)) uncaught_exception_what,
 };
 
-DEFINE_TYPE_INFO(uncaught_exception,uncaught_exception_default_ctor,uncaught_exception_dtor,NULL,NULL,NULL,NULL,NULL
-			,&uncaught_exception_class_table,yaooc_exception)
+DEFINE_TYPE_INFO(uncaught_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception)
 
 void uncaught_exception_ctor_ccs(pointer p,va_list args)
 {

@@ -50,7 +50,7 @@ yaooc_exception_class_table_t yaooc_exception_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_exception,NULL,NULL,NULL,NULL,NULL,NULL,NULL,&yaooc_exception_class_table,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_exception,N,N,N,N,N,N,N,Y,yaooc_object)
 /*  End YAOOC PreProcessor generated content */
 
 typedef struct yaooc_jmpbuf_s yaooc_jmpbuf_t;

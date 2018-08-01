@@ -22,39 +22,47 @@
 <div style="overflow-y: scroll; height:900px">
 <h2>Class Table and Instance</h2>
 <p>
-In this chapter the my_string class will be improved by adding two class methods.
+In this chapter the my_string class will be improved by adding two class methods. Addition macros will also be introduced for creating custom classes.
 </p>
 <p>
 In YAOOC, classes are divided into two parts -- table and instance. The class table has methods (and variables) that are shared
- by every instance of the class.  The class instance has variables (and methods) whose values are unique to a particular instance.
- YAOOC provides macros for creating the table and instance separately -- then combining into a single class. 
+by every instance of the class.  The class instance has variables (and methods) whose values are unique to a particular instance.
+YAOOC provides macros for creating the table and instance separately -- then combining into a single class. 
 </p>
 <p>
-The class table is defined by using the class_table macro.  
-The get method returns a pointer to the string and the set method sets the string.
+The class table is defined by using the yaooc_class_table macro.  It is normally used to define methods for the class.  However, it can
+be used to define variables that are common to every instance of the class.
+</p>
+<p> 
+For the my_string class, a get and set method will be defined.  The get method returns a const pointer to the string and the set method sets the string.
+Note that the first argument of a method is a pointer (or const_pointer) to the object. The class table is created as follows:
 </p>
 <pre><code>
-  class_table(my_string) {
+  yaooc_class_table(my_string) {
     const char* (*get)(const_pointer);
     void (*set)(pointer,const char*);
   };
 </code></pre>
 <p>
-The instance is created using the class_instance macro.  For my_string class, the instance will be the same as defined with the class_ macro.
+The instance is created using the yaooc_class_instance macro.  It is normally used to define variables that are unique to each instance.
+However, it can be used to define methods that are unique to each instance.
+</p>
+<p>
+For my_string class, the instance will be the same as defined with the yaooc_struct macro.
 </p>
 <pre><code>
-  class_instance(my_string) {
+  yaooc_class_instance(my_string) {
     char* str;
   };
 </code></pre>
 <p>
-To combine the table and instance parts, use the class (without underscore) macro.
+To combine the table and instance parts, use the yaooc_class macro.
 </p>
 <pre><code>
-  class(my_string);
+  yaooc_class(my_string);
 </code></pre>
 <p>
-FYI, now that the above three macros have been introduced, you will have very little use for the "class_" (with underscore) macro.
+The difference between using yaooc_struct and the above three macros is that yaooc_struct does not create a class table.  
 </p>
 <p>
 For the my_string class, the following code is created by the above three macros:
@@ -83,7 +91,7 @@ class_table_ value in the type info structure -- therefore, constructors have ac
 Doing so will destroy the value of class_table_;
 </p>
 <p>
-The method names should be the class name appended with underscore and name used in class table.  The methods for my_string class are:
+The method names should be the class name appended with underscore and method name used in class table.  The methods for my_string class are:
 </p>
 <pre><code>
   const char* my_string_get(const_pointer p)
@@ -115,7 +123,7 @@ The class table is then defined as:
 And DEFINE_TYPE_INFO should now contain a pointer to class table
 </p>
 <pre><code>
-  DEFINE_TYPE_INFO(my_string,my_string_default_ctor,my_string_dtor,my_string_copy_ctor,my_string_assign,my_string_less_than_compare,NULL,NULL,&my_string_class_table,NULL);
+  DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,N,N,Y,NULL);
 </code></pre>
 <p>
 To call a class table method, use ptr->class_table_->method(ptr,args). For example,
@@ -133,10 +141,10 @@ YAOOC provides the M macro (M for method) to make calling methods easier. The sy
 </code></pre>
 <p>
 Another macro that will have an occasional use is class_forward.  As the name implies, class_forward provides a forward declaration of a class.
-It defines the same types that the class macro does.  The user must use class_table, class_instance, and class to completely define the class before it can be used.   
+It defines the same types that the yaooc_class macro does.  The user must use yaooc_struct or the above three macros to completely define the class before it can be used.   
 </p>
 <pre><code>
-  class_forward(class_name);
+  yaooc_class_forward(class_name);
 </code></pre>
 
 </div>

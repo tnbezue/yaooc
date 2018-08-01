@@ -317,6 +317,5 @@ yaooc_pod_array_class_table_t yaooc_pod_array_class_table =
   .end = (iterator (*) (const_pointer)) yaooc_pod_array_end,
 };
 
-DEFINE_TYPE_INFO(yaooc_pod_array,yaooc_pod_array_default_ctor,yaooc_pod_array_dtor,yaooc_pod_array_copy_ctor,
-		yaooc_pod_array_assign,NULL,yaooc_pod_array_to_stream,NULL,&yaooc_pod_array_class_table,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_pod_array,Y,Y,Y,Y,N,Y,N,Y,yaooc_object)
 /*  End YAOOC PreProcessor generated content */

@@ -4,18 +4,18 @@
 #include <yaooc/stream.h>
 
 /* Normall, From here <--- */
-class_table(my_string) {
+yaooc_class_table(my_string) {
   yaooc_object_class_table_t;
   const char* (*get)(const_pointer);
   void (*set)(pointer,const char*);
 };
 
-class_instance(my_string) {
+yaooc_class_instance(my_string) {
   yaooc_object_class_instance_t;
   char* str;
 };
 
-class(my_string);
+yaooc_class(my_string);
 
 void my_string_default_ctor(pointer);
 void my_string_dtor(pointer);
@@ -126,7 +126,7 @@ my_string_class_table_t my_string_class_table =
   .set = my_string_set
 };
 
-DEFINE_TYPE_INFO(my_string,my_string_default_ctor,my_string_dtor,my_string_copy_ctor,my_string_assign,my_string_less_than_compare,my_string_to_stream,my_string_from_stream,&my_string_class_table,yaooc_object);
+DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,Y,Y,Y,yaooc_object);
 #define my_string_parent_class_table ((yaooc_object_class_table_t*)(my_string_class_table.parent_class_table_))
 
 /*

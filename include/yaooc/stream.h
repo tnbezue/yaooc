@@ -35,19 +35,19 @@ typedef pointer istream_pointer;
 /*
   Class definition for yaooc_stream_exception
 */
-class_table(yaooc_stream_exception)
+yaooc_class_table(yaooc_stream_exception)
 {
   yaooc_exception_class_table_t;
 };
 #define yaooc_stream_exception_parent_class_table ((yaooc_exception_class_table_t*)(yaooc_stream_exception_class_table.parent_class_table_))
 
-class_instance(yaooc_stream_exception)
+yaooc_class_instance(yaooc_stream_exception)
 {
   yaooc_exception_class_instance_t;
   char* exception_str_;
 };
 
-class(yaooc_stream_exception);
+yaooc_class(yaooc_stream_exception);
 
 /* Prototypes for yaooc_stream_exception type info */
 void yaooc_stream_exception_dtor(pointer);
@@ -69,7 +69,7 @@ const char* yaooc_stream_exception_what(const_pointer);
 /*
   Class definition for yaooc_base_stream
 */
-class_table(yaooc_base_stream)
+yaooc_class_table(yaooc_base_stream)
 {
   bool (*eof)(const_pointer);
   bool (*seek)(pointer,size_t,int);
@@ -78,12 +78,12 @@ class_table(yaooc_base_stream)
 };
 #define yaooc_base_stream_parent_class_table ((yaooc_object_class_table_t*)(yaooc_base_stream_class_table.parent_class_table_))
 
-class_instance(yaooc_base_stream)
+yaooc_class_instance(yaooc_base_stream)
 {
   FILE* handle_;
 };
 
-class(yaooc_base_stream);
+yaooc_class(yaooc_base_stream);
 
 /* Prototypes for yaooc_base_stream type info */
 void yaooc_base_stream_default_ctor(pointer);
@@ -107,7 +107,7 @@ void yaooc_base_stream_set_handle(pointer,FILE*);
 /*
   Class definition for yaooc_istream
 */
-class_table(yaooc_istream)
+yaooc_class_table(yaooc_istream)
 {
   yaooc_base_stream_class_table_t;
 	void (*stream)(pointer,...);
@@ -118,12 +118,12 @@ class_table(yaooc_istream)
 };
 #define yaooc_istream_parent_class_table ((yaooc_base_stream_class_table_t*)(yaooc_istream_class_table.parent_class_table_))
 
-class_instance(yaooc_istream)
+yaooc_class_instance(yaooc_istream)
 {
   yaooc_base_stream_class_instance_t;
 };
 
-class(yaooc_istream);
+yaooc_class(yaooc_istream);
 
 /* Prototypes for yaooc_istream type info */
 void yaooc_istream_default_ctor(pointer);
@@ -150,7 +150,7 @@ char* yaooc_istream_gets(pointer,char*,size_t);
 /*
   Class definition for yaooc_ostream
 */
-class_table(yaooc_ostream)
+yaooc_class_table(yaooc_ostream)
 {
   yaooc_base_stream_class_table_t;
 	void (*stream)(pointer,...);
@@ -161,12 +161,12 @@ class_table(yaooc_ostream)
 };
 #define yaooc_ostream_parent_class_table ((yaooc_base_stream_class_table_t*)(yaooc_ostream_class_table.parent_class_table_))
 
-class_instance(yaooc_ostream)
+yaooc_class_instance(yaooc_ostream)
 {
   yaooc_base_stream_class_instance_t;
 };
 
-class(yaooc_ostream);
+yaooc_class(yaooc_ostream);
 
 /* Prototypes for yaooc_ostream type info */
 void yaooc_ostream_default_ctor(pointer);

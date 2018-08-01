@@ -36,18 +36,18 @@ typedef struct {
 /*
   Class definition for yaooc_index_array_container
 */
-class_table(yaooc_index_array_container)
+yaooc_class_table(yaooc_index_array_container)
 {
   yaooc_array_container_class_table_t;
 };
 
-class_instance(yaooc_index_array_container)
+yaooc_class_instance(yaooc_index_array_container)
 {
   yaooc_array_container_class_instance_t;
   yaooc_index_array_container_index_t* indexes_;
 };
 
-class(yaooc_index_array_container);
+yaooc_class(yaooc_index_array_container);
 /* Prototypes for yaooc_index_array_container type info */
 void yaooc_index_array_container_dtor(pointer);
 void yaooc_index_array_container_copy_ctor(pointer,const_pointer);

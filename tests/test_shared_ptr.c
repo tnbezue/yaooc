@@ -44,7 +44,7 @@ void demo_ctor_int(pointer p,va_list args)
   ((demo_t*)p)->x=va_arg(args,int);
 }
 
-DEFINE_TYPE_INFO(demo,demo_default_ctor,demo_dtor,NULL,NULL,NULL,NULL,NULL)
+DEFINE_TYPE_INFO(demo,Y,Y,N,N,N,N,NULL)
 
 void test_sp()
 {

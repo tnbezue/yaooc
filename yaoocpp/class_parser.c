@@ -637,5 +637,5 @@ yaoocpp_class_parser_class_table_t yaoocpp_class_parser_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaoocpp_class_parser,yaoocpp_class_parser_default_ctor,yaoocpp_class_parser_dtor,NULL,NULL,NULL,NULL,NULL,&yaoocpp_class_parser_class_table,yaooc_base_parser)
+DEFINE_TYPE_INFO(yaoocpp_class_parser,Y,Y,N,N,N,N,N,Y,yaooc_base_parser)
 /*  End YAOOC PreProcessor generated content */

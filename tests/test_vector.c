@@ -50,7 +50,7 @@ void test_long()
   A 8 character string type
 */
 
-class_(str_8){
+yaooc_struct(str_8){
   char str[8];
 };
 void str_8_default_ctor(pointer p)
@@ -61,7 +61,7 @@ bool str_8_less_than_compare(const_pointer v1,const_pointer v2)
 {
 	return strcmp((const char*)(((str_8_const_pointer)v1)->str),(const char*)(((str_8_const_pointer)v2)->str)) < 0;
 }
-DEFINE_TYPE_INFO(str_8,str_8_default_ctor,NULL,NULL,NULL,str_8_less_than_compare,NULL,NULL,NULL,NULL)
+DEFINE_TYPE_INFO(str_8,Y,N,N,N,Y,N,N,N,NULL)
 
 VECTOR_DEFINITION(str_8,str_8_vector)
 VECTOR_IMPLEMENTATION(str_8,str_8_vector)

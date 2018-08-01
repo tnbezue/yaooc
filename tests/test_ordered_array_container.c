@@ -27,7 +27,7 @@
 typedef int_t* int_ordered_array_container_iterator;
 typedef const int_t* int_ordered_array_container_const_iterator;
 
-class_table(int_ordered_array_container)
+yaooc_class_table(int_ordered_array_container)
 {
   yaooc_ordered_array_container_class_table_t;
   int_ordered_array_container_iterator (*find)(const_pointer,const_pointer);
@@ -43,12 +43,12 @@ class_table(int_ordered_array_container)
   iterator (*at)(const_pointer,size_t);
 };
 
-class_instance(int_ordered_array_container)
+yaooc_class_instance(int_ordered_array_container)
 {
   yaooc_ordered_array_container_class_instance_t;
 };
 
-class(int_ordered_array_container);
+yaooc_class(int_ordered_array_container);
 
 void int_ordered_array_container_default_ctor(pointer d)
 {
@@ -87,8 +87,7 @@ int_ordered_array_container_class_table_t int_ordered_array_container_class_tabl
   .at = (iterator (*)(const_pointer,size_t)) yaooc_array_container_at, /* at */
 };
 
-DEFINE_TYPE_INFO(int_ordered_array_container,int_ordered_array_container_default_ctor,
-      NULL,NULL,NULL,NULL,NULL,NULL,&int_ordered_array_container_class_table,yaooc_array_container)
+DEFINE_TYPE_INFO(int_ordered_array_container,Y,N,N,N,N,N,N,Y,yaooc_array_container)
 
 void test_sizes()
 {
@@ -278,7 +277,7 @@ void test_assign()
 typedef simple_object_t* simple_object_ordered_array_container_iterator;
 typedef const simple_object_t* simple_object_ordered_array_container_const_iterator;
 
-class_table(simple_object_ordered_array_container)
+yaooc_class_table(simple_object_ordered_array_container)
 {
   yaooc_ordered_array_container_class_table_t;
   simple_object_ordered_array_container_iterator (*find)(pointer,const_pointer);
@@ -294,12 +293,12 @@ class_table(simple_object_ordered_array_container)
   iterator (*at)(const_pointer,size_t);
 };
 
-class_instance(simple_object_ordered_array_container)
+yaooc_class_instance(simple_object_ordered_array_container)
 {
 	yaooc_array_container_class_instance_t;
 };
 
-class(simple_object_ordered_array_container);
+yaooc_class(simple_object_ordered_array_container);
 
 void simple_object_ordered_array_container_default_ctor(pointer d)
 {
@@ -339,8 +338,7 @@ simple_object_ordered_array_container_class_table_t simple_object_ordered_array_
   .at = (iterator (*)(const_pointer,size_t))yaooc_array_container_at
 };
 
-DEFINE_TYPE_INFO(simple_object_ordered_array_container,simple_object_ordered_array_container_default_ctor,
-      NULL,NULL,NULL,NULL,NULL,NULL,&simple_object_ordered_array_container_class_table,yaooc_array_container)
+DEFINE_TYPE_INFO(simple_object_ordered_array_container,Y,N,N,N,N,N,N,Y,yaooc_array_container)
 
 void test_resize_shrink()
 {

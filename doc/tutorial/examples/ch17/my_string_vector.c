@@ -294,7 +294,7 @@ my_string_class_table_t my_string_class_table =
   .end = (char* (*) (const_pointer)) my_string_end,
 };
 
-DEFINE_TYPE_INFO(my_string,my_string_default_ctor,my_string_dtor,my_string_copy_ctor,my_string_assign,my_string_less_than_compare,my_string_to_stream,my_string_from_stream,&my_string_class_table,yaooc_object)
+DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,Y,Y,Y,yaooc_object)
 
 /* my_string_exception private members */
 
@@ -342,7 +342,7 @@ my_string_exception_class_table_t my_string_exception_class_table =
   .what = (const char* (*) (const_pointer)) my_string_exception_what,
 };
 
-DEFINE_TYPE_INFO(my_string_exception,my_string_exception_default_ctor,my_string_exception_dtor,NULL,NULL,NULL,NULL,NULL,&my_string_exception_class_table,yaooc_exception)
+DEFINE_TYPE_INFO(my_string_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception)
 
 /* my_string_insert_exception private members */
 
@@ -369,7 +369,7 @@ my_string_insert_exception_class_table_t my_string_insert_exception_class_table 
   .what = (const char* (*) (const_pointer)) my_string_exception_what,
 };
 
-DEFINE_TYPE_INFO(my_string_insert_exception,my_string_insert_exception_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&my_string_insert_exception_class_table,my_string_exception)
+DEFINE_TYPE_INFO(my_string_insert_exception,Y,N,N,N,N,N,N,Y,my_string_exception)
 
 /* my_string_erase_exception private members */
 
@@ -396,7 +396,7 @@ my_string_erase_exception_class_table_t my_string_erase_exception_class_table =
   .what = (const char* (*) (const_pointer)) my_string_exception_what,
 };
 
-DEFINE_TYPE_INFO(my_string_erase_exception,my_string_erase_exception_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&my_string_erase_exception_class_table,my_string_exception)
+DEFINE_TYPE_INFO(my_string_erase_exception,Y,N,N,N,N,N,N,Y,my_string_exception)
 
 /* my_string_at_exception private members */
 
@@ -423,7 +423,7 @@ my_string_at_exception_class_table_t my_string_at_exception_class_table =
   .what = (const char* (*) (const_pointer)) my_string_exception_what,
 };
 
-DEFINE_TYPE_INFO(my_string_at_exception,my_string_at_exception_default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&my_string_at_exception_class_table,my_string_exception)
+DEFINE_TYPE_INFO(my_string_at_exception,Y,N,N,N,N,N,N,Y,my_string_exception)
 
 /*  End YAOOC PreProcessor generated content */
 VECTOR_IMPLEMENTATION(my_string,my_string_vector);

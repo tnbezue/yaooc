@@ -27,17 +27,17 @@ typedef uint32_t yaooc_array_index_t;
 /*
   Class definition for yaooc_array_container
 */
-class_table(yaooc_array_container)
+yaooc_class_table(yaooc_array_container)
 {
   yaooc_pod_array_class_table_t;
 };
 
-class_instance(yaooc_array_container)
+yaooc_class_instance(yaooc_array_container)
 {
   yaooc_pod_array_class_instance_t;
 };
 
-class(yaooc_array_container);
+yaooc_class(yaooc_array_container);
 
 /* Prototypes for type info */
 void yaooc_array_container_dtor(pointer);

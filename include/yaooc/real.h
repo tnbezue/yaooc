@@ -26,7 +26,7 @@
 /*
   Class definition for yaooc_real
 */
-class_table(yaooc_real)
+yaooc_class_table(yaooc_real)
 {
   yaooc_object_class_table_t;
   void (*set)(pointer,double);
@@ -34,13 +34,13 @@ class_table(yaooc_real)
 };
 #define yaooc_real_parent_class_table ((yaooc_object_class_table_t*)(yaooc_real_class_table.parent_class_table_))
 
-class_instance(yaooc_real)
+yaooc_class_instance(yaooc_real)
 {
   yaooc_object_class_instance_t;
   double value_;
 };
 
-class(yaooc_real);
+yaooc_class(yaooc_real);
 
 /* Prototypes for yaooc_real type info */
 void yaooc_real_default_ctor(pointer);

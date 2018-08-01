@@ -25,7 +25,7 @@
 /*
   Class definition for yaooc_ifstream
 */
-class_table(yaooc_ifstream)
+yaooc_class_table(yaooc_ifstream)
 {
   yaooc_istream_class_table_t;
 	void (*open)(pointer,const char*,const char*);
@@ -33,12 +33,12 @@ class_table(yaooc_ifstream)
 };
 #define yaooc_ifstream_parent_class_table ((yaooc_istream_class_table_t*)(yaooc_ifstream_class_table.parent_class_table_))
 
-class_instance(yaooc_ifstream)
+yaooc_class_instance(yaooc_ifstream)
 {
   yaooc_istream_class_instance_t;
 };
 
-class(yaooc_ifstream);
+yaooc_class(yaooc_ifstream);
 
 /* Prototypes for yaooc_ifstream type info */
 void yaooc_ifstream_default_ctor(pointer);
@@ -70,7 +70,7 @@ void yaooc_ifstream_close(pointer);
 /*
   Class definition for yaooc_ofstream
 */
-class_table(yaooc_ofstream)
+yaooc_class_table(yaooc_ofstream)
 {
   yaooc_ostream_class_table_t;
 	void (*open)(pointer,const char*,const char*);
@@ -78,12 +78,12 @@ class_table(yaooc_ofstream)
 };
 #define yaooc_ofstream_parent_class_table ((yaooc_ostream_class_table_t*)(yaooc_ofstream_class_table.parent_class_table_))
 
-class_instance(yaooc_ofstream)
+yaooc_class_instance(yaooc_ofstream)
 {
   yaooc_ostream_class_instance_t;
 };
 
-class(yaooc_ofstream);
+yaooc_class(yaooc_ofstream);
 
 /* Prototypes for yaooc_ofstream type info */
 void yaooc_ofstream_default_ctor(pointer);

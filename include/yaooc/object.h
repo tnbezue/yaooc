@@ -25,7 +25,7 @@
 /*
   Class definition for yaooc_object
 */
-class_table(yaooc_object)
+yaooc_class_table(yaooc_object)
 {
   const class_table_t* parent_class_table_;
   const char* (*isa)(const_pointer);
@@ -33,11 +33,11 @@ class_table(yaooc_object)
   void (*swap)(pointer,pointer);
 };
 
-class_instance(yaooc_object)
+yaooc_class_instance(yaooc_object)
 {
 };
 
-class(yaooc_object);
+yaooc_class(yaooc_object);
 
 /* Prototypes for yaooc_object type info */
 bool yaooc_object_less_than_compare(const_pointer,const_pointer);

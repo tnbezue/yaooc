@@ -26,7 +26,7 @@
 typedef int_t* int_index_array_container_iterator;
 typedef const int_t* int_index_array_container_const_iterator;
 
-class_table(int_index_array_container)
+yaooc_class_table(int_index_array_container)
 {
   yaooc_index_array_container_class_table_t;
   int_index_array_container_iterator (*find)(const_pointer,const_pointer);
@@ -42,12 +42,12 @@ class_table(int_index_array_container)
   iterator (*at)(const_pointer,size_t);
 };
 
-class_instance(int_index_array_container)
+yaooc_class_instance(int_index_array_container)
 {
   yaooc_index_array_container_class_instance_t;
 };
 
-class(int_index_array_container);
+yaooc_class(int_index_array_container);
 
 void int_index_array_container_default_ctor(pointer d)
 {
@@ -125,8 +125,7 @@ int_index_array_container_class_table_t int_index_array_container_class_table=
   .at = (iterator (*)(const_pointer,size_t)) yaooc_array_container_at
 };
 
-DEFINE_TYPE_INFO(int_index_array_container,int_index_array_container_default_ctor,
-      NULL,NULL,NULL,NULL,NULL,NULL,&int_index_array_container_class_table,yaooc_index_array_container)
+DEFINE_TYPE_INFO(int_index_array_container,Y,N,N,N,N,N,N,Y,yaooc_index_array_container)
 
 void test_sizes()
 {

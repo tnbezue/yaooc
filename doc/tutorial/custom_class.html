@@ -29,7 +29,6 @@ This is meant to show the features of YAOOC rather than good programming practic
 A custom class starts with a structure.  For the simple string class (let's call it my_string), it is as follows:
 </p>
 <pre><code>
-  typedef struct my_string_s my_string_t;
   struct my_string_s {
     char* str;
   };
@@ -38,14 +37,14 @@ A custom class starts with a structure.  For the simple string class (let's call
 While structures can be defined using the above, it's better to use the macros provided by YAOOC.
 </p>
 <pre><code>
-  class_(my_string) {
+  yaooc_struct(my_string) {
     char* str;
   };
 </code></pre>
 
 <p>
-The "class_" (note the underscore) macro creates the same structure.  However, it creates additional
-code to define type info structure.  For my_string class, the following code is created:
+The yaooc_struct macro creates the same structure.  However, it creates code 
+that defines supporting types.  For my_string class, the following code is created:
 </p>
 <pre><code>
   typedef struct my_string_s my_string_t;

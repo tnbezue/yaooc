@@ -28,43 +28,43 @@ iterator yaooc_vector_push_back(pointer this,const_pointer v);
 void yaooc_vector_pop_back(pointer this);
 iterator yaooc_vector_back(pointer this);
 
-#define VECTOR_DEFINITION(T,N) \
-typedef T ## _t* N ## _iterator; \
-typedef const T ## _t* N ## _const_iterator; \
-class_table(N) \
+#define VECTOR_DEFINITION(T,NAME) \
+typedef T ## _t* NAME ## _iterator; \
+typedef const T ## _t* NAME ## _const_iterator; \
+yaooc_class_table(NAME) \
 { \
   yaooc_array_container_class_table_t; \
-  N ## _iterator (*at)(const_pointer,size_t); \
-  N ## _iterator (*push_back)(pointer,const T ## _t*); \
+  NAME ## _iterator (*at)(const_pointer,size_t); \
+  NAME ## _iterator (*push_back)(pointer,const T ## _t*); \
 	void (*pop_back)(pointer); \
-	N ## _iterator (*insert)(pointer,const_iterator,const T ## _t*); \
-  N ## _iterator (*insertn)(pointer,const_iterator,size_t,const T ## _t*); \
-	N ## _iterator (*insert_range)(pointer,const_iterator,const_iterator,const_iterator); \
-	N ## _iterator (*erase) (pointer,iterator); \
-	N ## _iterator (*erase_range) (pointer,iterator,iterator); \
+	NAME ## _iterator (*insert)(pointer,const_iterator,const T ## _t*); \
+  NAME ## _iterator (*insertn)(pointer,const_iterator,size_t,const T ## _t*); \
+	NAME ## _iterator (*insert_range)(pointer,const_iterator,const_iterator,const_iterator); \
+	NAME ## _iterator (*erase) (pointer,iterator); \
+	NAME ## _iterator (*erase_range) (pointer,iterator,iterator); \
   size_t (*erase_value) (pointer,const_pointer); \
   void (*reserve) (pointer,size_t); \
-	N ## _iterator (*front) (pointer); \
-	N ## _iterator (*back) (pointer); \
+	NAME ## _iterator (*front) (pointer); \
+	NAME ## _iterator (*back) (pointer); \
 	void (*resize)(pointer,size_t); \
 	void (*resize_value)(pointer,size_t,const_pointer); \
 	void (*shrink_to_fit)(pointer); \
   void (*clear)(pointer); \
 };\
-class_instance(N) \
+yaooc_class_instance(NAME) \
 { \
 	yaooc_array_container_class_instance_t; \
 }; \
-class(N);\
-const char* N ## _isa(const_pointer p);
+yaooc_class(NAME);\
+const char* NAME ## _isa(const_pointer p);
 
-#define VECTOR_IMPLEMENTATION(T,N) \
-void N ## _default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor_ti,T ## _ti); } \
-const char* N ## _isa(const_pointer p) { return # N "_t"; } \
-N ## _class_table_t N ## _class_table = \
+#define VECTOR_IMPLEMENTATION(T,NAME) \
+void NAME ## _default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor_ti,T ## _ti); } \
+const char* NAME ## _isa(const_pointer p) { return # NAME "_t"; } \
+NAME ## _class_table_t NAME ## _class_table = \
 { \
   .parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table, \
-  .isa = (const char* (*)(const_pointer)) N ## _isa, \
+  .isa = (const char* (*)(const_pointer)) NAME ## _isa, \
   .is_descendant = (bool (*)(const_pointer,const char*)) yaooc_object_is_descendant, \
   .swap = (void (*)(pointer,pointer)) yaooc_array_container_swap, \
   .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity, \
@@ -74,27 +74,27 @@ N ## _class_table_t N ## _class_table = \
   .empty = (bool (*)(const_pointer)) yaooc_array_container_empty, \
   .begin = (iterator (*)(const_pointer)) yaooc_array_container_begin, \
   .end = (iterator (*)(const_pointer)) yaooc_array_container_end, \
-  .at = (N ## _iterator (*)(const_pointer,size_t)) yaooc_array_container_at, \
-  .push_back = (N ## _iterator (*)(pointer,const T ## _t*)) yaooc_vector_push_back, \
+  .at = (NAME ## _iterator (*)(const_pointer,size_t)) yaooc_array_container_at, \
+  .push_back = (NAME ## _iterator (*)(pointer,const T ## _t*)) yaooc_vector_push_back, \
 	.pop_back = (void (*)(pointer)) yaooc_vector_pop_back, \
-	.insert = (N ## _iterator (*)(pointer,const_iterator,const T ## _t*)) yaooc_array_container_insert, \
-	.insertn = (N ## _iterator (*)(pointer,const_iterator,size_t n,const T ## _t*)) yaooc_array_container_insertn, \
-	.insert_range = (N ## _iterator (*)(pointer,const_iterator,const_iterator,const_iterator)) yaooc_array_container_insert_range, \
-	.erase = (N ## _iterator (*) (pointer,iterator)) yaooc_array_container_erase, \
-	.erase_range = (N ## _iterator (*) (pointer,iterator,iterator)) yaooc_array_container_erase_range, \
+	.insert = (NAME ## _iterator (*)(pointer,const_iterator,const T ## _t*)) yaooc_array_container_insert, \
+	.insertn = (NAME ## _iterator (*)(pointer,const_iterator,size_t n,const T ## _t*)) yaooc_array_container_insertn, \
+	.insert_range = (NAME ## _iterator (*)(pointer,const_iterator,const_iterator,const_iterator)) yaooc_array_container_insert_range, \
+	.erase = (NAME ## _iterator (*) (pointer,iterator)) yaooc_array_container_erase, \
+	.erase_range = (NAME ## _iterator (*) (pointer,iterator,iterator)) yaooc_array_container_erase_range, \
   .erase_value = (size_t (*) (pointer,const_pointer)) yaooc_array_container_erase_value, \
   .reserve = (void (*)(pointer,size_t)) yaooc_array_container_reserve, \
-	.front = (N ## _iterator (*) (pointer)) yaooc_array_container_begin, \
-	.back = (N ## _iterator (*) (pointer)) yaooc_vector_back, \
+	.front = (NAME ## _iterator (*) (pointer)) yaooc_array_container_begin, \
+	.back = (NAME ## _iterator (*) (pointer)) yaooc_vector_back, \
 	.resize = (void (*)(pointer,size_t)) yaooc_array_container_resize, \
 	.resize_value = (void (*)(pointer,size_t,const_pointer)) yaooc_array_container_resize_value, \
 	.shrink_to_fit = (void (*)(pointer)) yaooc_array_container_shrink_to_fit, \
 	.clear = (void (*)(pointer)) yaooc_array_container_clear, \
 }; \
-DEFINE_TYPE_INFO(N ,N ## _default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&N ## _class_table,yaooc_array_container)
+DEFINE_TYPE_INFO(NAME ,Y,N,N,N,N,N,N,Y,yaooc_array_container)
 
-#define VECTOR(T,N) \
-VECTOR_DEFINITION(T,N) \
-VECTOR_IMPLEMENTATION(T,N)
+#define VECTOR(T,NAME) \
+VECTOR_DEFINITION(T,NAME) \
+VECTOR_IMPLEMENTATION(T,NAME)
 
 #endif

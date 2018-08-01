@@ -29,7 +29,7 @@
 /*
   Class definition for yaooc_pod_array
 */
-class_table(yaooc_pod_array)
+yaooc_class_table(yaooc_pod_array)
 {
   yaooc_object_class_table_t;
   bool (*increase_capacity)(pointer,size_t); //const size_t extra_capacity_;
@@ -40,7 +40,7 @@ class_table(yaooc_pod_array)
   iterator (*begin)(const_pointer);
   iterator (*end)(const_pointer);
 };
-class_instance(yaooc_pod_array)
+yaooc_class_instance(yaooc_pod_array)
 {
   yaooc_object_class_instance_t;
   char* array_;
@@ -49,7 +49,7 @@ class_instance(yaooc_pod_array)
   size_t capacity_;
 };
 
-class(yaooc_pod_array);
+yaooc_class(yaooc_pod_array);
 
 
 /* Prototypes for yaooc_pod_array type info */
@@ -103,74 +103,74 @@ void yaooc_pod_array_clear(pointer);
 #define END(p)  AT(p,SIZE(p))
 #define INDEX(p,pos) (((yaooc_private_const_iterator)(pos)-BEGIN(p))/TYPE_SIZE(p))
 
-#define YAOOC_POD_ARRAY_DEFINITION(T,N) \
-typedef T ## _t* N ## _iterator; \
-typedef const T ## _t* N ## _const_iterator; \
-class_table(N) { \
+#define YAOOC_POD_ARRAY_DEFINITION(T,NAME) \
+typedef T ## _t* NAME ## _iterator; \
+typedef const T ## _t* NAME ## _const_iterator; \
+yaooc_class_table(NAME) { \
   yaooc_pod_array_class_table_t; \
-  N ## _iterator(*insert)(N ## _pointer,const_iterator,T ## _t); \
-  N ## _iterator(*insertn)(N ## _pointer,const_iterator,size_t,T ## _t); \
-  N ## _iterator(*insert_range)(N ## _pointer,const_iterator,const_iterator); \
-  N ## _iterator(*insert_back)(N ## _pointer,T ## _t); \
-  N ## _iterator(*insert_front)(N ## _pointer,T ## _t); \
-  N ## _iterator(*find)(N ## _pointer,T ## _t); \
-  N ## _iterator(*erase)(N ## _pointer,const_iterator); \
-  N ## _iterator(*erase_range)(N ## _pointer,const_iterator,const_iterator); \
-  size_t (*erase_value)(N ## _pointer,T ## _t); \
-  N ## _iterator(*erase_front)(N ## _pointer); \
-  N ## _iterator(*erase_back)(N ## _pointer); \
+  NAME ## _iterator(*insert)(NAME ## _pointer,const_iterator,T ## _t); \
+  NAME ## _iterator(*insertn)(NAME ## _pointer,const_iterator,size_t,T ## _t); \
+  NAME ## _iterator(*insert_range)(NAME ## _pointer,const_iterator,const_iterator); \
+  NAME ## _iterator(*insert_back)(NAME ## _pointer,T ## _t); \
+  NAME ## _iterator(*insert_front)(NAME ## _pointer,T ## _t); \
+  NAME ## _iterator(*find)(NAME ## _pointer,T ## _t); \
+  NAME ## _iterator(*erase)(NAME ## _pointer,const_iterator); \
+  NAME ## _iterator(*erase_range)(NAME ## _pointer,const_iterator,const_iterator); \
+  size_t (*erase_value)(NAME ## _pointer,T ## _t); \
+  NAME ## _iterator(*erase_front)(NAME ## _pointer); \
+  NAME ## _iterator(*erase_back)(NAME ## _pointer); \
   void (*clear)(pointer); \
 }; \
-class_instance(N) { \
+yaooc_class_instance(NAME) { \
   yaooc_pod_array_class_instance_t; \
 }; \
-class(N); \
-N ## _iterator N ## _insert(N ## _t*,const_iterator,T ## _t); \
-N ## _iterator N ## _insertn(N ## _t*,const_iterator,size_t,T ## _t); \
-N ## _iterator N ## _insert_range(N ## _t*,const_iterator,const_iterator); \
-N ## _iterator N ## _insert_back(N ## _t*,T ## _t); \
-N ## _iterator N ## _insert_front(N ## _t*,T ## _t); \
-N ## _iterator N ## _erase_front(N ## _t*); \
-N ## _iterator N ## _erase_back(N ## _t*);
+yaooc_class(NAME); \
+NAME ## _iterator NAME ## _insert(NAME ## _t*,const_iterator,T ## _t); \
+NAME ## _iterator NAME ## _insertn(NAME ## _t*,const_iterator,size_t,T ## _t); \
+NAME ## _iterator NAME ## _insert_range(NAME ## _t*,const_iterator,const_iterator); \
+NAME ## _iterator NAME ## _insert_back(NAME ## _t*,T ## _t); \
+NAME ## _iterator NAME ## _insert_front(NAME ## _t*,T ## _t); \
+NAME ## _iterator NAME ## _erase_front(NAME ## _t*); \
+NAME ## _iterator NAME ## _erase_back(NAME ## _t*);
 
-#define YAOOC_POD_ARRAY_IMPLEMENTATION(T,N) \
-void N ## _default_ctor(pointer p) \
+#define YAOOC_POD_ARRAY_IMPLEMENTATION(T,NAME) \
+void NAME ## _default_ctor(pointer p) \
 {\
   call_constructor(p,yaooc_pod_array_ctor_ti,T ## _ti); \
 }\
-N ## _iterator N ## _insert(N ## _t* this,const_iterator pos,T ## _t value) \
+NAME ## _iterator NAME ## _insert(NAME ## _t* this,const_iterator pos,T ## _t value) \
 { \
   return yaooc_pod_array_insert(this,pos,&value); \
 }\
-N ## _iterator N ## _insertn(N ## _t* this,const_iterator pos,size_t n,T ## _t value) \
+NAME ## _iterator NAME ## _insertn(NAME ## _t* this,const_iterator pos,size_t n,T ## _t value) \
 { \
   return yaooc_pod_array_insertn(this,pos,n,&value); \
 }\
-N ## _iterator N ## _insert_front(N ## _t* this,T ## _t value) \
+NAME ## _iterator NAME ## _insert_front(NAME ## _t* this,T ## _t value) \
 { \
   return yaooc_pod_array_insert(this,BEGIN(this),&value); \
 } \
-N ## _iterator N ## _insert_back(N ## _t* this,T ## _t value) \
+NAME ## _iterator NAME ## _insert_back(NAME ## _t* this,T ## _t value) \
 { \
   return yaooc_pod_array_insert(this,END(this),&value); \
 } \
-N ## _iterator N ## _erase_front(N ## _t* this)\
+NAME ## _iterator NAME ## _erase_front(NAME ## _t* this)\
 {\
   return yaooc_pod_array_erase(this,BEGIN(this)); \
 }\
-N ## _iterator N ## _erase_back(N ## _t* this)\
+NAME ## _iterator NAME ## _erase_back(NAME ## _t* this)\
 {\
   return yaooc_pod_array_erase(this,END(this)); \
 }\
-size_t N ## _erase_value(N ## _t* this,T ## _t value)\
+size_t NAME ## _erase_value(NAME ## _t* this,T ## _t value)\
 {\
   return yaooc_pod_array_erase_value(this,&value); \
 }\
-N ## _iterator N ## _find(N ## _pointer this,T ## _t value) \
+NAME ## _iterator NAME ## _find(NAME ## _pointer this,T ## _t value) \
 {\
   return yaooc_pod_array_find(this,&value); \
 } \
-N ## _class_table_t N ## _class_table= {\
+NAME ## _class_table_t NAME ## _class_table= {\
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table, \
   .isa = (const char* (*) (const_pointer p)) yaooc_pod_array_isa, \
   .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_pod_array_is_descendant, \
@@ -182,23 +182,23 @@ N ## _class_table_t N ## _class_table= {\
   .empty = (bool (*) (const_pointer p)) yaooc_pod_array_empty, \
   .begin = (iterator (*) (const_pointer p)) yaooc_pod_array_begin, \
   .end = (iterator (*) (const_pointer p)) yaooc_pod_array_end, \
-  .insert=N ## _insert, \
-  .insertn=N ## _insertn, \
-  .insert_range=(N ## _iterator(*)(N ## _t*,const_iterator,const_iterator))yaooc_pod_array_insert_range, \
-  .insert_back=N ## _insert_back, \
-  .find=N ## _find, \
-  .erase=(N ## _iterator(*)(N ## _pointer,const_iterator))yaooc_pod_array_erase,\
-  .erase_range=(N ## _iterator(*)(N ## _pointer,const_iterator,const_iterator))yaooc_pod_array_erase_range,\
-  .erase_value=N ## _erase_value, \
-  .erase_front=N ## _erase_front, \
-  .erase_back=N ## _erase_back, \
+  .insert=NAME ## _insert, \
+  .insertn=NAME ## _insertn, \
+  .insert_range=(NAME ## _iterator(*)(NAME ## _t*,const_iterator,const_iterator))yaooc_pod_array_insert_range, \
+  .insert_back=NAME ## _insert_back, \
+  .find=NAME ## _find, \
+  .erase=(NAME ## _iterator(*)(NAME ## _pointer,const_iterator))yaooc_pod_array_erase,\
+  .erase_range=(NAME ## _iterator(*)(NAME ## _pointer,const_iterator,const_iterator))yaooc_pod_array_erase_range,\
+  .erase_value=NAME ## _erase_value, \
+  .erase_front=NAME ## _erase_front, \
+  .erase_back=NAME ## _erase_back, \
   .clear = yaooc_pod_array_clear, \
 }; \
-DEFINE_TYPE_INFO(N ,N ## _default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&N ## _class_table,yaooc_pod_array)
+DEFINE_TYPE_INFO(NAME,Y,N,N,N,N,N,N,Y,yaooc_pod_array)
 
-#define YAOOC_POD_ARRAY(T,N) \
-YAOOC_POD_ARRAY_DEFINITION(T,N) \
-YAOOC_POD_ARRAY_IMPLEMENTATION(T,N)
+#define YAOOC_POD_ARRAY(T,NAME) \
+YAOOC_POD_ARRAY_DEFINITION(T,NAME) \
+YAOOC_POD_ARRAY_IMPLEMENTATION(T,NAME)
 
 
 #endif

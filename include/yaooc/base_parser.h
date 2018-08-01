@@ -27,19 +27,19 @@ typedef struct {
 } parser_position_t;
 
 STACK_DEFINITION(parser_position,parser_position_stack)
-class_table(yaooc_terminal)
+yaooc_class_table(yaooc_terminal)
 {
   char* (*get_text)(const_pointer);
   char* (*get_raw_text)(const_pointer);
 };
 
-class_instance(yaooc_terminal)
+yaooc_class_instance(yaooc_terminal)
 {
   const char* beg_;
   const char* end_;
 };
 
-class(yaooc_terminal);
+yaooc_class(yaooc_terminal);
 void yaooc_terminal_default_ctor(pointer);
 char* yaooc_terminal_get_text(const_pointer);
 char* yaooc_terminal_get_raw_text(const_pointer);
@@ -53,7 +53,7 @@ typedef enum { PARSE_SUCCESS = 0, PARSE_FAILED } yaooc_base_parser_result_t;
 /*
   Class definition for yaooc_base_parser
 */
-class_table(yaooc_base_parser)
+yaooc_class_table(yaooc_base_parser)
 {
   yaooc_object_class_table_t;
   void (*set_parse_string)(pointer,const char*);
@@ -91,7 +91,7 @@ class_table(yaooc_base_parser)
   yaooc_base_parser_result_t (*result)(const_pointer);
 };
 
-class_instance(yaooc_base_parser)
+yaooc_class_instance(yaooc_base_parser)
 {
   yaooc_object_class_instance_t;
   const char* string_to_parse_;
@@ -102,7 +102,7 @@ class_instance(yaooc_base_parser)
   yaooc_base_parser_result_t result_;
 };
 
-class(yaooc_base_parser);
+yaooc_class(yaooc_base_parser);
 /* Prototypes for yaooc_base_parser type info */
 void yaooc_base_parser_default_ctor(pointer);
 void yaooc_base_parser_dtor(pointer);

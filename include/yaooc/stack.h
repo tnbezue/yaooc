@@ -23,30 +23,30 @@
 void yaooc_stack_push(pointer,const_pointer);
 void yaooc_stack_pop(pointer);
 
-#define STACK_DEFINITION(T,N) \
-typedef T ## _t* N ## _iterator; \
-typedef const T ## _t* N ## _const_iterator; \
-class_table(N) {\
+#define STACK_DEFINITION(T,NAME) \
+typedef T ## _t* NAME ## _iterator; \
+typedef const T ## _t* NAME ## _const_iterator; \
+yaooc_class_table(NAME) {\
   yaooc_array_container_class_table_t; \
   T ## _t* (*top) (pointer); \
   void (*push)(pointer,const T ## _t*); \
   void (*pop)(pointer); \
 };\
-class_instance(N) {\
+yaooc_class_instance(NAME) {\
   yaooc_array_container_class_instance_t; \
 };\
-class(N); \
-const char* N ## _isa(const_pointer p);
+yaooc_class(NAME); \
+const char* NAME ## _isa(const_pointer p);
 
-#define STACK_IMPLEMENTATION(T,N) \
-void N ## _default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor_ti,T ## _ti); } \
-void N ## _push(pointer p,T ## _t *v) { yaooc_array_container_insert(p,BEGIN(p),v); } \
-void N ## _pop(pointer p) { yaooc_array_container_erase(p,BEGIN(p)); } \
-const char* N ## _isa(const_pointer p)  { return # N "_t"; } \
-N ## _class_table_t N ## _class_table = \
+#define STACK_IMPLEMENTATION(T,NAME) \
+void NAME ## _default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor_ti,T ## _ti); } \
+void NAME ## _push(pointer p,T ## _t *v) { yaooc_array_container_insert(p,BEGIN(p),v); } \
+void NAME ## _pop(pointer p) { yaooc_array_container_erase(p,BEGIN(p)); } \
+const char* NAME ## _isa(const_pointer p)  { return # NAME "_t"; } \
+NAME ## _class_table_t NAME ## _class_table = \
 {\
   .parent_class_table_ = (const class_table_t*)&yaooc_array_container_class_table, \
-  .isa = N ## _isa, \
+  .isa = NAME ## _isa, \
   .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_object_is_descendant, \
   .swap = (void (*) (pointer p,pointer)) yaooc_array_container_swap, \
   .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity, \
@@ -60,6 +60,6 @@ N ## _class_table_t N ## _class_table = \
   .push = (void (*)(pointer,const T ## _t*)) yaooc_stack_push, \
   .pop = (void (*)(pointer)) yaooc_stack_pop, \
 };\
-DEFINE_TYPE_INFO(N,N ## _default_ctor,NULL,NULL,NULL,NULL,NULL,NULL,&N ## _class_table,yaooc_array_container)
+DEFINE_TYPE_INFO(NAME,Y,N,N,N,N,N,N,Y,yaooc_array_container)
 
 #endif

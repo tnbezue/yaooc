@@ -171,7 +171,5 @@ yaooc_array_container_class_table_t yaooc_array_container_class_table = {
   .end = (iterator (*) (const_pointer p)) yaooc_array_container_end,
 };
 
-DEFINE_TYPE_INFO(yaooc_array_container,NULL,yaooc_array_container_dtor,
-		yaooc_array_container_copy_ctor,yaooc_array_container_assign,yaooc_array_container_less_than_compare,
-		NULL,NULL,&yaooc_array_container_class_table,yaooc_pod_array)
+DEFINE_TYPE_INFO(yaooc_array_container,N,Y,Y,Y,Y,N,N,Y,yaooc_pod_array)
 

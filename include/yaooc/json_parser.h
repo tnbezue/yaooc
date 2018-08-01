@@ -28,7 +28,7 @@
 /*
   Class definition for yaooc_json_parser
 */
-class_table(yaooc_json_parser)
+yaooc_class_table(yaooc_json_parser)
 {
   yaooc_base_parser_class_table_t;
   yaooc_json_value_pointer (*parse_json_null)(pointer);
@@ -43,12 +43,12 @@ class_table(yaooc_json_parser)
   yaooc_json_value_pointer (*parse_file)(pointer,const char*);
 };
 
-class_instance(yaooc_json_parser)
+yaooc_class_instance(yaooc_json_parser)
 {
   yaooc_base_parser_class_instance_t;
 };
 
-class(yaooc_json_parser);
+yaooc_class(yaooc_json_parser);
 /* Prototypes for yaooc_json_parser type info */
 
 /* Constructors for yaooc_json_parser */

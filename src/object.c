@@ -70,5 +70,4 @@ yaooc_object_class_table_t yaooc_object_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_object,yaooc_object_default_ctor,NULL,yaooc_object_copy_ctor,yaooc_object_assign,
-    yaooc_object_less_than_compare,NULL,NULL,&yaooc_object_class_table,NULL)
+DEFINE_TYPE_INFO(yaooc_object,Y,N,Y,Y,Y,N,N,Y,NULL)

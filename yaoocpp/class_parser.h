@@ -28,13 +28,13 @@
 /*
   Class definition for yaoocpp_class_parser
 */
-class_table(yaoocpp_class_parser)
+yaooc_class_table(yaoocpp_class_parser)
 {
   yaooc_base_parser_class_table_t;
   bool (*parse_file)(pointer,const char*);
 };
 
-class_instance(yaoocpp_class_parser)
+yaooc_class_instance(yaoocpp_class_parser)
 {
   yaooc_base_parser_class_instance_t;
   yaoocpp_item_ptr_vector_t* classes_;
@@ -42,7 +42,7 @@ class_instance(yaoocpp_class_parser)
   bool is_top_level_file_;
 };
 
-class(yaoocpp_class_parser);
+yaooc_class(yaoocpp_class_parser);
 /* Prototypes for yaoocpp_class_parser type info */
 
 /* Constructors for yaoocpp_class_parser */
