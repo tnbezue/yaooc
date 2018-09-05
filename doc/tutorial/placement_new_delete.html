@@ -54,7 +54,7 @@ Use newp_copy_static (below) to initialize from static object
 <div class="divTableRow">
 <div class="divTableCell">Initialize new object from existing static object</div>
 <div class="divTableCell">new (ptr) T(ref);</div>
-<div class="divTableCell">newp_copy_static(dst_ptr,src_ptr);</div>
+<div class="divTableCell">newp_copy_static(dst_ptr,T,src_ptr);</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">Initialize n new objects from existing dynamically allocated object (copy constructor)</div>
@@ -64,7 +64,7 @@ Use newp_copy_static (below) to initialize from static object
 <div class="divTableRow">
 <div class="divTableCell">Initialize n new objects from existing static object (copy constructor)</div>
 <div class="divTableCell">N/A</div>
-<div class="divTableCell">newp_array_copy_static(dst_ptr,src_ptr,T,n);</div>
+<div class="divTableCell">newp_array_copy_static(dst_ptr,T,src_ptr,n);</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">Initialize new object using specified constructor to initialize the object</div>
@@ -123,7 +123,7 @@ The macros below facilitate streams handing reading POD and static objects prope
 <div class="divTableHead">Description</div>
 </div>
 <div class="divTableRow">
-<div class="divTableCell">I_OBJ(O,T)</div>
+<div class="divTableCell">I_OBJ(T,O)</div>
 <div class="divTableCell">Input static object O of type T</div>
 </div>
 <div class="divTableRow">

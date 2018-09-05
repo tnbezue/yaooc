@@ -122,16 +122,16 @@ The method name is class name appended with "_less_than_compare".
 <pre><code>
   bool my_string_less_than_compare(const_pointer p1,const_pointer p2)
   {
-    my_string_const_pointer bsp1 = p1;
-    my_string_const_pointer bsp2 = p2;
-    if(bsp1->str == NULL) {
-      if(bsp2->str == NULL)
-        return false; /* both NULL, equal -- NULL is not less than NULL */
+    my_string_const_pointer msp1 = p1;
+    my_string_const_pointer msp2 = p2;
+    if(msp1->str == NULL) {
+      if(msp2->str == NULL)
+        return false; /* both NULL, equal -- not less  */
       else
         return true; /* 1st is NULL, 2nd is not.  NULL is less than not NULL */
-    } else if(bsp2 == NULL)
-      return false; /* 1st is not NULL, 2nd is NULL. Not NULL is not less than NULL */
-    return strcmp(bsp1->str,bsp2->str) < 0; /* Both not null, compare the strings */
+    } else if(msp2 == NULL)
+      return false; /* 1st is not NULL, 2nd is NULL. 1st is greater than 2nd, not less */
+    return strcmp(msp1->str,msp2->str) < 0; /* Both not null, compare the strings */
   }
 </code></pre>
 <p>
@@ -151,7 +151,7 @@ Each method takes two arguments -- pointers to the objects to compare.
 <div class="divTableCell">op_eq(p1,p2)</div>
 </div>
 <div class="divTableRow">
-<div class="divTableCell">Equal to</div>
+<div class="divTableCell">Noy equal to</div>
 <div class="divTableCell">!=</div>
 <div class="divTableCell">op_ne(p1,p2)</div>
 </div>

@@ -22,35 +22,20 @@
 <div style="overflow-y: scroll; height:850px">
 <h2><center>YAOOCPP</center></h2>
 <p>
-With multiple levels of inheritance and increasing number of methods, you will find that maintaining the class table
+Now, let's get back to developing the my_string class.
+</p>
+<p>
+With multiple levels of inheritance and increasing number of methods, creating/maintaining a YAOOC class will become
 increasingly tedious.  The YAOOC PreProcessor (YAOOCPP) alleviates this tedious work.  Much of the manual work that has been presented
 in previous chapters is done by YAOOCPP.
 </p>
 <p>
-Input to the YAOOC PreProcessor is a YAOOC class definition. YAOOCPP will generate the header and C source file for the class.
-</p>
-<p>
-The header will contain:
-</p>
-<ul>
-<li> the yaooc_class_table, yaooc_class_instance, and yaooc_class definitions for the class.</li>
-<li> prototypes for constructors, non private class methods, and variables.</li>
-</ul>
-<p>
-C source file will contain:
-</p>
-<ul>
-<li>templates for constructors and class methods</li>
-<li>complete variable definition</li>
-<li>class table for the class will be completely defined</li>
-<li>the DEFINE_TYPE_INFO specification</li>
-</ul>
-<p>
-The YAOOC class definition is shown below.
+Input to the YAOOC PreProcessor is a YAOOC class definition.
+The syntax of the YAOOC class definition is shown below.
 </p>
 <pre><code>
   #include &lt;parent.yaooc&gt;
-  class class_name : parent 
+  [ class | struct ] name : parent 
   {
       &lt;Type Info&gt;
       &lt;Constructors&gt;
@@ -64,28 +49,34 @@ The YAOOC class definition is shown below.
       &lt;Private methods and variables&gt;
   };
 </code></pre>
-<h3>Class Definition and inheritance</h3>
+<p>
+Multiple class definitions can appear in a file.  Table, instance, protected, and private section can be in any order.  There can also be multiple sections
+of same type -- that is, there can be multiple table and/or instance sections.  Any section can be omitted. C and C++ style comments can be used.
+</p>
+<h3>Include Directive</h3>
 <p>
 The include directive is used to include the class definition of the parent class.  There can be multiple include files specified.
 </p>
+<h3>Class Definition and inheritance</h3>
 <p>
-class_name is the name of the new class (the "_t" should not be included).  parent is the parent class name.
+name is the type name of the struct or class (the "_t" should not be included).  parent is the parent class type name.
+Struts do not require a parent.  A class must have a parent.  If a parent is not specified for a class, yaooc_object is assumed.
 </p>
 <h3>Type Info</h3>
 <p>
 There are seven possible entries in the type info section which correspond to entries in the type info table.
-Any or all of the entries may be omitted.  NULL will be used for entries that do not appear.
+Any or all of the entries may be omitted.
 Those entries are shown below. 
 </p>
 <pre>
 <code>
-  class_name();    /* Generate template for default constructor */
-  ~class_name();   /* Generate template for destructor */
-  class_name(class_name);  /* Generate template for copy constructor */
-  operator=();   /* Generate template for assignment method */
-  operator&lt;();   /* Generate template for less than compare method */
-  operator&lt;&lt;(); /* Generate template for to_stream method */
-  operator&gt;&gt;(); /* Generate template for from_stream method */
+  name();             /* Generate template for default constructor */
+  ~name();            /* Generate template for destructor */
+  name(name);         /* Generate template for copy constructor */
+  operator=();        /* Generate template for assignment method */
+  operator&lt;();        /* Generate template for less than compare method */
+  operator&lt;&lt;();       /* Generate template for to_stream method */
+  operator&gt;&gt;();       /* Generate template for from_stream method */
 </code>
 </pre>
 <p>
@@ -93,14 +84,28 @@ The entries can be specified in any order.
 </p>
 <h3>Constructors</h3>
 <p>
-The constructors section identifies the constructors that will be available for this class. Constructors should 
-begin with the class_name and followed by "_ctor_" and one or more valid identifier characters. It is suggested to
-use abbreviated types or variable names to complete the constructor name. Note the names of the my_string
-constructors for example.
+The constructors section identifies the constructors that will be available for this class. The syntax for constructors is:
 </p>
-<p> 
-The constructor should specify a parenthesized list of arguments for the constructor.
-A pointer to object to initialize is automatically added as first argument thus should not be specified.
+<pre><code>
+  name_ctor_XXXXX(type1 arg1,type2 arg2, ..., typen argn) [ = implementation_method ]
+</code></pre>
+<p>
+<ul>
+<li>
+Constructors begin with the class_name followed by "_ctor_" and one or more valid identifier characters. It is suggested to
+use abbreviated types or variable names to complete the constructor name.
+</li>
+<li>
+The constructor specifies a parenthesized list of arguments for the constructor.
+</li>
+<li>
+A pointer to the instance to initialize is automatically added as first argument thus should not be specified in argument list.
+</li>
+<li>
+Implementation_method is the name of an existing constructor.  If specified, a template for the method is not generated.  A "#define"
+statement is generated so that implementation_method is used as constructor. 
+</li>
+</ul> 
 </p>   
 <p>
 Items for type info and constructors can be intermixed.  That is, definition order could be default constructor,
@@ -115,7 +120,7 @@ Class table entries are defined in the table section.  The syntax for variable m
   var_type var_name [ = value ];
 </code></pre>
 <p>
-For the table section, the value is almost always specified.  If value is a string, it should be
+For the table section, the value is optional but should be specified.  If value is a string, it should be
 enclosed in double quotes. If value is not specified, 0 (zero) is assumed.
 </p>
 <p>The syntax for method definition is:</p>
@@ -153,21 +158,20 @@ Items in instance section follow the same rules as the table section -- with a f
 Only new items can be added to instance -- methods can not be overridden. 
 </li>
 <li>
-Values and implementation methods are ignored for instance members. These must be specified after the object has been created -- perhaps in the constructor.
+Values and implementation methods are ignored for instance members. These must be specified during runtime -- normally in the constructor.
+</li>
+<li>
+Can have an entry that indicates type only -- normally a struct type (i.e., custom_t).
 </li>
 </ul>
 <h3>Protected</h3>
 <p>
-Protected does not have the same meaning as in C++.  Protected members are defined in the header file and implemented in C source file.
-They are meant to be helpers to class and derived classes.
+Protected members variables and methods that are not part of the class but are meant to be helpers to class and derived classes. The syntax
+is the same as table entries. 
 </p>
 <h3>Private</h3>
 <p>
-Private members are defined as static in the C source file.  Can only be used by the class being created.
-</p>
-<p>
-Multiple class definitions can appear in a file.  Table, instance, protected, and private section can be in any order.  There can also be multiple sections
-of same type.  That is, there can be multiple table and/or instance sections.  Any section can be omitted. C and C++ style comments can be used.
+Private variables and methods that are meant to only be used by the class being created.
 </p>
 <h3>Executing YAOOCPP</h3>
 The syntax for executing yaoocpp is similar to executing the C preprocessor.  In fact, yaoocpp uses the C preprocessor so many preprocessor directives
@@ -186,10 +190,101 @@ Where:
 <p>
 A file.h.template and file.c.template will be generated by YAOOCPP.
 </p>
+<h3>YAOOCPP Output</h3>
+<p>YAOOCPP will generate the header and C source file for the class. Methods and variable will be prefixed with the class type name and underscore ("_").</p>
+<p>
+The header will contain:
+</p>
+<ul>
+<li>The yaooc_struct, yaooc_class_table, yaooc_class_instance, and yaooc_class definitions for the class.</li>
+<li>The prototypes for the type info methods.  If an entry is not specified, a "#define" statement is generated referencing the parent method</li>
+<li>The prototypes for constructors. If an implementation method was specified, a "#define" statement is generate referencing it.</li>
+<li>The prototypes for new or overridden class table methods.  If a method was inherited (and not overridden) a "#define" statement is generated referencing the parent method</li>
+<li>The prototypes for protected methods and variables.</li>
+</ul>
+<p>
+C source file will contain:
+</p>
+<ul>
+<li>Prototypes for private methods</li>
+<li>Definition for private variables</li>
+<li>Templates for type info methods</li>
+<li>Templates for constructors</li>
+<li>Templates for class table methods</li>
+<li>Templates for private method</li>
+<li>Templates for protected methods and variables</li>
+<li>Class table definition</li>
+<li>The DEFINE_TYPE_INFO specification</li>
+</ul>
+<p>
+If a default constructor, destructor, copy constructor, or assignment methods are specified in the class definition file, YAOOCPP will create these entries
+based on the type of the variables in the instance.  <font color="red">BE SURE TO REVIEW THESE METHODS TO ENSURE THEY ARE PROPERLY DEFINED</font>.
+</p>
+<p>
+YAOOCPP will create a default constructor as follows:
+<ul>
+<li>
+If a parent class (other than yaooc_object) is defined, the default constructor for the parent class is called.
+</li>
+<li>
+For non inherited instance members, initialization will be attempted as follows:
+<ul>
+<li>
+If member type ends with "_t", it is assumed to be a static YAOOC object and is initialized with placement new (newp) 
+</li>
+<li>
+If member is a pointer (type ends with "*"), it is initialized to NULL.
+</li>
+<li>
+Otherwise the value is set to zero (0).
+</li>
+</ul>
+</li>
+</ul>
+</p>
+<p>
+YAOOCPP will create a destructor using the following rules:
+<ul>
+<li>
+If variable is a static YAOOC object (type name ends with "_t"), then placement delete (deletep) is used.
+</li>
+<li>
+If variable instance member is a constant pointer (regardless of type), no action is taken.
+</li>
+<li>
+If variable instance member is a pointer to a YAOOC object (type name ends with "_t\s+*"), then delete is used.
+</li>
+<li>
+If variable instance member is a pointer and does not point to a YAOOC object (type name does not end with "_t\s+*"), then free is used.
+</li>
+<li>
+Otherwise, no action is taken.
+</li>
+</ul>
+</p>
+<p>
+YAOOCPP will create a copy constructor that calls the default constructor to initialize the new instance and then call assignment method.
+</p>
+<p>
+YAOOCPP will create an assignment method using the following rules:
+<ul>
+<li>
+If variable is a static YAOOC object (type ends with "_t"), assign_static is used.
+</li>
+<li>
+If variable is a non constant pointer to a YAOOC object, instance variable is deleted and assigned copy of source variable.
+</li>
+<li>
+If instance variable is a non constant pointer to a non YAOOC object, an undefined method is used so that compilation will fail thus allowing user to specify code to properly assign variable.
+</li>
+<li>
+Otherwise, the instance is equated to the source value.
+</li>
+</ul>
+</p>
 <h3>Improved my_string class</h3>
 <p>
-Since YAOOCPP does much of the tedious work, a more robust string class can be created.  This example is meant to show features
-of YAOOCPP rather than good programming practice.
+Since YAOOCPP does the tedious work, a more robust string class can be created.  The class definition for the my_string class is shown below.
 </p>
 <pre><code>
   #ifndef __MY_STRING_YAOOC_INCLUDED__
@@ -199,9 +294,9 @@ of YAOOCPP rather than good programming practice.
   class my_string : yaooc_object
   {
       my_string();                                                   /* default constructor. */
-      my_string_ctor_ccs_n(const char* s,size_t n);                  /* Constructor 1 */
+      my_string_ctor_ccs_size(const char* s,size_t n);               /* Constructor 1 */
       my_string_ctor_ccs(const char* s);                             /* Constructor 2 */
-      my_string_ctor_chr_n(int ch,size_t n);                         /* Constructor 3 */
+      my_string_ctor_chr_size(int ch,size_t n);                      /* Constructor 3 */
       ~my_string();                                                  /* destructor */
       my_string(my_string);                                          /* copy constructor */
       operator=();                                                   /* assignment */
@@ -237,6 +332,8 @@ of YAOOCPP rather than good programming practice.
     
     private:
       size_t allocate_space(size_t n);                               /* Allocates space to hold string */
+      char *strrstr(const char *pat) const;                          /* Find last pat in str */
+      
     protected:
       void insert_space(size_t pos,size_t n);                        /* Insert space in string */
       void erase_space(size_t pos,size_t n);                         /* erase space in string */
@@ -244,8 +341,8 @@ of YAOOCPP rather than good programming practice.
   #endif
 </code></pre>
 <p>
-Review the files in the examples/ch11 folder.  Examine the contents of my_string.h.template and my_string.c.template to understand the output of yaoocpp.  Compare to my_string.h
-and my_string.c to see how little code was added.
+Review the files in the examples/ch13 folder.  Examine the contents of my_string_ch13.h.template and my_string_ch13.c.template to understand the output of yaoocpp.  Compare to my_string_ch13.h
+and my_string_ch13.c to see what code was added.
 </p>
 </div>
 </div>

@@ -61,13 +61,28 @@ If any thread throws an exception that is not caught, then a message indicating 
 is printed to stderr and the program is terminated.
 </p>
 <p>
-All exceptions should be a descendant of yaooc_exception.  The definition of yaooc_exception is:
+All exceptions should be a descendant of yaooc_exception.  The class definition of yaooc_exception is:
 </p>
 <pre><code>
-  class exception : object {
+  class yaooc_exception : yaooc_object
+  {
+      yaooc_exception();
+      yaooc_exception_ctor_v(const char* fmt,...)
+      ~yaooc_exception();
+      yaooc_exception(yaooc_exception);
+      operator=();
     table:
+      const char* isa() const;
       const char* what() const;
+    instance:
+      char* what_;
   };
+</code></pre>
+<p>
+The constructor yaooc_exception_ctor_v creates an exception using printf syntax.  For example,
+</p>
+<pre><code>
+   THROW(new_ctor(yaooc_exception,yaooc_exception_ctor_v,"Error in file %s at line %d",file,line));
 </code></pre>
 <h3>TRY/CATCH blocks have a pointer bag</h3>
 <p>

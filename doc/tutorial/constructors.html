@@ -30,7 +30,7 @@ For my_string class, the first constructor initializes my_string object using n 
 </p>
 <pre><code>
   /* Uses n characters of string to initilize object */
-  void my_string_ctor_ccs_n(pointer p,va_list args)
+  void my_string_ctor_ccs_size(pointer p,va_list args)
   {
     my_string_pointer this=p;
     const char* str=va_arg(args,const char*);
@@ -55,20 +55,20 @@ The second constructor creates a my_string object using the entire string specif
   void my_string_ctor_ccs(pointer p,va_list args)
   {
     const char* str=va_arg(args,const char*);
-    call_constructor(p,my_string_ctor_ccs_n,str,SIZE_MAX);
+    call_constructor(p,my_string_ctor_ccs_size,str,SIZE_MAX);
   }
 </code></pre>
 <p>
 In the second constructor, notice that a call is made to the first constructor using the call_constructor method.  The default and
-copy constructors can be called directly.  Other constructors (because of the va_list argument) can not.  The call_constructor method 
-should be used.  The call_constructor can not be used to call the default or copy constructor.
+copy constructors can be called by using the corresponding method name.  Other constructors (because of the va_list argument) can not.  The call_constructor method 
+must be used.  The call_constructor can not be used to call the default or copy constructor.
 </p>
 
 <p>
 The third constructor initializes a my_string object with n copies of the specified character. 
 </p>
 <pre><code>
-  void my_string_ctor_chr_n(pointer p,va_list args)
+  void my_string_ctor_chr_size(pointer p,va_list args)
   {
     my_string_pointer this=p;
     char c = va_arg(args,int);
@@ -85,9 +85,9 @@ The third constructor initializes a my_string object with n copies of the specif
 The constructors are called using "new_ctor" version of new.
 </p>
 <pre><code>
-  my_string_pointer sp1 = new_ctor(my_string,my_string_ctor_ccs_n,"This is a test.",1024);
+  my_string_pointer sp1 = new_ctor(my_string,my_string_ctor_ccs_size,"This is a test.",1024);
   my_string_pointer sp2 = new_ctor(my_string,my_string_ctor_ccs,"This is a test.");
-  my_string_pointer sp3 = new_ctor(my_string,my_string_ctor_chr_n,'Y',24);
+  my_string_pointer sp3 = new_ctor(my_string,my_string_ctor_chr_size,'Y',24);
 </code></pre>
 <h3>Naming Convention</h3>
 <p>

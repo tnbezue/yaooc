@@ -120,10 +120,10 @@ The class table is then defined as:
   };
 </code></pre>
 <p>
-And DEFINE_TYPE_INFO should now contain a pointer to class table
+And DEFINE_TYPE_INFO should now indicate that a class table exists.
 </p>
 <pre><code>
-  DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,N,N,Y,NULL);
+  DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,N,N,<font color="red">Y</font>,NULL);
 </code></pre>
 <p>
 To call a class table method, use ptr->class_table_->method(ptr,args). For example,
@@ -140,7 +140,7 @@ YAOOC provides the M macro (M for method) to make calling methods easier. The sy
   printf("%s\n",M(ptr,get));
 </code></pre>
 <p>
-Another macro that will have an occasional use is class_forward.  As the name implies, class_forward provides a forward declaration of a class.
+Another macro that will have an occasional use is yaooc_class_forward.  As the name implies, yaooc_class_forward provides a forward declaration of a class.
 It defines the same types that the yaooc_class macro does.  The user must use yaooc_struct or the above three macros to completely define the class before it can be used.   
 </p>
 <pre><code>

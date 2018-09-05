@@ -59,9 +59,12 @@ can access the type info to apply the appropriate assignment method.  Likewise, 
 of elements to delete. 
 </p>
 <p>
-The assign and comparison methods (presented in previous chapters) only work for a single allocated object.  They do
-not work for objects created on the stack -- nor the second or greater element in an array.  These objects will be referred to as static objects.
-There are special versions of assign and comparison that are used with static objects.  The class type is included as an argument to the static versions. 
+For variables declared on the stack or for elements beyond the first element of an array (henceforth, will be referred to as static objects), the above memory layout is not available.
+Therefore, some of the methods that have been presented so far will not work on static objects.  Static versions of these methods (appended with "_static") will have to be used.
+Since the type info pointer is not available, the class type is included as an argument to the static versions.
+</p>
+<p>
+Static versions of assign and comparison methods are presented below.   
 </p>
 
 <div class="divTable">
@@ -105,11 +108,20 @@ There are special versions of assign and comparison that are used with static ob
 For example, to compare if two my_string objects are equal, use:
 </p>
 <pre><code>
-  if(op_eq_static(p1,p2,my_string))
+  #define INIT_STATIC_MY_STRING { .class_table_=&amp;my_string_class_table, .str=NULL } 
+  my_string_t ms1 = INIT_STATIC_MY_STRING;
+  my_string_t ms2 = INIT_STATIC_MY_STRING;
+  ....
+  if(op_eq_static(&amp;ms1,&amp;ms2,my_string))
     puts("Equal");
 </code></pre>
 <p>
-YAOOC provides a method that is not available in C++ -- renew. Renew is to new as realloc is to malloc. ptr is a pointer memory that was
+In C++, when a variable is declared, it is initialized by using the default constructor.  In C, this does not occur.  One way to 
+initialize static objects ms1 and ms2 is shown above.  Another method will be presented in the next chapter.
+</p>
+<h3>Renew</h3>
+<p>
+While on the subject of memory, it should be noted that YAOOC provides a method that is not available in C++ -- renew. Renew is to new as realloc is to malloc. ptr is a pointer to memory that was
 previously allocated with new (unlike realloc, it cannot be NULL). The following table shows the forms of renew.
 </p>
 <div class="divTable">
@@ -134,16 +146,16 @@ previously allocated with new (unlike realloc, it cannot be NULL). The following
 </div>
 
 <p>
-The above table only presents the case where N is greater than the current allocation.  If, in the above cases, N is less than the current allocation,
+The above table only presents the case where N is greater than the current allocation.  If N is less than the current allocation,
 the destructor is called for each element removed before memory is reallocated.  If N is the same as the current allocation, no action is taken.
 </p>
 
 <pre><code>
-  my_string_t* demo=new_array(my_string,32); /* Initial size is 32 */
+  my_string_t* demo=new_array(char,8); /* Initial size is 8 */
   ...
-  demo=renew(demo,128); /* Increase capacity to 128 elements */
+  demo=renew(demo,20); /* Increase capacity to 20 */
   ...
-  demo=renew(demo,16); /* Decrease capacity to 16 elements */
+  demo=renew(demo,5); /* Decrease capacity to 5 */
 </code></pre>
 
 </div>
