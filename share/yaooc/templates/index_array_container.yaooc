@@ -12,21 +12,21 @@ class yaooc_index_array_container : yaooc_array_container
 
   private:
   protected:
-    iterator insert_index(yaooc_size_t pos,yaooc_size_t n,yaooc_size_t value);
-    iterator remove_index(yaooc_size_t pos,yaooc_size_t n);
-    bool increase_capacity(yaooc_size_t n);
+    iterator insert_index(size_t pos,size_t n,size_t value);
+    iterator remove_index(size_t pos,size_t n);
+    bool increase_capacity(size_t n);
     iterator insert(const_iterator pos,const_pointer value);
-    iterator insertn(const_iterator pos,yaooc_size_t n,const_pointer val);
+    iterator insertn(const_iterator pos,size_t n,const_pointer val);
     iterator insert_range(const_iterator pos,const_iterator f,const_iterator l);
     yaooc_index_array_container_find_result_t find_protected(const_pointer value);
     iterator find(const_pointer value);
     iterator erase(const_iterator pos);
-    yaooc_size_t erase_value(const_pointer value);
+    size_t erase_value(const_pointer value);
     iterator erase_range(const_iterator f,const_iterator l);
-    void resize(yaooc_size_t n);
-    void resize_value(yaooc_size_t n,const_pointer value);
+    void resize(size_t n);
+    void resize_value(size_t n,const_pointer value);
     void shrink_to_fit();
-    void reserve(yaooc_size_t n);
+    void reserve(size_t n);
     void clear();
 
   table:
@@ -34,7 +34,7 @@ class yaooc_index_array_container : yaooc_array_container
     void swap(pointer p2);
 
   instance:
-    yaooc_size_t* indexes_;
+    size_t* indexes_;
 };
 
 #endif

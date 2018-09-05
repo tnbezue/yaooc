@@ -17,43 +17,48 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <getopt.h>
-#include <libgen.h>
-#include <ctype.h>
 #include <yaooc/string.h>
 #include <yaooc/pointer_bag.h>
-#include "class_parser.h"
+#include <yaooc/exception.h>
+#include <yaooc/fstream.h>
+#include <string.h>
+#include <libgen.h>
+#include "parser.h"
 
-yaooc_string_t* includes;
-yaooc_string_t* cpp;
-//yaooc_string_pointer defines;
+yaooc_string_t includes = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+yaooc_string_t cpp = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+yaooc_string_t defines = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+yaooc_string_t output_file = YAOOC_STRING_STATIC_DEFAULT_CTOR;
 
 #define YAOOCPP_MAJOR 1
-#define YAOOCPP_MINOR 4
+#define YAOOCPP_MINOR 3
+
 void print_info()
 {
-  printf("YAOOCPP -- Yet Another Object Oriented C PreProcessor\n");
+  M(cout,printf,"YAOOCPP -- Yet Another Object Oriented C PreProcessor\n");
 }
 
 void print_help(const char* pgm)
 {
   print_info();
-  printf("Syntax: %s [ -h | --help ]\n",pgm);
-  printf("        %s [ -v | --version ]\n",pgm);
-  printf("        %s [ -I | --include <path> ] [ -Dmacro<=value> ] file.yaooc\n",pgm);
-  printf("Where:\n");
-  printf("  -h|--help -- prints this help\n");
-  printf("  -v|--version -- prints version information\n");
-  printf("  -I|--include -- Include path for C preprocessor\n");
-  printf("  -D|--define  -- Define macro\n");
-  printf("  file.yaooc -- preprocesses file.yaooc into file.h.template and file.c.template\n");
+  M(cout,printf,"Syntax: %s [ -h | --help ]\n",pgm);
+  M(cout,printf,"        %s [ -v | --version ]\n",pgm);
+  M(cout,printf,"        %s [ -I | --include path ] [ -Dmacro<=value> ] [ -o | --output prefix ] file.yaooc\n",pgm);
+  M(cout,printf,"Where:\n");
+  M(cout,printf,"  -h|--help -- prints this help\n");
+  M(cout,printf,"  -v|--version -- prints version information\n");
+  M(cout,printf,"  -I|--include -- Include path for C preprocessor (multiple -I directives may be specified)\n");
+  M(cout,printf,"  -D|--define  -- Define macro (multiple -D directives may be specified)\n");
+  M(cout,printf,"  -o|--output  -- Specifies output file prefix.  Appended with \".h.template\" and \".c.template\"\n");
+//  M(cout,printf,"  -p|--cpp -- C preprocessor to use.  \n");
+  M(cout,printf,"  file.yaooc -- File to preprocesses.  If output prefix not specified, then \"file\" is used as output prefix\n");
 }
 
 void print_version()
 {
   print_info();
-  printf("Version: %d.%d\n",YAOOCPP_MAJOR,YAOOCPP_MINOR);
+  M(cout,printf,"Version: %d.%d\n",YAOOCPP_MAJOR,YAOOCPP_MINOR);
 }
 
 void parse_options(int argc,char* argv[])
@@ -63,8 +68,9 @@ void parse_options(int argc,char* argv[])
     {"help", no_argument, 0, 'h' },
     {"version", no_argument, 0, 'v'},
     {"include", required_argument, 0, 'I'},
-    {"preprocessor",required_argument, 0, 'p'},
-//    {"define", required_argument, 0, 'D' },
+//    {"cpp",required_argument, 0, 'p'},
+    {"define", required_argument, 0, 'D' },
+    {"output",required_argument, 0, 'o' },
     { 0,0,0,0 }
   };
   int c;
@@ -72,22 +78,26 @@ void parse_options(int argc,char* argv[])
   while((c=getopt_long(argc,argv,"hvI:p:D:",options,&option_index)) > 0) {
     switch(c) {
       case 'I':
-        M(includes,append," -I");
-        M(includes,append,optarg);
+        M(&includes,append," -I");
+        M(&includes,append,optarg);
         break;
 
-/*      case 'D':
-        M(defines,append, " -D");
-        M(defines,append,optarg);
+      case 'D':
+        M(&defines,append, " -D");
+        M(&defines,append,optarg);
         break;
-*/
+
       case 'p':
-        M(cpp,set,optarg);
+        M(&cpp,set,optarg);
         break;
 
       case 'v':
         print_version();
         exit(0);
+
+      case 'o':
+        M(&output_file,set,optarg);
+        break;
 
       case 'h':
       default:
@@ -98,89 +108,92 @@ void parse_options(int argc,char* argv[])
   }
 }
 
-yaooc_string_pointer root_name(const char* fname)
+char* root_name(const char* fname)
 {
   char* temp=yaooc_strdup(fname);
-  yaooc_string_pointer ret=new(yaooc_string);
   char *base=basename(temp);
   char *ptr=strchr(base,'.');
-  M(ret,setn,base,ptr-base);
+  size_t l = ptr-base;
+  char* ret=new_array(char,l+1);
+  strncpy(ret,base,l);
+  ret[l]=0;
   delete(temp);
   return ret;
 }
 
-void write_header(yaooc_string_const_pointer root,yaoocpp_item_ptr_vector_const_pointer classes)
-{
-  PB_INIT;
-  yaooc_string_pointer header=PB_SAVE(new_ctor(yaooc_string,yaooc_string_ctor_ccs,M(root,c_str)));
-  yaooc_string_pointer header_block=PB_SAVE(M(header,upcase));
-  M(header,append,".h.template");
-  yaooc_ofstream_pointer out=PB_SAVE(new_ctor(yaooc_ofstream,yaooc_ofstream_ctor_fname_mode,M(header,c_str),"w"));
-  if(out) {
-    M(out,printf,"#ifndef __%s_INCLUDED__\n"
-                "#define __%s_INCLUDED__\n\n"
-                "#include <yaooc/object.h>\n\n",M(header_block,c_str),M(header_block,c_str));
-    M(out,printf,"/*  Begin YAOOC PreProcessor generated content */\n\n");
-    yaoocpp_item_ptr_vector_const_iterator ci;
-    FOR_EACH(ci,classes)  {
-      if(((yaoocpp_class_const_pointer)*ci)->defined_in_top_level_file_)
-        M(((yaoocpp_class_const_pointer)*ci),print_to_header,out);
-    }
-    M(out,printf,"/*  End YAOOC PreProcessor generated content */\n\n#endif\n");
-  }
-  PB_EXIT;
-}
-
-void write_source(yaooc_string_const_pointer root,yaoocpp_item_ptr_vector_const_pointer classes)
-{
-  PB_INIT;
-  yaooc_string_pointer source=PB_SAVE(new_ctor(yaooc_string,yaooc_string_ctor_ccs,M(root,c_str)));
-//  yaooc_string_pointer header=PB_SAVE(new_ctor(yaooc_string,yaooc_string_ctor_ccs,M(root,c_str))));
-  M(source,append,".c.template");
-  yaooc_ofstream_pointer out=PB_SAVE(new_ctor(yaooc_ofstream,yaooc_ofstream_ctor_fname_mode,M(source,c_str),"w"));
-  if(out) {
-    M(out,printf,"#include \"%s.h\"\n\n",M(root,c_str));
-    M(out,printf,"/*  Begin YAOOC PreProcessor generated content */\n\n");
-    yaoocpp_item_ptr_vector_const_iterator ci;
-    FOR_EACH(ci,classes)  {
-      if(((yaoocpp_class_const_pointer)*ci)->defined_in_top_level_file_)
-        M(((yaoocpp_class_const_pointer)*ci),print_to_source,out);
-    }
-    M(out,printf,"/*  End YAOOC PreProcessor generated content */\n");
-  }
-  PB_EXIT;
-}
-
 int main(int argc,char* argv[])
 {
-	setbuf(stdout,NULL);
-	setbuf(stderr,NULL);
 	PB_INIT;
-  includes=PB_SAVE(new(yaooc_string));
-//  defines=PB_SAVE(new(yaooc_string));
-  cpp=PB_SAVE(new_ctor(yaooc_string,yaooc_string_ctor_ccs,"cpp -nostdinc"));
+	M(&cpp,set,"cpp -nostdinc");
   parse_options(argc,argv);
+  yaooc_ofstream_t h_strm,c_strm;
+  newp(&h_strm,yaooc_ofstream);
+  newp(&c_strm,yaooc_ofstream);
+  yaoocpp_parser_t class_parser;
+  newp(&class_parser,yaoocpp_parser);
   if(optind < argc) {
-    yaoocpp_class_parser_pointer yaoocpp_parser = PB_SAVE(new(yaoocpp_class_parser));
-    int j;
-    for(j=optind;j<argc;j++) {
-      if(M(yaoocpp_parser,parse_file,argv[j])) {
-        if(M(yaoocpp_parser->classes_,size)> 0) {
-          yaoocpp_item_ptr_vector_const_iterator i;
-          FOR_EACH(i,yaoocpp_parser->classes_) {
-//            M(*i,dump,stdout);
-            yaooc_string_pointer root=PB_SAVE(root_name(argv[j]));
-            write_header(root,yaoocpp_parser->classes_);
-            write_source(root,yaoocpp_parser->classes_);
+		TRY {
+			int i;
+			for(i=optind;i<argc;i++) {
+				M(&class_parser,parse_file,argv[i]);
+        if(M(class_parser.classes_,size) > 0) {
+          char* root;
+          if(M(&output_file,size) > 0)
+            root=yaooc_strdup(M(&output_file,c_str));
+          else
+            root=PB_SAVE(root_name(argv[i]));
+          size_t l=strlen(root)+12; // root + ".[ch].template"
+          char* header_fname=PB_SAVE(new_array(char,l));
+          strcpy(header_fname,root);
+          strcat(header_fname,".h.template");
+          M(&h_strm,open,header_fname,"w");
+          char* uc_root=PB_SAVE(yaooc_upcase(root));
+          M(&h_strm,printf,"#ifndef __%s_INCLUDED__\n"
+                           "#define __%s_INCLUDED__\n\n",uc_root,uc_root);
+          M(&h_strm,printf,"/* Begin YAOOCPP output */\n\n");
+          M(&h_strm,printf,"#include <yaooc/object.h>\n"
+                           "#include <yaooc/stream.h>\n"
+                           "\n");
+
+          char* source_fname=PB_SAVE(new_array(char,l));
+          strcpy(source_fname,root);
+          strcat(source_fname,".c.template");
+          M(&c_strm,open,source_fname,"w");
+          M(&c_strm,printf,"/* Begin YAOOCPP output */\n\n");
+          M(&c_strm,printf,"#include \"%s.h\"\n\n",root);
+          yaoocpp_container_pointer_vector_const_iterator k;
+
+  //				M(cout,printf,"%zu classes defined\n",M(classes,size));
+          FOR_EACH(k,class_parser.classes_) {
+            if((*k)->defined_in_top_level_file_) {
+              M(*k,print_to_header,&h_strm);
+              M(*k,print_to_source,&c_strm);
+            }
+  //          M(cout,printf,"%s %d\n",M(&((yaoocpp_class_pointer)(*k))->name_,c_str),((yaoocpp_class_pointer)(*k))->defined_in_top_level_file_);
           }
+          M(&h_strm,printf,"/* End YAOOCPP output */\n\n");
+          M(&h_strm,printf,"\n#endif\n");
+          M(&c_strm,printf,"/* End YAOOCPP output */\n\n");
+
+          M(&h_strm,close);
+          M(&c_strm,close);
         }
-      } else {
-        printf("Error processing file %s near %.30s\n",argv[j],yaoocpp_parser->current_pos_);
       }
-    }
-  } else {
-    print_help(argv[0]);
-  }
+		} CATCH(yaoocpp_parser_exception,e) {
+			M(cerr,printf,"%s\n",M(e,what));
+//			exit(0);
+		} CATCH(yaooc_exception,e) {
+			M(e,what); // To avoid compiler warnings
+			M(cerr,printf,"Unknow exception occured\n");
+//			exit(0);
+		} ETRY
+	}
+  deletep(&h_strm,yaooc_ofstream);
+  deletep(&c_strm,yaooc_ofstream);
+  deletep(&class_parser,yaoocpp_parser);
+  deletep(&cpp,yaooc_string);
+  deletep(&includes,yaooc_string);
+  deletep(&output_file,yaooc_string);
   PB_EXIT;
-  return 0;
+	return 0;
 }

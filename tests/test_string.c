@@ -470,6 +470,24 @@ void test_gsub()
 	delete(str);
 }
 
+void test_start_end()
+{
+	TESTCASE("Starts with");
+	yaooc_string_pointer str=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"This is a test");
+  TEST("Starts with \"This\"",M(str,starts_with,"This"));
+  TEST("Starts with entire string",M(str,starts_with,"This is a test"));
+  TEST("Does not start with \"this\"",!M(str,starts_with,"this"));
+  TEST("Does not start with a longer string",!M(str,starts_with,"This is a test "));
+  TEST("Does not start with a zero length string",!M(str,starts_with,""));
+	TESTCASE("Ends with");
+  TEST("Ends with \"test\"",M(str,ends_with,"test"));
+  TEST("Ends with entire string",M(str,ends_with,"This is a test"));
+  TEST("Does not start with a longer string",!M(str,ends_with,"This is a test "));
+  TEST("Does not end with \"Test\"",!M(str,ends_with,"Test"));
+  TEST("Does not end with a zero length string",!M(str,ends_with,""));
+	delete(str);
+}
+
 test_function tests[]=
 {
 	test_construtor,
@@ -488,6 +506,7 @@ test_function tests[]=
 	test_match,
 	test_sub,
 	test_gsub,
+  test_start_end,
 };
 
 STD_MAIN(tests)

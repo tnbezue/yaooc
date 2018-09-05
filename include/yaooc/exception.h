@@ -36,22 +36,24 @@ yaooc_class_table(yaooc_exception)
 yaooc_class_instance(yaooc_exception)
 {
   yaooc_object_class_instance_t;
+	char* what_;
 };
 
 yaooc_class(yaooc_exception);
 
 /* Prototypes for yaooc_exception type info */
+void yaooc_exception_default_ctor(pointer);
+void yaooc_exception_dtor(pointer);
+void yaooc_exception_copy_ctor(pointer,const_pointer);
+void yaooc_exception_assign(pointer,const_pointer);
 
 /* Constructors for yaooc_exception */
-#define yaooc_exception_default_ctor yaooc_object_default_ctor
-#define yaooc_exception_dtor yaooc_object_dtor
-#define yaooc_exception_copy_ctor yaooc_object_copy_ctor
-#define yaooc_exception_assign yaooc_object_assign
+void yaooc_exception_ctor_v(pointer,va_list);
 
 /* Prototypes for yaooc_exception class table*/
 const char* yaooc_exception_isa(const_pointer);
 #define yaooc_exception_is_descendant yaooc_object_is_descendant
-#define yaooc_exception_swap yaooc_object_swap
+void yaooc_exception_swap(pointer,pointer);
 const char* yaooc_exception_what(const_pointer);
 
 /* Prototypes for yaooc_exception class instance*/

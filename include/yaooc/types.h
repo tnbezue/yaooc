@@ -183,6 +183,7 @@ typedef N ## _t* const N ## _pointer; \
 typedef const N ## _t* const N ##_const_pointer; \
 void N ## _to_stream(const_pointer,pointer); \
 void N ## _from_stream(pointer,pointer); \
+extern const type_info_t __ ## N ## _ti; \
 extern const type_info_t* const N ## _ti;
 
 POD_DEFINITION(char,char)
@@ -195,6 +196,7 @@ POD_DEFINITION(long long,long);
 POD_DEFINITION(unsigned long long,ulong);
 POD_DEFINITION(double,double)
 POD_DEFINITION(pointer,pointer)
+POD_DEFINITION(const_pointer,const_pointer)
 POD_DEFINITION(char*,yaooc_ccs)
 
 /*

@@ -33,49 +33,11 @@ static const char* yaooc_json_type_strings[] =
 
 
 /* Typeinfo for yaooc_json_exception */
-void yaooc_json_exception_default_ctor(pointer p)
-{
-  yaooc_json_exception_pointer this=p;
-  this->exception_str_=NULL;
-}
-
-void yaooc_json_exception_dtor(pointer p)
-{
-  yaooc_json_exception_pointer this=p;
-  if(this->exception_str_)
-    FREE(this->exception_str_);
-}
-
-void yaooc_json_exception_copy_ctor(pointer d,const_pointer s)
-{
-  yaooc_json_exception_default_ctor(d);
-  yaooc_json_exception_assign(d,s);
-}
-
-void yaooc_json_exception_assign(pointer d,const_pointer s)
-{
-  yaooc_json_exception_pointer this=d;
-  yaooc_json_exception_const_pointer src=s;
-  yaooc_json_exception_dtor(this);
-  this->exception_str_=src->exception_str_ == NULL ? NULL : STRDUP(src->exception_str_);
-}
 
 /* Constructors for yaooc_json_exception */
-void yaooc_json_exception_ctor_ccs(pointer p,va_list args)
-{
-  yaooc_json_exception_pointer this=p;
-  const char* str = va_arg(args,const char*);
-  this->exception_str_ = str == NULL ? NULL : STRDUP(str);
-}
 
 /* Class table methods for yaooc_json_exception */
 const char* yaooc_json_exception_isa(const_pointer p) { return "yaooc_json_exception_t"; }
-
-const char* yaooc_json_exception_what(const_pointer p)
-{
-  yaooc_json_exception_const_pointer this=p;
-  return this->exception_str_;
-}
 
 
 /* Class table for yaooc_json_exception */
@@ -89,7 +51,7 @@ yaooc_json_exception_class_table_t yaooc_json_exception_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_json_exception,Y,Y,Y,Y,N,N,N,Y,yaooc_exception)
+DEFINE_TYPE_INFO(yaooc_json_exception,N,N,N,N,N,N,N,Y,yaooc_exception)
 
 
 /* Private items for yaooc_json_value */
@@ -132,10 +94,9 @@ bool yaooc_json_value_less_than_compare(const_pointer p1,const_pointer p2)
   yaooc_json_value_const_pointer vp1=p1;
   yaooc_json_value_const_pointer vp2=p2;
   if(vp1->type_ != vp2->type_) {
-    char str[128];
-    sprintf(str,"Attempt compare different json types: %s and %s",
-        yaooc_json_type_strings[vp1->type_],yaooc_json_type_strings[vp2->type_]);
-    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_ccs,str));
+		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
+				"Attempt compare different json types: %s and %s",
+				yaooc_json_type_strings[vp1->type_],yaooc_json_type_strings[vp2->type_]));
   }
   return M(vp1,virtual_less_than_compare,vp2);
 }
@@ -158,10 +119,9 @@ void yaooc_json_value_virtual_copy_ctor(pointer p,const_pointer s)
 {
   yaooc_json_value_pointer this=p;
   yaooc_json_value_const_pointer src=p;
-  char str[128];
-  sprintf(str,"copy ctor %s to %s\n",yaooc_json_type_strings[src->type_],
-    yaooc_json_type_strings[this->type_]);
-  THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_ccs,str));
+  THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
+				"copy ctor %s to %s\n",yaooc_json_type_strings[src->type_],
+    yaooc_json_type_strings[this->type_]));
 }
 
 /*
@@ -170,9 +130,8 @@ void yaooc_json_value_virtual_assign(pointer p,const_pointer s)
 {
   yaooc_json_value_pointer this=p;
   yaooc_json_value_const_pointer src=s;
-	char str[128];
-  sprintf(str,"Trying to assign %d to %d\n",src->type_,this->type_);
-	THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_ccs,str));
+	THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
+				"Trying to assign %d to %d\n",src->type_,this->type_));
 }
 
 bool yaooc_json_value_virtual_less_than_compare(const_pointer p,const_pointer o)
@@ -249,9 +208,8 @@ void yaooc_json_null_virtual_assign(pointer p,const_pointer s)
     this->class_table_=&yaooc_json_null_class_table;
     this->type_=JSON_NULL;
   } else {
-    char str[128];
-    sprintf(str,"Attempt to assign JSON_NULL to %s",yaooc_json_type_strings[this->type_]);
-    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_ccs,str));
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
+				"Attempt to assign JSON_NULL to %s",yaooc_json_type_strings[this->type_]));
   }
 }
 
@@ -337,9 +295,8 @@ void yaooc_json_bool_virtual_assign(pointer p,const_pointer s)
     this->type_=JSON_BOOL;
     this->bool_=src->bool_;
   } else {
-    char str[128];
-    sprintf(str,"Attempt to assign JSON_BOOL to %s",yaooc_json_type_strings[this->type_]);
-    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_ccs,str));
+		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
+					"Attempt to assign JSON_BOOL to %s",yaooc_json_type_strings[this->type_]));
   }
 }
 
@@ -437,9 +394,8 @@ void yaooc_json_integer_virtual_assign(pointer p,const_pointer s)
     this->type_=JSON_INTEGER;
     this->int_=((yaooc_json_integer_const_pointer)s)->int_;
   } else {
-    char str[128];
-    sprintf(str,"Attempt to assign JSON_INTEGER to %s",yaooc_json_type_strings[this->type_]);
-    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_ccs,str));
+		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
+					"Attempt to assign JSON_INTEGER to %s",yaooc_json_type_strings[this->type_]));
   }
 }
 
@@ -536,9 +492,8 @@ void yaooc_json_real_virtual_assign(pointer p,const_pointer s)
     this->type_=JSON_REAL;
     this->real_=((yaooc_json_real_const_pointer)s)->real_;
   } else {
-    char str[128];
-    sprintf(str,"Attempt to assign JSON_REAL to %s",yaooc_json_type_strings[this->type_]);
-    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_ccs,str));
+		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
+					"Attempt to assign JSON_REAL to %s",yaooc_json_type_strings[this->type_]));
   }
 }
 
@@ -654,9 +609,8 @@ void yaooc_json_string_virtual_assign(pointer p,const_pointer s)
     FREE(this->string_);
     this->string_=STRDUP(((yaooc_json_string_const_pointer)s)->string_);
   } else {
-    char str[128];
-    sprintf(str,"Attempt to assign JSON_STRING to %s",yaooc_json_type_strings[this->type_]);
-    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_ccs,str));
+		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
+					"Attempt to assign JSON_STRING to %s",yaooc_json_type_strings[this->type_]));
   }
 }
 
@@ -769,9 +723,8 @@ void yaooc_json_array_virtual_assign(pointer p,const_pointer s)
   if(this->type_==JSON_ARRAY) {
     assign(this->array_,((yaooc_json_array_pointer)s)->array_);
   } else {
-    char str[128];
-    sprintf(str,"Attempt to assign JSON_ARRAY to %s",yaooc_json_type_strings[this->type_]);
-    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_ccs,str));
+		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
+					"Attempt to assign JSON_ARRAY to %s",yaooc_json_type_strings[this->type_]));
   }
 }
 
@@ -918,9 +871,8 @@ void yaooc_json_object_virtual_assign(pointer p,const_pointer s)
   if(this->type_==JSON_OBJECT) {
     assign(this->object_,((yaooc_json_object_const_pointer)s)->object_);
   } else {
-    char str[128];
-    sprintf(str,"Attempt to assign JSON_OBJECT to %s",yaooc_json_type_strings[this->type_]);
-    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_ccs,str));
+		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
+					"Attempt to assign JSON_OBJECT to %s",yaooc_json_type_strings[this->type_]));
   }
 }
 

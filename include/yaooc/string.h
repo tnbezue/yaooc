@@ -66,6 +66,8 @@ yaooc_class_table(yaooc_string)
 	yaooc_string_pointer (*gsub)(const_pointer,const char*,const char*);
 	void (*gsub_)(pointer,const char*,const char*);
 	bool (*match)(const_pointer,const char*);
+  bool (*starts_with)(const_pointer,const char*);
+  bool (*ends_with)(const_pointer,const char*);
   void (*clear)(pointer);
   size_t (*findstr)(pointer,const char*,size_t);
   size_t (*rfindstr)(pointer,const char*,size_t);
@@ -97,7 +99,7 @@ void yaooc_string_ctor_n_chr(pointer,va_list);
 const char* yaooc_string_isa(const_pointer);
 #define yaooc_string_is_descendant yaooc_pod_array_is_descendant
 #define yaooc_string_swap yaooc_pod_array_swap
-#define yaooc_string_increase_capacity yaooc_string_pod_array_increase_capacity
+bool yaooc_string_increase_capacity(pointer,size_t);
 size_t yaooc_string_size_needed(const_pointer,size_t);
 #define yaooc_string_size yaooc_pod_array_size
 #define yaooc_string_capacity yaooc_pod_array_capacity
@@ -137,6 +139,8 @@ void yaooc_string_sub_(pointer,const char*,const char*);
 yaooc_string_pointer yaooc_string_gsub(const_pointer,const char*,const char*);
 void yaooc_string_gsub_(pointer,const char*,const char*);
 bool yaooc_string_match(const_pointer,const char*);
+bool yaooc_string_starts_with(const_pointer,const char*);
+bool yaooc_string_ends_with(const_pointer,const char*);
 size_t yaooc_string_findstr(pointer,const char*,size_t);
 size_t yaooc_string_rfindstr(pointer,const char*,size_t);
 size_t yaooc_string_findchr(pointer,char,size_t);
@@ -152,6 +156,9 @@ yaooc_string_vector_pointer yaooc_string_split(const_pointer,const char*,size_t)
 extern const size_t yaooc_string_npos;
 
 /*  End YAOOC PreProcessor generated content */
+
+#define YAOOC_STRING_STATIC_DEFAULT_CTOR { .class_table_ = &yaooc_string_class_table, .array_=NULL, \
+		.type_info_=&__char_ti,.size_=0,.capacity_=0 }
 
 VECTOR_DEFINITION(yaooc_string,yaooc_string_vector)
 

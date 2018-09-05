@@ -94,7 +94,7 @@ yaooc_class_table(yaooc_base_parser)
 yaooc_class_instance(yaooc_base_parser)
 {
   yaooc_object_class_instance_t;
-  const char* string_to_parse_;
+//  const char* string_to_parse_;
   const char* current_pos_;
   parser_position_stack_t* stack_;
   unsigned int line_no_;

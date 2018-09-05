@@ -39,25 +39,25 @@ yaooc_class_table(yaooc_regex_exception)
 yaooc_class_instance(yaooc_regex_exception)
 {
   yaooc_exception_class_instance_t;
-  char* what_;
 };
 
 yaooc_class(yaooc_regex_exception);
 
 /* Prototypes for yaooc_regex_exception type info */
-void yaooc_regex_exception_default_ctor(pointer);
-void yaooc_regex_exception_dtor(pointer);
-void yaooc_regex_exception_copy_ctor(pointer,const_pointer);
-void yaooc_regex_exception_assign(pointer,const_pointer);
+#define yaooc_regex_exception_default_ctor yaooc_exception_default_ctor
+#define yaooc_regex_exception_dtor yaooc_exception_dtor
+#define yaooc_regex_exception_copy_ctor yaooc_exception_copy_ctor
+#define yaooc_regex_exception_assign yaooc_exception_assign
 
 /* Prototypes for yaooc_regex_exception constructors */
 void yaooc_regex_exception_ctor_ccs(pointer,va_list);
+#define yaooc_regex_exception_ctor_v yaooc_exception_ctor_v
 
 /* Prototypes for yaooc_regex_exception class table */
 const char* yaooc_regex_exception_isa(const_pointer);
 #define yaooc_regex_exception_is_descendant yaooc_exception_is_descendant
-void yaooc_regex_exception_swap(pointer,pointer);
-const char* yaooc_regex_exception_what(const_pointer);
+#define yaooc_regex_exception_swap yaooc_exception_swap
+#define yaooc_regex_exception_what yaooc_exception_what
 
 /* Prototypes for yaooc_regex_exception protected members */
 

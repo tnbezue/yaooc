@@ -2,7 +2,6 @@
 #define __OBJECT_YAOOC_INCLUDED__
 
 class yaooc_object {
-    operator<();
   table:
     const class_table_t* parent_class_table_ = NULL;
     const char* isa() const;

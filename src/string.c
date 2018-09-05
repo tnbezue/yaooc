@@ -48,7 +48,7 @@ const void *memrmem(const void *ptr, size_t size, const void *pat, size_t patsiz
 	return NULL;
 }
 
-void* memrchr(const void*,size_t,size_t);
+//void* memrchr(const void*,size_t,size_t);
 
 #ifdef _WIN32
 void* memrchr(const void* buf,size_t c,size_t spos)
@@ -78,13 +78,7 @@ void yaooc_string_default_ctor(pointer p)
   M(this,increase_capacity,1);
 	*END(p)=0;
 }
-/*
-void yaooc_string_dtor(pointer p)
-{
-  yaooc_string_pointer this=p;
-  this->size_=0;
-}
-*/
+
 void yaooc_string_copy_ctor(pointer d,const_pointer s)
 {
   yaooc_string_default_ctor(d);
@@ -189,7 +183,7 @@ void yaooc_string_insert_chr(pointer p,size_t pos,char ch)
 
 void yaooc_string_insertn_chr(pointer p,size_t pos,size_t count,char ch)
 {
-  yaooc_private_iterator ret=yaooc_array_container_insert_space(p,AT(p,pos),count);
+  yaooc_private_iterator ret=yaooc_pod_array_insert_space(p,AT(p,pos),count);
   memset(ret,ch,count);
   *((yaooc_private_iterator)END(p))=0;
 }
@@ -230,14 +224,6 @@ yaooc_string_iterator yaooc_string_erase_pos(pointer p,const_iterator pos)
   return ret;
 }
 
-/*
-yaooc_string_iterator yaooc_string_erase_range(pointer p,const_iterator first,const_iterator last)
-{
-  yaooc_string_iterator ret = yaooc_array_container_erase_space(p,INDEX(p,first),DISTANCE(p,first,last));
-  *(END(p))=0;
-  return ret;
-}
-*/
 void yaooc_string_replace(pointer p,size_t pos,size_t n,const char* str)
 {
   yaooc_string_replacen(p,pos,n,str,str ? strlen(str) : 0);
@@ -255,9 +241,7 @@ void yaooc_string_replacen(pointer p,size_t pos,size_t n,const char* str,size_t 
   if(pos > this->size_) pos=this->size_;
   if(n == yaooc_string_npos || this->size_ < (pos+n))
     n=this->size_-pos;
-/*  if(n < count)
-    yaooc_array_container_increase_capacity(p,count-n);*/
-  yaooc_private_iterator dpos = yaooc_array_container_replace_space(this,AT(p,pos),AT(p,pos+n),count);
+  yaooc_private_iterator dpos = yaooc_pod_array_replace_space(this,AT(p,pos),AT(p,pos+n),count);
   memcpy(dpos,str,count);
   *((yaooc_private_iterator)END(this))=0;
 }
@@ -268,30 +252,7 @@ void yaooc_string_clear(pointer p)
   this->size_=0;
   *this->array_=0;
 }
-/*
-void yaooc_string_resize(pointer p,size_t n)
-{
-  char ch=' ';
-  yaooc_array_container_resize_value(p,n,&ch);
-  *(END(p))=0;
-}
 
-void yaooc_string_resize_value(pointer p,size_t n,char ch)
-{
-  yaooc_array_container_resize_value(p,n,&ch);
-  *(END(p))=0;
-}
-
-
-void yaooc_string_shrink_to_fit(pointer p)
-{
-  yaooc_string_pointer this=p;
-  if(this->capacity_ > INITIAL_CAPACITY  && this->size_ < this->capacity_) {
-    this->capacity_=this->size_;
-    this->array_=REALLOC(this->array_,this->capacity_*this->type_info_->type_size_+1);
-  }
-}
-*/
 void yaooc_string_append(pointer p,const char* str)
 {
   if(str) {
@@ -304,13 +265,7 @@ void yaooc_string_appendn(pointer p,const char* str,size_t count)
   if(str)
     yaooc_string_insertn(p,SIZE(p),str,count);
 }
-/*
-void yaooc_string_reserve(pointer p,size_t n)
-{
-  if(CAPACITY(p) < n)
-//    yaooc_array_container_increase_capacity_extra(p,n-SIZE(p),1);
-}
-*/
+
 void yaooc_string_resize(pointer p,size_t n)
 {
   yaooc_string_resize_value(p,n,' ');
@@ -555,6 +510,43 @@ bool yaooc_string_match(const_pointer p,const char* pat)
 	return ret;
 }
 
+bool yaooc_string_starts_with(const_pointer p,const char* str)
+{
+	yaooc_string_const_pointer this=p;
+	bool ret=false;
+  if(str && this->size_ > 0) {
+    int l = strlen(str);
+    if(l > 0 && l<=this->size_) {
+      char* ptr=BEGIN(p);
+      for(;l>0;l--) {
+        if(*ptr++ != *str++)
+          return false;
+      }
+      return true;
+    }
+  }
+  return ret;
+}
+
+bool yaooc_string_ends_with(const_pointer p,const char* str)
+{
+	yaooc_string_const_pointer this=p;
+	bool ret=false;
+  if(str && this->size_ > 0) {
+    int l = strlen(str);
+    if(l > 0 && l<=this->size_) {
+      char* ptr=END(p)-1;
+      str+=l-1;
+      for(;l>0;l--) {
+        if(*ptr-- != *str--)
+          return false;
+      }
+      return true;
+    }
+  }
+  return ret;
+}
+
 size_t yaooc_string_findstr(pointer p,const char* str,size_t pos)
 {
   yaooc_string_const_pointer this=p;
@@ -750,6 +742,8 @@ yaooc_string_class_table_t yaooc_string_class_table =
 	.gsub = (yaooc_string_pointer (*) (const_pointer,const char*,const char*)) yaooc_string_gsub,
 	.gsub_ = (void (*) (pointer,const char*,const char*)) yaooc_string_gsub_,
 	.match = (bool (*) (const_pointer,const char*)) yaooc_string_match,
+	.starts_with = (bool (*) (const_pointer,const char*)) yaooc_string_starts_with,
+	.ends_with = (bool (*) (const_pointer,const char*)) yaooc_string_ends_with,
   .clear = (void (*) (pointer p)) yaooc_string_clear,
   .findstr = (size_t (*) (pointer p,const char*,size_t)) yaooc_string_findstr,
   .rfindstr = (size_t (*) (pointer p,const char*,size_t)) yaooc_string_rfindstr,

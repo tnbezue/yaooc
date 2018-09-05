@@ -38,7 +38,7 @@ class yaooc_shared_ptr : yaooc_object
     pointer get();
     pointer release();
     void reset(pointer ptr);
-    yaooc_size_t count() const;
+    size_t count() const;
   instance:
     yaooc_counter_t* counter_;
 };

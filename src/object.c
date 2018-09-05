@@ -24,14 +24,6 @@
 /* Protected members for yaooc_object */
 
 /* Typeinfo for yaooc_object */
-void yaooc_object_default_ctor(pointer p) { }
-
-void yaooc_object_copy_ctor(pointer p,const_pointer o) { }
-
-bool yaooc_object_less_than_compare(const_pointer p1,const_pointer p2)
-{
-  return false;
-}
 
 /* Additional constructors for yaooc_object */
 
@@ -53,11 +45,6 @@ void yaooc_object_swap(pointer d,pointer s)
 {
 }
 
-char* yaooc_object_to_s(const_pointer p)
-{
-  return NULL;
-};
-
 /* Instance members for yaooc_object */
 
 /* yaooc_object class table */
@@ -70,4 +57,7 @@ yaooc_object_class_table_t yaooc_object_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_object,Y,N,Y,Y,Y,N,N,Y,NULL)
+DEFINE_TYPE_INFO(yaooc_object,N,N,N,N,N,N,N,Y,NULL)
+
+void yaooc_do_nothing_default_ctor(pointer p) { }
+void yaooc_do_nothing_copy_ctor(pointer p,const_pointer s) { }

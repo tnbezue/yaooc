@@ -17,863 +17,1266 @@
 
 #include "template_objects.h"
 #include <string.h>
+#include <yaooc/regex.h>
 
-/*  Begin YAOOC PreProcessor generated content */
+/* Private variables implementation for yaoocpp_argument */
 
-/* Private items for yaoocpp_item */
+/* Private methods prototypes for yaoocpp_argument */
 
-/* Protected items for yaoocpp_item */
-
-
-/* Typeinfo for yaoocpp_item */
-void yaoocpp_item_default_ctor(pointer p)
-{
-  ((yaoocpp_item_pointer)p)->flags_=DEFINED_IN_CURRENT_CLASS;
-}
-
-void yaoocpp_item_dtor(pointer p)
-{
-  yaoocpp_item_pointer this=p;
-  M(this,virtual_dtor);
-}
-
-void yaoocpp_item_copy_ctor(pointer d,const_pointer s)
-{
-  yaoocpp_item_default_ctor(d);
-  yaoocpp_item_assign(d,s);
-}
-
-void yaoocpp_item_assign(pointer d,const_pointer s)
-{
-  ((yaoocpp_item_pointer)d)->flags_=((yaoocpp_item_const_pointer)s)->flags_;
-}
-
-bool yaoocpp_item_less_than_compare(const_pointer p1,const_pointer p2)
-{
-  yaoocpp_item_const_pointer vp1=p1;
-  yaoocpp_item_const_pointer vp2=p2;
-  int ret = strcmp(M(vp1,isa),M(vp2,isa));
-  return ret == 0 ? M(vp1,virtual_less_than_compare,p2) : ret < 0;
-}
-
-/* Constructors for yaoocpp_item */
-
-/* Class table methods for yaoocpp_item */
-const char* yaoocpp_item_isa(const_pointer p) { return "yaoocpp_item_t"; }
-
-/* Class table for yaoocpp_item */
-yaoocpp_item_class_table_t yaoocpp_item_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer)) yaoocpp_item_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) yaoocpp_item_is_descendant,
-  .swap = (void (*) (pointer,pointer)) yaoocpp_item_swap,
-  .virtual_dtor = (void (*) (pointer)) NULL,
-  .virtual_less_than_compare = (bool (*) (const_pointer,const_pointer)) NULL,
-  .dump = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_class_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_class_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-};
-
-
-DEFINE_TYPE_INFO(yaoocpp_item,Y,Y,Y,Y,Y,N,N,Y,yaooc_object)
-
-DYNAMIC_POINTER_IMPLEMENTATION(yaoocpp_item,yaoocpp_item_ptr);
-VECTOR_IMPLEMENTATION(yaoocpp_item_ptr,yaoocpp_item_ptr_vector);
-
-
-/* Private items for yaoocpp_argument */
-
-/* Protected items for yaoocpp_argument */
-
-
-/* Typeinfo for yaoocpp_argument */
+/* Type Info implemmentation for yaoocpp_argument */
 void yaoocpp_argument_default_ctor(pointer p)
 {
   yaoocpp_argument_pointer this=p;
-  yaoocpp_item_default_ctor(p);
-  this->name_=new(yaooc_string);
-  this->type_=new(yaooc_string);
+  newp(&this->type_,yaooc_string);
+  newp(&this->name_,yaooc_string);
+  newp(&this->array_size_,yaooc_string);
+  this->is_array_=false;
 }
 
-void yaoocpp_argument_copy_ctor(pointer d,const_pointer s)
-{
-  yaoocpp_argument_default_ctor(d);
-  yaoocpp_argument_assign(d,s);
-}
-
-void yaoocpp_argument_assign(pointer d,const_pointer s)
-{
-  yaoocpp_argument_pointer dst=d;
-  yaoocpp_argument_const_pointer src=s;
-  yaoocpp_item_assign(d,s);
-  assign_static(dst->name_,src->name_,yaooc_string);
-  assign_static(dst->type_,src->type_,yaooc_string);
-}
-
-/*bool yaoocpp_argument_less_than_compare(const_pointer p1,const_pointer p2)
-{
-  yaoocpp_argument_const_pointer vp1=p1;
-  yaoocpp_argument_const_pointer vp2=p2;
-  return op_lt_static(vp1->name_,vp2->name_,yaooc_string);
-}
-*/
-/* Constructors for yaoocpp_argument */
-
-/* Class table methods for yaoocpp_argument */
-const char* yaoocpp_argument_isa(const_pointer p) { return "yaoocpp_argument_t"; }
-
-void yaoocpp_argument_virtual_dtor(pointer p)
+void yaoocpp_argument_dtor(pointer p)
 {
   yaoocpp_argument_pointer this=p;
-  delete(this->name_);
-  delete(this->type_);
+  deletep(&this->type_,yaooc_string);
+  deletep(&this->name_,yaooc_string);
+  deletep(&this->array_size_,yaooc_string);
 }
 
-bool yaoocpp_argument_virtual_less_than_compare(const_pointer p,const_pointer o)
+void yaoocpp_argument_copy_ctor(pointer p,const_pointer s)
+{
+  yaoocpp_argument_default_ctor(p);
+  yaoocpp_argument_assign(p,s);
+}
+
+void yaoocpp_argument_assign(pointer p,const_pointer s)
+{
+  yaoocpp_argument_pointer this=p;
+  yaoocpp_argument_const_pointer src=s;
+  assign_static(&this->type_,&src->type_,yaooc_string);
+  assign_static(&this->name_,&src->name_,yaooc_string);
+  assign_static(&this->array_size_,&src->array_size_,yaooc_string);
+  this->is_array_=src->is_array_;
+}
+
+VECTOR_IMPLEMENTATION(yaoocpp_argument,yaoocpp_argument_vector);
+
+
+/* Constructors implementation for yaoocpp_argument */
+
+/* Private methods implementation for yaoocpp_argument */
+
+/* Protected implementation for yaoocpp_argument */
+void yaoocpp_argument_print_type(const_pointer p,ostream_pointer o)
 {
   yaoocpp_argument_const_pointer this=p;
-  yaoocpp_argument_const_pointer other=o;
-  return op_lt_static(this->name_,other->name_,yaooc_string);
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf," %s",M(&this->type_,c_str));
+  if(this->is_array_) {
+    M(ostrm,printf,"[%s]",M(&this->array_size_,c_str));
+  }
 }
 
-void yaoocpp_argument_dump(const_pointer p,yaooc_ofstream_pointer out)
+void yaoocpp_argument_print_type_name(const_pointer p,ostream_pointer o)
 {
   yaoocpp_argument_const_pointer this=p;
-  M(out,printf,"Type: %s Name: %s",M(this->type_,c_str),M(this->name_,c_str));
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"%s %s",M(&this->type_,c_str),M(&this->name_,c_str));
+  if(this->is_array_) {
+    M(ostrm,printf,"[%s]",M(&this->array_size_,c_str));
+  }
 }
 
-const char* yaoocpp_argument_type(const_pointer p)
+/* Type info structure for yaoocpp_argument */
+DEFINE_TYPE_INFO(yaoocpp_argument,Y,Y,Y,Y,N,N,N,N,NULL);
+
+/* Private variables implementation for yaoocpp_element */
+
+/* Private methods prototypes for yaoocpp_element */
+
+/* Type Info implemmentation for yaoocpp_element */
+void yaoocpp_element_default_ctor(pointer p)
 {
-  return M(((yaoocpp_argument_const_pointer)p)->type_,c_str);
+  yaoocpp_element_pointer this=p;
+  newp(&this->name_,yaooc_string);
+  this->state_=INITIAL;
 }
 
-const char* yaoocpp_argument_name(const_pointer p)
+void yaoocpp_element_dtor(pointer p)
 {
-  return M(((yaoocpp_argument_const_pointer)p)->name_,c_str);
+  yaoocpp_element_pointer this=p;
+  deletep(&this->name_,yaooc_string);
 }
 
-/* Class table for yaoocpp_argument */
-yaoocpp_argument_class_table_t yaoocpp_argument_class_table =
+void yaoocpp_element_copy_ctor(pointer p,const_pointer s)
 {
-  .parent_class_table_ = (const class_table_t*) &yaoocpp_item_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaoocpp_argument_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaoocpp_argument_is_descendant,
-  .swap = (void (*) (pointer p,pointer)) yaoocpp_argument_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaoocpp_argument_virtual_dtor,
-  .virtual_less_than_compare = (bool (*) (const_pointer p,const_pointer)) yaoocpp_argument_virtual_less_than_compare,
-  .dump = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_argument_dump,
-  .type = (const char* (*) (const_pointer)) yaoocpp_argument_type,
-  .name = (const char* (*) (const_pointer)) yaoocpp_argument_name,
-  .print_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_class_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_class_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
+  yaoocpp_element_default_ctor(p);
+  yaoocpp_element_assign(p,s);
+}
+
+void yaoocpp_element_assign(pointer p,const_pointer s)
+{
+  yaoocpp_element_pointer this=p;
+  yaoocpp_element_const_pointer src=s;
+  assign_static(&this->name_,&src->name_,yaooc_string);
+  this->state_=src->state_;
+}
+
+bool yaoocpp_element_less_than_compare(const_pointer p1,const_pointer p2)
+{
+  yaoocpp_element_const_pointer vp1=p1;
+  yaoocpp_element_const_pointer vp2=p2;
+  return op_lt_static(&vp1->name_,&vp2->name_,yaooc_string);
+}
+
+/* Constructors implementation for yaoocpp_element */
+
+/* Private methods implementation for yaoocpp_element */
+
+/* Protected implementation for yaoocpp_element */
+
+
+/* Table implementation for yaoocpp_element */
+const char* yaoocpp_element_isa(const_pointer p) {  return "yaoocpp_element_t"; }
+
+
+/* Class table definition for yaoocpp_element */
+yaoocpp_element_class_table_t yaoocpp_element_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+  .isa = (const char*(*)(const_pointer)) yaoocpp_element_isa,
+  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_element_is_descendant,
+  .swap = (void(*)(pointer,pointer)) yaoocpp_element_swap,
+  .print_class_table_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_element_print_class_table_definition,
+  .print_class_instance_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_element_print_class_instance_definition,
+  .print_prototype = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_element_print_prototype,
+  .print_implementation = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_element_print_implementation,
+  .print_class_table_implementation = (void(*)(const_pointer,ostream_pointer,const char*)) yaoocpp_element_print_class_table_implementation,
 };
 
+/* Type info structure for yaoocpp_element */
+DEFINE_TYPE_INFO(yaoocpp_element,Y,Y,Y,Y,Y,N,N,Y,yaooc_object);
 
-DEFINE_TYPE_INFO(yaoocpp_argument,Y,N,Y,Y,N,N,N,Y,yaoocpp_item)
-/* Private items for yaoocpp_variable */
-
-/* Protected items for yaoocpp_variable */
+DYNAMIC_POINTER_IMPLEMENTATION(yaoocpp_element,yaoocpp_element_pointer);
+VECTOR_IMPLEMENTATION(yaoocpp_element_pointer,yaoocpp_element_pointer_vector);
 
 
-/* Typeinfo for yaoocpp_variable */
+/* Private variables implementation for yaoocpp_type */
+
+/* Private methods prototypes for yaoocpp_type */
+
+/* Type Info implemmentation for yaoocpp_type */
+/* Constructors implementation for yaoocpp_type */
+
+/* Private methods implementation for yaoocpp_type */
+
+/* Protected implementation for yaoocpp_type */
+
+/* Table implementation for yaoocpp_type */
+const char* yaoocpp_type_isa(const_pointer p) {  return "yaoocpp_type_t"; }
+
+void yaoocpp_type_print_class_table_definition(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_type_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"  %s;\n",M(&this->name_,c_str));
+}
+
+/* Class table definition for yaoocpp_type */
+yaoocpp_type_class_table_t yaoocpp_type_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaoocpp_element_class_table,
+  .isa = (const char*(*)(const_pointer)) yaoocpp_type_isa,
+  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_type_is_descendant,
+  .swap = (void(*)(pointer,pointer)) yaoocpp_type_swap,
+  .print_class_table_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_type_print_class_table_definition,
+  .print_class_instance_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_type_print_class_instance_definition,
+  .print_prototype = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_type_print_prototype,
+  .print_implementation = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_type_print_implementation,
+  .print_class_table_implementation = (void(*)(const_pointer,ostream_pointer,const char*)) yaoocpp_type_print_class_table_implementation,
+};
+
+/* Type info structure for yaoocpp_type */
+DEFINE_TYPE_INFO(yaoocpp_type,N,N,N,N,N,N,N,Y,yaoocpp_element);
+
+/* Private variables implementation for yaoocpp_variable */
+
+/* Private methods prototypes for yaoocpp_variable */
+
+/* Type Info implemmentation for yaoocpp_variable */
 void yaoocpp_variable_default_ctor(pointer p)
 {
   yaoocpp_variable_pointer this=p;
-  yaoocpp_argument_default_ctor(this);
-  this->default_value_=new(yaooc_string);
+  yaoocpp_element_default_ctor(p);
+  newp(&this->type_,yaooc_string);
+  newp(&this->default_value_,yaooc_string);
+  M(&this->default_value_,set,"0");
+	newp(&this->array_size_,yaooc_string);
+	this->is_array_=false;
 }
 
-void yaoocpp_variable_copy_ctor(pointer d,const_pointer s)
-{
-  yaoocpp_variable_default_ctor(d);
-  yaoocpp_variable_assign(d,s);
-}
-
-void yaoocpp_variable_assign(pointer d,const_pointer s)
-{
-  yaoocpp_variable_pointer dst=d;
-  yaoocpp_variable_const_pointer src=s;
-  yaoocpp_argument_assign(d,s);
-  assign_static(dst->default_value_,src->default_value_,yaooc_string);
-}
-
-/* Constructors for yaoocpp_variable */
-
-/* Class table methods for yaoocpp_variable */
-const char* yaoocpp_variable_isa(const_pointer p) { return "yaoocpp_variable_t"; }
-
-void yaoocpp_variable_virtual_dtor(pointer p)
+void yaoocpp_variable_dtor(pointer p)
 {
   yaoocpp_variable_pointer this=p;
-  delete(this->default_value_);
-  yaoocpp_argument_virtual_dtor(p);
+  deletep(&this->type_,yaooc_string);
+  deletep(&this->default_value_,yaooc_string);
+	deletep(&this->array_size_,yaooc_string);
 }
 
-bool yaoocpp_variable_virtual_less_than_compare(const_pointer p,const_pointer o)
+void yaoocpp_variable_copy_ctor(pointer p,const_pointer s)
 {
-  return yaoocpp_argument_virtual_less_than_compare(p,o);
+  yaoocpp_variable_default_ctor(p);
+  yaoocpp_variable_assign(p,s);
 }
 
-void yaoocpp_variable_dump(const_pointer p,yaooc_ofstream_pointer out)
+void yaoocpp_variable_assign(pointer p,const_pointer s)
 {
-  yaoocpp_variable_const_pointer this=p;
-  yaoocpp_argument_dump(p,out);
-  M(out,printf," Default value: %s\n",M(this->default_value_,c_str));
+  yaoocpp_variable_pointer this=p;
+  yaoocpp_variable_const_pointer src=s;
+  yaoocpp_element_assign(p,s);
+  assign_static(&this->type_,&src->type_,yaooc_string);
+  assign_static(&this->name_,&src->name_,yaooc_string);
+  assign_static(&this->default_value_,&src->default_value_,yaooc_string);
+  assign_static(&this->array_size_,&src->array_size_,yaooc_string);
+	this->is_array_=src->is_array_;
 }
 
-const char* yaoocpp_variable_default_value(const_pointer p)
-{
-  return M(((yaoocpp_variable_const_pointer)p)->default_value_,c_str);
-}
+/* Constructors implementation for yaoocpp_variable */
 
-void yaoocpp_variable_print_prototype(const_pointer p,yaooc_ofstream_pointer out)
-{
-  yaoocpp_variable_const_pointer this=p;
-  M(out,printf,"extern %s %s;\n",M(this,type),M(this,name));
-}
+/* Private methods implementation for yaoocpp_variable */
 
-void yaoocpp_variable_print_implementation(const_pointer p,yaooc_ofstream_pointer out)
-{
-  yaoocpp_variable_const_pointer this=p;
-  M(out,printf,"%s %s = %s;\n",M(this,type),M(this,name),
-        M(this->default_value_,size)==0 ? "0" : M(this,default_value));
-}
+/* Protected implementation for yaoocpp_variable */
 
-void yaoocpp_variable_print_class_prototype(const_pointer p,yaooc_ofstream_pointer out)
+/* Table implementation for yaoocpp_variable */
+const char* yaoocpp_variable_isa(const_pointer p) {  return "yaoocpp_variable_t"; }
+
+void yaoocpp_variable_print_class_table_definition(const_pointer p,ostream_pointer o)
 {
   yaoocpp_variable_const_pointer this=p;
-  M(out,printf,"  %s %s;\n",M(this->type_,c_str),M(this->name_,c_str));
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"  %s %s",M(&this->type_,c_str),M(&this->name_,c_str));
+  if(this->is_array_)
+		M(ostrm,printf,"[%s]",M(&this->array_size_,c_str));
+  M(ostrm,printf,";\n",M(&this->type_,c_str),M(&this->name_,c_str));
 }
-
-void yaoocpp_variable_print_class_implementation(const_pointer p,yaooc_ofstream_pointer out)
+/*
+void yaoocpp_variable_print_class_instance_definition(const_pointer p,ostream_pointer o)
 {
   yaoocpp_variable_const_pointer this=p;
-  M(out,printf,"  .%s = (%s) %s,\n",M(this,name),M(this,type),M(this->default_value_,size)==0 ? "0" : M(this,default_value));
+}
+*/
+void yaoocpp_variable_print_prototype(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
+{
+  yaoocpp_variable_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"%s%s %s",storage_class,M(&this->type_,c_str),M(&this->name_,c_str));
+  if(this->is_array_)
+		M(ostrm,printf,"[%s]",M(&this->array_size_,c_str));
+  M(ostrm,printf,";\n",M(&this->type_,c_str),M(&this->name_,c_str));
 }
 
-//void yaoocpp_variable_
-/* Class table for yaoocpp_variable */
+void yaoocpp_variable_print_implementation(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
+{
+  yaoocpp_variable_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"%s%s %s",storage_class,M(&this->type_,c_str),M(&this->name_,c_str));
+  if(this->is_array_)
+		M(ostrm,printf,"[%s]",M(&this->array_size_,c_str));
+  M(ostrm,printf,";\n",M(&this->type_,c_str),M(&this->name_,c_str));
+}
+
+void yaoocpp_variable_print_class_table_implementation(const_pointer p,ostream_pointer o,const char* class_name)
+{
+  yaoocpp_variable_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+//  M(ostrm,printf,"  .%s = (%s) %s,\n",M(&this->name_,c_str),M(&this->type_,c_str),M(&this->default_value_,c_str));
+  M(ostrm,printf,"  .%s = (%s",M(&this->name_,c_str),M(&this->type_,c_str));
+	if(this->is_array_)
+		M(ostrm,printf,"[%s]",M(&this->array_size_,c_str));
+  M(ostrm,printf,") %s,\n",M(&this->default_value_,c_str));
+}
+
+
+/* Class table definition for yaoocpp_variable */
 yaoocpp_variable_class_table_t yaoocpp_variable_class_table =
 {
-  .parent_class_table_ = (const class_table_t*) &yaoocpp_argument_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaoocpp_variable_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaoocpp_variable_is_descendant,
-  .swap = (void (*) (pointer p,pointer)) yaoocpp_variable_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaoocpp_variable_virtual_dtor,
-  .virtual_less_than_compare = (bool (*) (const_pointer p,const_pointer)) yaoocpp_variable_virtual_less_than_compare,
-  .dump = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_variable_dump,
-  .type = (const char* (*) (const_pointer p)) yaoocpp_argument_type,
-  .name = (const char* (*) (const_pointer p)) yaoocpp_argument_name,
-  .default_value = (const char* (*) (const_pointer p)) yaoocpp_variable_default_value,
-  .print_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_variable_print_prototype,
-  .print_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_variable_print_implementation,
-  .print_class_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_variable_print_class_prototype,
-  .print_class_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_variable_print_class_implementation,
+  .parent_class_table_ = (const class_table_t*) &yaoocpp_element_class_table,
+  .isa = (const char*(*)(const_pointer)) yaoocpp_variable_isa,
+  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_variable_is_descendant,
+  .swap = (void(*)(pointer,pointer)) yaoocpp_variable_swap,
+  .print_class_table_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_variable_print_class_table_definition,
+  .print_class_instance_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_variable_print_class_instance_definition,
+  .print_prototype = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_variable_print_prototype,
+  .print_implementation = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_variable_print_implementation,
+  .print_class_table_implementation = (void(*)(const_pointer,ostream_pointer,const char*)) yaoocpp_variable_print_class_table_implementation,
 };
 
+/* Type info structure for yaoocpp_variable */
+DEFINE_TYPE_INFO(yaoocpp_variable,Y,Y,Y,Y,N,N,N,Y,yaoocpp_element);
 
-DEFINE_TYPE_INFO(yaoocpp_variable,Y,N,Y,Y,N,N,N,Y,yaoocpp_argument)
+/* Private variables implementation for yaoocpp_constructor */
 
-/* Private items for yaoocpp_constructor */
+/* Private methods prototypes for yaoocpp_constructor */
 
-/* Protected items for yaoocpp_constructor */
-
-
-/* Typeinfo for yaoocpp_constructor */
+/* Type Info implemmentation for yaoocpp_constructor */
 void yaoocpp_constructor_default_ctor(pointer p)
 {
   yaoocpp_constructor_pointer this=p;
-  yaoocpp_item_default_ctor(p);
-  this->name_=new(yaooc_string);
-  this->arguments_=new(yaoocpp_item_ptr_vector);
-  this->implementation_method_=new(yaooc_string);
-  this->prefix_=new(yaooc_string);
+  yaoocpp_element_default_ctor(p);
+  newp(&this->arguments_,yaoocpp_argument_vector);
+  newp(&this->implementation_method_,yaooc_string);
 }
 
-void yaoocpp_constructor_copy_ctor(pointer d,const_pointer s)
-{
-  yaoocpp_constructor_default_ctor(d);
-  yaoocpp_constructor_assign(d,s);
-}
-
-void yaoocpp_constructor_assign(pointer d,const_pointer s)
-{
-  yaoocpp_item_assign(d,s);
-  yaoocpp_constructor_pointer dst=d;
-  yaoocpp_constructor_const_pointer src=s;
-  assign_static(dst->name_,src->name_,yaooc_string);
-  assign_static(dst->arguments_,src->arguments_,yaoocpp_item_ptr_vector);
-  assign_static(dst->implementation_method_,src->implementation_method_,yaooc_string);
-  assign_static(dst->prefix_,src->prefix_,yaooc_string);
-}
-
-/* Constructors for yaoocpp_constructor */
-
-/* Class table methods for yaoocpp_constructor */
-const char* yaoocpp_constructor_isa(const_pointer p) { return "yaoocpp_constructor_t"; }
-
-void yaoocpp_constructor_virtual_dtor(pointer p)
+void yaoocpp_constructor_dtor(pointer p)
 {
   yaoocpp_constructor_pointer this=p;
-  delete(this->name_);
-  delete(this->arguments_);
-  delete(this->implementation_method_);
-  delete(this->prefix_);
+  deletep(&this->arguments_,yaoocpp_argument_vector);
+  deletep(&this->implementation_method_,yaooc_string);
 }
 
-bool yaoocpp_constructor_virtual_less_than_compare(const_pointer p,const_pointer o)
+void yaoocpp_constructor_copy_ctor(pointer p,const_pointer s)
 {
-  yaoocpp_constructor_const_pointer this=p;
-  yaoocpp_constructor_const_pointer other=o;
-  return op_lt_static(this->name_,other->name_,yaooc_string);
+  yaoocpp_constructor_default_ctor(p);
+  yaoocpp_constructor_assign(p,s);
 }
 
-void yaoocpp_constructor_dump(const_pointer p,yaooc_ofstream_pointer out)
+void yaoocpp_constructor_assign(pointer p,const_pointer s)
+{
+  yaoocpp_constructor_pointer this=p;
+  yaoocpp_constructor_const_pointer src=s;
+  yaoocpp_element_assign(p,s);
+  assign_static(&this->arguments_,&src->arguments_,yaoocpp_argument_vector);
+  assign_static(&this->implementation_method_,&src->implementation_method_,yaooc_string);
+}
+
+/* Constructors implementation for yaoocpp_constructor */
+
+/* Private methods implementation for yaoocpp_constructor */
+
+/* Protected implementation for yaoocpp_constructor */
+
+/* Table implementation for yaoocpp_constructor */
+const char* yaoocpp_constructor_isa(const_pointer p) {  return "yaoocpp_constructor_t"; }
+
+void yaoocpp_constructor_print_prototype(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
 {
   yaoocpp_constructor_const_pointer this=p;
-  M(out,printf,"Name: %s Prefix: %s Defined in Current: %s  Defined in Parent: %s Overridden: %s\n",
-        M(this->name_,c_str),M(this->prefix_,c_str),
-        (this->flags_ & DEFINED_IN_CURRENT_CLASS) ? "Yes" : "No",
-        (this->flags_ & DEFINED_IN_PARENT_CLASS) ? "Yes" : "No",
-        (this->flags_ & OVERRIDEN_IN_CURRENT_CLASS) ? "Yes" : "No");
-  yaoocpp_item_ptr_vector_const_iterator i;
-//  int n=1;
-  FOR_EACH(i,this->arguments_) {
-    yaoocpp_argument_const_pointer arg= (yaoocpp_argument_const_pointer)*i;
-    M(out,printf,"  "); M(arg,dump,out); M(out,printf,"\n");
+  yaooc_ostream_pointer ostrm=o;
+  if(M(&this->implementation_method_,size) == 0) {
+    M(ostrm,printf,"void %s(pointer,va_list);\n",M(&this->name_,c_str));
+  } else {
+    M(ostrm,printf,"#define %s %s\n",M(&this->name_,c_str),M(&this->implementation_method_,c_str));
   }
 }
 
-void yaoocpp_constructor_print_prototype(const_pointer p,yaooc_ofstream_pointer out)
+void yaoocpp_constructor_print_implementation(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
 {
   yaoocpp_constructor_const_pointer this=p;
-  M(out,printf,"void %s%s(pointer,va_list);\n",M(this->prefix_,c_str),M(this->name_,c_str));
-}
-
-void yaoocpp_constructor_print_implementation(const_pointer p,yaooc_ofstream_pointer out)
-{
-  yaoocpp_constructor_const_pointer this=p;
-  M(out,printf,"void %s%s(pointer p,va_list args)\n{\n"
-        "  %s_pointer this=p;\n",M(this->prefix_,c_str),M(this->name_,c_str),
-        M(this->prefix_,c_str));
-  yaoocpp_item_ptr_vector_const_iterator i;
-  FOR_EACH(i,this->arguments_) {
-    yaoocpp_argument_const_pointer arg= (yaoocpp_argument_const_pointer)*i;
-    M(out,printf,"  %s %s = va_arg(args,%s);\n",M(arg,type),M(arg,name),M(arg,type));
+  yaooc_ostream_pointer ostrm=o;
+  if(M(&this->implementation_method_,size) == 0) {
+    M(ostrm,printf,"void %s(pointer p,va_list args)\n",M(&this->name_,c_str));
+    M(ostrm,printf,"{\n");
+    M(ostrm,printf,"  %s_pointer this=p;\n",class_name);
+    yaoocpp_argument_vector_const_iterator iarg;
+    FOR_EACH(iarg,&this->arguments_) {
+      if(strcmp(M(&iarg->type_,c_str),"...") != 0) {
+				M(ostrm,printf," ");
+				yaoocpp_argument_print_type_name(iarg,o);
+				M(ostrm,printf,"= va_arg(args,");
+				yaoocpp_argument_print_type(iarg,o);
+				M(ostrm,printf,");\n");
+			}
+//        M(ostrm,printf,"  %s %s = va_arg(args,%s);\n",M(&iarg->type_,c_str),M(&iarg->name_,c_str),M(&iarg->type_,c_str));
+    }
+    M(ostrm,printf,"}\n\n");
   }
-  M(out,printf,"\n}\n\n");
 }
 
-/* Class table for yaoocpp_constructor */
+
+/* Class table definition for yaoocpp_constructor */
 yaoocpp_constructor_class_table_t yaoocpp_constructor_class_table =
 {
-  .parent_class_table_ = (const class_table_t*) &yaoocpp_item_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaoocpp_constructor_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaoocpp_constructor_is_descendant,
-  .swap = (void (*) (pointer p,pointer)) yaoocpp_constructor_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaoocpp_constructor_virtual_dtor,
-  .virtual_less_than_compare = (bool (*) (const_pointer p,const_pointer)) yaoocpp_constructor_virtual_less_than_compare,
-  .dump = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_constructor_dump,
-  .print_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_constructor_print_prototype,
-  .print_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_constructor_print_implementation,
-  .print_class_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_class_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
+  .parent_class_table_ = (const class_table_t*) &yaoocpp_element_class_table,
+  .isa = (const char*(*)(const_pointer)) yaoocpp_constructor_isa,
+  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_constructor_is_descendant,
+  .swap = (void(*)(pointer,pointer)) yaoocpp_constructor_swap,
+  .print_class_table_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_constructor_print_class_table_definition,
+  .print_class_instance_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_constructor_print_class_instance_definition,
+  .print_prototype = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_constructor_print_prototype,
+  .print_implementation = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_constructor_print_implementation,
+  .print_class_table_implementation = (void(*)(const_pointer,ostream_pointer,const char*)) yaoocpp_constructor_print_class_table_implementation,
 };
 
+/* Type info structure for yaoocpp_constructor */
+DEFINE_TYPE_INFO(yaoocpp_constructor,Y,Y,Y,Y,N,N,N,Y,yaoocpp_element);
 
-DEFINE_TYPE_INFO(yaoocpp_constructor,Y,N,Y,Y,N,N,N,Y,yaoocpp_item)
-/* Private items for yaoocpp_method */
+/* Private variables implementation for yaoocpp_method */
 
-/* Protected items for yaoocpp_method */
+/* Private methods prototypes for yaoocpp_method */
 
-
-/* Typeinfo for yaoocpp_method */
-#define yaoocpp_method_parent_class_table ((yaoocpp_constructor_class_table_t*)(yaoocpp_method_class_table.parent_class_table_))
+/* Type Info implemmentation for yaoocpp_method */
 void yaoocpp_method_default_ctor(pointer p)
 {
   yaoocpp_method_pointer this=p;
   yaoocpp_constructor_default_ctor(p);
-  this->type_=new(yaooc_string);
+  newp(&this->return_type_,yaooc_string);
   this->is_const_=false;
+
 }
 
-void yaoocpp_method_copy_ctor(pointer d,const_pointer s)
-{
-  yaoocpp_method_default_ctor(d);
-  yaoocpp_method_assign(d,s);
-}
-
-void yaoocpp_method_assign(pointer d,const_pointer s)
-{
-  yaoocpp_method_pointer dst=d;
-  yaoocpp_method_const_pointer src=s;
-  yaoocpp_constructor_assign(dst,src);
-  assign_static(dst->type_,src->type_,yaooc_string);
-  dst->is_const_=src->is_const_;
-}
-
-/* Constructors for yaoocpp_method */
-
-/* Class table methods for yaoocpp_method */
-const char* yaoocpp_method_isa(const_pointer p) { return "yaoocpp_method_t"; }
-
-void yaoocpp_method_virtual_dtor(pointer p)
+void yaoocpp_method_dtor(pointer p)
 {
   yaoocpp_method_pointer this=p;
-  delete(this->type_);
-  yaoocpp_method_parent_class_table->virtual_dtor(p);
+  deletep(&this->return_type_,yaooc_string);
 }
 
-bool yaoocpp_method_virtual_less_than_compare(const_pointer p,const_pointer o)
+void yaoocpp_method_copy_ctor(pointer p,const_pointer s)
 {
-  return yaoocpp_method_parent_class_table->virtual_less_than_compare(p,o);
+  yaoocpp_method_default_ctor(p);
+  yaoocpp_method_assign(p,s);
 }
 
-void yaoocpp_method_dump(const_pointer p,yaooc_ofstream_pointer out)
+void yaoocpp_method_assign(pointer p,const_pointer s)
+{
+  yaoocpp_method_pointer this=p;
+  yaoocpp_method_const_pointer src=s;
+  yaoocpp_constructor_assign(p,s);
+  assign_static(&this->return_type_,&src->return_type_,yaooc_string);
+  this->is_const_=src->is_const_;
+}
+
+/* Constructors implementation for yaoocpp_method */
+
+/* Private methods implementation for yaoocpp_method */
+
+/* Protected implementation for yaoocpp_method */
+
+/* Table implementation for yaoocpp_method */
+const char* yaoocpp_method_isa(const_pointer p) {  return "yaoocpp_method_t"; }
+
+void yaoocpp_method_print_class_table_definition(const_pointer p,ostream_pointer o)
 {
   yaoocpp_method_const_pointer this=p;
-  M(out,printf,"Return type: %s\n",M(this->type_,c_str));
-  yaoocpp_method_parent_class_table->dump(p,out);
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"  %s (*%s)(%spointer",M(&this->return_type_,c_str),M(&this->name_,c_str),
+        this->is_const_ ? "const_" : "");
+  yaoocpp_argument_vector_const_iterator iarg;
+  FOR_EACH(iarg,&this->arguments_) {
+		M(ostrm,printf,",");
+		yaoocpp_argument_print_type(iarg,ostrm);
+//    M(ostrm,printf,",%s",M(&iarg->type_,c_str));
+  }
+  M(ostrm,printf,");\n");
 }
 
-void yaoocpp_method_print_prototype(const_pointer p,yaooc_ofstream_pointer out)
+void yaoocpp_method_print_prototype(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
 {
   yaoocpp_method_const_pointer this=p;
-  if(M(this->implementation_method_,size)==0) {
-    M(out,printf,"%s %s_%s(%spointer",M(this->type_,c_str),M(this->prefix_,c_str),
-            M(this->name_,c_str),this->is_const_ ? "const_" : "");
-    yaoocpp_item_ptr_vector_const_iterator i;
-    FOR_EACH(i,this->arguments_) {
-      yaoocpp_argument_const_pointer arg= (yaoocpp_argument_const_pointer)*i;
-      M(out,printf,",%s",M(arg,type));
+  yaooc_ostream_pointer ostrm=o;
+  if(M(&this->implementation_method_,size) == 0) {
+    M(ostrm,printf,"%s%s %s_%s(%spointer",storage_class,M(&this->return_type_,c_str),class_name,M(&this->name_,c_str),
+            this->is_const_ ? "const_" : "");
+    yaoocpp_argument_vector_const_iterator iarg;
+    FOR_EACH(iarg,&this->arguments_) {
+			M(ostrm,printf,",");
+			yaoocpp_argument_print_type(iarg,ostrm);
+//      M(ostrm,printf,",%s",M(&iarg->type_,c_str));
     }
-    M(out,printf,");\n");
+    M(ostrm,printf,");\n");
   } else {
-    M(out,printf,"#define %s_%s %s\n",M(this->prefix_,c_str),M(this->name_,c_str),
-            M(this->implementation_method_,c_str));
+    M(ostrm,printf,"#define %s_%s %s\n",class_name,M(&this->name_,c_str),M(&this->implementation_method_,c_str));
   }
 }
 
-void yaoocpp_method_print_implementation(const_pointer p,yaooc_ofstream_pointer out)
+void yaoocpp_method_print_implementation(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
 {
   yaoocpp_method_const_pointer this=p;
-  if(strcmp(M(this->name_,c_str),"isa")==0) {
-    M(out,printf,"const char* %s_isa(const_pointer p) { return \"%s_t\"; }\n\n",
-          M(this->prefix_,c_str),M(this->prefix_,c_str));
-  } else if(M(this->implementation_method_,size)==0) {
-    M(out,printf,"%s %s_%s(%spointer p",M(this->type_,c_str),M(this->prefix_,c_str),
-            M(this->name_,c_str),this->is_const_ ? "const_" : "");
-    yaoocpp_item_ptr_vector_const_iterator i;
-    FOR_EACH(i,this->arguments_) {
-      yaoocpp_argument_const_pointer arg= (yaoocpp_argument_const_pointer)*i;
-      M(out,printf,",%s %s",M(arg,type),M(arg,name));
+  yaooc_ostream_pointer ostrm=o;
+  if(M(&this->implementation_method_,size) == 0) {
+    M(ostrm,printf,"%s%s %s_%s(%spointer p",storage_class,M(&this->return_type_,c_str),class_name,M(&this->name_,c_str),
+            (this->is_const_ ? "const_" : ""));
+    yaoocpp_argument_vector_const_iterator iarg;
+    FOR_EACH(iarg,&this->arguments_) {
+			M(ostrm,printf,",");
+			yaoocpp_argument_print_type_name(iarg,ostrm);
+//      M(ostrm,printf,",%s %s",M(&iarg->type_,c_str),M(&iarg->name_,c_str));
     }
-    M(out,printf,")\n");
-    M(out,printf,"{\n  %s_%spointer this=p;\n",M(this->prefix_,c_str),this->is_const_ ? "const_" : "");
-    if(strcmp(M(this->type_,c_str),"void")!=0 && strcmp(M(this->type_,c_str),"static void")!=0) {
-      M(out,printf,"  %s ret;\n\n  return ret;",M(this->type_,c_str));
+    M(ostrm,printf,")");
+    if(strcmp(M(&this->name_,c_str),"isa") == 0) {
+      M(ostrm,printf," {  return \"%s_t\"; ",class_name);
+    } else {
+      M(ostrm,printf,"\n{\n"
+              "  %s_%spointer this=p;\n",class_name,(this->is_const_ ? "const_": ""));
+      if(strcmp(M(&this->return_type_,c_str),"void") != 0)
+        M(ostrm,printf,"  %s ret;\n"
+                      "  return ret;\n",M(&this->return_type_,c_str));
     }
-    M(out,printf,"\n}\n\n");
+    M(ostrm,printf,"}\n\n");
   }
 }
 
-void yaoocpp_method_print_class_prototype(const_pointer p,yaooc_ofstream_pointer out)
+void yaoocpp_method_print_class_table_implementation(const_pointer p,ostream_pointer o,const char* class_name)
 {
   yaoocpp_method_const_pointer this=p;
-  M(out,printf,"  %s (*%s)(%spointer",M(this->type_,c_str),M(this->name_,c_str),this->is_const_ ? "const_" : "");
-  yaoocpp_item_ptr_vector_const_iterator i;
-  FOR_EACH(i,this->arguments_) {
-    yaoocpp_argument_const_pointer arg= (yaoocpp_argument_const_pointer)*i;
-    M(out,printf,",%s",M(arg,type));
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"  .%s = (%s(*)(%spointer",M(&this->name_,c_str),M(&this->return_type_,c_str),
+        (this->is_const_ ? "const_": ""));
+  yaoocpp_argument_vector_const_iterator iarg;
+  FOR_EACH(iarg,&this->arguments_) {
+		M(ostrm,printf,",");
+		yaoocpp_argument_print_type(iarg,ostrm);
+//    M(ostrm,printf,",%s",M(&iarg->type_,c_str));
   }
-  M(out,printf,");\n");
+  M(ostrm,printf,")) %s_%s,\n",class_name,M(&this->name_,c_str));
 }
 
-void yaoocpp_method_print_class_implementation(const_pointer p,yaooc_ofstream_pointer out)
-{
-  yaoocpp_method_const_pointer this=p;
-  M(out,printf,"  .%s = (%s (*) (%spointer",M(this->name_,c_str),M(this->type_,c_str),this->is_const_ ? "const_" : "");
-  yaoocpp_item_ptr_vector_const_iterator i;
-  FOR_EACH(i,this->arguments_) {
-    yaoocpp_argument_const_pointer arg= (yaoocpp_argument_const_pointer)*i;
-    M(out,printf,",%s",M(arg,type));
-  }
-  M(out,printf,")) ");
-  if(M(this->implementation_method_,size)==0) {
-    M(out,printf,"%s_%s,\n",M(this->prefix_,c_str),M(this->name_,c_str));
-  } else {
-    M(out,printf,"%s,\n",M(this->implementation_method_,c_str));
-  }
-}
 
-/* Class table for yaoocpp_method */
+/* Class table definition for yaoocpp_method */
 yaoocpp_method_class_table_t yaoocpp_method_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaoocpp_constructor_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaoocpp_method_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaoocpp_method_is_descendant,
-  .swap = (void (*) (pointer p,pointer)) yaoocpp_method_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaoocpp_method_virtual_dtor,
-  .virtual_less_than_compare = (bool (*) (const_pointer p,const_pointer)) yaoocpp_method_virtual_less_than_compare,
-  .dump = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_method_dump,
-  .print_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_method_print_prototype,
-  .print_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_method_print_implementation,
-  .print_class_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_method_print_class_prototype,
-  .print_class_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_method_print_class_implementation,
+  .isa = (const char*(*)(const_pointer)) yaoocpp_method_isa,
+  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_method_is_descendant,
+  .swap = (void(*)(pointer,pointer)) yaoocpp_method_swap,
+  .print_class_table_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_method_print_class_table_definition,
+  .print_class_instance_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_method_print_class_instance_definition,
+  .print_prototype = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_method_print_prototype,
+  .print_implementation = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_method_print_implementation,
+  .print_class_table_implementation = (void(*)(const_pointer,ostream_pointer,const char*)) yaoocpp_method_print_class_table_implementation,
 };
 
+/* Type info structure for yaoocpp_method */
+DEFINE_TYPE_INFO(yaoocpp_method,Y,Y,Y,Y,N,N,N,Y,yaoocpp_constructor);
 
-DEFINE_TYPE_INFO(yaoocpp_method,Y,N,Y,Y,N,N,N,Y,yaoocpp_constructor)
-/* Private items for yaoocpp_class */
+/* Private variables implementation for yaoocpp_container */
 
-/* Protected items for yaoocpp_class */
+/* Private methods prototypes for yaoocpp_container */
+typedef enum { PRINT_ANY = 0, PRINT_VAR = 1, PRINT_METHOD = 2, PRINT_BOTH = 3 } print_element_t;
+static void yaoocpp_container_print_define_type_info(const_pointer,ostream_pointer,bool);
+static void yaoocpp_container_print_type_info_implementation(const_pointer,ostream_pointer);
+static void yaoocpp_container_print_element_prototype(const_pointer,ostream_pointer,const char*,
+        yaoocpp_element_pointer_vector_const_pointer,print_element_t,const char*);
+static void yaoocpp_container_print_element_implementation(const_pointer,ostream_pointer,const char*,yaoocpp_element_pointer_vector_const_pointer,print_element_t,const char*);
+static void yaoocpp_container_print_type_info_prototype(const_pointer,ostream_pointer);
+
+/* Type Info implemmentation for yaoocpp_container */
+void yaoocpp_container_default_ctor(pointer p)
+{
+  yaoocpp_container_pointer this=p;
+	this->parent_=NULL;
+	newp(&this->name_,yaooc_string);
+	newp(&this->constructors_,yaoocpp_element_pointer_vector);
+	newp(&this->instance_,yaoocpp_element_pointer_vector);
+	newp(&this->private_,yaoocpp_element_pointer_vector);
+	newp(&this->protected_,yaoocpp_element_pointer_vector);
+	this->has_default_ctor_ = false;
+	this->has_dtor_ = false;
+	this->has_copy_ctor_ = false;
+	this->has_assign_ = false;
+	this->has_lt_cmp_ = false;
+	this->has_to_stream_ = false;
+	this->has_from_stream_ = false;
+	this->defined_in_top_level_file_ = false;
+}
+
+void yaoocpp_container_dtor(pointer p)
+{
+  yaoocpp_container_pointer this=p;
+	deletep(&this->name_,yaooc_string);
+	deletep(&this->constructors_,yaoocpp_element_pointer_vector);
+	deletep(&this->instance_,yaoocpp_element_pointer_vector);
+	deletep(&this->private_,yaoocpp_element_pointer_vector);
+	deletep(&this->protected_,yaoocpp_element_pointer_vector);
+}
+
+void yaoocpp_container_copy_ctor(pointer p,const_pointer s)
+{
+	yaoocpp_container_default_ctor(p);
+	yaoocpp_container_assign(p,s);
+}
+
+void yaoocpp_container_assign(pointer p,const_pointer s)
+{
+  yaoocpp_container_pointer this=p;
+  yaoocpp_container_const_pointer src=s;
+	this->parent_=src->parent_;
+  assign_static(&this->name_,&src->name_,yaooc_string);
+	assign_static(&this->constructors_,&src->constructors_,yaoocpp_element_pointer_vector);
+	assign_static(&this->instance_,&src->instance_,yaoocpp_element_pointer_vector);
+	assign_static(&this->private_,&src->private_,yaoocpp_element_pointer_vector);
+	assign_static(&this->protected_,&src->protected_,yaoocpp_element_pointer_vector);
+	this->has_default_ctor_ = src->has_default_ctor_;
+	this->has_dtor_ = src->has_dtor_;
+	this->has_copy_ctor_ = src->has_copy_ctor_;
+	this->has_assign_ = src->has_assign_;
+	this->has_lt_cmp_ = src->has_lt_cmp_;
+	this->has_to_stream_ = src->has_to_stream_;
+	this->has_from_stream_ = src->has_from_stream_;
+	this->defined_in_top_level_file_ = src->defined_in_top_level_file_;
+}
+
+bool yaoocpp_container_less_than_compare(const_pointer p1,const_pointer p2)
+{
+  yaoocpp_container_const_pointer vp1=p1;
+  yaoocpp_container_const_pointer vp2=p2;
+  return op_lt_static(&vp1->name_,&vp2->name_,yaooc_string);
+}
+
+/* Constructors implementation for yaoocpp_container */
+
+/* Private methods implementation for yaoocpp_container */
+static void yaoocpp_container_print_define_type_info(const_pointer p,ostream_pointer o,bool has_class_table)
+{
+  yaoocpp_container_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"/* Type info structure for %s */\n",M(&this->name_,c_str));
+  M(ostrm,printf,"DEFINE_TYPE_INFO(%s",M(&this->name_,c_str));
+  M(ostrm,printf,",%c",this->has_default_ctor_ ? 'Y' : 'N');
+  M(ostrm,printf,",%c",this->has_dtor_ ? 'Y' : 'N');
+  M(ostrm,printf,",%c",this->has_copy_ctor_ ? 'Y' : 'N');
+  M(ostrm,printf,",%c",this->has_assign_ ? 'Y' : 'N');
+  M(ostrm,printf,",%c",this->has_lt_cmp_ ? 'Y' : 'N');
+  M(ostrm,printf,",%c",this->has_to_stream_ ? 'Y' : 'N');
+  M(ostrm,printf,",%c",this->has_from_stream_ ? 'Y' : 'N');
+  M(ostrm,printf,",%c",has_class_table ? 'Y' : 'N' );
+  M(ostrm,printf,",%s);\n\n",this->parent_ ? M(&this->parent_->name_,c_str) : "NULL" );
+}
+
+static void yaoocpp_container_print_default_ctor_implementation(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_container_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"void %s_default_ctor(pointer p)\n"
+                "{\n"
+                "  %s_pointer this=p;\n",M(&this->name_,c_str),M(&this->name_,c_str));
+  if(this->parent_ && strcmp(M(&this->parent_->name_,c_str),"yaooc_object") != 0) {
+    M(ostrm,printf,"  %s_default_ctor(this);\n",M(&this->parent_->name_,c_str));
+  }
+  yaoocpp_element_pointer_vector_const_iterator i;
+  FOR_EACH(i,&this->instance_) {
+    if((*i)->state_ == INITIAL && ISA(*i,yaoocpp_variable)) {
+      yaoocpp_variable_pointer ivar=(yaoocpp_variable_pointer)*i;
+      if(M(&ivar->type_,ends_with,"*")) {
+        M(ostrm,printf,"  this->%s = NULL;\n",M(&ivar->name_,c_str));
+      } else if(M(&ivar->type_,ends_with,"_t")) {
+        yaooc_string_pointer temp=M(&ivar->type_,substr,0,M(&ivar->type_,size)-2);
+        M(ostrm,printf,"  newp(&this->%s,%s);\n",M(&ivar->name_,c_str),M(temp,c_str));
+        delete(temp);
+      } else {
+        M(ostrm,printf,"  this->%s = 0;\n",M(&ivar->name_,c_str));
+      }
+    }
+  }
+  M(ostrm,printf,"}\n\n");
+}
+
+static void yaoocpp_container_print_dtor_implementation(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_container_const_pointer this=p;
+  PB_INIT;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"void %s_dtor(pointer p)\n"
+                "{\n"
+                "  %s_pointer this=p;\n",M(&this->name_,c_str),M(&this->name_,c_str));
+  yaoocpp_element_pointer_vector_const_iterator i;
+  yaooc_regex_pointer re=PB_SAVE(new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"(.*)_t\\s+\\*",0));
+  FOR_EACH(i,&this->instance_) {
+    if((*i)->state_ == INITIAL && ISA(*i,yaoocpp_variable)) {
+      yaoocpp_variable_pointer ivar=(yaoocpp_variable_pointer)*i;
+      if(M(&ivar->type_,ends_with,"*")) {
+        // If varible is const, then most likely a pointer to an object that was deleted elsewhere
+        if(!M(&ivar->type_,starts_with,"const")) {
+          yaooc_matchdata_pointer md=PB_SAVE(M(re,match,M(&ivar->type_,c_str),0));
+          if(M(md,bool)) {
+            M(ostrm,printf,"  if(this->%s)\n"
+                           "     delete(this->%s);\n",M(&ivar->name_,c_str),M(&ivar->name_,c_str));
+//            delete(md);
+          } else {
+            M(ostrm,printf,"  if(this->%s)\n"
+                           "     FREE(this->%s);\n",M(&ivar->name_,c_str),M(&ivar->name_,c_str));
+          }
+          M(ostrm,printf,"  this->%s = NULL;\n",M(&ivar->name_,c_str));
+        }
+      } else if(M(&ivar->type_,ends_with,"_t")) {
+        yaooc_string_pointer temp=PB_SAVE(M(&ivar->type_,substr,0,M(&ivar->type_,size)-2));
+        M(ostrm,printf,"  deletep(&this->%s,%s);\n",M(&ivar->name_,c_str),M(temp,c_str));
+//        delete(temp);
+      }
+    }
+  }
+  M(ostrm,printf,"}\n\n");
+  PB_EXIT;
+}
+
+static void yaoocpp_container_print_assign_implementation(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_container_const_pointer this=p;
+  PB_INIT;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"void %s_assign(pointer p,const_pointer s)\n"
+                "{\n"
+                "  %s_pointer this=p;\n"
+                "  %s_const_pointer src=s;\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));
+  if(this->parent_ && strcmp(M(&this->parent_->name_,c_str),"yaooc_object") != 0) {
+    M(ostrm,printf,"  %s_assign(this,src);\n",M(&this->parent_->name_,c_str));
+  }
+  yaooc_regex_pointer re=PB_SAVE(new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"(.*)_t\\s+\\*",0));
+  yaoocpp_element_pointer_vector_const_iterator i;
+  FOR_EACH(i,&this->instance_) {
+    if((*i)->state_ == INITIAL && ISA(*i,yaoocpp_variable)) {
+      yaoocpp_variable_pointer ivar=(yaoocpp_variable_pointer)*i;
+      if(M(&ivar->type_,ends_with,"*")) {
+        if(M(&ivar->type_,starts_with,"const")) {
+          M(ostrm,printf,"  this->%s=src->%s;\n",M(&ivar->name_,c_str),M(&ivar->name_,c_str));
+        } else {
+//          M(ostrm,printf,"  if(this->%s != NULL) \n",M(&ivar->name_,c_str));
+          yaooc_matchdata_pointer md=PB_SAVE(M(re,match,M(&ivar->type_,c_str),0));
+//          yaooc_string_pointer temp=M(md,at,1);
+          if(M(md,bool)) {
+            M(ostrm,printf,"  if(this->%s!=NULL)\n"
+                           "    delete(this->%s;\n"
+                           "  this->%s = src->%s != NULL ? new_copy(src->%s) : NULL;\n",
+                           M(&ivar->name_,c_str),M(&ivar->name_,c_str),M(&ivar->name_,c_str),M(&ivar->name_,c_str));
+          } else {
+            M(ostrm,printf,"  DO_NOT_KNOW_HOW_TO_ASSIGN(this->%s,src->%s);\n",M(&ivar->name_,c_str),M(&ivar->name_,c_str));
+          }
+        }
+      } else if(M(&ivar->type_,ends_with,"_t")) {
+        yaooc_string_pointer temp=PB_SAVE(M(&ivar->type_,substr,0,M(&ivar->type_,size)-2));
+        M(ostrm,printf,"  assign_static(&this->%s,&src->%s,%s);\n",M(&ivar->name_,c_str),M(&ivar->name_,c_str),M(temp,c_str));
+      } else {
+        M(ostrm,printf,"  this->%s = src->%s;\n",M(&ivar->name_,c_str),M(&ivar->name_,c_str));
+      }
+    }
+  }
+  M(ostrm,printf,"}\n\n");
+  PB_EXIT;
+}
+
+static void yaoocpp_container_print_type_info_implementation(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_container_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"/* Type Info implemmentation for %s */\n",M(&this->name_,c_str));
+  if(this->has_default_ctor_)
+    yaoocpp_container_print_default_ctor_implementation(this,ostrm);
+  if(this->has_dtor_)
+    yaoocpp_container_print_dtor_implementation(this,ostrm);
+  if(this->has_copy_ctor_)
+    M(ostrm,printf,"void %s_copy_ctor(pointer p,const_pointer s)\n"
+                  "{\n"
+                  "  %s_default_ctor(p);\n"
+                  "  %s_assign(p,s);\n"
+                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));
+  if(this->has_assign_)
+    yaoocpp_container_print_assign_implementation(this,ostrm);
+/*    M(ostrm,printf,"void %s_assign(pointer p,const_pointer s)\n"
+                  "{\n"
+                  "  %s_pointer this=p;\n"
+                  "  %s_const_pointer src=s;\n"
+                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));*/
+  if(this->has_lt_cmp_)
+    M(ostrm,printf,"bool %s_less_than_compare(const_pointer p1,const_pointer p2)\n"
+                  "{\n"
+                  "  %s_const_pointer vp1=p1;\n"
+                  "  %s_const_pointer vp2=p2;\n"
+                  "  bool ret=false;\n"
+                  "  return ret;\n"
+                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));
+  if(this->has_to_stream_)
+    M(ostrm,printf,"void %s_to_stream(const_pointer p,ostream_pointer o)"
+                  "{\n"
+                  "  %s_const_pointer this=p;\n"
+                  "  yaooc_ostream_pointer ostrm=o;\n"
+                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str));
+  if(this->has_from_stream_)
+    M(ostrm,printf,"void %s_from_stream(pointer p,istream_pointer i)"
+                  "{\n"
+                  "  %s_pointer this=p;\n"
+                  "  yaooc_istream_pointer istrm=i;\n"
+                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str));
+}
 
 
-/* Typeinfo for yaoocpp_class */
+static void yaoocpp_container_print_element_prototype(const_pointer p,ostream_pointer o,const char* sub_section,
+      yaoocpp_element_pointer_vector_const_pointer elements,print_element_t pvt, const char* storage_class)
+{
+  yaoocpp_container_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"/* %s prototypes for %s */\n",sub_section,M(&this->name_,c_str));
+  yaoocpp_element_pointer_vector_const_iterator iter;
+  FOR_EACH(iter,elements) {
+    if((pvt == PRINT_ANY) || ((pvt & PRINT_VAR) && ISA(*iter,yaoocpp_variable))
+       || ((pvt & PRINT_METHOD) && ISA(*iter,yaoocpp_method)))
+      M(*iter,print_prototype,ostrm,M(&this->name_,c_str),storage_class);
+
+  }
+  M(ostrm,printf,"\n");
+}
+
+static void yaoocpp_container_print_element_implementation(const_pointer p,ostream_pointer o,const char* sub_section,
+      yaoocpp_element_pointer_vector_const_pointer elements,print_element_t pvt, const char* storage_class)
+{
+  yaoocpp_container_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"/* %s implementation for %s */\n",sub_section,M(&this->name_,c_str));
+  yaoocpp_element_pointer_vector_const_iterator iter;
+  FOR_EACH(iter,elements) {
+    if((pvt == PRINT_ANY) || ((pvt & PRINT_VAR) && ISA(*iter,yaoocpp_variable))
+       || ((pvt & PRINT_METHOD) && ISA(*iter,yaoocpp_method)))
+      M(*iter,print_implementation,ostrm,M(&this->name_,c_str),storage_class);
+  }
+  M(ostrm,printf,"\n");
+}
+
+static void yaoocpp_container_print_type_info_prototype(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_container_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"/* Type Info Prototypes for %s */\n",M(&this->name_,c_str));
+  if(this->has_default_ctor_)
+    M(ostrm,printf,"void %s_default_ctor(pointer);\n",M(&this->name_,c_str));
+  else if(this->parent_)
+    M(ostrm,printf,"#define %s_default_ctor %s_default_ctor\n",M(&this->name_,c_str),M(&this->parent_->name_,c_str));
+  else
+    M(ostrm,printf,"#define %s_default_ctor yaooc_do_nothing_default_ctor\n",M(&this->name_,c_str));
+  if(this->has_dtor_)
+    M(ostrm,printf,"void %s_dtor(pointer);\n",M(&this->name_,c_str));
+  else if(this->parent_)
+    M(ostrm,printf,"#define %s_dtor %s_dtor\n",M(&this->name_,c_str),M(&this->parent_->name_,c_str));
+  else
+    M(ostrm,printf,"#define %s_dtor yaooc_do_nothing_dtor\n",M(&this->name_,c_str));
+  if(this->has_copy_ctor_)
+    M(ostrm,printf,"void %s_copy_ctor(pointer,const_pointer);\n",M(&this->name_,c_str));
+  else if(this->parent_)
+    M(ostrm,printf,"#define %s_copy_ctor %s_copy_ctor\n",M(&this->name_,c_str),M(&this->parent_->name_,c_str));
+  else
+    M(ostrm,printf,"#define %s_copy_ctor yaooc_do_nothing_copy_ctor\n",M(&this->name_,c_str));
+  if(this->has_assign_)
+    M(ostrm,printf,"void %s_assign(pointer,const_pointer);\n",M(&this->name_,c_str));
+  else if(this->parent_)
+    M(ostrm,printf,"#define %s_assign %s_assign\n",M(&this->name_,c_str),M(&this->parent_->name_,c_str));
+  else
+    M(ostrm,printf,"#define %s_assign yaooc_do_nothing_assign\n",M(&this->name_,c_str));
+  if(this->has_lt_cmp_)
+    M(ostrm,printf,"bool %s_less_than_compare(const_pointer,const_pointer);\n",M(&this->name_,c_str));
+  if(this->has_to_stream_)
+    M(ostrm,printf,"void %s_to_stream(const_pointer,ostream_pointer);\n",M(&this->name_,c_str));
+  if(this->has_from_stream_)
+    M(ostrm,printf,"void %s_from_stream(pointer,istream_pointer);\n",M(&this->name_,c_str));
+  M(ostrm,printf,"\n");
+}
+
+
+/* Protected implementation for yaoocpp_container */
+void yaoocpp_container_inherit(pointer p)
+{
+  yaoocpp_container_pointer this=p;
+  if(this->parent_) {
+    assign_static(&this->instance_,&this->parent_->instance_,yaoocpp_element_pointer_vector);
+    yaoocpp_element_pointer_vector_iterator i;
+    FOR_EACH(i,&this->instance_)
+      (*i)->state_=INHERITED;
+  }
+}
+
+
+/* Table implementation for yaoocpp_container */
+const char* yaoocpp_container_isa(const_pointer p) {  return "yaoocpp_container_t"; }
+
+
+/* Class table definition for yaoocpp_container */
+yaoocpp_container_class_table_t yaoocpp_container_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+  .isa = (const char*(*)(const_pointer)) yaoocpp_container_isa,
+  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_container_is_descendant,
+  .swap = (void(*)(pointer,pointer)) yaoocpp_container_swap,
+  .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_container_print_to_header,
+  .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_container_print_to_source,
+};
+
+/* Type info structure for yaoocpp_container */
+DEFINE_TYPE_INFO(yaoocpp_container,Y,Y,Y,Y,Y,N,N,Y,yaooc_object);
+
+DYNAMIC_POINTER_IMPLEMENTATION(yaoocpp_container,yaoocpp_container_pointer);
+VECTOR_IMPLEMENTATION(yaoocpp_container_pointer,yaoocpp_container_pointer_vector);
+
+/* Private variables implementation for yaoocpp_struct */
+
+/* Private methods prototypes for yaoocpp_struct */
+
+/* Type Info implemmentation for yaoocpp_struct */
+/* Constructors implementation for yaoocpp_struct */
+
+/* Private methods implementation for yaoocpp_struct */
+
+/* Protected implementation for yaoocpp_struct */
+
+/* Table implementation for yaoocpp_struct */
+const char* yaoocpp_struct_isa(const_pointer p) {  return "yaoocpp_struct_t"; }
+
+void yaoocpp_struct_print_to_header(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_struct_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"/*\n  Struct Definition for %s\n*/\n",M(&this->name_,c_str));
+  M(ostrm,printf,"yaooc_struct(%s) {\n",M(&this->name_,c_str));
+  if(this->parent_)
+    M(ostrm,printf,"  %s_t;\n",M(&this->parent_->name_,c_str));
+  yaoocpp_element_pointer_vector_const_iterator iter;
+  FOR_EACH(iter,&this->instance_) {
+    if((*iter)->state_==INITIAL)
+      M(*iter,print_class_instance_definition,ostrm);
+  }
+  M(ostrm,printf,"};\n\n");
+//  yaoocpp_container_print_element_prototype(this,ostrm,"Private",&this->private_);
+  yaoocpp_container_print_element_prototype(this,ostrm,"Protected",&this->protected_,PRINT_BOTH,"extern ");
+  yaoocpp_container_print_type_info_prototype(this,ostrm);
+  yaoocpp_container_print_element_prototype(this,ostrm,"Constructor",&this->constructors_,PRINT_ANY,"");
+}
+
+void yaoocpp_struct_print_to_source(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_struct_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+
+  yaoocpp_container_print_element_implementation(this,ostrm,"Private variables",&this->private_,PRINT_VAR,"static ");
+  yaoocpp_container_print_element_prototype(this,ostrm,"Private methods",&this->private_,PRINT_METHOD,"static ");
+  yaoocpp_container_print_type_info_implementation(this,ostrm);
+  yaoocpp_container_print_element_implementation(this,ostrm,"Constructors",&this->constructors_,PRINT_ANY,"");
+  yaoocpp_container_print_element_implementation(this,ostrm,"Private methods",&this->private_,PRINT_METHOD,"static ");
+  yaoocpp_container_print_element_implementation(this,ostrm,"Protected",&this->protected_,PRINT_METHOD,"");
+  yaoocpp_container_print_define_type_info(this,ostrm,false);
+}
+
+
+/* Class table definition for yaoocpp_struct */
+yaoocpp_struct_class_table_t yaoocpp_struct_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
+  .isa = (const char*(*)(const_pointer)) yaoocpp_struct_isa,
+  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_struct_is_descendant,
+  .swap = (void(*)(pointer,pointer)) yaoocpp_struct_swap,
+  .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_struct_print_to_header,
+  .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_struct_print_to_source,
+};
+
+/* Private variables implementation for yaoocpp_container_with_class_table */
+
+/* Private methods prototypes for yaoocpp_container_with_class_table */
+static void yaoocpp_container_with_class_table_print_class_table_implementation(pointer, ostream_pointer);
+
+/* Type Info implemmentation for yaoocpp_container_with_class_table */
+void yaoocpp_container_with_class_table_default_ctor(pointer p)
+{
+  yaoocpp_container_with_class_table_pointer this=p;
+  yaoocpp_container_default_ctor(this);
+  newp(&this->table_,yaoocpp_element_pointer_vector);
+}
+
+void yaoocpp_container_with_class_table_dtor(pointer p)
+{
+  yaoocpp_container_with_class_table_pointer this=p;
+  deletep(&this->table_,yaoocpp_element_pointer_vector);
+}
+
+void yaoocpp_container_with_class_table_copy_ctor(pointer p,const_pointer s)
+{
+  yaoocpp_container_with_class_table_default_ctor(p);
+  yaoocpp_container_with_class_table_assign(p,s);
+}
+
+void yaoocpp_container_with_class_table_assign(pointer p,const_pointer s)
+{
+  yaoocpp_container_with_class_table_pointer this=p;
+  yaoocpp_container_with_class_table_const_pointer src=s;
+  yaoocpp_container_assign(this,src);
+  assign_static(&this->table_,&src->table_,yaoocpp_element_pointer_vector);
+}
+
+/* Constructors implementation for yaoocpp_container_with_class_table */
+
+/* Private methods implementation for yaoocpp_container_with_class_table */
+static void yaoocpp_container_with_class_table_print_class_table_implementation(pointer p,ostream_pointer o)
+{
+  yaoocpp_container_with_class_table_pointer this=p;
+}
+
+
+/* Protected implementation for yaoocpp_container_with_class_table */
+void yaoocpp_container_with_class_table_inherit(pointer p)
+{
+  yaoocpp_container_with_class_table_pointer this=p;
+  if(this->parent_) {
+    yaoocpp_container_inherit(this);
+    // If inheriting from a class, assign
+    yaoocpp_class_t* p=(yaoocpp_class_pointer)this->parent_;
+    assign_static(&this->table_,&p->table_,yaoocpp_element_pointer_vector);
+    yaoocpp_element_pointer_vector_iterator i;
+    FOR_EACH(i,&this->table_) {
+      (*i)->state_=INHERITED;
+      if(ISA(*i,yaoocpp_method)) {
+        yaoocpp_method_pointer method=(yaoocpp_method_pointer)*i;
+        if(strcmp(M(&method->name_,c_str),"isa")==0) {
+          method->state_=OVERRIDDEN;
+          M(&method->implementation_method_,clear);
+        } else {
+          M(&method->implementation_method_,set,M(&p->name_,c_str));
+          M(&method->implementation_method_,append,"_");
+          M(&method->implementation_method_,append,M(&method->name_,c_str));
+        }
+      } else {
+        yaoocpp_variable_pointer var=(yaoocpp_variable_pointer)*i;
+        if(strcmp(M(&var->name_,c_str),"parent_class_table_")==0) {
+          M(&var->default_value_,set,"&");
+          M(&var->default_value_,append,M(&p->name_,c_str));
+          M(&var->default_value_,append,"_class_table");
+        }
+      }
+    }
+  }
+}
+
+
+/* Table implementation for yaoocpp_container_with_class_table */
+const char* yaoocpp_container_with_class_table_isa(const_pointer p) {  return "yaoocpp_container_with_class_table_t"; }
+
+void yaoocpp_container_with_class_table_print_to_header(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_container_with_class_table_const_pointer this=p;
+}
+
+void yaoocpp_container_with_class_table_print_to_source(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_container_with_class_table_const_pointer this=p;
+}
+
+
+/* Class table definition for yaoocpp_container_with_class_table */
+yaoocpp_container_with_class_table_class_table_t yaoocpp_container_with_class_table_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
+  .isa = (const char*(*)(const_pointer)) yaoocpp_container_with_class_table_isa,
+  .is_descendant = (bool(*)(const_pointer, const char*)) yaoocpp_container_with_class_table_is_descendant,
+  .swap = (void(*)(pointer, pointer)) yaoocpp_container_with_class_table_swap,
+  .print_to_header = (void(*)(const_pointer, ostream_pointer)) yaoocpp_container_with_class_table_print_to_header,
+  .print_to_source = (void(*)(const_pointer, ostream_pointer)) yaoocpp_container_with_class_table_print_to_source,
+};
+
+/* Type info structure for yaoocpp_container_with_class_table */
+DEFINE_TYPE_INFO(yaoocpp_container_with_class_table,Y,Y,Y,Y,N,N,N,Y,yaoocpp_container);
+
+/* Type info structure for yaoocpp_struct */
+DEFINE_TYPE_INFO(yaoocpp_struct,N,N,N,N,N,N,N,Y,yaoocpp_container);
+
+/* Private variables implementation for yaoocpp_union */
+
+/* Private methods prototypes for yaoocpp_union */
+
+/* Type Info implemmentation for yaoocpp_union */
+/* Constructors implementation for yaoocpp_union */
+
+/* Private methods implementation for yaoocpp_union */
+
+/* Protected implementation for yaoocpp_union */
+
+/* Table implementation for yaoocpp_union */
+const char* yaoocpp_union_isa(const_pointer p) {  return "yaoocpp_union_t"; }
+
+void yaoocpp_union_print_to_header(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_union_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"/*\n  Union Definition for %s\n*/\n",M(&this->name_,c_str));
+  M(ostrm,printf,"yaooc_union_table(%s) {\n",M(&this->name_,c_str));
+  if(this->parent_)
+    M(ostrm,printf,"  %s_class_table_t;\n",M(&this->parent_->name_,c_str));
+  yaoocpp_element_pointer_vector_const_iterator iter;
+  FOR_EACH(iter,&this->table_) {
+    if((*iter)->state_==INITIAL)
+      M(*iter,print_class_table_definition,ostrm);
+  }
+  M(ostrm,printf,"};\n");
+  if(this->parent_)
+    M(ostrm,printf,"#define %s_parent_class_table ((%s_class_table_t*)(%s_class_table.parent_class_table_))\n",
+          M(&this->name_,c_str),M(&this->parent_->name_,c_str),M(&this->name_,c_str));
+  M(ostrm,printf,"\nyaooc_union_instance(%s) {\n",M(&this->name_,c_str));
+  if(this->parent_)
+    M(ostrm,printf,"  %s_class_instance_t;\n",M(&this->parent_->name_,c_str));
+  FOR_EACH(iter,&this->instance_) {
+    if((*iter)->state_==INITIAL)
+      M(*iter,print_class_instance_definition,ostrm);
+  }
+  M(ostrm,printf,"};\n\n");
+  M(ostrm,printf,"yaooc_union(%s);\n\n",M(&this->name_,c_str));
+  yaoocpp_container_print_type_info_prototype(this,ostrm);
+  yaoocpp_container_print_element_prototype(this,ostrm,"Constructors",&this->constructors_,PRINT_ANY,"");
+  yaoocpp_container_print_element_prototype(this,ostrm,"Table",&this->table_,PRINT_METHOD,"");
+  yaoocpp_container_print_element_prototype(this,ostrm,"Protected",&this->protected_,PRINT_BOTH,"extern ");
+#if 0
+  M(ostrm,printf,"/*\n  Union Definition for %s\n*/\n",M(&this->name_,c_str));
+  M(ostrm,printf,"yaooc_union(%s) {\n",M(&this->name_,c_str));
+  if(this->parent_)
+    M(ostrm,printf,"  %s_t;\n",M(&this->parent_->name_,c_str));
+  yaoocpp_element_pointer_vector_const_iterator iter;
+  FOR_EACH(iter,&this->instance_) {
+    if((*iter)->state_==INITIAL)
+      M(*iter,print_class_instance_definition,ostrm);
+  }
+  M(ostrm,printf,"};\n\n");
+//  yaoocpp_container_print_element_prototype(this,ostrm,"Private",&this->private_);
+  yaoocpp_container_print_element_prototype(this,ostrm,"Protected",&this->protected_,PRINT_BOTH,"extern ");
+  yaoocpp_container_print_type_info_prototype(this,ostrm);
+  yaoocpp_container_print_element_prototype(this,ostrm,"Constructor",&this->constructors_,PRINT_ANY,"");
+#endif
+}
+
+void yaoocpp_union_print_to_source(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_union_const_pointer this=p;
+  yaooc_ostream_pointer ostrm=o;
+
+  yaoocpp_container_print_element_implementation(this,ostrm,"Private variables",&this->private_,PRINT_VAR,"static ");
+  yaoocpp_container_print_element_prototype(this,ostrm,"Private methods",&this->private_,PRINT_METHOD,"static ");
+  yaoocpp_container_print_type_info_implementation(this,ostrm);
+  yaoocpp_container_print_element_implementation(this,ostrm,"Constructors",&this->constructors_,PRINT_ANY,"");
+  yaoocpp_container_print_element_implementation(this,ostrm,"Private methods",&this->private_,PRINT_METHOD,"static ");
+  yaoocpp_container_print_element_implementation(this,ostrm,"Protected",&this->protected_,PRINT_METHOD,"");
+  yaoocpp_container_print_define_type_info(this,ostrm,false);
+}
+
+
+/* Class table definition for yaoocpp_union */
+yaoocpp_union_class_table_t yaoocpp_union_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
+  .isa = (const char*(*)(const_pointer)) yaoocpp_union_isa,
+  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_union_is_descendant,
+  .swap = (void(*)(pointer,pointer)) yaoocpp_union_swap,
+  .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_union_print_to_header,
+  .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_union_print_to_source,
+};
+
+/* Type info structure for yaoocpp_union */
+DEFINE_TYPE_INFO(yaoocpp_union,N,N,N,N,N,N,N,Y,yaoocpp_container_with_class_table);
+
+/* Private variables implementation for yaoocpp_class */
+
+/* Private methods prototypes for yaoocpp_class */
+static void yaoocpp_class_print_class_table_implementation(const_pointer,ostream_pointer);
+
+/* Type Info implemmentation for yaoocpp_class
 void yaoocpp_class_default_ctor(pointer p)
 {
   yaoocpp_class_pointer this=p;
-  this->parent_=NULL;
-  this->name_=new(yaooc_string);
-  this->constructors_=new(yaoocpp_item_ptr_vector);
-  this->table_=new(yaoocpp_item_ptr_vector);
-  this->instance_=new(yaoocpp_item_ptr_vector);
-  this->private_=new(yaoocpp_item_ptr_vector);
-  this->protected_=new(yaoocpp_item_ptr_vector);
-  this->has_default_ctor_ = false;
-  this->has_dtor_ = false;
-  this->has_copy_ctor_ = false;
-  this->has_assign_ = false;
-  this->has_lt_cmp_ = false;
-	this->has_to_stream_ = false;
-	this->has_from_stream_ = false;
-  this->defined_in_top_level_file_ = false;
+	yaoocpp_container_default_ctor(p);
+	newp(&this->table_,yaoocpp_element_pointer_vector);
 }
 
-void yaoocpp_class_copy_ctor(pointer d,const_pointer s)
-{
-  yaoocpp_class_default_ctor(d);
-  yaoocpp_class_assign(d,s);
-}
-
-void yaoocpp_class_assign(pointer d,const_pointer s)
-{
-  yaoocpp_class_pointer dst=d;
-  yaoocpp_class_const_pointer src=s;
-  dst->parent_=src->parent_;
-  assign_static(dst->name_,src->name_,yaooc_string);
-  assign_static(dst->constructors_,src->constructors_,yaoocpp_item_ptr_vector);
-  assign_static(dst->table_,src->table_,yaoocpp_item_ptr_vector);
-  assign_static(dst->instance_,src->instance_,yaoocpp_item_ptr_vector);
-  assign_static(dst->private_,src->private_,yaoocpp_item_ptr_vector);
-  assign_static(dst->protected_,src->protected_,yaoocpp_item_ptr_vector);
-  dst->has_default_ctor_ = src->has_default_ctor_;
-  dst->has_dtor_ = src->has_dtor_;
-  dst->has_copy_ctor_ = src->has_copy_ctor_;
-  dst->has_assign_ = src->has_assign_;
-  dst->has_lt_cmp_ = src->has_lt_cmp_;
-  dst->has_to_stream_ = src->has_to_stream_;
-  dst->has_from_stream_ = src->has_from_stream_;
-  dst->defined_in_top_level_file_ = src->defined_in_top_level_file_;
-}
-/* Constructors for yaoocpp_class */
-
-/* Class table methods for yaoocpp_class */
-const char* yaoocpp_class_isa(const_pointer p) { return "yaoocpp_class_t"; }
-
-void yaoocpp_class_virtual_dtor(pointer p)
+void yaoocpp_class_dtor(pointer p)
 {
   yaoocpp_class_pointer this=p;
-  delete(this->name_);
-  delete(this->constructors_);
-  delete(this->table_);
-  delete(this->instance_);
-  delete(this->private_);
-  delete(this->protected_);
+	deletep(&this->table_,yaoocpp_element_pointer_vector);
 }
 
-bool yaoocpp_class_virtual_less_than_compare(const_pointer p,const_pointer o)
+void yaoocpp_class_copy_ctor(pointer p,const_pointer s)
 {
-  yaoocpp_class_const_pointer this=p;
-  yaoocpp_class_const_pointer other=o;
-  return op_lt_static(this->name_,other->name_,yaooc_string);
+  yaoocpp_class_default_ctor(p);
+  yaoocpp_class_assign(p,s);
 }
 
-void yaoocpp_class_dump(const_pointer p,yaooc_ofstream_pointer out)
+void yaoocpp_class_assign(pointer p,const_pointer s)
+{
+  yaoocpp_class_pointer this=p;
+  yaoocpp_class_const_pointer src=s;
+	yaoocpp_container_assign(p,s);
+	assign_static(&this->table_,&src->table_,yaoocpp_element_pointer_vector);
+}
+*/
+/* Constructors implementation for yaoocpp_class */
+
+/* Private methods implementation for yaoocpp_class */
+static void yaoocpp_class_print_class_table_implementation(const_pointer p,ostream_pointer o)
 {
   yaoocpp_class_const_pointer this=p;
-  M(out,printf,"Class Name: %s\n",M(this->name_,c_str));
-  M(out,printf,"Parent Name: %s\n",this->parent_==NULL ? "None" : M(this->parent_->name_,c_str));
-  M(out,printf,"Has default ctor: %s\n",this->has_default_ctor_ ? "Yes" : "No" );
-  M(out,printf,"Has dtor: %s\n",this->has_dtor_ ? "Yes" : "No" );
-  M(out,printf,"Has copy ctor: %s\n",this->has_copy_ctor_ ? "Yes" : "No" );
-  M(out,printf,"Has assigment: %s\n",this->has_assign_ ? "Yes" : "No" );
-  M(out,printf,"Has less than compare ctor: %s\n",this->has_lt_cmp_ ? "Yes" : "No" );
-	M(out,printf,"Has to stream: %s\n",this->has_to_stream_ ?  "Yes" : "No" );
-	M(out,printf,"Has from stream: %s\n",this->has_from_stream_ ?  "Yes" : "No" );
-  M(out,printf,"Constructors\n");
-  yaoocpp_item_ptr_vector_const_iterator i;
-  FOR_EACH(i,this->constructors_) {
-    M(*i,dump,out);
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"/* Class table definition for %s */\n",M(&this->name_,c_str));
+  M(ostrm,printf,"%s_class_table_t %s_class_table = \n{\n",M(&this->name_,c_str),M(&this->name_,c_str));
+  yaoocpp_element_pointer_vector_const_iterator i;
+  FOR_EACH(i,&this->table_) {
+    M(*i,print_class_table_implementation,ostrm,M(&this->name_,c_str));
   }
-  M(out,printf,"Table\n");
-  FOR_EACH(i,this->table_) {
-    M(*i,dump,out);
-  }
-  M(out,printf,"Instance\n");
-  FOR_EACH(i,this->instance_) {
-    M(*i,dump,out);
-  }
-  M(out,printf,"Private\n");
-  FOR_EACH(i,this->private_) {
-    M(*i,dump,out);
-  }
-  M(out,printf,"Protected\n");
-  FOR_EACH(i,this->protected_) {
-    M(*i,dump,out);
-  }
+  M(ostrm,printf,"};\n\n");
 }
 
-void yaoocpp_class_print_class_definition(const_pointer p,yaooc_ofstream_pointer out)
+
+/* Protected implementation for yaoocpp_class
+void yaoocpp_class_inherit(pointer p)
+{
+}
+*/
+
+/* Table implementation for yaoocpp_class */
+const char* yaoocpp_class_isa(const_pointer p) {  return "yaoocpp_class_t"; }
+
+void yaoocpp_class_print_to_header(const_pointer p,ostream_pointer o)
 {
   yaoocpp_class_const_pointer this=p;
-  M(out,printf,"\n/*\n"
-      "  Class definition for %s\n"
-      "*/\n"
-      "yaooc_class_table(%s)\n"
-      "{\n",M(this->name_,c_str),M(this->name_,c_str));
-
-  if(this->parent_) {
-    M(out,printf,"  %s_class_table_t;\n",M(this->parent_->name_,c_str));
-  }
-  yaoocpp_item_ptr_vector_const_iterator item;
-  FOR_EACH(item,this->table_) {
-    if((*item)->flags_ == DEFINED_IN_CURRENT_CLASS) {
-      M(*item,print_class_prototype,out);
-    }
-  }
-  M(out,printf,"};\n");
+  yaooc_ostream_pointer ostrm=o;
+  M(ostrm,printf,"/*\n  Class Definition for %s\n*/\n",M(&this->name_,c_str));
+  M(ostrm,printf,"yaooc_class_table(%s) {\n",M(&this->name_,c_str));
   if(this->parent_)
-    M(out,printf,"#define %s_parent_class_table ((%s_class_table_t*)(%s_class_table.parent_class_table_))\n",
-            M(this->name_,c_str),M(this->parent_->name_,c_str),M(this->name_,c_str));
-
-  M(out,printf,"\nyaooc_class_instance(%s)\n{\n",M(this->name_,c_str));
-  if(this->parent_) {
-    M(out,printf,"  %s_class_instance_t;\n",M(this->parent_->name_,c_str));
+    M(ostrm,printf,"  %s_class_table_t;\n",M(&this->parent_->name_,c_str));
+  yaoocpp_element_pointer_vector_const_iterator iter;
+  FOR_EACH(iter,&this->table_) {
+    if((*iter)->state_==INITIAL)
+      M(*iter,print_class_table_definition,ostrm);
   }
-  FOR_EACH(item,this->instance_) {
-    if((*item)->flags_ == DEFINED_IN_CURRENT_CLASS) {
-      M(*item,print_class_prototype,out);
-    }
+  M(ostrm,printf,"};\n");
+  if(this->parent_)
+    M(ostrm,printf,"#define %s_parent_class_table ((%s_class_table_t*)(%s_class_table.parent_class_table_))\n",
+          M(&this->name_,c_str),M(&this->parent_->name_,c_str),M(&this->name_,c_str));
+  M(ostrm,printf,"\nyaooc_class_instance(%s) {\n",M(&this->name_,c_str));
+  if(this->parent_)
+    M(ostrm,printf,"  %s_class_instance_t;\n",M(&this->parent_->name_,c_str));
+  FOR_EACH(iter,&this->instance_) {
+    if((*iter)->state_==INITIAL)
+      M(*iter,print_class_instance_definition,ostrm);
   }
-  M(out,printf,"};\n");
-  M(out,printf,"\nyaooc_class(%s);\n\n",M(this->name_,c_str));
+  M(ostrm,printf,"};\n\n");
+  M(ostrm,printf,"yaooc_class(%s);\n\n",M(&this->name_,c_str));
+  yaoocpp_container_print_type_info_prototype(this,ostrm);
+  yaoocpp_container_print_element_prototype(this,ostrm,"Constructors",&this->constructors_,PRINT_ANY,"");
+  yaoocpp_container_print_element_prototype(this,ostrm,"Table",&this->table_,PRINT_METHOD,"");
+  yaoocpp_container_print_element_prototype(this,ostrm,"Protected",&this->protected_,PRINT_BOTH,"extern ");
 }
 
-void yaoocpp_class_print_type_info_prototypes(const_pointer p,yaooc_ofstream_pointer out)
+void yaoocpp_class_print_to_source(const_pointer p,ostream_pointer o)
 {
   yaoocpp_class_const_pointer this=p;
-  M(out,printf,"/* Prototypes for %s type info */\n",M(this->name_,c_str));
-  if(this->has_default_ctor_)
-    M(out,printf,"void %s_default_ctor(pointer);\n",M(this->name_,c_str));
-  if(this->has_dtor_)
-    M(out,printf,"void %s_dtor(pointer);\n",M(this->name_,c_str));
-  if(this->has_copy_ctor_)
-    M(out,printf,"void %s_copy_ctor(pointer,const_pointer);\n",M(this->name_,c_str));
-  if(this->has_assign_)
-    M(out,printf,"void %s_assign(pointer,const_pointer);\n",M(this->name_,c_str));
-  if(this->has_lt_cmp_)
-    M(out,printf,"bool %s_less_than_compare(const_pointer,const_pointer);\n",M(this->name_,c_str));
-  if(this->has_to_stream_)
-    M(out,printf,"void %s_to_stream(const_pointer,pointer);\n",M(this->name_,c_str));
-  if(this->has_from_stream_)
-    M(out,printf,"void %s_from_stream(pointer,pointer);\n",M(this->name_,c_str));
-  M(out,printf,"\n");
-}
-
-void yaoocpp_class_print_constructor_prototypes(const_pointer p,yaooc_ofstream_pointer out)
-{
-  yaoocpp_class_const_pointer this=p;
-  M(out,printf,"/* Prototypes for %s constructors */\n",M(this->name_,c_str));
-  yaoocpp_item_ptr_vector_const_iterator icon;
-  FOR_EACH(icon,this->constructors_) {
-    M(((yaoocpp_constructor_const_pointer)*icon),print_prototype,out);
-  }
-  M(out,printf,"\n");
-}
-
-void yaoocpp_class_print_class_prototypes(yaoocpp_item_ptr_vector_const_pointer this,yaooc_ofstream_pointer out,
-      const char* this_class,bool print_var_proto,bool is_static)
-{
-  yaoocpp_item_ptr_vector_const_iterator item;
-  FOR_EACH(item,this) {
-    if(ISA(*item,yaoocpp_method)) {
-      M(*item,print_prototype,out);
-    } else {
-      if(print_var_proto)
-        M(*item,print_prototype,out);
-    }
-  }
-  M(out,printf,"\n");
-}
-
-void yaoocpp_class_print_implementation(yaoocpp_item_ptr_vector_const_pointer this,yaooc_ofstream_pointer out,
-      const char* this_class,bool print_var_implementation)
-{
-  yaoocpp_item_ptr_vector_const_iterator item;
-  FOR_EACH(item,this) {
-    if(ISA(*item,yaoocpp_method)) {
-      yaoocpp_method_const_pointer method=(yaoocpp_method_const_pointer)*item;
-      if(method->flags_ & (DEFINED_IN_CURRENT_CLASS | OVERRIDEN_IN_CURRENT_CLASS)) {
-        M(method,print_implementation,out);
-      }
-    } else if(print_var_implementation) {
-      yaoocpp_variable_const_pointer var=(yaoocpp_variable_const_pointer)*item;
-      M(var,print_implementation,out);
-    }
-  }
-}
-
-void yaoocpp_class_print_to_header(const_pointer p,yaooc_ofstream_pointer out)
-{
-  yaoocpp_class_const_pointer this=p;
-  yaoocpp_class_print_class_definition(p,out);
-  yaoocpp_class_print_type_info_prototypes(p,out);
-  yaoocpp_class_print_constructor_prototypes(p,out);
-  M(out,printf,"/* Prototypes for %s class table */\n",M(this->name_,c_str));
-  yaoocpp_class_print_class_prototypes(this->table_,out,M(this->name_,c_str),false,false);
-//  M(out,printf,"/* Prototypes for %s class instance */\n",M(this->name_,c_str));
-//  yaoocpp_class_print_class_prototypes(this->instance_,out,M(this->name_,c_str),false,false);
-  M(out,printf,"/* Prototypes for %s protected members */\n",M(this->name_,c_str));
-  yaoocpp_class_print_class_prototypes(this->protected_,out,M(this->name_,c_str),true,false);
-}
-
-void yaoocpp_class_print_type_info_implementation(const_pointer p,yaooc_ofstream_pointer out)
-{
-  yaoocpp_class_const_pointer this=p;
-  if(this->has_default_ctor_)
-    M(out,printf,"void %s_default_ctor(pointer p)\n"
-            "{\n"
-            "  %s_pointer this=p;\n\n"
-            "}\n\n",M(this->name_,c_str),M(this->name_,c_str));
-  if(this->has_dtor_)
-    M(out,printf,"void %s_dtor(pointer p)\n"
-            "{\n"
-            "  %s_pointer this=p;\n\n"
-            "}\n\n",M(this->name_,c_str),M(this->name_,c_str));
-  if(this->has_copy_ctor_)
-    M(out,printf,"void %s_copy_ctor(pointer p,const_pointer s)\n"
-            "{\n"
-            "  %s_pointer this=p;\n"
-            "  %s_const_pointer src=s;\n"
-            "\n}\n\n",M(this->name_,c_str),M(this->name_,c_str),M(this->name_,c_str));
-  if(this->has_assign_)
-    M(out,printf,"void %s_assign(pointer p,const_pointer s)\n"
-            "{\n"
-            "  %s_pointer this=p;\n"
-            "  %s_const_pointer src=s;\n"
-            "\n}\n\n",M(this->name_,c_str),M(this->name_,c_str),M(this->name_,c_str));
-  if(this->has_lt_cmp_)
-    M(out,printf,"bool %s_less_than_compare(const_pointer p1,const_pointer p2)\n"
-            "{\n"
-            "  %s_const_pointer vp1=p1;\n"
-            "  %s_const_pointer vp2=p2;\n"
-            "  bool ret;\n\n"
-            "  return ret;\n"
-            "\n}\n",M(this->name_,c_str),M(this->name_,c_str),M(this->name_,c_str));
-  if(this->has_to_stream_)
-    M(out,printf,"void %s_to_stream(const_pointer p,pointer s)\n"
-            "{\n"
-            "  %s_const_pointer this=p;\n"
-            "  yaooc_ostream_pointer strm=s;\n"
-            "\n}\n",M(this->name_,c_str),M(this->name_,c_str));
-  if(this->has_from_stream_)
-    M(out,printf,"void %s_from_stream(pointer p,pointer s)\n"
-            "{\n"
-            "  %s_pointer this=p;\n"
-            "  yaooc_istream_pointer strm=s;\n"
-            "\n}\n",M(this->name_,c_str),M(this->name_,c_str));
-  M(out,printf,"\n");
-}
-
-void yaoocpp_class_print_constructor_implementation(const_pointer p,yaooc_ofstream_pointer out)
-{
-  yaoocpp_class_const_pointer this=p;
-  yaoocpp_item_ptr_vector_const_iterator icon;
-  FOR_EACH(icon,this->constructors_) {
-    M(((yaoocpp_constructor_const_pointer)*icon),print_implementation,out);
-  }
-  M(out,printf,"\n");
-}
-
-void yaoocpp_class_print_class_table(const_pointer p,yaooc_ofstream_pointer out)
-{
-  yaoocpp_class_const_pointer this=p;
-  yaoocpp_item_ptr_vector_const_iterator item;
-  M(out,printf,"%s_class_table_t %s_class_table = \n{\n",M(this->name_,c_str),M(this->name_,c_str));
-  FOR_EACH(item,this->table_) {
-    M(*item,print_class_implementation,out);
-  }
-  M(out,printf,"};\n\n");
-}
-
-void yaoocpp_class_print_define_type_info(const_pointer p,yaooc_ofstream_pointer out)
-{
-  yaoocpp_class_const_pointer this=p;
-  M(out,printf,"DEFINE_TYPE_INFO(%s",M(this->name_,c_str));
-	M(out,printf,",%c",(this->has_default_ctor_ ? 'Y' : 'N'));
-	M(out,printf,",%c",(this->has_dtor_ ? 'Y' : 'N'));
-	M(out,printf,",%c",(this->has_copy_ctor_ ? 'Y' : 'N'));
-	M(out,printf,",%c",(this->has_assign_ ? 'Y' : 'N'));
-	M(out,printf,",%c",(this->has_lt_cmp_ ? 'Y' : 'N'));
-	M(out,printf,",%c",(this->has_to_stream_ ? 'Y' : 'N'));
-	M(out,printf,",%c",(this->has_from_stream_ ? 'Y' : 'N'));
-  M(out,printf,",Y,%s)\n",this->parent_ ? M(this->parent_->name_,c_str) : "NULL");
-}
-
-void yaoocpp_class_print_to_source(const_pointer p,yaooc_ofstream_pointer out)
-{
-  yaoocpp_class_const_pointer this=p;
-  M(out,printf,"\n/* %s private members */\n",M(this->name_,c_str));
-  yaoocpp_class_print_implementation(this->private_,out,M(this->name_,c_str),true);
-  M(out,printf,"\n/* %s type info members */\n",M(this->name_,c_str));
-  yaoocpp_class_print_type_info_implementation(p,out);
-  M(out,printf,"\n/* Constructors for %s */\n",M(this->name_,c_str));
-  yaoocpp_class_print_constructor_implementation(p,out);
-  M(out,printf,"\n/* %s protected members */\n",M(this->name_,c_str));
-  yaoocpp_class_print_implementation(this->protected_,out,M(this->name_,c_str),true);
-  M(out,printf,"\n/* Class table methods for %s */\n",M(this->name_,c_str));
-  yaoocpp_class_print_implementation(this->table_,out,M(this->name_,c_str),false);
-  M(out,printf,"\n/* Class table for %s */\n",M(this->name_,c_str));
-  yaoocpp_class_print_class_table(this,out);
-  yaoocpp_class_print_define_type_info(this,out);
-  M(out,printf,"\n");
+  yaooc_ostream_pointer ostrm=o;
+  yaoocpp_container_print_element_implementation(this,ostrm,"Private variables",&this->private_,PRINT_VAR,"static ");
+  yaoocpp_container_print_element_prototype(this,ostrm,"Private methods",&this->private_,PRINT_METHOD,"static ");
+  yaoocpp_container_print_type_info_implementation(this,ostrm);
+  yaoocpp_container_print_element_implementation(this,ostrm,"Constructors",&this->constructors_,PRINT_ANY,"");
+  yaoocpp_container_print_element_implementation(this,ostrm,"Private methods",&this->private_,PRINT_METHOD,"static ");
+  yaoocpp_container_print_element_implementation(this,ostrm,"Protected",&this->protected_,PRINT_METHOD,"");
+  yaoocpp_container_print_element_implementation(this,ostrm,"Table",&this->table_,PRINT_METHOD,"");
+  yaoocpp_class_print_class_table_implementation(this,ostrm);
+  yaoocpp_container_print_define_type_info(this,ostrm,true);
 }
 
 
-/* Class table for yaoocpp_class */
+/* Class table definition for yaoocpp_class */
 yaoocpp_class_class_table_t yaoocpp_class_class_table =
 {
-  .parent_class_table_ = (const class_table_t*) &yaoocpp_item_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaoocpp_class_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaoocpp_class_is_descendant,
-  .swap = (void (*) (pointer p,pointer)) yaoocpp_class_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaoocpp_class_virtual_dtor,
-  .virtual_less_than_compare = (bool (*) (const_pointer p,const_pointer)) yaoocpp_class_virtual_less_than_compare,
-  .dump = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_class_dump,
-  .print_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_class_prototype = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_class_implementation = (void (*) (const_pointer p,yaooc_ofstream_pointer)) NULL,
-  .print_to_header = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_class_print_to_header,
-  .print_to_source = (void (*) (const_pointer p,yaooc_ofstream_pointer)) yaoocpp_class_print_to_source,
+  .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
+  .isa = (const char*(*)(const_pointer)) yaoocpp_class_isa,
+  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_class_is_descendant,
+  .swap = (void(*)(pointer,pointer)) yaoocpp_class_swap,
+  .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_class_print_to_header,
+  .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_class_print_to_source,
 };
 
+/* Type info structure for yaoocpp_class */
+DEFINE_TYPE_INFO(yaoocpp_class,N,N,N,N,N,N,N,Y,yaoocpp_container_with_class_table);
 
-DEFINE_TYPE_INFO(yaoocpp_class,Y,N,Y,Y,N,N,N,Y,yaoocpp_item)
-/*  End YAOOC PreProcessor generated content */

@@ -51,24 +51,23 @@ yaooc_class_table(yaooc_json_exception)
 yaooc_class_instance(yaooc_json_exception)
 {
   yaooc_exception_class_instance_t;
-  char* exception_str_;
 };
 
 yaooc_class(yaooc_json_exception);
 /* Prototypes for yaooc_json_exception type info */
-void yaooc_json_exception_default_ctor(pointer);
-void yaooc_json_exception_dtor(pointer);
-void yaooc_json_exception_copy_ctor(pointer,const_pointer);
-void yaooc_json_exception_assign(pointer,const_pointer);
+#define yaooc_json_exception_default_ctor yaooc_exception_default_ctor
+#define yaooc_json_exception_dtor yaooc_exception_dtor
+#define yaooc_json_exception_copy_ctor yaooc_exception_copy_ctor
+#define yaooc_json_exception_default_ctor yaooc_exception_default_ctor
 
 /* Constructors for yaooc_json_exception */
-void yaooc_json_exception_ctor_ccs(pointer,va_list);
+#define yaooc_json_exception_ctor_v yaooc_exception_ctor_v
 
 /* Prototypes for yaooc_json_exception class table*/
 const char* yaooc_json_exception_isa(const_pointer);
 #define yaooc_json_exception_is_descendant yaooc_exception_is_descendant
 #define yaooc_json_exception_swap yaooc_exception_swap
-const char* yaooc_json_exception_what(const_pointer);
+#define yaooc_json_exception_what yaooc_exception_what
 
 /* Prototypes for yaooc_json_exception class instance*/
 

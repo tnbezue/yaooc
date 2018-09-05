@@ -24,34 +24,6 @@
 /* yaooc_regex_exception private members */
 
 /* yaooc_regex_exception type info members */
-void yaooc_regex_exception_default_ctor(pointer p)
-{
-  yaooc_regex_exception_pointer this=p;
-	this->what_=NULL;
-}
-
-void yaooc_regex_exception_dtor(pointer p)
-{
-  yaooc_regex_exception_pointer this=p;
-	if(this->what_)
-		FREE(this->what_);
-}
-
-void yaooc_regex_exception_copy_ctor(pointer p,const_pointer s)
-{
-	yaooc_regex_exception_default_ctor(p);
-	yaooc_regex_exception_assign(p,s);
-}
-
-void yaooc_regex_exception_assign(pointer p,const_pointer s)
-{
-  yaooc_regex_exception_pointer this=p;
-  yaooc_regex_exception_const_pointer src=s;
-	yaooc_regex_exception_dtor(this);
-	this->what_=src->what_ ? STRDUP(src->what_) : NULL;
-}
-
-
 
 /* Constructors for yaooc_regex_exception */
 void yaooc_regex_exception_ctor_ccs(pointer p,va_list args)
@@ -67,18 +39,6 @@ void yaooc_regex_exception_ctor_ccs(pointer p,va_list args)
 /* Class table methods for yaooc_regex_exception */
 const char* yaooc_regex_exception_isa(const_pointer p) { return "yaooc_regex_exception_t"; }
 
-void yaooc_regex_exception_swap(pointer p,pointer o)
-{
-  yaooc_regex_exception_pointer this=p;
-	yaooc_regex_exception_pointer other=o;
-	SWAP(char*,this->what_,other->what_);
-}
-
-const char* yaooc_regex_exception_what(const_pointer p)
-{
-	return ((yaooc_regex_exception_const_pointer)p)->what_;
-}
-
 /* Class table for yaooc_regex_exception */
 yaooc_regex_exception_class_table_t yaooc_regex_exception_class_table =
 {
@@ -89,7 +49,7 @@ yaooc_regex_exception_class_table_t yaooc_regex_exception_class_table =
   .what = (const char* (*) (const_pointer)) yaooc_regex_exception_what,
 };
 
-DEFINE_TYPE_INFO(yaooc_regex_exception,Y,Y,Y,Y,N,N,N,Y,yaooc_exception)
+DEFINE_TYPE_INFO(yaooc_regex_exception,N,N,N,N,N,N,N,Y,yaooc_exception)
 
 
 /* Private items for yaooc_matchdata */

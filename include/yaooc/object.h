@@ -40,12 +40,12 @@ yaooc_class_instance(yaooc_object)
 yaooc_class(yaooc_object);
 
 /* Prototypes for yaooc_object type info */
-bool yaooc_object_less_than_compare(const_pointer,const_pointer);
+#define yaooc_object_default_ctor yaooc_object_do_nothing_default_ctor
+#define yaooc_object_dtor yaooc_object_do_nothing_dtor
+#define yaooc_object_copy_ctor yaooc_object_do_nothing_copy_ctor
+#define yaooc_object_assign yaooc_object_do_nothing_assign
 
 /* Constructors for yaooc_object */
-void yaooc_object_default_ctor(pointer);
-void yaooc_object_copy_ctor(pointer,const_pointer);
-#define yaooc_object_assign yaooc_object_copy_ctor
 
 /* Prototypes for yaooc_object class table*/
 const char* yaooc_object_isa(const_pointer);
@@ -61,5 +61,9 @@ void yaooc_object_swap(pointer,pointer);
 #define ISA(p,o) (strcmp(((yaooc_object_pointer)(p))->class_table_->isa((p)),# o "_t") == 0)
 #define IS_DESCENDANT(p,o) (((yaooc_object_pointer)(p))->class_table_->is_descendant((p),# o "_t"))
 
+void yaooc_do_nothing_default_ctor(pointer);
+#define yaooc_do_nothing_dtor yaooc_do_nothing_default_ctor
+void yaooc_do_nothing_copy_ctor(pointer,const_pointer);
+#define yaooc_do_nothing_assign yaooc_do_nothing_copy_ctor
 
 #endif

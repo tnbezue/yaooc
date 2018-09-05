@@ -27,6 +27,39 @@
 /* Protected items for yaooc_exception */
 
 /* Typeinfo for yaooc_exception */
+void yaooc_exception_default_ctor(pointer p)
+{
+	yaooc_exception_pointer this=p;
+	this->what_=NULL;
+}
+
+void yaooc_exception_dtor(pointer p)
+{
+	yaooc_exception_pointer this=p;
+	if(this->what_)
+		free(this->what_);  // Don't use FREE since vasprintf may have allocated the memory
+}
+
+void yaooc_exception_copy_ctor(pointer p,const_pointer s)
+{
+	yaooc_exception_default_ctor(p);
+	yaooc_exception_assign(p,s);
+}
+
+void yaooc_exception_assign(pointer p,const_pointer s)
+{
+	yaooc_exception_pointer this=p;
+	yaooc_exception_const_pointer src=p;
+	yaooc_exception_dtor(p);
+	this->what_ = src->what_ ? strdup(src->what_) : NULL; // Don't use STRDUP
+}
+
+void yaooc_exception_ctor_v(pointer p,va_list args)
+{
+	yaooc_exception_pointer this=p;
+	const char* fmt=va_arg(args,const char*);
+	vasprintf(&this->what_,fmt,args);
+}
 
 /* Class table members for yaooc_exception */
 const char* yaooc_exception_isa(const_pointer p)
@@ -34,9 +67,16 @@ const char* yaooc_exception_isa(const_pointer p)
   return "yaooc_exception_t";
 }
 
+void yaooc_exception_swap(pointer p,pointer o)
+{
+	yaooc_exception_pointer this=p;
+	yaooc_exception_pointer other=o;
+	SWAP(char *,this->what_,other->what_);
+}
+
 const char* yaooc_exception_what(const_pointer p)
 {
-  return NULL;
+  return ((yaooc_exception_const_pointer)p)->what_;
 }
 
 /* Class table for yaooc_exception */
@@ -50,7 +90,7 @@ yaooc_exception_class_table_t yaooc_exception_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_exception,N,N,N,N,N,N,N,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_exception,Y,Y,Y,Y,N,N,N,Y,yaooc_object)
 /*  End YAOOC PreProcessor generated content */
 
 typedef struct yaooc_jmpbuf_s yaooc_jmpbuf_t;

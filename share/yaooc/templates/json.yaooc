@@ -104,7 +104,7 @@ class yaooc_json_string : yaooc_json_value
     yaooc_json_string();
     yaooc_json_string(yaooc_json_string);
     yaooc_json_string_ctor_ccs(const char* str);
-    yaooc_json_string_ctor_ccs_size(const char* str,yaooc_size_t n);
+    yaooc_json_string_ctor_ccs_size(const char* str,size_t n);
 
   table:
     const char* isa() const;
@@ -115,7 +115,7 @@ class yaooc_json_string : yaooc_json_value
     void print(ostream_pointer);
     void set(const char* value);
     const char* get() const;
-    yaooc_size_t size() const;
+    size_t size() const;
     void clear();
 };
 
@@ -134,8 +134,8 @@ class yaooc_json_array : yaooc_json_value
     yaooc_json_array_iterator insert(pointer value);
     void erase(pointer value);
     void clear();
-    yaooc_size_t size() const;
-    yaooc_json_array_iterator at(yaooc_size_t i) const;
+    size_t size() const;
+    yaooc_json_array_iterator at(size_t i) const;
     yaooc_json_array_iterator begin() const;
     yaooc_json_array_iterator end() const;
 };
@@ -155,7 +155,7 @@ class yaooc_json_object : yaooc_json_value
     yaooc_json_object_iterator insert(const_pointer str,const_pointer val);
     void erase(const_pointer str);
     void clear();
-    yaooc_size_t size() const;
+    size_t size() const;
     yaooc_json_value_pointer at(const_pointer str) const;
     yaooc_json_object_iterator begin() const;
     yaooc_json_object_iterator end() const;

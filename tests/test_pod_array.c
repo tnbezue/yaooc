@@ -71,6 +71,25 @@ void test_erase()
   delete(intsa);
 }
 
+void test_replace()
+{
+  int ary[] = { 41, 43, 45, 49 };
+  TESTCASE("Int array erase")
+  int_pod_array_t* intsa=new(int_pod_array);
+  M(intsa,insert_back,10);
+  M(intsa,insert_back,20);
+  M(intsa,insert_back,30);
+  M(intsa,insert_back,40);
+  M(intsa,insert_back,50);
+  M(intsa,insert_back,60);
+  M(intsa,insert_back,70);
+  
+  int_pod_array_const_iterator i;
+  FOR_EACH(i,intsa) {
+    printf("%d ",*i);
+  }
+}
+
 struct demo_s {
   unsigned long ul;
   int m;

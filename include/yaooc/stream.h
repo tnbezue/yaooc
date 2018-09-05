@@ -44,25 +44,25 @@ yaooc_class_table(yaooc_stream_exception)
 yaooc_class_instance(yaooc_stream_exception)
 {
   yaooc_exception_class_instance_t;
-  char* exception_str_;
 };
 
 yaooc_class(yaooc_stream_exception);
 
 /* Prototypes for yaooc_stream_exception type info */
-void yaooc_stream_exception_dtor(pointer);
-void yaooc_stream_exception_copy_ctor(pointer,const_pointer);
-void yaooc_stream_exception_assign(pointer,const_pointer);
+#define yaooc_stream_exception_default_ctor yaooc_exception_default_ctor
+#define yaooc_stream_exception_dtor yaooc_exception_dtor
+#define yaooc_stream_exception_copy_ctor yaooc_exception_copy_ctor
+#define yaooc_stream_exception_assign yaooc_exception_assign
 
 /* Prototypes for yaooc_stream_exception constructors */
-void yaooc_stream_exception_ctor_ccs(pointer,va_list);
+#define yaooc_stream_exception_ctor_v yaooc_exception_ctor_v
 
 /* Prototypes for yaooc_stream_exception class table */
 const char* yaooc_stream_exception_isa(const_pointer);
 #define yaooc_stream_exception_is_descendant yaooc_exception_is_descendant
 #define yaooc_stream_exception_swap yaooc_exception_swap
 #define yaooc_stream_exception_to_s yaooc_exception_to_s
-const char* yaooc_stream_exception_what(const_pointer);
+#define yaooc_stream_exception_what yaooc_exception_what
 
 /* Prototypes for yaooc_stream_exception protected members */
 

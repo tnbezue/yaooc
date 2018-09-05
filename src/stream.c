@@ -24,53 +24,13 @@
 /* yaooc_stream_exception private members */
 
 /* yaooc_stream_exception type info members */
-void yaooc_stream_exception_default_ctor(pointer p)
-{
-  yaooc_stream_exception_pointer this=p;
-	this->exception_str_=NULL;
-}
-
-void yaooc_stream_exception_dtor(pointer p)
-{
-  yaooc_stream_exception_pointer this=p;
-	if(this->exception_str_)
-		FREE(this->exception_str_);
-}
-
-void yaooc_stream_exception_copy_ctor(pointer p,const_pointer s)
-{
-	yaooc_stream_exception_default_ctor(p);
-	yaooc_stream_exception_assign(p,s);
-}
-
-void yaooc_stream_exception_assign(pointer p,const_pointer s)
-{
-  yaooc_stream_exception_pointer this=p;
-  yaooc_stream_exception_const_pointer src=s;
-	yaooc_stream_exception_dtor(this);
-	this->exception_str_ = src->exception_str_ ? STRDUP(src->exception_str_) : NULL;
-}
 
 /* Constructors for yaooc_stream_exception */
-void yaooc_stream_exception_ctor_ccs(pointer p,va_list args)
-{
-  yaooc_stream_exception_pointer this=p;
-  const char* str = va_arg(args,const char*);
-	this->exception_str_ = str ? STRDUP(str) : NULL;
-}
-
 
 /* yaooc_stream_exception protected members */
 
 /* Class table methods for yaooc_stream_exception */
 const char* yaooc_stream_exception_isa(const_pointer p) { return "yaooc_stream_exception_t"; }
-
-const char* yaooc_stream_exception_what(const_pointer p)
-{
-  yaooc_stream_exception_const_pointer this=p;
-  return this->exception_str_;
-}
-
 
 /* Class table for yaooc_stream_exception */
 yaooc_stream_exception_class_table_t yaooc_stream_exception_class_table =
@@ -82,7 +42,7 @@ yaooc_stream_exception_class_table_t yaooc_stream_exception_class_table =
   .what = (const char* (*) (const_pointer)) yaooc_stream_exception_what,
 };
 
-DEFINE_TYPE_INFO(yaooc_stream_exception,Y,Y,Y,Y,N,N,N,Y,yaooc_exception)
+DEFINE_TYPE_INFO(yaooc_stream_exception,N,N,N,N,N,N,N,Y,yaooc_exception)
 
 /* yaooc_base_stream private members */
 
@@ -174,7 +134,7 @@ void yaooc_istream_stream(pointer p,...)
 				from_s(ptr,p);
 			}
 		} else
-			THROW(new_ctor(yaooc_stream_exception,yaooc_stream_exception_ctor_ccs,"No from_stream method for object"));
+			THROW(new_ctor(yaooc_stream_exception,yaooc_stream_exception_ctor_v,"No from_stream method for object"));
 	}
 	va_end(args);
 }
@@ -280,7 +240,7 @@ void yaooc_ostream_stream(pointer p,...)
 				to_s(ptr,p);
 			}
 		} else {
-			THROW(new_ctor(yaooc_stream_exception,yaooc_stream_exception_ctor_ccs,"No to_stream method for object"));
+			THROW(new_ctor(yaooc_stream_exception,yaooc_stream_exception_ctor_v,"No to_stream method for object"));
 		}
 	}
 	va_end(args);
@@ -394,4 +354,4 @@ static void initialize_streams() {
 	__cerr.handle_ = stderr;
 }
 
-extern type_info_t __yaooc_ccs_ti;
+//extern type_info_t __yaooc_ccs_ti;

@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 #include <yaooc/new.h>
 
 #ifdef __YAOOC_USE_GC__
@@ -524,4 +525,26 @@ char* yaooc_strdup(const char* str)
     strcpy(dup_str,str);
   }
   return dup_str;
+}
+
+char* yaooc_upcase(const char* str)
+{
+  char* uc_str=yaooc_strdup(str);
+  if(uc_str) {
+    char* ptr;
+    for(ptr=uc_str;*ptr;ptr++)
+      *ptr=toupper(*ptr);
+  }
+  return uc_str;
+}
+
+char* yaooc_downcase(const char* str)
+{
+  char* uc_str=yaooc_strdup(str);
+  if(uc_str) {
+    char* ptr;
+    for(ptr=uc_str;*ptr;ptr++)
+      *ptr=tolower(*ptr);
+  }
+  return uc_str;
 }

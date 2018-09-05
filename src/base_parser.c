@@ -169,8 +169,8 @@ void yaooc_base_parser_swap(pointer p,pointer o)
 void yaooc_base_parser_set_parse_string(pointer p,const char* pstr)
 {
   yaooc_base_parser_pointer this=p;
-  this->string_to_parse_=pstr;
-  this->current_pos_=this->string_to_parse_;
+//  this->string_to_parse_=pstr;
+  this->current_pos_=pstr;
 }
 
 void yaooc_base_parser_rule_start(pointer p)

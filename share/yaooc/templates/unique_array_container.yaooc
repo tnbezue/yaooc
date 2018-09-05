@@ -9,10 +9,10 @@ class yaooc_unique_array_container : yaooc_array_container
   private:
   protected:
     iterator insert(const_iterator pos,const_pointer value);
-    iterator insertn(const_iterator pos,yaooc_size_t n,const_pointer val);
+    iterator insertn(const_iterator pos,size_t n,const_pointer val);
     iterator insert_range(const_iterator pos,const_iterator f,const_iterator l);
-    void resize(yaooc_size_t n);
-    void resize_value(yaooc_size_t n,const_pointer value);
+    void resize(size_t n);
+    void resize_value(size_t n,const_pointer value);
   table:
     const char* isa() const;
 };

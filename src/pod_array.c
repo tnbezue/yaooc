@@ -164,7 +164,8 @@ void yaooc_pod_array_shrink_to_fit(pointer p)
   // Don't shrink to less than INITIAL_CAPACITY
   if(this->capacity_ > YAOOC_POD_ARRAY_INITIAL_CAPACITY && this->size_ < this->capacity_) {
     this->capacity_=this->size_ < YAOOC_POD_ARRAY_INITIAL_CAPACITY ? YAOOC_POD_ARRAY_INITIAL_CAPACITY : this->size_;
-    this->array_=REALLOC(this->array_,CAPACITY(this)*TYPE_SIZE(this));
+//    this->array_=REALLOC(this->array_,CAPACITY(this)*TYPE_SIZE(this));
+    this->array_=REALLOC(this->array_,M(this,size_needed,this->capacity_)); //*TYPE_SIZE(this)+this->class_table_->extra_capacity_);
   }
 }
 
