@@ -1,0 +1,62 @@
+#ifndef __YAOOCPP_PARSER_INCLUDED__
+#define __YAOOCPP_PARSER_INCLUDED__
+
+#include <exception.yaooc>
+#include <base_parser.yaooc>
+
+class yaoocpp_parser_exception : yaooc_exception
+{
+	yaoocpp_parser_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
+};
+
+struct name_parent
+{
+    name_parent();
+    ~name_parent();
+  instance:
+    char* name_;
+    const yaoocpp_container_t* parent_;
+};
+
+class yaoocpp_parser : yaooc_base_parser
+{
+		yaoocpp_parser();
+		~yaoocpp_parser();
+	table:
+		yaooc_terminal_t custom_whitespace();
+		void parse_file(const char* file);
+
+	instance:
+    yaoocpp_container_pointer_vector_t* classes_;
+    char* buffer_;
+    const char* file_;
+		const char* header_text_;
+		const char* source_text_;
+    bool is_top_level_file_;
+
+  private:
+    void preprocess();
+    yaoocpp_container_const_pointer find_class(const char* name);
+    name_parent_t parse_name_parent();
+    bool parse_default_ctor(pointer cc);
+    bool parse_dtor(pointer cc);
+    bool parse_copy_ctor(pointer cc);
+    bool parse_assign(pointer cc);
+    bool parse_less_than_compare(pointer cc);
+    bool parse_to_stream(pointer cc);
+    bool parse_from_stream(pointer cc);
+    yaoocpp_argument_pointer parse_argument();
+    void parse_type_info(pointer cc);
+    void parse_arguments(yaoocpp_argument_vector_t* args);
+    bool parse_constructor(pointer cc);
+    yaoocpp_element_pointer parse_method();
+    yaoocpp_element_pointer parse_variable();
+    yaoocpp_element_pointer parse_type();
+    bool parse_sub_section(const char *section,yaoocpp_element_pointer_vector_t* element_vector);
+    yaoocpp_container_pointer parse_class();
+    yaoocpp_container_pointer parse_struct();
+    yaoocpp_container_pointer parse_union();
+    yaoocpp_container_pointer parse_section();
+};
+
+#endif
