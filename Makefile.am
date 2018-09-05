@@ -96,6 +96,7 @@ include/yaooc/index_array_container.h \
 include/yaooc/integer.h \
 include/yaooc/json.h \
 include/yaooc/json_parser.h \
+include/yaooc/macros.h \
 include/yaooc/map.h \
 include/yaooc/memory.h \
 include/yaooc/new.h \
@@ -149,6 +150,7 @@ tests/test_stack \
 tests/test_stream \
 tests/test_string \
 tests/test_thread \
+tests/test_union \
 tests/test_unique_array_container \
 tests/test_unique_index_array_container \
 tests/test_unique_ordered_array_container \
@@ -160,8 +162,8 @@ bin_PROGRAMS=yaoocpp/yaoocpp
 
 bin_SCRIPTS=yaooc-config
 
-yaoocpp_yaoocpp_SOURCES=yaoocpp/yaoocpp.c yaoocpp/class_parser.c \
-        yaoocpp/template_objects.c  yaoocpp/class_parser.h \
+yaoocpp_yaoocpp_SOURCES=yaoocpp/yaoocpp.c yaoocpp/parser.c \
+        yaoocpp/template_objects.c  yaoocpp/parser.h \
         yaoocpp/template_objects.h
 
 yaoocpp_yaoocpp_LDFLAGS=-L$(top_srcdir)/lib -lyaooc -pthread

@@ -109,7 +109,7 @@ check_PROGRAMS = tests/test_algorithm$(EXEEXT) \
 	tests/test_queue$(EXEEXT) tests/test_regex$(EXEEXT) \
 	tests/test_set$(EXEEXT) tests/test_stack$(EXEEXT) \
 	tests/test_stream$(EXEEXT) tests/test_string$(EXEEXT) \
-	tests/test_thread$(EXEEXT) \
+	tests/test_thread$(EXEEXT) tests/test_union$(EXEEXT) \
 	tests/test_unique_array_container$(EXEEXT) \
 	tests/test_unique_index_array_container$(EXEEXT) \
 	tests/test_unique_ordered_array_container$(EXEEXT) \
@@ -292,6 +292,10 @@ tests_test_thread_SOURCES = tests/test_thread.c
 tests_test_thread_OBJECTS = tests/test_thread.$(OBJEXT)
 tests_test_thread_LDADD = $(LDADD)
 tests_test_thread_DEPENDENCIES =
+tests_test_union_SOURCES = tests/test_union.c
+tests_test_union_OBJECTS = tests/test_union.$(OBJEXT)
+tests_test_union_LDADD = $(LDADD)
+tests_test_union_DEPENDENCIES =
 tests_test_unique_array_container_SOURCES =  \
 	tests/test_unique_array_container.c
 tests_test_unique_array_container_OBJECTS =  \
@@ -315,8 +319,7 @@ tests_test_vector_OBJECTS = tests/test_vector.$(OBJEXT)
 tests_test_vector_LDADD = $(LDADD)
 tests_test_vector_DEPENDENCIES =
 am_yaoocpp_yaoocpp_OBJECTS = yaoocpp/yaoocpp.$(OBJEXT) \
-	yaoocpp/class_parser.$(OBJEXT) \
-	yaoocpp/template_objects.$(OBJEXT)
+	yaoocpp/parser.$(OBJEXT) yaoocpp/template_objects.$(OBJEXT)
 yaoocpp_yaoocpp_OBJECTS = $(am_yaoocpp_yaoocpp_OBJECTS)
 yaoocpp_yaoocpp_LDADD = $(LDADD)
 yaoocpp_yaoocpp_DEPENDENCIES =
@@ -370,7 +373,8 @@ SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_pod_array.c tests/test_pointer_bag.c \
 	tests/test_queue.c tests/test_regex.c tests/test_set.c \
 	tests/test_stack.c tests/test_stream.c tests/test_string.c \
-	tests/test_thread.c tests/test_unique_array_container.c \
+	tests/test_thread.c tests/test_union.c \
+	tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c \
 	tests/test_vector.c $(yaoocpp_yaoocpp_SOURCES)
@@ -385,7 +389,8 @@ DIST_SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_pod_array.c tests/test_pointer_bag.c \
 	tests/test_queue.c tests/test_regex.c tests/test_set.c \
 	tests/test_stack.c tests/test_stream.c tests/test_string.c \
-	tests/test_thread.c tests/test_unique_array_container.c \
+	tests/test_thread.c tests/test_union.c \
+	tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c \
 	tests/test_vector.c $(yaoocpp_yaoocpp_SOURCES)
@@ -644,6 +649,7 @@ include/yaooc/index_array_container.h \
 include/yaooc/integer.h \
 include/yaooc/json.h \
 include/yaooc/json_parser.h \
+include/yaooc/macros.h \
 include/yaooc/map.h \
 include/yaooc/memory.h \
 include/yaooc/new.h \
@@ -672,8 +678,8 @@ include/yaooc/yaooc_debug.h
 
 LDADD = -L$(top_srcdir)/lib -lyaooc
 bin_SCRIPTS = yaooc-config
-yaoocpp_yaoocpp_SOURCES = yaoocpp/yaoocpp.c yaoocpp/class_parser.c \
-        yaoocpp/template_objects.c  yaoocpp/class_parser.h \
+yaoocpp_yaoocpp_SOURCES = yaoocpp/yaoocpp.c yaoocpp/parser.c \
+        yaoocpp/template_objects.c  yaoocpp/parser.h \
         yaoocpp/template_objects.h
 
 yaoocpp_yaoocpp_LDFLAGS = -L$(top_srcdir)/lib -lyaooc -pthread
@@ -1019,6 +1025,12 @@ tests/test_thread.$(OBJEXT): tests/$(am__dirstamp) \
 tests/test_thread$(EXEEXT): $(tests_test_thread_OBJECTS) $(tests_test_thread_DEPENDENCIES) $(EXTRA_tests_test_thread_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test_thread$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_thread_OBJECTS) $(tests_test_thread_LDADD) $(LIBS)
+tests/test_union.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test_union$(EXEEXT): $(tests_test_union_OBJECTS) $(tests_test_union_DEPENDENCIES) $(EXTRA_tests_test_union_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test_union$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_union_OBJECTS) $(tests_test_union_LDADD) $(LIBS)
 tests/test_unique_array_container.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1051,7 +1063,7 @@ yaoocpp/$(DEPDIR)/$(am__dirstamp):
 	@: > yaoocpp/$(DEPDIR)/$(am__dirstamp)
 yaoocpp/yaoocpp.$(OBJEXT): yaoocpp/$(am__dirstamp) \
 	yaoocpp/$(DEPDIR)/$(am__dirstamp)
-yaoocpp/class_parser.$(OBJEXT): yaoocpp/$(am__dirstamp) \
+yaoocpp/parser.$(OBJEXT): yaoocpp/$(am__dirstamp) \
 	yaoocpp/$(DEPDIR)/$(am__dirstamp)
 yaoocpp/template_objects.$(OBJEXT): yaoocpp/$(am__dirstamp) \
 	yaoocpp/$(DEPDIR)/$(am__dirstamp)
@@ -1161,11 +1173,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_stream.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_string.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_thread.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_union.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_unique_array_container.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_unique_index_array_container.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_unique_ordered_array_container.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_vector.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@yaoocpp/$(DEPDIR)/class_parser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@yaoocpp/$(DEPDIR)/parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@yaoocpp/$(DEPDIR)/template_objects.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@yaoocpp/$(DEPDIR)/yaoocpp.Po@am__quote@
 
