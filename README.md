@@ -22,7 +22,7 @@ As the name suggests, YAOOC is another framework to make C a bit more like C++ -
     delete(lv);
 
     /* Custom class */
-    class_(custom) {
+    yaooc_struct(custom) {
       int x;
       double d;
       char* string;
