@@ -16,7 +16,7 @@ AC_CONFIG_MACRO_DIRS([m4])
 AC_CHECK_HEADER_STDBOOL
 AC_FUNC_MALLOC
 
-CFLAGS="$CFLAGS -fms-extensions -pthread -D__USE_GNU"
+CFLAGS="$CFLAGS -fms-extensions -pthread -D_GNU_SOURCE"
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h inttypes.h stddef.h stdint.h stdlib.h string.h unistd.h])
