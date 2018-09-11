@@ -91,9 +91,6 @@ void my_string_from_stream(pointer p,pointer s)
 	this->str=strdup(temp);
 }
 
-const char* my_string_isa(const_pointer p) { return "my_string_t"; }
-
-
 const char* my_string_get(const_pointer p)
 {
   return ((my_string_const_pointer)p)->str;
@@ -117,8 +114,7 @@ void my_string_set(pointer p,const char* s)
 my_string_class_table_t my_string_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = my_string_isa,
-  .is_descendant = yaooc_object_is_descendant,
+  .type_name_ = "my_string_t",
   .swap = my_string_swap,
   .get = my_string_get,
   .set = my_string_set
@@ -168,12 +164,12 @@ void my_string_ctor_chr_size(pointer p,va_list args)
 
 int main(int argc,char* argv[])
 {
-  
+
   my_string_t ms1;
   newp(&ms1,my_string);
   M(&ms1,set,"This is a test");
   STREAM(cout,O_CCS("SP1 is \""),O_OBJ(my_string,ms1),O_CCS("\""),endl);
-  
+
 	int z;
 	char temp[64];
 	STREAM(cout,O_CCS("Enter an integer and a string containing at least two words\n"));

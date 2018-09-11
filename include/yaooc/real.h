@@ -52,8 +52,6 @@ bool yaooc_real_less_than_compare(const_pointer,const_pointer);
 void yaooc_real_ctor_real(pointer,va_list);
 
 /* Prototypes for yaooc_real class table */
-const char* yaooc_real_isa(const_pointer);
-#define yaooc_real_is_descendant yaooc_object_is_descendant
 void yaooc_real_swap(pointer,pointer);
 char* yaooc_real_to_s(const_pointer);
 void yaooc_real_set(pointer,double);

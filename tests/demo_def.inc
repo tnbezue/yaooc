@@ -110,16 +110,10 @@ void demo_swap(pointer p1,pointer p2)
   SWAP(int,this1->x,this2->x)
 }
 
-const char* demo_isa(const_pointer p)
-{
-  return "demo_t";
-}
-
 demo_class_table_t demo_class_table=
 {
   .parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
-  .isa = demo_isa,
-  .is_descendant = yaooc_object_is_descendant,
+  .type_name_ = (const char*) "demo_t",
   .swap = demo_swap,
   .say = demo_say,
   .setx = demo_setx

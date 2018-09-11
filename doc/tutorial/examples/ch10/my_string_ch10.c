@@ -91,8 +91,6 @@ void my_string_from_stream(pointer p,pointer s)
 	this->str=strdup(temp);
 }
 
-const char* my_string_isa(const_pointer p) { return "my_string_t"; }
-
 
 const char* my_string_get(const_pointer p)
 {
@@ -117,8 +115,7 @@ void my_string_set(pointer p,const char* s)
 my_string_class_table_t my_string_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = my_string_isa,
-  .is_descendant = yaooc_object_is_descendant,
+  .type_name_ = "my_string_t",
   .swap = my_string_swap,
   .get = my_string_get,
   .set = my_string_set
@@ -174,9 +171,9 @@ int main(int argc,char* argv[])
   /* Create a new my_string object using my_string_ctor_ccs ctor */
   my_string_pointer sp2=new_ctor(my_string,my_string_ctor_ccs,"This is sp2 test string.");
 
-  M(cout,printf,"Isa: %s\n",M(sp1,isa));
-  M(cout,printf,"Is descendant of yaooc_object: %s\n",M(sp2,is_descendant,"yaooc_object_t") ? "Yes" : "No");
-  M(cout,printf,"Is descendant of yaooc_string: %s\n",M(sp2,is_descendant,"yaooc_string_t") ? "Yes" : "No");
+  M(cout,printf,"Type is: %s\n",TYPE(sp1));
+  M(cout,printf,"Is descendant of yaooc_object: %s\n",ISA(sp2,yaooc_object) ? "Yes" : "No");
+  M(cout,printf,"Is descendant of yaooc_string: %s\n",ISA(sp2,yaooc_string) ? "Yes" : "No");
   M(cout,printf,"Sp1 is : %s\nSp2 is %s\n",M(sp1,get),M(sp2,get));
   M(sp1,swap,sp2);
   M(cout,printf,"After swap\nSp1 is: %s\nSp2 is: %s\n",M(sp1,get),M(sp2,get));

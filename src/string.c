@@ -48,8 +48,6 @@ const void *memrmem(const void *ptr, size_t size, const void *pat, size_t patsiz
 	return NULL;
 }
 
-//void* memrchr(const void*,size_t,size_t);
-
 #ifdef _WIN32
 void* memrchr(const void* buf,size_t c,size_t spos)
 {
@@ -148,8 +146,6 @@ void yaooc_string_ctor_n_chr(pointer p,va_list args)
 }
 
 /* Class table methods for yaooc_string */
-
-const char* yaooc_string_isa(const_pointer p) { return "yaooc_string_t"; }
 
 void yaooc_string_insert(pointer p,size_t ipos,const char* str)
 {
@@ -699,8 +695,7 @@ static yaooc_string_vector_pointer yaooc_string_split_re(const_pointer p,const c
 yaooc_string_class_table_t yaooc_string_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_pod_array_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_string_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_string_is_descendant,
+  .type_name_ = (const char*) "yaooc_string_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_pod_array_swap,
   .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_string_size_needed,

@@ -42,8 +42,6 @@ yaooc_class(yaooc_unique_ordered_array_container);
 /* Constructors for yaooc_unique_ordered_array_container */
 
 /* Prototypes for yaooc_unique_ordered_array_container yaooc_class table*/
-const char* yaooc_unique_ordered_array_container_isa(const_pointer);
-#define yaooc_unique_ordered_array_container_is_descendant yaooc_ordered_array_container_is_descendant
 #define yaooc_unique_ordered_array_container_swap yaooc_ordered_array_container_swap
 #define yaooc_unique_ordered_array_container_size yaooc_ordered_array_container_size
 #define yaooc_unique_ordered_array_container_capacity yaooc_ordered_array_container_capacity

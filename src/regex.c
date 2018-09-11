@@ -37,14 +37,12 @@ void yaooc_regex_exception_ctor_ccs(pointer p,va_list args)
 /* yaooc_regex_exception protected members */
 
 /* Class table methods for yaooc_regex_exception */
-const char* yaooc_regex_exception_isa(const_pointer p) { return "yaooc_regex_exception_t"; }
 
 /* Class table for yaooc_regex_exception */
 yaooc_regex_exception_class_table_t yaooc_regex_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .isa = (const char* (*) (const_pointer)) yaooc_regex_exception_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) yaooc_exception_is_descendant,
+  .type_name_ = (const char*) "yaooc_regex_exception_t",
   .swap = (void (*) (pointer,pointer)) yaooc_regex_exception_swap,
   .what = (const char* (*) (const_pointer)) yaooc_regex_exception_what,
 };
@@ -106,8 +104,6 @@ void yaooc_matchdata_assign(pointer d,const_pointer s)
 /* Constructors for yaooc_matchdata */
 
 /* Class table methods for yaooc_matchdata */
-const char* yaooc_matchdata_isa(const_pointer p) { return "yaooc_matchdata_t"; }
-
 void yaooc_matchdata_swap(pointer p,pointer o)
 {
   yaooc_matchdata_pointer this=p;
@@ -188,8 +184,7 @@ size_t yaooc_matchdata_size(const_pointer p)
 yaooc_matchdata_class_table_t yaooc_matchdata_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_matchdata_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_matchdata_is_descendant,
+  .type_name_ = (const char*) "yaooc_matchdata_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_matchdata_swap,
   .at = (yaooc_string_pointer (*) (const_pointer p,size_t)) yaooc_matchdata_at,
   .exec = (yaooc_string_pointer (*) (pointer p,const char*)) yaooc_matchdata_exec,
@@ -357,8 +352,7 @@ bool yaooc_regex_bool(const_pointer p)
 yaooc_regex_class_table_t yaooc_regex_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_regex_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_regex_is_descendant,
+  .type_name_ = (const char*) "yaooc_regex_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_regex_swap,
   .set_pattern_flags = (void (*) (pointer p,const char*,int)) yaooc_regex_set_pattern_flags,
   .get_pattern = (const char* (*) (const_pointer p)) yaooc_regex_get_pattern,

@@ -290,8 +290,6 @@ void yaooc_index_array_container_ctor_ti(pointer p,va_list args)
 }
 
 /* Class table methods for yaooc_index_array_container */
-const char* yaooc_index_array_container_isa(const_pointer p) { return "yaooc_index_array_container_t"; }
-
 void yaooc_index_array_container_swap(pointer p1,pointer p2)
 {
   yaooc_array_container_swap(p1,p2);
@@ -302,8 +300,7 @@ void yaooc_index_array_container_swap(pointer p1,pointer p2)
 yaooc_index_array_container_class_table_t yaooc_index_array_container_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_index_array_container_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_index_array_container_is_descendant,
+  .type_name_ = (const char*) "yaooc_index_array_container_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_index_array_container_swap,
   .increase_capacity = (bool (*) (pointer,size_t))yaooc_index_array_container_increase_capacity,
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,

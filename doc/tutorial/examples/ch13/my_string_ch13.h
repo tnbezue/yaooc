@@ -54,8 +54,6 @@ void my_string_ctor_ccs(pointer,va_list);
 void my_string_ctor_chr_size(pointer,va_list);
 
 /* Table prototypes for my_string */
-const char* my_string_isa(const_pointer);
-#define my_string_is_descendant yaooc_object_is_descendant
 void my_string_swap(pointer,pointer);
 const char* my_string_get(const_pointer);
 #define my_string_c_str my_string_get

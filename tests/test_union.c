@@ -18,8 +18,6 @@ yaooc_union_instance(sample)
 
 yaooc_union(sample)
 
-const char* sample_isa(const_pointer p) { return "sample_t"; }
-
 void sample_swap(pointer p,pointer o)
 {
 	sample_pointer this=p;
@@ -41,8 +39,7 @@ void sample_print(const_pointer p)
 
 sample_class_table_t sample_class_table = {
   .parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
-  .isa = sample_isa,
-  .is_descendant = yaooc_object_is_descendant,
+  .type_name_ = (const char*) "sample_t",
   .swap = sample_swap,
 	.print = sample_print
 };

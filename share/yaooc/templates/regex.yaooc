@@ -13,7 +13,6 @@ class yaooc_regex_exception : yaooc_exception {
 
 	table:
 		void swap(pointer o);
-		const char* isa() const;
 		const char* what() const;
 	instance:
 		char* what_;
@@ -26,7 +25,6 @@ class yaooc_matchdata : yaooc_object {
     ~yaooc_matchdata();
     operator=();
   table:
-    const char* isa() const;
     void swap(pointer other);
     yaooc_string_pointer at(size_t i) const;
     yaooc_string_pointer exec(const char* str);

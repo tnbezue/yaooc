@@ -64,8 +64,6 @@ yaooc_ordered_array_container_find_result_t yaooc_ordered_array_container_find_p
   return ret;
 }
 
-const char* yaooc_ordered_array_container_isa(const_pointer p) { return "yaooc_ordered_array_container_t"; }
-
 iterator yaooc_ordered_array_container_find(const_pointer p,const_pointer value)
 {
   yaooc_ordered_array_container_find_result_t fr=yaooc_ordered_array_container_find_protected(p,value);
@@ -152,8 +150,7 @@ void yaooc_ordered_array_container_resize(pointer p,size_t n)
 yaooc_ordered_array_container_class_table_t yaooc_ordered_array_container_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_ordered_array_container_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_ordered_array_container_is_descendant,
+  .type_name_ = (const char*) "yaooc_ordered_array_container_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_ordered_array_container_swap,
   .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,

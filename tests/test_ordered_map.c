@@ -50,8 +50,6 @@ yaooc_class_instance(student_info)
 
 yaooc_class(student_info);
 
-const char* student_info_isa(const_pointer p) { return "student_info_t"; }
-
 void student_info_default_ctor(pointer p)
 {
   student_info_pointer this=p;
@@ -90,8 +88,7 @@ uint_t student_info_score(const_pointer p)
 
 student_info_class_table_t student_info_class_table = {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa=student_info_isa,
-  .is_descendant = yaooc_object_is_descendant,
+  .type_name_ = (const char*) "student_info_t",
   .swap = yaooc_object_swap,
   .score = student_info_score
 };

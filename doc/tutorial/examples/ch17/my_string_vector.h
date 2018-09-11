@@ -59,8 +59,6 @@ void my_string_ctor_ccs(pointer,va_list);
 void my_string_ctor_chr_n(pointer,va_list);
 
 /* Prototypes for my_string class table */
-const char* my_string_isa(const_pointer);
-#define my_string_is_descendant yaooc_object_is_descendant
 void my_string_swap(pointer,pointer);
 const char* my_string_get(const_pointer);
 #define my_string_c_str my_string_get
@@ -97,7 +95,6 @@ yaooc_class_table(my_string_exception)
 yaooc_class_instance(my_string_exception)
 {
   yaooc_exception_class_instance_t;
-  char* what_;
 };
 
 yaooc_class(my_string_exception);
@@ -110,8 +107,6 @@ void my_string_exception_dtor(pointer);
 void my_string_exception_ctor_ccs(pointer,va_list);
 
 /* Prototypes for my_string_exception class table */
-const char* my_string_exception_isa(const_pointer);
-#define my_string_exception_is_descendant yaooc_exception_is_descendant
 #define my_string_exception_swap yaooc_exception_swap
 const char* my_string_exception_what(const_pointer);
 
@@ -140,8 +135,6 @@ void my_string_insert_exception_default_ctor(pointer);
 /* Prototypes for my_string_insert_exception constructors */
 
 /* Prototypes for my_string_insert_exception class table */
-const char* my_string_insert_exception_isa(const_pointer);
-#define my_string_insert_exception_is_descendant my_string_exception_is_descendant
 #define my_string_insert_exception_swap my_string_exception_swap
 #define my_string_insert_exception_what my_string_exception_what
 
@@ -170,8 +163,6 @@ void my_string_erase_exception_default_ctor(pointer);
 /* Prototypes for my_string_erase_exception constructors */
 
 /* Prototypes for my_string_erase_exception class table */
-const char* my_string_erase_exception_isa(const_pointer);
-#define my_string_erase_exception_is_descendant my_string_exception_is_descendant
 #define my_string_erase_exception_swap my_string_exception_swap
 #define my_string_erase_exception_what my_string_exception_what
 
@@ -200,8 +191,6 @@ void my_string_at_exception_default_ctor(pointer);
 /* Prototypes for my_string_at_exception constructors */
 
 /* Prototypes for my_string_at_exception class table */
-const char* my_string_at_exception_isa(const_pointer);
-#define my_string_at_exception_is_descendant my_string_exception_is_descendant
 #define my_string_at_exception_swap my_string_exception_swap
 #define my_string_at_exception_what my_string_exception_what
 

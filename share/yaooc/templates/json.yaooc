@@ -12,7 +12,6 @@ class yaooc_json_exception : yaooc_exception
   operator=();
   yaooc_json_exception_ctor_ccs(const char * str);
   table:
-    const char* isa() const;
     const char* what() const;
   instance:
     char* exception_str_;
@@ -26,7 +25,6 @@ class yaooc_json_value : yaooc_object
     operator=();
     operator<();
   table:
-    const char* isa() const;
     void virtual_dtor();
     void virtual_copy_ctor(pointer s);
     void virtual_assign(pointer s);
@@ -42,7 +40,6 @@ class yaooc_json_null : yaooc_json_value
     yaooc_json_null();
     yaooc_json_null(yaooc_json_null);
   table:
-    const char* isa() const;
     void virtual_dtor();
     void virtual_copy_ctor();
     void virtual_assign();
@@ -56,7 +53,6 @@ class yaooc_json_bool : yaooc_json_value
     yaooc_json_bool(yaooc_json_bool);
     yaooc_json_bool_ctor_bool(bool value);
   table:
-    const char* isa() const;
     void virtual_dtor();
     void virtual_copy_ctor();
     void virtual_assign();
@@ -72,7 +68,6 @@ class yaooc_json_integer : yaooc_json_value
     yaooc_json_integer(yaooc_json_integer);
     yaooc_json_integer_ctor_int(int value);
   table:
-    const char* isa() const;
     void virtual_dtor();
     void virtual_copy_ctor();
     void virtual_assign();
@@ -89,7 +84,6 @@ class yaooc_json_real : yaooc_json_value
     yaooc_json_real_ctor_real(double value);
 
   table:
-    const char* isa() const;
     void virtual_dtor();
     void virtual_copy_ctor();
     void virtual_assign();
@@ -107,7 +101,6 @@ class yaooc_json_string : yaooc_json_value
     yaooc_json_string_ctor_ccs_size(const char* str,size_t n);
 
   table:
-    const char* isa() const;
     void virtual_dtor();
     void virtual_copy_ctor();
     void virtual_assign();
@@ -125,7 +118,6 @@ class yaooc_json_array : yaooc_json_value
     yaooc_json_array(yaooc_json_array);
 
   table:
-    const char* isa() const;
     void virtual_dtor();
     void virtual_copy_ctor();
     void virtual_assign();
@@ -146,7 +138,6 @@ class yaooc_json_object : yaooc_json_value
     yaooc_json_object(yaooc_json_object);
 
   table:
-    const char* isa() const;
     void virtual_dtor();
     void virtual_copy_ctor();
     void virtual_assign();

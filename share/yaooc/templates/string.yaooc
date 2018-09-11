@@ -16,7 +16,6 @@ class yaooc_string : yaooc_pod_array
   protected:
     const size_t npos = -1;
   table:
-    const char* isa() const;
     const size_t extra_capacity_=1;
     void reserve(size_t n) = yaooc_pod_array_reserve;
     void insert(size_t ipos,const char* str);

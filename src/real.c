@@ -63,7 +63,6 @@ void yaooc_real_ctor_real(pointer p,va_list args)
 /* yaooc_real protected members */
 
 /* Class table methods for yaooc_real */
-const char* yaooc_real_isa(const_pointer p) { return "yaooc_real_t"; }
 
 void yaooc_real_swap(pointer p,pointer o)
 {
@@ -101,8 +100,7 @@ void yaooc_real_from_stream(pointer p,pointer s)
 yaooc_real_class_table_t yaooc_real_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer)) yaooc_real_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) yaooc_object_is_descendant,
+  .type_name_ = (const char*) "yaooc_real_t",
   .swap = (void (*) (pointer,pointer)) yaooc_real_swap,
   .set = (void (*) (pointer,double)) yaooc_real_set,
   .get = (double (*) (const_pointer)) yaooc_real_get,

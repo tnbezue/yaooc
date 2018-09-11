@@ -36,18 +36,15 @@ yaooc_class_instance(NAME) {\
   yaooc_array_container_class_instance_t; \
 };\
 yaooc_class(NAME); \
-const char* NAME ## _isa(const_pointer p);
 
 #define STACK_IMPLEMENTATION(T,NAME) \
 void NAME ## _default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor_ti,T ## _ti); } \
 void NAME ## _push(pointer p,T ## _t *v) { yaooc_array_container_insert(p,BEGIN(p),v); } \
 void NAME ## _pop(pointer p) { yaooc_array_container_erase(p,BEGIN(p)); } \
-const char* NAME ## _isa(const_pointer p)  { return # NAME "_t"; } \
 NAME ## _class_table_t NAME ## _class_table = \
 {\
   .parent_class_table_ = (const class_table_t*)&yaooc_array_container_class_table, \
-  .isa = NAME ## _isa, \
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_object_is_descendant, \
+  .type_name_ = # NAME "_t", \
   .swap = (void (*) (pointer p,pointer)) yaooc_array_container_swap, \
   .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity, \
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed, \

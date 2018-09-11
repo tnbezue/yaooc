@@ -53,8 +53,6 @@ void yaooc_istringstream_ctor_ccs(pointer,va_list);
 void yaooc_istringstream_ctor_ccs_n(pointer,va_list);
 
 /* Prototypes for yaooc_istringstream class table */
-const char* yaooc_istringstream_isa(const_pointer);
-#define yaooc_istringstream_is_descendant yaooc_istream_is_descendant
 #define yaooc_istringstream_swap yaooc_istream_swap
 #define yaooc_istringstream_to_s yaooc_istream_to_s
 #define yaooc_istringstream_eof yaooc_istream_eof
@@ -100,8 +98,6 @@ void yaooc_ostringstream_dtor(pointer);
 /* Prototypes for yaooc_ostringstream constructors */
 
 /* Prototypes for yaooc_ostringstream class table */
-const char* yaooc_ostringstream_isa(const_pointer);
-#define yaooc_ostringstream_is_descendant yaooc_ostream_is_descendant
 #define yaooc_ostringstream_swap yaooc_ostream_swap
 #define yaooc_ostringstream_to_s yaooc_ostream_to_s
 #define yaooc_ostringstream_eof yaooc_ostream_eof

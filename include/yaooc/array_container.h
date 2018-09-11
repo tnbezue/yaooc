@@ -49,8 +49,6 @@ bool yaooc_array_container_less_than_compare(const_pointer,const_pointer);
 #define yaooc_array_container_ctor_ti yaooc_pod_array_ctor_ti
 
 /* Prototypes for class table members */
-const char* yaooc_array_container_isa(const_pointer);
-#define yaooc_array_container_is_descendant yaooc_object_is_descendant
 #define yaooc_array_container_swap yaooc_pod_array_swap
 #define yaooc_array_container_empty yaooc_pod_array_empty
 #define yaooc_array_container_size yaooc_pod_array_size

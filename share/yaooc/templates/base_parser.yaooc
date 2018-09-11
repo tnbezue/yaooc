@@ -9,7 +9,6 @@ class yaooc_base_parser : yaooc_object {
     yaooc_base_parser(yaooc_base_parser);
     operator=();
   table:
-    const char* isa() const;
     void swap(pointer o);
     void set_parse_string(const char* str);
     void rule_start();

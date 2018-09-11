@@ -23,7 +23,6 @@ class yaooc_array_container : yaooc_pod_array
     void clear();
 
   table:
-    const char* isa() const;
 };
 
 #endif

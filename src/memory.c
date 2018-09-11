@@ -115,11 +115,6 @@ void yaooc_unique_ptr_ctor_ptr(pointer p,va_list args)
 }
 
 /* Class table members for yaooc_unique_ptr */
-const char* yaooc_unique_ptr_isa(const_pointer p)
-{
-  return "yaooc_unique_ptr_t";
-}
-
 void yaooc_unique_ptr_swap(pointer p,pointer ptr)
 {
   yaooc_unique_ptr_pointer this=p;
@@ -153,8 +148,7 @@ void yaooc_unique_ptr_reset(pointer p,pointer ptr)
 
 yaooc_unique_ptr_class_table_t yaooc_unique_ptr_class_table = {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_unique_ptr_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_unique_ptr_is_descendant,
+  .type_name_ = (const char*) "yaooc_unique_ptr_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_unique_ptr_swap,
   .get = (pointer (*) (const_pointer p)) yaooc_unique_ptr_get,
   .release = (pointer (*) (pointer p)) yaooc_unique_ptr_release,
@@ -233,11 +227,6 @@ void yaooc_shared_ptr_ctor_ptr(pointer p,va_list args)
 }
 
 /* Class table members for yaooc_shared_ptr */
-const char* yaooc_shared_ptr_isa(const_pointer p)
-{
-  return "yaooc_shared_ptr_t";
-}
-
 void yaooc_shared_ptr_swap(pointer p,pointer ptr)
 {
   yaooc_shared_ptr_pointer this=p;
@@ -302,8 +291,7 @@ size_t yaooc_shared_ptr_count(const_pointer p)
 
 yaooc_shared_ptr_class_table_t yaooc_shared_ptr_class_table = {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_shared_ptr_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_shared_ptr_is_descendant,
+  .type_name_ = (const char*) "yaooc_shared_ptr_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_shared_ptr_swap,
   .get = (pointer (*) (const_pointer p)) yaooc_shared_ptr_get,
   .release = (pointer (*) (pointer p)) yaooc_shared_ptr_release,

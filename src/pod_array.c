@@ -218,8 +218,6 @@ void yaooc_pod_array_ctor_ti(pointer p,va_list args)
 }
 
 /* Class table methods for yaooc_pod_array */
-const char* yaooc_pod_array_isa(const_pointer p) { return "yaooc_pod_array_t"; }
-
 void yaooc_pod_array_swap(pointer p,pointer p2)
 {
   yaooc_pod_array_pointer this=p;
@@ -306,8 +304,7 @@ void yaooc_pod_array_to_stream(const_pointer p,pointer s)
 yaooc_pod_array_class_table_t yaooc_pod_array_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer)) yaooc_pod_array_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) yaooc_pod_array_is_descendant,
+  .type_name_ = (const char*) "yaooc_pod_array_t",
   .swap = (void (*) (pointer,pointer)) yaooc_pod_array_swap,
   .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,

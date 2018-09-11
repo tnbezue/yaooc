@@ -10,7 +10,6 @@ class yaooc_thread: yaooc_object
   private:
     void* yaooc_thread_start_thread(void* arg);
   table:
-    const char* isa() const;
     pthread_t id() const;
     int join();
     int cancel();
@@ -31,7 +30,6 @@ class yaooc_mutex : yaooc_object
     yaooc_mutex();
     ~yaooc_mutex();
   table:
-    const char* isa() const;
     bool lock();
     bool trylock();
     bool unlock();
@@ -45,7 +43,6 @@ class yaooc_condition_variable : yaooc_mutex
     ~yaooc_condition_variable();
 
   table:
-    const char* isa() const;
     bool signal();
     bool broadcast();
     int wait();

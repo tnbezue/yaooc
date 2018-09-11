@@ -159,8 +159,6 @@ void my_string_erase_space(pointer p,size_t pos,size_t n)
 
 
 /* Table implementation for my_string */
-const char* my_string_isa(const_pointer p) {  return "my_string_t"; }
-
 void my_string_swap(pointer p,pointer o)
 {
   my_string_pointer this=p;
@@ -277,11 +275,10 @@ char* my_string_end(const_pointer p)
 
 
 /* Class table definition for my_string */
-my_string_class_table_t my_string_class_table = 
+my_string_class_table_t my_string_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char*(*)(const_pointer)) my_string_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) my_string_is_descendant,
+  .type_name_ = (const char*) "my_string_t",
   .swap = (void(*)(pointer,pointer)) my_string_swap,
   .my_string_n_pos = (const size_t) -1,
   .get = (const char*(*)(const_pointer)) my_string_get,

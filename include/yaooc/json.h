@@ -64,8 +64,6 @@ yaooc_class(yaooc_json_exception);
 #define yaooc_json_exception_ctor_v yaooc_exception_ctor_v
 
 /* Prototypes for yaooc_json_exception class table*/
-const char* yaooc_json_exception_isa(const_pointer);
-#define yaooc_json_exception_is_descendant yaooc_exception_is_descendant
 #define yaooc_json_exception_swap yaooc_exception_swap
 #define yaooc_json_exception_what yaooc_exception_what
 
@@ -106,8 +104,6 @@ bool yaooc_json_value_less_than_compare(const_pointer,const_pointer);
 /* Constructors for yaooc_json_value */
 
 /* Prototypes for yaooc_json_value class table*/
-const char* yaooc_json_value_isa(const_pointer);
-#define yaooc_json_value_is_descendant yaooc_object_is_descendant
 #define yaooc_json_value_swap yaooc_object_swap
 void yaooc_json_value_virtual_dtor(pointer);
 void yaooc_json_value_virtual_copy_ctor(pointer,const_pointer);
@@ -142,8 +138,6 @@ void yaooc_json_null_copy_ctor(pointer,const_pointer);
 /* Constructors for yaooc_json_null */
 
 /* Prototypes for yaooc_json_null class table*/
-const char* yaooc_json_null_isa(const_pointer);
-#define yaooc_json_null_is_descendant yaooc_json_value_is_descendant
 #define yaooc_json_null_swap yaooc_json_value_swap
 void yaooc_json_null_virtual_dtor(pointer);
 void yaooc_json_null_virtual_copy_ctor(pointer,const_pointer);
@@ -180,8 +174,6 @@ void yaooc_json_bool_copy_ctor(pointer,const_pointer);
 void yaooc_json_bool_ctor_bool(pointer,va_list);
 
 /* Prototypes for yaooc_json_bool class table*/
-const char* yaooc_json_bool_isa(const_pointer);
-#define yaooc_json_bool_is_descendant yaooc_json_value_is_descendant
 #define yaooc_json_bool_swap yaooc_json_value_swap
 void yaooc_json_bool_virtual_dtor(pointer);
 void yaooc_json_bool_virtual_copy_ctor(pointer,const_pointer);
@@ -220,8 +212,6 @@ void yaooc_json_integer_copy_ctor(pointer,const_pointer);
 void yaooc_json_integer_ctor_int(pointer,va_list);
 
 /* Prototypes for yaooc_json_integer class table*/
-const char* yaooc_json_integer_isa(const_pointer);
-#define yaooc_json_integer_is_descendant yaooc_json_value_is_descendant
 #define yaooc_json_integer_swap yaooc_json_value_swap
 void yaooc_json_integer_virtual_dtor(pointer);
 void yaooc_json_integer_virtual_copy_ctor(pointer,const_pointer);
@@ -260,8 +250,6 @@ void yaooc_json_real_copy_ctor(pointer,const_pointer);
 void yaooc_json_real_ctor_real(pointer,va_list);
 
 /* Prototypes for yaooc_json_real class table*/
-const char* yaooc_json_real_isa(const_pointer);
-#define yaooc_json_real_is_descendant yaooc_json_value_is_descendant
 #define yaooc_json_real_swap yaooc_json_value_swap
 void yaooc_json_real_virtual_dtor(pointer);
 void yaooc_json_real_virtual_copy_ctor(pointer,const_pointer);
@@ -303,8 +291,6 @@ void yaooc_json_string_ctor_ccs(pointer,va_list);
 void yaooc_json_string_ctor_ccs_size(pointer,va_list);
 
 /* Prototypes for yaooc_json_string class table*/
-const char* yaooc_json_string_isa(const_pointer);
-#define yaooc_json_string_is_descendant yaooc_json_value_is_descendant
 #define yaooc_json_string_swap yaooc_json_value_swap
 void yaooc_json_string_virtual_dtor(pointer);
 void yaooc_json_string_virtual_copy_ctor(pointer,const_pointer);
@@ -352,8 +338,6 @@ void yaooc_json_array_copy_ctor(pointer,const_pointer);
 /* Constructors for yaooc_json_array */
 
 /* Prototypes for yaooc_json_array class table*/
-const char* yaooc_json_array_isa(const_pointer);
-#define yaooc_json_array_is_descendant yaooc_json_value_is_descendant
 #define yaooc_json_array_swap yaooc_json_value_swap
 void yaooc_json_array_virtual_dtor(pointer);
 void yaooc_json_array_virtual_copy_ctor(pointer,const_pointer);
@@ -404,8 +388,6 @@ void yaooc_json_object_copy_ctor(pointer,const_pointer);
 /* Constructors for yaooc_json_object */
 
 /* Prototypes for yaooc_json_object class table*/
-const char* yaooc_json_object_isa(const_pointer);
-#define yaooc_json_object_is_descendant yaooc_json_value_is_descendant
 #define yaooc_json_object_swap yaooc_json_value_swap
 void yaooc_json_object_virtual_dtor(pointer);
 void yaooc_json_object_virtual_copy_ctor(pointer,const_pointer);

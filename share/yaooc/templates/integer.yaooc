@@ -5,20 +5,39 @@
 
 class yaooc_integer : yaooc_object
 {
-    yaooc_integer();
-    yaooc_integer(yaooc_integer);
-    yaooc_integer_ctor_int(long value);
-    operator=();
-    operator<();
+	yaooc_integer();
+	yaooc_integer(yaooc_integer);
+	yaooc_integer_ctor_int(long value);
+	operator=();
+	operator<();
+	operator<<();
+	operator>>();
+	protected:
+	table:
+		void swap(pointer o);
+		void set(long long value);
+		long long get() const;
+	instance:
+		long long value_;
+};
 
-  protected:
-  table:
-    const char* isa() const;
-    void swap(pointer o);
-    void set(long value);
-    long get() const;
-  instance:
-    long value_;
+class yaooc_unsigned_integer : yaooc_object
+{
+	yaooc_unsigned_integer();
+	yaooc_unsigned_integer(yaooc_integer);
+	yaooc_unsigned_integer_ctor_int(long value);
+	operator=();
+	operator<();
+	operator<<();
+	operator>>();
+
+	protected:
+	table:
+		void swap(pointer o);
+		void set(unsigned long long value);
+		unsigned long long get() const;
+	instance:
+		unsigned long long value_;
 };
 
 #endif

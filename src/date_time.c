@@ -221,8 +221,6 @@ void yaooc_date_time_ctor_ccs(pointer p,va_list args)
 /* yaooc_date_time protected members */
 
 /* Class table methods for yaooc_date_time */
-const char* yaooc_date_time_isa(const_pointer p) { return "yaooc_date_time_t"; }
-
 void yaooc_date_time_swap(pointer p,pointer o)
 {
   yaooc_date_time_pointer this=p;
@@ -305,8 +303,7 @@ char* yaooc_date_time_strftime(const_pointer p,const char* fmt)
 yaooc_date_time_class_table_t yaooc_date_time_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer)) yaooc_date_time_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) yaooc_object_is_descendant,
+  .type_name_ = (const char*) "yaooc_date_time_t",
   .swap = (void (*) (pointer,pointer)) yaooc_date_time_swap,
   .set = (void (*) (pointer,int)) yaooc_date_time_set,
   .get = (int (*) (const_pointer)) yaooc_date_time_get,

@@ -18,7 +18,6 @@ class yaooc_ordered_array_container : yaooc_array_container
     void resize_value(size_t n,const_pointer value);
 
   table:
-    const char* isa() const;
 };
 
 #endif

@@ -17,7 +17,6 @@ class yaooc_date_time : yaooc_object {
 		yaooc_date_time_ctor_ccs(const char* str);
 	table:
 
-		const char* isa() const;
 		void swap(pointer o);
 		void set(int t);
 		int get() const;

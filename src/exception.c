@@ -62,11 +62,6 @@ void yaooc_exception_ctor_v(pointer p,va_list args)
 }
 
 /* Class table members for yaooc_exception */
-const char* yaooc_exception_isa(const_pointer p)
-{
-  return "yaooc_exception_t";
-}
-
 void yaooc_exception_swap(pointer p,pointer o)
 {
 	yaooc_exception_pointer this=p;
@@ -83,8 +78,7 @@ const char* yaooc_exception_what(const_pointer p)
 yaooc_exception_class_table_t yaooc_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_exception_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_exception_is_descendant,
+  .type_name_ = (const char*) "yaooc_exception_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_exception_swap,
   .what = (const char* (*) (const_pointer p)) yaooc_exception_what,
 };
@@ -252,7 +246,7 @@ static void yaooc_jmpbuf_destroy(yaooc_jmpbuf_t* jb)
 
 static void yaooc_exception_terminate(yaooc_exception_pointer e)
 {
-  fprintf(stderr,"terminate called after throwing %s : %s\n",M(e,isa),M(e,what) ? M(e,what) : "");
+  fprintf(stderr,"terminate called after throwing %s : %s\n",e->class_table_->type_name_,M(e,what) ? M(e,what) : "");
   delete(e);
   exit(0);
 }
@@ -295,7 +289,7 @@ void __rethrow_last_exception__()
 
 bool __catch__(const char* etype)
 {
-  return M(yaooc_exception_current_exception_thrown(),is_descendant,etype);
+  return yaooc_object_isa(yaooc_exception_current_exception_thrown(),etype);
 }
 /*
   Called from CATCH and ETRY macros -- node and node->current_jmpbuf_ should never be NULL

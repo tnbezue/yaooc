@@ -43,8 +43,6 @@ void yaooc_unique_array_container_default_ctor(pointer);
 #define yaooc_unique_array_container_ctor_ti yaooc_array_container_ctor_ti
 
 /* Prototypes for yaooc_unique_array_container class table*/
-const char* yaooc_unique_array_container_isa(const_pointer);
-#define yaooc_unique_array_container_is_descendant yaooc_array_container_is_descendant
 #define yaooc_unique_array_container_swap yaooc_array_container_swap
 #define yaooc_unique_array_container_size yaooc_array_container_size
 #define yaooc_array_container_increase_capacity yaooc_pod_array_increase_capacity

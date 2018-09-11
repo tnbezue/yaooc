@@ -79,8 +79,6 @@ void yaooc_thread_ctor_method(pointer p,va_list args)
 }
 
 /* Class table methods for yaooc_thread */
-const char* yaooc_thread_isa(const_pointer p) { return "yaooc_thread_t"; }
-
 pthread_t yaooc_thread_id(const_pointer p)
 {
   yaooc_thread_const_pointer this=p;
@@ -153,8 +151,7 @@ void* yaooc_thread_method(pointer p)
 yaooc_thread_class_table_t yaooc_thread_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer)) yaooc_thread_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) yaooc_thread_is_descendant,
+  .type_name_ = (const char*) "yaooc_thread_t",
   .swap = (void (*) (pointer,pointer)) yaooc_thread_swap,
   .id = (pthread_t (*) (const_pointer)) yaooc_thread_id,
   .join = (int (*) (pointer)) yaooc_thread_join,
@@ -190,8 +187,6 @@ void yaooc_mutex_dtor(pointer p)
 /* Constructors for yaooc_mutex */
 
 /* Class table methods for yaooc_mutex */
-const char* yaooc_mutex_isa(const_pointer p) { return "yaooc_mutex_t"; }
-
 bool yaooc_mutex_lock(pointer p)
 {
   yaooc_mutex_pointer this=p;
@@ -214,8 +209,7 @@ bool yaooc_mutex_unlock(pointer p)
 yaooc_mutex_class_table_t yaooc_mutex_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_mutex_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_mutex_is_descendant,
+  .type_name_ = (const char*) "yaooc_mutex_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_mutex_swap,
   .lock = (bool (*) (pointer p)) yaooc_mutex_lock,
   .trylock = (bool (*) (pointer p)) yaooc_mutex_trylock,
@@ -249,8 +243,6 @@ void yaooc_condition_variable_dtor(pointer p)
 /* Constructors for yaooc_condition_variable */
 
 /* Class table methods for yaooc_condition_variable */
-const char* yaooc_condition_variable_isa(const_pointer p) { return "yaooc_condition_variable_t"; }
-
 bool yaooc_condition_variable_signal(pointer p)
 {
   yaooc_condition_variable_pointer this=p;
@@ -292,8 +284,7 @@ int yaooc_condition_variable_timedwait(pointer p,double delay)
 yaooc_condition_variable_class_table_t yaooc_condition_variable_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_mutex_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_condition_variable_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_condition_variable_is_descendant,
+  .type_name_ = (const char*) "yaooc_condition_variable_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_condition_variable_swap,
   .lock = (bool (*) (pointer p)) yaooc_condition_variable_lock,
   .trylock = (bool (*) (pointer p)) yaooc_condition_variable_trylock,

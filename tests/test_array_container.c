@@ -61,12 +61,10 @@ size_t int_array_container_erase_value(pointer p,int_t value)
 	return yaooc_array_container_erase_value(p,&value);
 }
 
-const char* int_array_container_isa(const_pointer p) { return "int_array_container_t"; }
 int_array_container_class_table_t int_array_container_class_table=
 {
   .parent_class_table_ = (const class_table_t*)&yaooc_array_container_class_table,
-  .isa = int_array_container_isa, /* isa */
-  .is_descendant = (bool(*) (const_pointer,const char*)) yaooc_object_is_descendant, /* is_descendant  */
+  .type_name_ = (const char*) "int_array_container_t",
   .swap = yaooc_array_container_swap, /* swap  */
   .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
@@ -310,13 +308,10 @@ size_t simple_object_array_container_erase_value(pointer p,simple_object_t so)
 	return yaooc_array_container_erase_value(p,&so);
 }
 
-const char* simple_object_array_container_isa(const_pointer p) { return "simple_object_array_container_t"; }
-
 simple_object_array_container_class_table_t simple_object_array_container_class_table=
 {
   .parent_class_table_ = (const class_table_t*)&yaooc_array_container_class_table, /* parent_class_table_ */
-  .isa = simple_object_array_container_isa, /* isa */
-  .is_descendant = (bool(*) (const_pointer,const char*)) yaooc_object_is_descendant, /* is_descendant  */
+  .type_name_ = (const char*) "simple_object_array_container_t",
   .swap = yaooc_array_container_swap, /* swap  */
   .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,

@@ -28,8 +28,7 @@
 yaooc_class_table(yaooc_object)
 {
   const class_table_t* parent_class_table_;
-  const char* (*isa)(const_pointer);
-  bool (*is_descendant)(const_pointer,const char*);
+  const char* type_name_;
   void (*swap)(pointer,pointer);
 };
 
@@ -48,18 +47,17 @@ yaooc_class(yaooc_object);
 /* Constructors for yaooc_object */
 
 /* Prototypes for yaooc_object class table*/
-const char* yaooc_object_isa(const_pointer);
-bool yaooc_object_is_descendant(const_pointer,const char*);
 void yaooc_object_swap(pointer,pointer);
 
 /* Prototypes for yaooc_object class instance*/
 
 /* Prototypes for yaooc_object class protected items*/
+bool yaooc_object_isa(const_pointer,const char*);
 
 /*  End YAOOC PreProcessor generated content */
 
-#define ISA(p,o) (strcmp(((yaooc_object_pointer)(p))->class_table_->isa((p)),# o "_t") == 0)
-#define IS_DESCENDANT(p,o) (((yaooc_object_pointer)(p))->class_table_->is_descendant((p),# o "_t"))
+#define TYPE(p) ((yaooc_object_pointer)(p))->class_table_->type_name_
+#define ISA(p,o) yaooc_object_isa(p,# o "_t")
 
 void yaooc_do_nothing_default_ctor(pointer);
 #define yaooc_do_nothing_dtor yaooc_do_nothing_default_ctor

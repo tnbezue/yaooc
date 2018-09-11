@@ -48,8 +48,6 @@ void yaooc_ifstream_dtor(pointer);
 void yaooc_ifstream_ctor_fname_mode(pointer,va_list);
 
 /* Prototypes for yaooc_ifstream class table */
-const char* yaooc_ifstream_isa(const_pointer);
-#define yaooc_ifstream_is_descendant yaooc_istream_is_descendant
 #define yaooc_ifstream_swap yaooc_istream_swap
 #define yaooc_ifstream_to_s yaooc_istream_to_s
 #define yaooc_ifstream_eof yaooc_istream_eof
@@ -93,8 +91,6 @@ void yaooc_ofstream_dtor(pointer);
 void yaooc_ofstream_ctor_fname_mode(pointer,va_list);
 
 /* Prototypes for yaooc_ofstream class table */
-const char* yaooc_ofstream_isa(const_pointer);
-#define yaooc_ofstream_is_descendant yaooc_ostream_is_descendant
 #define yaooc_ofstream_swap yaooc_ostream_swap
 #define yaooc_ofstream_to_s yaooc_ostream_to_s
 #define yaooc_ofstream_eof yaooc_ostream_eof

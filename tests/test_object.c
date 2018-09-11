@@ -34,9 +34,9 @@ void test_basic()
   M(d,setx,32);
 
   TEST("isa demo_t",ISA(d,demo));
-  TEST("is a decendant of object_t",IS_DESCENDANT(d,yaooc_object));
-  TEST("Not a decendant of string_t",!IS_DESCENDANT(d,yaooc_string));
-  TEST("ISA method return 'demo_t'",strcmp(M(d,isa),"demo_t")==0);
+  TEST("is a decendant of object_t",ISA(d,yaooc_object));
+  TEST("Not a decendant of string_t",!ISA(d,yaooc_string));
+//  TEST("ISA method return 'demo_t'",ISA(d,"demo_t"));
 //  TEST("ISA from static yaooc_object table",strcmp(yaooc_object_isa(d),"yaooc_object_t")==0);
   TEST("D is 32",d->x==32);
   demo_pointer d2=new(demo);
@@ -55,7 +55,7 @@ void test_basic()
     Will not work if more than one level is traversed (parent calls its' parent method using same form).
     Bad -- Can get into infinite loop
   */
-  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(((yaooc_object_class_table_t*)(d->class_table_->parent_class_table_))->isa(d),"yaooc_object_t")==0);
+  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(((yaooc_object_class_table_t*)(d->class_table_->parent_class_table_))->type_name_,"yaooc_object_t")==0);
 
   /*
     Using the complete method name
@@ -63,14 +63,14 @@ void test_basic()
     Code would have to be manually changed.
     Good -- Implementing parent method with different name is rare.
   */
-  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(yaooc_object_isa(d),"yaooc_object_t")==0);
+//  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(yaooc_object_isa(d),"yaooc_object_t")==0);
 
   /*
     Using parent class table directly.
     Slighty better than above.  May still require code changes if heirarchy changed.
     Better -- Parenting changes are very rare
   */
-  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(yaooc_object_class_table.isa(d),"yaooc_object_t")==0);
+//  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(yaooc_object_class_table.isa(d),"yaooc_object_t")==0);
 
   /*
     Using parent class table via this class table parent_class_table entry
@@ -78,7 +78,7 @@ void test_basic()
     Best -- can't think of any case it would not work. A simple #define makes it easier
   */
 #define demo_parent_class_table ((yaooc_object_class_table_t*)(demo_class_table.parent_class_table_))
-  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(demo_parent_class_table->isa(d),"yaooc_object_t")==0);
+//  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(demo_parent_class_table->isa(d),"yaooc_object_t")==0);
   delete(d);
   delete(d2);
 }
@@ -96,7 +96,6 @@ yaooc_class_instance(base)
 };
 yaooc_class(base);
 
-const char* base_isa(const_pointer p) { return "base_t"; }
 int base_do_something_count=0;
 void base_do_something(pointer p)
 {
@@ -105,8 +104,7 @@ void base_do_something(pointer p)
 base_class_table_t base_class_table =
 {
   .parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
-  .isa = base_isa,
-  .is_descendant = yaooc_object_is_descendant,
+  .type_name_ = (const char*) "base_t",
   .swap = yaooc_object_swap,
   .do_something = base_do_something
 };
@@ -124,7 +122,6 @@ yaooc_class_instance(derived1)
 };
 yaooc_class(derived1);
 
-const char* derived1_isa(const_pointer p) { return "derived1_t"; }
 int derived1_do_something_count=0;
 void derived1_do_something_bad(pointer p)
 {
@@ -158,8 +155,7 @@ void derived1_do_something_best(pointer p)
 derived1_class_table_t derived1_class_table =
 {
   .parent_class_table_ = (const class_table_t*)&base_class_table,
-  .isa = derived1_isa,
-  .is_descendant = yaooc_object_is_descendant,
+  .type_name_ = (const char*) "derived1_t",
   .swap = yaooc_object_swap,
   .do_something = derived1_do_something_bad
 };
@@ -179,7 +175,6 @@ yaooc_class_instance(derived2)
 };
 yaooc_class(derived2);
 
-const char* derived2_isa(const_pointer p) { return "derived2_t"; }
 int derived2_do_something_count=0;
 void derived2_do_something(pointer p)
 {
@@ -192,8 +187,7 @@ void derived2_do_something(pointer p)
 derived2_class_table_t derived2_class_table =
 {
   .parent_class_table_ = (const class_table_t*)&derived1_class_table,
-  .isa = derived2_isa,
-  .is_descendant = yaooc_object_is_descendant,
+  .type_name_ = (const char*) "derived2_t",
   .swap = yaooc_object_swap,
   .do_something = derived2_do_something
 };
@@ -203,25 +197,25 @@ void test_inheritance()
 {
   TESTCASE("Inheritance");
   base_pointer b=new(base);
-  TEST("base object isa returns base_t",strcmp(M(b,isa),"base_t")==0);
-  TEST("base is descendant from base_t",M(b,is_descendant,"base_t"));
-  TEST("base is descendant from yaooc_object_t",M(b,is_descendant,"yaooc_object_t"));
-  TEST("base is not a descendant of yaooc_string_t",!M(b,is_descendant,"yaooc_string_t"));
+  TEST("base object isa returns base_t",ISA(b,base));
+  TEST("base is descendant from base_t",ISA(b,base));
+  TEST("base is descendant from yaooc_object_t",ISA(b,yaooc_object));
+  TEST("base is not a descendant of yaooc_string_t",!ISA(b,yaooc_string));
 
   derived1_pointer d1=new(derived1);
-  TEST("derived 1 object isa returns derived1_t",strcmp(M(d1,isa),"derived1_t")==0);
-  TEST("derived 1 is descendant from derived1_t",M(d1,is_descendant,"derived1_t"));
-  TEST("derived 1 is descendant from base_t",M(d1,is_descendant,"base_t"));
-  TEST("derived 1 is descendant from yaooc_object_t",M(d1,is_descendant,"yaooc_object_t"));
-  TEST("derived 1 is not a descendant of yaooc_string_t",!M(d1,is_descendant,"yaooc_string_t"));
+  TEST("derived 1 object isa returns derived1_t",ISA(d1,derived1));
+  TEST("derived 1 is descendant from derived1_t",ISA(d1,derived1));
+  TEST("derived 1 is descendant from base_t",ISA(d1,base));
+  TEST("derived 1 is descendant from yaooc_object_t",ISA(d1,yaooc_object));
+  TEST("derived 1 is not a descendant of yaooc_string_t",!ISA(d1,yaooc_string));
 
   derived2_pointer d2=new(derived2);
-  TEST("derived 2 object isa returns derived1_t",strcmp(M(d2,isa),"derived2_t")==0);
-  TEST("derived 2 is descendant from derived2_t",M(d2,is_descendant,"derived2_t"));
-  TEST("derived 2 is descendant from derived1_t",M(d2,is_descendant,"derived1_t"));
-  TEST("derived 2 is descendant from base_t",M(d2,is_descendant,"base_t"));
-  TEST("derived 2 is descendant from yaooc_object_t",M(d2,is_descendant,"yaooc_object_t"));
-  TEST("derived 2 is not a descendant of yaooc_string_t",!M(d2,is_descendant,"yaooc_string_t"));
+  TEST("derived 2 object isa returns derived2_t",ISA(d2,derived2));
+  TEST("derived 2 is descendant from derived2_t",ISA(d2,derived2));
+  TEST("derived 2 is descendant from derived1_t",ISA(d2,derived1));
+  TEST("derived 2 is descendant from base_t",ISA(d2,base));
+  TEST("derived 2 is descendant from yaooc_object_t",ISA(d2,yaooc_object));
+  TEST("derived 2 is not a descendant of yaooc_string_t",!ISA(d2,yaooc_string));
 
   delete_list(b,d1,d2,NULL);
 }

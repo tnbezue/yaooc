@@ -12,7 +12,6 @@ class yaooc_stream_exception : yaooc_exception
     ~yaooc_stream_exception();
     yaooc_stream_exception_ctor_ccs(const char* str);
   table:
-    const char* isa() const;
     const char* what() const;
   instance:
     char* exception_str_;

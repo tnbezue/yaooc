@@ -53,8 +53,6 @@ void yaooc_pointer_bag_dtor(pointer);
 /* Prototypes for Constructors */
 
 /* Prototypes for class table members */
-const char* yaooc_pointer_bag_isa(const_pointer);
-#define yaooc_pointer_bag_is_descendant yaooc_object_is_descendant
 void yaooc_pointer_bag_swap(pointer,pointer);
 pointer yaooc_pointer_bag_push(pointer,pointer);
 void yaooc_pointer_bag_push_list(pointer,...);

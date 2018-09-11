@@ -67,8 +67,6 @@ void yaooc_date_time_ctor_tm(pointer,va_list);
 void yaooc_date_time_ctor_ccs(pointer,va_list);
 
 /* Prototypes for yaooc_date_time class table */
-const char* yaooc_date_time_isa(const_pointer);
-#define yaooc_date_time_is_descendant yaooc_object_is_descendant
 void yaooc_date_time_swap(pointer,pointer);
 void yaooc_date_time_set(pointer,int);
 int yaooc_date_time_get(const_pointer);

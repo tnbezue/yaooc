@@ -43,7 +43,6 @@ yaooc_class_instance(NAME) { \
   yaooc_ ## C ## _container_class_instance_t; \
 };\
 yaooc_class(NAME); \
-const char* NAME ## _isa(const_pointer); \
 NAME ## _iterator NAME ## _insert(pointer,const K ## _t*,const V ## _t*); \
 size_t NAME ## _erase_key(pointer,const K ## _t*); \
 V ## _t* NAME ## _at(const_pointer,const K ## _t*); \
@@ -51,7 +50,6 @@ NAME ## _iterator NAME ## _find(const_pointer, const K ## _t*);
 
 #define __MAP_IMPLEMENTATION(K,V,C,NAME) \
 PAIR_IMPLEMENTATION(K,V,NAME ## _pair) \
-const char* NAME ## _isa(const_pointer p) { return # NAME "_t"; } \
 NAME ## _iterator NAME ## _insert(pointer p,const K ## _t* k,const V ## _t* v) \
 { \
   NAME ## _pair_t pair; \
@@ -90,8 +88,7 @@ size_t NAME ## _erase_key(pointer p, const K ## _t* k) \
 void NAME ## _default_ctor(pointer p) { call_constructor(p,yaooc_ ## C ## _container_ctor_ti,NAME ## _pair_ti); } \
 NAME ## _class_table_t NAME ## _class_table = { \
   .parent_class_table_ = (const class_table_t*)&yaooc_ ## C ## _container_class_table, \
-  .isa = NAME ## _isa, \
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_object_is_descendant, \
+  .type_name_ = # NAME "_t", \
   .swap = (void (*) (pointer p,pointer)) yaooc_ ## C ## _container_swap, \
   .increase_capacity = (bool (*) (pointer,size_t)) yaooc_ ## C ## _container_increase_capacity, \
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_ ## C ## _container_size_needed, \

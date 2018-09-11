@@ -57,8 +57,6 @@ void my_string_ctor_ccs(pointer,va_list);
 void my_string_ctor_chr_n(pointer,va_list);
 
 /* Prototypes for my_string class table */
-const char* my_string_isa(const_pointer);
-#define my_string_is_descendant yaooc_object_is_descendant
 void my_string_swap(pointer,pointer);
 const char* my_string_get(const_pointer);
 #define my_string_c_str my_string_get
@@ -107,8 +105,6 @@ yaooc_class(my_string_exception);
 #define my_string_exception_ctor_v yaooc_exception_ctor_v
 
 /* Table prototypes for my_string_exception */
-const char* my_string_exception_isa(const_pointer);
-#define my_string_exception_is_descendant yaooc_exception_is_descendant
 #define my_string_exception_swap yaooc_exception_swap
 #define my_string_exception_what yaooc_exception_what
 
@@ -138,8 +134,6 @@ yaooc_class(my_string_insert_exception);
 #define my_string_insert_exception_ctor_v yaooc_exception_ctor_v
 
 /* Table prototypes for my_string_insert_exception */
-const char* my_string_insert_exception_isa(const_pointer);
-#define my_string_insert_exception_is_descendant my_string_exception_is_descendant
 #define my_string_insert_exception_swap my_string_exception_swap
 #define my_string_insert_exception_what my_string_exception_what
 
@@ -169,8 +163,6 @@ yaooc_class(my_string_erase_exception);
 #define my_string_erase_exception_ctor_v yaooc_exception_ctor_v
 
 /* Table prototypes for my_string_erase_exception */
-const char* my_string_erase_exception_isa(const_pointer);
-#define my_string_erase_exception_is_descendant my_string_exception_is_descendant
 #define my_string_erase_exception_swap my_string_exception_swap
 #define my_string_erase_exception_what my_string_exception_what
 
@@ -200,8 +192,6 @@ yaooc_class(my_string_at_exception);
 #define my_string_at_exception_ctor_v yaooc_exception_ctor_v
 
 /* Table prototypes for my_string_at_exception */
-const char* my_string_at_exception_isa(const_pointer);
-#define my_string_at_exception_is_descendant my_string_exception_is_descendant
 #define my_string_at_exception_swap my_string_exception_swap
 #define my_string_at_exception_what my_string_exception_what
 

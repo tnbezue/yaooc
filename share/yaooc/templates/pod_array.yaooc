@@ -29,7 +29,6 @@ class yaooc_pod_array : yaooc_object
 
   table:
     cont class_table_t* private_class_table_=&yaooc_pod_array_private_class_table;
-    const char* isa() const;
     void swap(pointer p2);
     bool increase_capacity(size_t n);
     size_t size_needed(size_t n);

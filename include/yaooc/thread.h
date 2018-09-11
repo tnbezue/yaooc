@@ -67,8 +67,6 @@ void yaooc_thread_dtor(pointer);
 void yaooc_thread_ctor_method(pointer,va_list);
 
 /* Prototypes for yaooc_thread class table*/
-const char* yaooc_thread_isa(const_pointer);
-#define yaooc_thread_is_descendant yaooc_object_is_descendant
 #define yaooc_thread_swap yaooc_object_swap
 pthread_t yaooc_thread_id(const_pointer);
 int yaooc_thread_join(pointer);
@@ -108,8 +106,6 @@ void yaooc_mutex_dtor(pointer);
 /* Constructors for yaooc_mutex */
 
 /* Prototypes for yaooc_mutex class table*/
-const char* yaooc_mutex_isa(const_pointer);
-#define yaooc_mutex_is_descendant yaooc_object_is_descendant
 #define yaooc_mutex_swap yaooc_object_swap
 bool yaooc_mutex_lock(pointer);
 bool yaooc_mutex_trylock(pointer);
@@ -147,8 +143,6 @@ void yaooc_condition_variable_dtor(pointer);
 /* Constructors for yaooc_condition_variable */
 
 /* Prototypes for yaooc_condition_variable class table*/
-const char* yaooc_condition_variable_isa(const_pointer);
-#define yaooc_condition_variable_is_descendant yaooc_mutex_is_descendant
 #define yaooc_condition_variable_swap yaooc_mutex_swap
 #define yaooc_condition_variable_lock yaooc_mutex_lock
 #define yaooc_condition_variable_trylock yaooc_mutex_trylock

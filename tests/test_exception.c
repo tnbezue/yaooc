@@ -50,11 +50,6 @@ void demo_exception_dtor(pointer p)
     FREE(this->msg_);
 }
 
-const char* demo_exception_isa(const_pointer p)
-{
-  return "demo_exception_t";
-}
-
 const char* demo_exception_what(const_pointer p)
 {
   return ((demo_exception_const_pointer)p)->msg_;
@@ -63,8 +58,7 @@ const char* demo_exception_what(const_pointer p)
 demo_exception_class_table_t demo_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .isa = (const char*(*) (const_pointer)) demo_exception_isa,
-  .is_descendant = (bool(*) (const_pointer,const char*)) yaooc_object_is_descendant,
+  .type_name_ = (const char*) "demo_exception_t",
   .swap = (void(*) (pointer,pointer)) yaooc_object_swap,
   .what = (const char*(*) (const_pointer)) demo_exception_what,
 
@@ -105,11 +99,6 @@ void demo2_exception_dtor(pointer p)
     FREE(this->msg_);
 }
 
-const char* demo2_exception_isa(const_pointer p)
-{
-  return "demo2_exception_t";
-}
-
 const char* demo2_exception_what(const_pointer p)
 {
   return ((demo2_exception_const_pointer)p)->msg_;
@@ -118,8 +107,7 @@ const char* demo2_exception_what(const_pointer p)
 demo2_exception_class_table_t demo2_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .isa = (const char*(*) (const_pointer)) demo2_exception_isa,
-  .is_descendant = (bool(*) (const_pointer,const char*)) yaooc_object_is_descendant,
+  .type_name_ = (const char*) "demo2_exception_t",
   .swap = (void(*) (pointer,pointer)) yaooc_object_swap,
   .what = (const char*(*) (const_pointer)) demo2_exception_what,
 };
@@ -159,11 +147,6 @@ void uncaught_exception_dtor(pointer p)
     FREE(this->msg_);
 }
 
-const char* uncaught_exception_isa(const_pointer p)
-{
-  return "uncaught_exception_t";
-}
-
 const char* uncaught_exception_what(const_pointer p)
 {
   return ((uncaught_exception_const_pointer)p)->msg_;
@@ -172,8 +155,7 @@ const char* uncaught_exception_what(const_pointer p)
 uncaught_exception_class_table_t uncaught_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .isa = (const char*(*) (const_pointer)) uncaught_exception_isa,
-  .is_descendant = (bool(*) (const_pointer,const char*)) yaooc_object_is_descendant,
+  .type_name_ = (const char*) "uncaught_exception_t",
   .swap = (void(*) (pointer,pointer)) yaooc_object_swap,
   .what = (const char*(*) (const_pointer)) uncaught_exception_what,
 };
@@ -261,13 +243,13 @@ void test_exception()
     }
     CATCH(demo_exception,e)
     {
-      printf("Caught %s in block 1\n",M(e,isa));
+      printf("Caught %s in block 1\n",TYPE(e));
       result=1;
       TEST("Exception caught in block 1",strcmp(M(e,what),"Catch Block 1")==0);
     }
     CATCH(demo2_exception,e)
     {
-      printf("Caught %s in block 2\n",M(e,isa));
+      printf("Caught %s in block 2\n",TYPE(e));
       result=2;
       printf(" ZZZZ %s\n",M(e,what));
       TEST("Exception caught in block 2",strcmp(M(e,what),"Catch Block 2")==0);
@@ -310,27 +292,26 @@ void test_nested()
           }
         } CATCH(demo_exception,ed) {  /* CB2_1 */
           strcat(path,"CB2_1");
-          strcat(path,M(ed,isa));
+          strcat(path,TYPE(ed));
         } CATCH(demo2_exception,ed2) { /* CB2_2 */
           strcat(path,"CB_2");
-          strcat(path,M(ed2,isa));
+          strcat(path,TYPE(ed2));
           if(i==6) {
             TRY { /* CB2_T1 */
               THROW(new(demo_exception));
             } CATCH(demo_exception,aed) { /* CB2_CB1 */
-              M(aed,isa);
+              TYPE(aed);
               THROW(new(yaooc_exception));
             }
             ETRY
           }
         } CATCH(yaooc_exception,ye) { /* CB2_3 */
-          M(ye,isa);
+          TYPE(ye);
         }
         ETRY
       }
     } CATCH(yaooc_exception,yye) { /* CB1 */
-			M(yye,isa);
-//      strcpy(et,M(yye,isa));
+			TYPE(yye);
     }
     ETRY
     printf("%d %s\n",i,path);

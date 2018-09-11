@@ -135,15 +135,12 @@ bool yaoocpp_element_less_than_compare(const_pointer p1,const_pointer p2)
 
 
 /* Table implementation for yaoocpp_element */
-const char* yaoocpp_element_isa(const_pointer p) {  return "yaoocpp_element_t"; }
-
 
 /* Class table definition for yaoocpp_element */
 yaoocpp_element_class_table_t yaoocpp_element_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_element_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_element_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_element_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_element_swap,
   .print_class_table_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_element_print_class_table_definition,
   .print_class_instance_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_element_print_class_instance_definition,
@@ -171,8 +168,6 @@ VECTOR_IMPLEMENTATION(yaoocpp_element_pointer,yaoocpp_element_pointer_vector);
 /* Protected implementation for yaoocpp_type */
 
 /* Table implementation for yaoocpp_type */
-const char* yaoocpp_type_isa(const_pointer p) {  return "yaoocpp_type_t"; }
-
 void yaoocpp_type_print_class_table_definition(const_pointer p,ostream_pointer o)
 {
   yaoocpp_type_const_pointer this=p;
@@ -184,8 +179,7 @@ void yaoocpp_type_print_class_table_definition(const_pointer p,ostream_pointer o
 yaoocpp_type_class_table_t yaoocpp_type_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaoocpp_element_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_type_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_type_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_type_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_type_swap,
   .print_class_table_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_type_print_class_table_definition,
   .print_class_instance_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_type_print_class_instance_definition,
@@ -246,8 +240,6 @@ void yaoocpp_variable_assign(pointer p,const_pointer s)
 /* Protected implementation for yaoocpp_variable */
 
 /* Table implementation for yaoocpp_variable */
-const char* yaoocpp_variable_isa(const_pointer p) {  return "yaoocpp_variable_t"; }
-
 void yaoocpp_variable_print_class_table_definition(const_pointer p,ostream_pointer o)
 {
   yaoocpp_variable_const_pointer this=p;
@@ -299,8 +291,7 @@ void yaoocpp_variable_print_class_table_implementation(const_pointer p,ostream_p
 yaoocpp_variable_class_table_t yaoocpp_variable_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaoocpp_element_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_variable_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_variable_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_variable_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_variable_swap,
   .print_class_table_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_variable_print_class_table_definition,
   .print_class_instance_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_variable_print_class_instance_definition,
@@ -354,8 +345,6 @@ void yaoocpp_constructor_assign(pointer p,const_pointer s)
 /* Protected implementation for yaoocpp_constructor */
 
 /* Table implementation for yaoocpp_constructor */
-const char* yaoocpp_constructor_isa(const_pointer p) {  return "yaoocpp_constructor_t"; }
-
 void yaoocpp_constructor_print_prototype(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
 {
   yaoocpp_constructor_const_pointer this=p;
@@ -395,8 +384,7 @@ void yaoocpp_constructor_print_implementation(const_pointer p,ostream_pointer o,
 yaoocpp_constructor_class_table_t yaoocpp_constructor_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaoocpp_element_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_constructor_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_constructor_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_constructor_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_constructor_swap,
   .print_class_table_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_constructor_print_class_table_definition,
   .print_class_instance_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_constructor_print_class_instance_definition,
@@ -450,8 +438,6 @@ void yaoocpp_method_assign(pointer p,const_pointer s)
 /* Protected implementation for yaoocpp_method */
 
 /* Table implementation for yaoocpp_method */
-const char* yaoocpp_method_isa(const_pointer p) {  return "yaoocpp_method_t"; }
-
 void yaoocpp_method_print_class_table_definition(const_pointer p,ostream_pointer o)
 {
   yaoocpp_method_const_pointer this=p;
@@ -500,15 +486,11 @@ void yaoocpp_method_print_implementation(const_pointer p,ostream_pointer o,const
 //      M(ostrm,printf,",%s %s",M(&iarg->type_,c_str),M(&iarg->name_,c_str));
     }
     M(ostrm,printf,")");
-    if(strcmp(M(&this->name_,c_str),"isa") == 0) {
-      M(ostrm,printf," {  return \"%s_t\"; ",class_name);
-    } else {
-      M(ostrm,printf,"\n{\n"
-              "  %s_%spointer this=p;\n",class_name,(this->is_const_ ? "const_": ""));
-      if(strcmp(M(&this->return_type_,c_str),"void") != 0)
-        M(ostrm,printf,"  %s ret;\n"
-                      "  return ret;\n",M(&this->return_type_,c_str));
-    }
+		M(ostrm,printf,"\n{\n"
+						"  %s_%spointer this=p;\n",class_name,(this->is_const_ ? "const_": ""));
+		if(strcmp(M(&this->return_type_,c_str),"void") != 0)
+			M(ostrm,printf,"  %s ret;\n"
+										"  return ret;\n",M(&this->return_type_,c_str));
     M(ostrm,printf,"}\n\n");
   }
 }
@@ -533,8 +515,7 @@ void yaoocpp_method_print_class_table_implementation(const_pointer p,ostream_poi
 yaoocpp_method_class_table_t yaoocpp_method_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaoocpp_constructor_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_method_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_method_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_method_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_method_swap,
   .print_class_table_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_method_print_class_table_definition,
   .print_class_instance_definition = (void(*)(const_pointer,ostream_pointer)) yaoocpp_method_print_class_instance_definition,
@@ -880,15 +861,12 @@ void yaoocpp_container_inherit(pointer p)
 
 
 /* Table implementation for yaoocpp_container */
-const char* yaoocpp_container_isa(const_pointer p) {  return "yaoocpp_container_t"; }
-
 
 /* Class table definition for yaoocpp_container */
 yaoocpp_container_class_table_t yaoocpp_container_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_container_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_container_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_container_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_container_swap,
   .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_container_print_to_header,
   .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_container_print_to_source,
@@ -912,8 +890,6 @@ VECTOR_IMPLEMENTATION(yaoocpp_container_pointer,yaoocpp_container_pointer_vector
 /* Protected implementation for yaoocpp_struct */
 
 /* Table implementation for yaoocpp_struct */
-const char* yaoocpp_struct_isa(const_pointer p) {  return "yaoocpp_struct_t"; }
-
 void yaoocpp_struct_print_to_header(const_pointer p,ostream_pointer o)
 {
   yaoocpp_struct_const_pointer this=p;
@@ -953,8 +929,7 @@ void yaoocpp_struct_print_to_source(const_pointer p,ostream_pointer o)
 yaoocpp_struct_class_table_t yaoocpp_struct_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_struct_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_struct_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_struct_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_struct_swap,
   .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_struct_print_to_header,
   .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_struct_print_to_source,
@@ -1016,20 +991,19 @@ void yaoocpp_container_with_class_table_inherit(pointer p)
       (*i)->state_=INHERITED;
       if(ISA(*i,yaoocpp_method)) {
         yaoocpp_method_pointer method=(yaoocpp_method_pointer)*i;
-        if(strcmp(M(&method->name_,c_str),"isa")==0) {
-          method->state_=OVERRIDDEN;
-          M(&method->implementation_method_,clear);
-        } else {
-          M(&method->implementation_method_,set,M(&p->name_,c_str));
-          M(&method->implementation_method_,append,"_");
-          M(&method->implementation_method_,append,M(&method->name_,c_str));
-        }
+        M(&method->implementation_method_,set,M(&p->name_,c_str));
+        M(&method->implementation_method_,append,"_");
+        M(&method->implementation_method_,append,M(&method->name_,c_str));
       } else {
         yaoocpp_variable_pointer var=(yaoocpp_variable_pointer)*i;
         if(strcmp(M(&var->name_,c_str),"parent_class_table_")==0) {
           M(&var->default_value_,set,"&");
           M(&var->default_value_,append,M(&p->name_,c_str));
           M(&var->default_value_,append,"_class_table");
+        } else if(strcmp(M(&var->name_,c_str),"type_name_")==0) {
+          M(&var->default_value_,set,"\"");
+          M(&var->default_value_,append,M(&this->name_,c_str));
+          M(&var->default_value_,append,"_t\"");
         }
       }
     }
@@ -1038,8 +1012,6 @@ void yaoocpp_container_with_class_table_inherit(pointer p)
 
 
 /* Table implementation for yaoocpp_container_with_class_table */
-const char* yaoocpp_container_with_class_table_isa(const_pointer p) {  return "yaoocpp_container_with_class_table_t"; }
-
 void yaoocpp_container_with_class_table_print_to_header(const_pointer p,ostream_pointer o)
 {
   yaoocpp_container_with_class_table_const_pointer this=p;
@@ -1055,8 +1027,7 @@ void yaoocpp_container_with_class_table_print_to_source(const_pointer p,ostream_
 yaoocpp_container_with_class_table_class_table_t yaoocpp_container_with_class_table_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_container_with_class_table_isa,
-  .is_descendant = (bool(*)(const_pointer, const char*)) yaoocpp_container_with_class_table_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_container_with_class_table_t",
   .swap = (void(*)(pointer, pointer)) yaoocpp_container_with_class_table_swap,
   .print_to_header = (void(*)(const_pointer, ostream_pointer)) yaoocpp_container_with_class_table_print_to_header,
   .print_to_source = (void(*)(const_pointer, ostream_pointer)) yaoocpp_container_with_class_table_print_to_source,
@@ -1073,6 +1044,7 @@ DEFINE_TYPE_INFO(yaoocpp_struct,N,N,N,N,N,N,N,Y,yaoocpp_container);
 /* Private methods prototypes for yaoocpp_union */
 
 /* Type Info implemmentation for yaoocpp_union */
+
 /* Constructors implementation for yaoocpp_union */
 
 /* Private methods implementation for yaoocpp_union */
@@ -1080,8 +1052,6 @@ DEFINE_TYPE_INFO(yaoocpp_struct,N,N,N,N,N,N,N,Y,yaoocpp_container);
 /* Protected implementation for yaoocpp_union */
 
 /* Table implementation for yaoocpp_union */
-const char* yaoocpp_union_isa(const_pointer p) {  return "yaoocpp_union_t"; }
-
 void yaoocpp_union_print_to_header(const_pointer p,ostream_pointer o)
 {
   yaoocpp_union_const_pointer this=p;
@@ -1112,22 +1082,6 @@ void yaoocpp_union_print_to_header(const_pointer p,ostream_pointer o)
   yaoocpp_container_print_element_prototype(this,ostrm,"Constructors",&this->constructors_,PRINT_ANY,"");
   yaoocpp_container_print_element_prototype(this,ostrm,"Table",&this->table_,PRINT_METHOD,"");
   yaoocpp_container_print_element_prototype(this,ostrm,"Protected",&this->protected_,PRINT_BOTH,"extern ");
-#if 0
-  M(ostrm,printf,"/*\n  Union Definition for %s\n*/\n",M(&this->name_,c_str));
-  M(ostrm,printf,"yaooc_union(%s) {\n",M(&this->name_,c_str));
-  if(this->parent_)
-    M(ostrm,printf,"  %s_t;\n",M(&this->parent_->name_,c_str));
-  yaoocpp_element_pointer_vector_const_iterator iter;
-  FOR_EACH(iter,&this->instance_) {
-    if((*iter)->state_==INITIAL)
-      M(*iter,print_class_instance_definition,ostrm);
-  }
-  M(ostrm,printf,"};\n\n");
-//  yaoocpp_container_print_element_prototype(this,ostrm,"Private",&this->private_);
-  yaoocpp_container_print_element_prototype(this,ostrm,"Protected",&this->protected_,PRINT_BOTH,"extern ");
-  yaoocpp_container_print_type_info_prototype(this,ostrm);
-  yaoocpp_container_print_element_prototype(this,ostrm,"Constructor",&this->constructors_,PRINT_ANY,"");
-#endif
 }
 
 void yaoocpp_union_print_to_source(const_pointer p,ostream_pointer o)
@@ -1149,8 +1103,7 @@ void yaoocpp_union_print_to_source(const_pointer p,ostream_pointer o)
 yaoocpp_union_class_table_t yaoocpp_union_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_union_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_union_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_union_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_union_swap,
   .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_union_print_to_header,
   .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_union_print_to_source,
@@ -1164,34 +1117,8 @@ DEFINE_TYPE_INFO(yaoocpp_union,N,N,N,N,N,N,N,Y,yaoocpp_container_with_class_tabl
 /* Private methods prototypes for yaoocpp_class */
 static void yaoocpp_class_print_class_table_implementation(const_pointer,ostream_pointer);
 
-/* Type Info implemmentation for yaoocpp_class
-void yaoocpp_class_default_ctor(pointer p)
-{
-  yaoocpp_class_pointer this=p;
-	yaoocpp_container_default_ctor(p);
-	newp(&this->table_,yaoocpp_element_pointer_vector);
-}
+/* Type Info implemmentation for yaoocpp_class */
 
-void yaoocpp_class_dtor(pointer p)
-{
-  yaoocpp_class_pointer this=p;
-	deletep(&this->table_,yaoocpp_element_pointer_vector);
-}
-
-void yaoocpp_class_copy_ctor(pointer p,const_pointer s)
-{
-  yaoocpp_class_default_ctor(p);
-  yaoocpp_class_assign(p,s);
-}
-
-void yaoocpp_class_assign(pointer p,const_pointer s)
-{
-  yaoocpp_class_pointer this=p;
-  yaoocpp_class_const_pointer src=s;
-	yaoocpp_container_assign(p,s);
-	assign_static(&this->table_,&src->table_,yaoocpp_element_pointer_vector);
-}
-*/
 /* Constructors implementation for yaoocpp_class */
 
 /* Private methods implementation for yaoocpp_class */
@@ -1209,15 +1136,9 @@ static void yaoocpp_class_print_class_table_implementation(const_pointer p,ostre
 }
 
 
-/* Protected implementation for yaoocpp_class
-void yaoocpp_class_inherit(pointer p)
-{
-}
-*/
+/* Protected implementation for yaoocpp_class */
 
 /* Table implementation for yaoocpp_class */
-const char* yaoocpp_class_isa(const_pointer p) {  return "yaoocpp_class_t"; }
-
 void yaoocpp_class_print_to_header(const_pointer p,ostream_pointer o)
 {
   yaoocpp_class_const_pointer this=p;
@@ -1270,8 +1191,7 @@ void yaoocpp_class_print_to_source(const_pointer p,ostream_pointer o)
 yaoocpp_class_class_table_t yaoocpp_class_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_class_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_class_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_class_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_class_swap,
   .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_class_print_to_header,
   .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_class_print_to_source,

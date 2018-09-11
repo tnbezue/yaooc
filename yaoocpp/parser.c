@@ -43,15 +43,12 @@ char current_file[256];
 /* Protected implementation for yaoocpp_parser_exception */
 
 /* Table implementation for yaoocpp_parser_exception */
-const char* yaoocpp_parser_exception_isa(const_pointer p) {  return "yaoocpp_parser_exception_t"; }
-
 
 /* Class table definition for yaoocpp_parser_exception */
 yaoocpp_parser_exception_class_table_t yaoocpp_parser_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_parser_exception_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_parser_exception_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_parser_exception_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_parser_exception_swap,
   .what = (const char*(*)(const_pointer)) yaoocpp_parser_exception_what,
 };
@@ -730,7 +727,6 @@ static yaoocpp_container_pointer yaoocpp_parser_parse_section(pointer p)
 /* Protected implementation for yaoocpp_parser */
 
 /* Table implementation for yaoocpp_parser */
-const char* yaoocpp_parser_isa(const_pointer p) {  return "yaoocpp_parser_t"; }
 
 yaooc_terminal_t yaoocpp_parser_custom_whitespace(pointer p)
 {
@@ -807,8 +803,7 @@ void yaoocpp_parser_parse_file(pointer p,const char* file)
 yaoocpp_parser_class_table_t yaoocpp_parser_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_base_parser_class_table,
-  .isa = (const char*(*)(const_pointer)) yaoocpp_parser_isa,
-  .is_descendant = (bool(*)(const_pointer,const char*)) yaoocpp_parser_is_descendant,
+  .type_name_ = (const char*) "yaoocpp_parser_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_parser_swap,
   .set_parse_string = (void(*)(pointer,const char*)) yaoocpp_parser_set_parse_string,
   .rule_start = (void(*)(pointer)) yaoocpp_parser_rule_start,

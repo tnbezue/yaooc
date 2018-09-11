@@ -44,10 +44,7 @@ void yaooc_pointer_bag_dtor(pointer p)
 /* Additional constructors for yaooc_pointer_bag */
 
 /* Class table members for yaooc_pointer_bag */
-const char* yaooc_pointer_bag_isa(const_pointer p)
-{
-  return "yaooc_pointer_bag_t";
-}
+
 /*
 void yaooc_pointer_bag_swap(pointer p,pointer p2)
 {
@@ -122,8 +119,7 @@ void yaooc_pointer_bag_delete_all(pointer p)
 yaooc_pointer_bag_class_table_t yaooc_pointer_bag_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_pod_array_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_pointer_bag_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_pointer_bag_is_descendant,
+  .type_name_ = (const char*) "yaooc_pointer_bag_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_pod_array_swap,
   .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,

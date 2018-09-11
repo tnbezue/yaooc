@@ -27,7 +27,6 @@ class yaooc_red_black_index_array_container : yaooc_array_container
     void clear();
 
   table:
-    const char* isa() const;
     void swap(pointer p2);
 
   instance:

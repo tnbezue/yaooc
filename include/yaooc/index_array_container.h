@@ -57,8 +57,6 @@ void yaooc_index_array_container_assign(pointer,const_pointer);
 void yaooc_index_array_container_ctor_ti(pointer,va_list);
 
 /* Prototypes for yaooc_index_array_container class table*/
-const char* yaooc_index_array_container_isa(const_pointer);
-#define yaooc_index_array_container_is_descendant yaooc_array_container_is_descendant
 void yaooc_index_array_container_swap(pointer,pointer);
 #define yaooc_index_array_container_size yaooc_array_container_size
 #define yaooc_index_array_container_capacity yaooc_array_container_capacity

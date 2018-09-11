@@ -112,8 +112,6 @@ void yaooc_base_parser_assign(pointer,const_pointer);
 /* Constructors for yaooc_base_parser */
 
 /* Prototypes for yaooc_base_parser class table*/
-const char* yaooc_base_parser_isa(const_pointer);
-#define yaooc_base_parser_is_descendant yaooc_object_is_descendant
 void yaooc_base_parser_swap(pointer,pointer);
 void yaooc_base_parser_set_parse_string(pointer,const char*);
 void yaooc_base_parser_rule_start(pointer);

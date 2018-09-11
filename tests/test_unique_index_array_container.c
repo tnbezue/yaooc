@@ -99,12 +99,10 @@ bool index_ordered(int_unique_index_array_container_const_pointer this)
   return true;
 }
 
-const char* int_unique_index_array_container_isa(const_pointer p) { return "int_unique_index_array_container_t"; }
 int_unique_index_array_container_class_table_t int_unique_index_array_container_class_table=
 {
   .parent_class_table_ = (const class_table_t*)&yaooc_unique_index_array_container_class_table, /* parent_class_table_ */
-  .isa = int_unique_index_array_container_isa, /* isa */
-  .is_descendant = (bool(*) (const_pointer,const char*)) yaooc_object_is_descendant, /* is_descendant  */
+  .type_name_ = (const char*) "int_unique_index_array_container_t",
   .swap = yaooc_index_array_container_swap, /* swap  */
   .increase_capacity = (bool(*)(pointer,size_t)) yaooc_index_array_container_increase_capacity,
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,

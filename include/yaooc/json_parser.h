@@ -54,8 +54,6 @@ yaooc_class(yaooc_json_parser);
 /* Constructors for yaooc_json_parser */
 
 /* Prototypes for yaooc_json_parser class table*/
-#define yaooc_json_parser_isa yaooc_base_parser_isa
-#define yaooc_json_parser_is_descendant yaooc_base_parser_is_descendant
 #define yaooc_json_parser_swap yaooc_base_parser_swap
 #define yaooc_json_parser_set_parse_string yaooc_base_parser_set_parse_string
 #define yaooc_json_parser_rule_start yaooc_base_parser_rule_start

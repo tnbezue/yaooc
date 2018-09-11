@@ -24,7 +24,6 @@ yaooc_class(yaoocpp_parser_exception);
 
 /* Table prototypes for yaoocpp_parser_exception */
 const char* yaoocpp_parser_exception_isa(const_pointer);
-#define yaoocpp_parser_exception_is_descendant yaooc_exception_is_descendant
 #define yaoocpp_parser_exception_swap yaooc_exception_swap
 #define yaoocpp_parser_exception_what yaooc_exception_what
 
@@ -74,7 +73,6 @@ void yaoocpp_parser_dtor(pointer);
 
 /* Table prototypes for yaoocpp_parser */
 const char* yaoocpp_parser_isa(const_pointer);
-#define yaoocpp_parser_is_descendant yaooc_base_parser_is_descendant
 #define yaoocpp_parser_swap yaooc_base_parser_swap
 #define yaoocpp_parser_set_parse_string yaooc_base_parser_set_parse_string
 #define yaoocpp_parser_rule_start yaooc_base_parser_rule_start

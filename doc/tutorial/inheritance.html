@@ -62,25 +62,21 @@ A struct should not have a class as a parent and a class should not have a struc
 macro, a struct type name can be specified as a member (it must not be the first entry).
 </p>
 <p>
-yaooc_object has no instance members.  It has four table entries -- one variable and three methods. They are:
+yaooc_object has no instance members.  It has three table entries -- two variables and one method. They are:
 </p>
 <pre><code>
   const class_table_t* parent_class_table_;  /* Pointer to parent class table */
-  const char * (*isa)(const_pointer);       /* Return the name of the class */
-  bool (*is_descendant)(const_pointer,const char*);  /* true if specified this class is a descendant of specified class */
+  const char * type_name_;       /* type name of the class */
   void (*swap)(pointer,pointer); /* Swaps contents of instances */
 </code></pre>
 <p>
-The parent class table should always be specified.  The isa method should be overridden so that it returns the class name.
-The is_descendant method should not be overridden -- with the parent class table specified, it can properly determine if a
-class is a descendant of another.  The swap method should be overridden as needed -- the yaooc_object version does nothing. 
+The parent class table is the class table of the parent and should always be specified.  The type_name_ variable should be set to the type name -- including the "_t".
+The swap method is used to swap the values of the two object.  It should be overridden as needed -- the yaooc_object version does nothing. 
 </p>
 <p>
-For the my_string class, the following methods will override the ones defined in yaooc_object.
+For the my_string class, the swap method will be overridden with the following:
 </p>
 <pre><code>
-  const char* my_string_isa(const_pointer p) { return "my_string_t"; }
-
   void my_string_swap(pointer p,pointer o)
   {
     my_string_pointer this=p;
@@ -97,7 +93,7 @@ The class table and DEFINE_TYPE_INFO for my_string will be:
   my_string_class_table_t my_string_class_table =
   {
     .parent_class_table_=(const class_table_t*) &yaooc_object_class_table,
-    .isa = my_string_isa,
+    .type_name_ = "my_string_t",
     .is_descendant=yaooc_object_is_descendant,
     .swap = my_string_swap,
     .get = my_string_get,
@@ -143,15 +139,8 @@ The inheritance tree is traversed until a non NULL method is found.  If a non NU
 
 <h3>Calling Parent Method</h3>
 <p>
-There are a few ways to call a parent method.  See the test_object.c file in the tests directory.  The best method is demonstrated here -- 
-using parent class table via the class table parent_class_table entry. For example, to call the isa method for the parent class, use:
+There are a few ways to call a parent method.  See the test_object.c file in the tests directory for various ways to call the parent method.
 </p>
-<pre><code>
-  #define my_string_parent_class_table ((yaooc_object_class_table_t*)(my_string_class_table.parent_class_table_))
-  ...
-  my_string_pointer sp=new(my_string);
-  M(cout,printf,"my_string_parent class is %s\n",my_string_parent_class_table->isa(sp));
-</code></pre>
 
 </div>
 </div>

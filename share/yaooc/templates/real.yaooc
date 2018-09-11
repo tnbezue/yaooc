@@ -13,7 +13,6 @@ class yaooc_real : yaooc_object
 
   protected:
   table:
-    const char* isa() const;
     void swap(pointer o);
     void set(double value);
     double get() const;

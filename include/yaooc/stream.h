@@ -58,8 +58,6 @@ yaooc_class(yaooc_stream_exception);
 #define yaooc_stream_exception_ctor_v yaooc_exception_ctor_v
 
 /* Prototypes for yaooc_stream_exception class table */
-const char* yaooc_stream_exception_isa(const_pointer);
-#define yaooc_stream_exception_is_descendant yaooc_exception_is_descendant
 #define yaooc_stream_exception_swap yaooc_exception_swap
 #define yaooc_stream_exception_to_s yaooc_exception_to_s
 #define yaooc_stream_exception_what yaooc_exception_what
@@ -91,8 +89,6 @@ void yaooc_base_stream_default_ctor(pointer);
 /* Prototypes for yaooc_base_stream constructors */
 
 /* Prototypes for yaooc_base_stream class table */
-const char* yaooc_base_stream_isa(const_pointer);
-#define yaooc_base_stream_is_descendant yaooc_object_is_descendant
 #define yaooc_base_stream_swap yaooc_object_swap
 #define yaooc_base_stream_to_s yaooc_object_to_s
 bool yaooc_base_stream_eof(const_pointer);
@@ -131,8 +127,6 @@ void yaooc_istream_default_ctor(pointer);
 /* Prototypes for yaooc_istream constructors */
 
 /* Prototypes for yaooc_istream class table */
-const char* yaooc_istream_isa(const_pointer);
-#define yaooc_istream_is_descendant yaooc_base_stream_is_descendant
 #define yaooc_istream_swap yaooc_base_stream_swap
 #define yaooc_istream_to_s yaooc_base_stream_to_s
 #define yaooc_istream_eof yaooc_base_stream_eof
@@ -174,9 +168,7 @@ void yaooc_ostream_default_ctor(pointer);
 /* Prototypes for yaooc_ostream constructors */
 
 /* Prototypes for yaooc_ostream class table */
-const char* yaooc_ostream_isa(const_pointer);
 void yaooc_ostream_stream(pointer,...);
-#define yaooc_ostream_is_descendant yaooc_base_stream_is_descendant
 #define yaooc_ostream_swap yaooc_base_stream_swap
 #define yaooc_ostream_to_s yaooc_base_stream_to_s
 #define yaooc_ostream_eof yaooc_base_stream_eof

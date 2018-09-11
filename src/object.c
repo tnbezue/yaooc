@@ -22,25 +22,22 @@
 /* Private members for yaooc_object */
 
 /* Protected members for yaooc_object */
+bool yaooc_object_isa(const_pointer p,const char* s)
+{
+	const yaooc_object_class_table_t* current_class_table=(yaooc_object_class_table_t*)(((yaooc_object_pointer)p)->class_table_);
+	while(current_class_table != NULL) {
+		if(strcmp(current_class_table->type_name_,s) == 0)
+			return true;
+		current_class_table=(const yaooc_object_class_table_t*)current_class_table->parent_class_table_;
+	}
+	return false;
+}
 
 /* Typeinfo for yaooc_object */
 
 /* Additional constructors for yaooc_object */
 
 /* Class table members for yaooc_object */
-const char* yaooc_object_isa(const_pointer p) { return "yaooc_object_t"; }
-
-bool yaooc_object_is_descendant(const_pointer p,const char* s)
-{
-  yaooc_object_class_table_t* current_class_table=(yaooc_object_class_table_t*)(((yaooc_object_pointer)p)->class_table_);
-  while(current_class_table != NULL) {
-    if(strcmp(current_class_table->isa(p),s) == 0)
-      return true;
-    current_class_table=(yaooc_object_class_table_t*)current_class_table->parent_class_table_;
-  }
-  return false;
-}
-
 void yaooc_object_swap(pointer d,pointer s)
 {
 }
@@ -51,8 +48,7 @@ void yaooc_object_swap(pointer d,pointer s)
 yaooc_object_class_table_t yaooc_object_class_table =
 {
   .parent_class_table_ = (const class_table_t*) NULL,
-  .isa = (const char* (*) (const_pointer p)) yaooc_object_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_object_is_descendant,
+  .type_name_ = (const char*) "yaooc_object_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_object_swap,
 };
 

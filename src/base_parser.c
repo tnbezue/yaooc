@@ -160,8 +160,6 @@ void yaooc_base_parser_assign(pointer d,const_pointer s)
 /* Constructors for yaooc_base_parser */
 
 /* Class table methods for yaooc_base_parser */
-const char* yaooc_base_parser_isa(const_pointer p) { return "yaooc_base_parser_t"; }
-
 void yaooc_base_parser_swap(pointer p,pointer o)
 {
 }
@@ -594,8 +592,7 @@ yaooc_base_parser_result_t yaooc_base_parser_result(const_pointer p)
 yaooc_base_parser_class_table_t yaooc_base_parser_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_base_parser_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_base_parser_is_descendant,
+  .type_name_ = (const char*) "yaooc_base_parser_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_base_parser_swap,
   .set_parse_string = (void (*) (pointer p,const char*)) yaooc_base_parser_set_parse_string,
   .rule_start = (void (*) (pointer p)) yaooc_base_parser_rule_start,

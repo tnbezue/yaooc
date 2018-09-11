@@ -15,8 +15,7 @@ class my_string : yaooc_object
     my_string_ctor_chr_n(int ch,size_t n);
 
     table:
-      const size_t my_string_n_pos = -1;
-      const char* isa() const;
+      const char* type_name="my_string_t";
       void swap(pointer o);
       const char* get() const;
       const char* c_str() const = my_string_get;

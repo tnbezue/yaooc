@@ -96,8 +96,6 @@ void yaooc_string_ctor_ccs_n(pointer,va_list);
 void yaooc_string_ctor_n_chr(pointer,va_list);
 
 /* Prototypes for yaooc_string class table*/
-const char* yaooc_string_isa(const_pointer);
-#define yaooc_string_is_descendant yaooc_pod_array_is_descendant
 #define yaooc_string_swap yaooc_pod_array_swap
 bool yaooc_string_increase_capacity(pointer,size_t);
 size_t yaooc_string_size_needed(const_pointer,size_t);

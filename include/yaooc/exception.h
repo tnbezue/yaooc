@@ -51,8 +51,6 @@ void yaooc_exception_assign(pointer,const_pointer);
 void yaooc_exception_ctor_v(pointer,va_list);
 
 /* Prototypes for yaooc_exception class table*/
-const char* yaooc_exception_isa(const_pointer);
-#define yaooc_exception_is_descendant yaooc_object_is_descendant
 void yaooc_exception_swap(pointer,pointer);
 const char* yaooc_exception_what(const_pointer);
 

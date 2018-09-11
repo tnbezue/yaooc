@@ -56,16 +56,13 @@ yaooc_class_instance(NAME) \
 	yaooc_array_container_class_instance_t; \
 }; \
 yaooc_class(NAME);\
-const char* NAME ## _isa(const_pointer p);
 
 #define VECTOR_IMPLEMENTATION(T,NAME) \
 void NAME ## _default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor_ti,T ## _ti); } \
-const char* NAME ## _isa(const_pointer p) { return # NAME "_t"; } \
 NAME ## _class_table_t NAME ## _class_table = \
 { \
   .parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table, \
-  .isa = (const char* (*)(const_pointer)) NAME ## _isa, \
-  .is_descendant = (bool (*)(const_pointer,const char*)) yaooc_object_is_descendant, \
+  .type_name_ = (const char*) #NAME "_t", \
   .swap = (void (*)(pointer,pointer)) yaooc_array_container_swap, \
   .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity, \
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed, \

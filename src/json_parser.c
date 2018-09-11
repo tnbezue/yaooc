@@ -225,8 +225,7 @@ yaooc_json_value_pointer yaooc_json_parser_parse_file(pointer p,const char* file
 yaooc_json_parser_class_table_t yaooc_json_parser_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_base_parser_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_json_parser_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_json_parser_is_descendant,
+  .type_name_ = (const char*) "yaooc_json_parser_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_json_parser_swap,
   .set_parse_string = (void (*) (pointer,const char*)) yaooc_json_parser_set_parse_string,
   .rule_start = (void (*) (pointer p)) yaooc_json_parser_rule_start,

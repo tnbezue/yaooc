@@ -8,7 +8,6 @@ class yaooc_pointer_bag : yaooc_object
     yaooc_pointer_bag();
     ~yaooc_pointer_bag();
   table:
-    const char* isa() const;
     void swap(pointer p2);
     pointer push(pointer v);
     void push_list(...);

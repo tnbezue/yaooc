@@ -307,7 +307,6 @@ Since YAOOCPP does the tedious work, a more robust string class can be created. 
   
     table:
       const size_t my_string_n_pos = -1;                             /* variable in class table. */
-      const char* isa() const;                                       /* Override yaooc_object isa method */
       void swap(pointer o);                                          /* Override yaooc_object swap method */
       const char* get() const;                                       /* returns string value */
       const char* c_str() const = my_string_get;                     /* same as get */

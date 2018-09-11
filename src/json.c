@@ -37,15 +37,12 @@ static const char* yaooc_json_type_strings[] =
 /* Constructors for yaooc_json_exception */
 
 /* Class table methods for yaooc_json_exception */
-const char* yaooc_json_exception_isa(const_pointer p) { return "yaooc_json_exception_t"; }
-
 
 /* Class table for yaooc_json_exception */
 yaooc_json_exception_class_table_t yaooc_json_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_json_exception_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_json_exception_is_descendant,
+  .type_name_ = (const char*) "yaooc_json_exception_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_json_exception_swap,
   .what = (const char* (*) (const_pointer p)) yaooc_json_exception_what,
 };
@@ -109,8 +106,6 @@ void yaooc_json_value_to_stream(const_pointer p,pointer s)
 /* Constructors for yaooc_json_value */
 
 /* Class table methods for yaooc_json_value */
-const char* yaooc_json_value_isa(const_pointer p) { return "yaooc_json_value_t"; }
-
 void yaooc_json_value_virtual_dtor(pointer p)
 {
 }
@@ -153,8 +148,7 @@ void yaooc_json_value_print(const_pointer p,ostream_pointer s)
 yaooc_json_value_class_table_t yaooc_json_value_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer)) yaooc_json_value_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) yaooc_json_value_is_descendant,
+  .type_name_ = (const char*) "yaooc_json_value_t",
   .swap = (void (*) (pointer,pointer)) yaooc_json_value_swap,
   .virtual_dtor = (void (*) (pointer)) yaooc_json_value_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_value_virtual_copy_ctor,
@@ -189,8 +183,6 @@ void yaooc_json_null_copy_ctor(pointer d,const_pointer s)
 /* Constructors for yaooc_json_null */
 
 /* Class table methods for yaooc_json_null */
-const char* yaooc_json_null_isa(const_pointer p) { return "yaooc_json_null_t"; }
-
 void yaooc_json_null_virtual_dtor(pointer p)
 {
 }
@@ -229,8 +221,7 @@ void yaooc_json_null_print(const_pointer p,ostream_pointer s)
 yaooc_json_null_class_table_t yaooc_json_null_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_json_null_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_json_null_is_descendant,
+  .type_name_ = (const char*) "yaooc_json_null_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_json_null_swap,
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_null_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_null_virtual_copy_ctor,
@@ -272,8 +263,6 @@ void yaooc_json_bool_ctor_bool(pointer p,va_list args)
 }
 
 /* Class table methods for yaooc_json_bool */
-const char* yaooc_json_bool_isa(const_pointer p) { return "yaooc_json_bool_t"; }
-
 void yaooc_json_bool_virtual_dtor(pointer p)
 {
 }
@@ -329,8 +318,7 @@ bool yaooc_json_bool_get(const_pointer p)
 yaooc_json_bool_class_table_t yaooc_json_bool_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_json_bool_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_json_bool_is_descendant,
+  .type_name_ = (const char*) "yaooc_json_bool_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_json_bool_swap,
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_bool_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_bool_virtual_copy_ctor,
@@ -372,8 +360,6 @@ void yaooc_json_integer_ctor_int(pointer p,va_list args)
 }
 
 /* Class table methods for yaooc_json_integer */
-const char* yaooc_json_integer_isa(const_pointer p) { return "yaooc_json_integer_t"; }
-
 void yaooc_json_integer_virtual_dtor(pointer p)
 {
 }
@@ -428,8 +414,7 @@ int64_t yaooc_json_integer_get(const_pointer p)
 yaooc_json_integer_class_table_t yaooc_json_integer_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_json_integer_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_json_integer_is_descendant,
+  .type_name_ = (const char*) "yaooc_json_integer_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_json_integer_swap,
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_integer_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_integer_virtual_copy_ctor,
@@ -471,8 +456,6 @@ void yaooc_json_real_ctor_real(pointer p,va_list args)
 }
 
 /* Class table methods for yaooc_json_real */
-const char* yaooc_json_real_isa(const_pointer p) { return "yaooc_json_real_t"; }
-
 void yaooc_json_real_virtual_dtor(pointer p)
 {
 }
@@ -525,8 +508,7 @@ double yaooc_json_real_get(const_pointer p)
 yaooc_json_real_class_table_t yaooc_json_real_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_json_real_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_json_real_is_descendant,
+  .type_name_ = (const char*) "yaooc_json_real_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_json_real_swap,
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_real_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_real_virtual_copy_ctor,
@@ -583,8 +565,6 @@ void yaooc_json_string_ctor_ccs_size(pointer p,va_list args)
 }
 
 /* Class table methods for yaooc_json_string */
-const char* yaooc_json_string_isa(const_pointer p) { return "yaooc_json_string_t"; }
-
 void yaooc_json_string_virtual_dtor(pointer p)
 {
   yaooc_json_string_pointer this=p;
@@ -655,8 +635,7 @@ void yaooc_json_string_clear(pointer p)
 yaooc_json_string_class_table_t yaooc_json_string_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_json_string_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_json_string_is_descendant,
+  .type_name_ = (const char*) "yaooc_json_string_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_json_string_swap,
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_string_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_string_virtual_copy_ctor,
@@ -698,8 +677,6 @@ void yaooc_json_array_copy_ctor(pointer d,const_pointer s)
 /* Constructors for yaooc_json_array */
 
 /* Class table methods for yaooc_json_array */
-const char* yaooc_json_array_isa(const_pointer p) { return "yaooc_json_array_t"; }
-
 void yaooc_json_array_virtual_dtor(pointer p)
 {
   yaooc_json_array_pointer this=p;
@@ -798,8 +775,7 @@ yaooc_json_array_iterator yaooc_json_array_end(const_pointer p)
 yaooc_json_array_class_table_t yaooc_json_array_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_json_array_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_json_array_is_descendant,
+  .type_name_ = (const char*) "yaooc_json_array_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_json_array_swap,
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_array_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_array_virtual_copy_ctor,
@@ -830,8 +806,6 @@ MINI_MAP_IMPLEMENTATION(yaooc_json_string,yaooc_json_value,yaooc_json_string_val
 
 
 /* Typeinfo for yaooc_json_object */
-const char* yaooc_json_object_isa(const_pointer p) { return "yaooc_json_object_t"; }
-
 void yaooc_json_object_default_ctor(pointer p)
 {
   yaooc_json_object_pointer this=p;
@@ -949,8 +923,7 @@ yaooc_json_object_iterator yaooc_json_object_end(const_pointer p)
 yaooc_json_object_class_table_t yaooc_json_object_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .isa = (const char* (*) (const_pointer p)) yaooc_json_object_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_json_object_is_descendant,
+  .type_name_ = (const char*) "yaooc_json_object_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_json_object_swap,
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_object_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_object_virtual_copy_ctor,

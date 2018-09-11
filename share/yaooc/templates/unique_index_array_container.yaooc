@@ -15,7 +15,6 @@ class yaooc_unique_index_array_container : yaooc_index_array_container
 //    void yaooc_index_array_container_insert_index(pointer p,size_t pos,size_t n,size_t value);
 
   table:
-    const char* isa() const;
 
   instance:
 };

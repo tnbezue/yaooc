@@ -12,7 +12,6 @@ class yaooc_exception : yaooc_object
 		operator=();
 
   table:
-    const char* isa() const;
     const char* what() const;
 	instance:
 		char* what_;

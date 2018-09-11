@@ -91,8 +91,6 @@ void my_string_from_stream(pointer p,pointer s)
 	this->str=strdup(temp);
 }
 
-const char* my_string_isa(const_pointer p) { return "my_string_t"; }
-
 
 const char* my_string_get(const_pointer p)
 {
@@ -117,8 +115,7 @@ void my_string_set(pointer p,const char* s)
 my_string_class_table_t my_string_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = my_string_isa,
-  .is_descendant = yaooc_object_is_descendant,
+  .type_name_ = "my_string_t",
   .swap = my_string_swap,
   .get = my_string_get,
   .set = my_string_set
@@ -172,13 +169,13 @@ int main(int argc,char* argv[])
   my_string_t ms1={ .class_table_=&my_string_class_table, .str = NULL };
 
   M(&ms1,set,"This is a test");
-  
+
   my_string_t* ms_array=new_array(my_string,5);
   M(ms_array+2,set,"This is 3rd item");
   M(cout,printf,"Array is located at address %p\n",ms_array);
   M(cout,printf,"Third string has been set to: %s\n",M(ms_array+2,get));
   M(cout,printf,"Number of elements is %zu\n",*(size_t*)(((char*)ms_array)-sizeof(size_t)));
-  
+
   ms_array=renew_array(ms_array,20);
   M(cout,printf,"Array is now located at address %p\n",ms_array);
   M(cout,printf,"Third string is still set to: %s\n",M(ms_array+2,get));

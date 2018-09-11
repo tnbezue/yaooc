@@ -104,8 +104,6 @@ bool yaooc_unique_ptr_less_than_compare(const_pointer,const_pointer);
 void yaooc_unique_ptr_ctor_ptr(pointer,va_list);
 
 /* Prototypes for class table members */
-const char* yaooc_unique_ptr_isa(const_pointer);
-#define yaooc_unique_ptr_is_descendant yaooc_object_is_descendant
 void yaooc_unique_ptr_swap(pointer,pointer);
 pointer yaooc_unique_ptr_get(const_pointer);
 pointer yaooc_unique_ptr_release(pointer);
@@ -137,12 +135,10 @@ void NAME ## _ctor_ptr(pointer,va_list);
 #define UNIQUE_PTR_IMPLEMENTATION(T,NAME) \
 void NAME ## _ctor_ptr(pointer p,va_list args) \
 { call_constructor(p,yaooc_unique_ptr_ctor_ptr,va_arg(args,pointer)); } \
-const char* NAME ## _isa(const_pointer p) { return # NAME "_t"; } \
 NAME ## _class_table_t NAME ## _class_table = \
 { \
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table, \
-  .isa = (const char*(*) (const_pointer)) NAME ## _isa, \
-  .is_descendant = (bool(*) (const_pointer,const char*)) yaooc_object_is_descendant, \
+  .type_name_ = (const char*) # NAME "_t", \
   .swap = (void(*) (pointer,pointer)) yaooc_unique_ptr_swap, \
   .get = (T ## _pointer (*)(NAME ## _const_pointer))yaooc_unique_ptr_get, \
   .reset = (void (*) (NAME ## _pointer,T ## _pointer)) yaooc_unique_ptr_reset, \
@@ -183,8 +179,6 @@ bool yaooc_shared_ptr_less_than_compare(const_pointer,const_pointer);
 void yaooc_shared_ptr_ctor_ptr(pointer,va_list);
 
 /* Prototypes for class table members */
-const char* yaooc_shared_ptr_isa(const_pointer);
-#define yaooc_shared_ptr_is_descendant yaooc_object_is_descendant
 void yaooc_shared_ptr_swap(pointer,pointer);
 pointer yaooc_shared_ptr_get(const_pointer);
 pointer yaooc_shared_ptr_release(pointer);
@@ -212,17 +206,14 @@ yaooc_class_instance(NAME) { \
 	yaooc_counter_t* counter_; \
 }; \
 yaooc_class(NAME); \
-void NAME ## _ctor_ptr(pointer this,va_list args); \
-const char* NAME ## _isa(const_pointer);
+void NAME ## _ctor_ptr(pointer this,va_list args);
 
 #define SHARED_PTR_IMPLEMENTATION(T,NAME) \
 void NAME ## _ctor_ptr(pointer this,va_list args) \
 	{ call_constructor(this,yaooc_shared_ptr_ctor_ptr,va_arg(args,pointer)); } \
-const char* NAME ## _isa(const_pointer p) { return # NAME "_t"; } \
 NAME ## _class_table_t NAME ## _class_table = {\
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table, \
-  .isa = (const char* (*) (const_pointer)) NAME ## _isa, \
-  .is_descendant = (bool (*) (const_pointer,const char*)) yaooc_object_is_descendant, \
+  .type_name_ = (const char*) # NAME "_t", \
   .swap = (void (*) (pointer,pointer)) yaooc_shared_ptr_swap, \
   .get = (T ## _pointer (*) (NAME ## _const_pointer)) yaooc_shared_ptr_get, \
   .release = (T ## _pointer (*) (NAME ## _pointer)) yaooc_shared_ptr_release, \

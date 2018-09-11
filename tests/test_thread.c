@@ -246,8 +246,6 @@ yaooc_class_instance(custom_exception)
 
 yaooc_class(custom_exception);
 
-const char* custom_exception_isa(const_pointer p) { return "custom_exception_t"; }
-
 
 void custom_exception_default_ctor(pointer p)
 {
@@ -259,8 +257,7 @@ void custom_exception_default_ctor(pointer p)
 custom_exception_class_table_t custom_exception_class_table=
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .isa = (const char* (*) (const_pointer p)) custom_exception_isa,
-  .is_descendant = (bool (*) (const_pointer p,const char*)) yaooc_object_is_descendant,
+  .type_name_ = (const char*) "custom_exception_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_exception_swap,
   .what = (const char* (*) (const_pointer p)) yaooc_exception_what,
 };

@@ -30,14 +30,12 @@
 /* yaooc_stream_exception protected members */
 
 /* Class table methods for yaooc_stream_exception */
-const char* yaooc_stream_exception_isa(const_pointer p) { return "yaooc_stream_exception_t"; }
 
 /* Class table for yaooc_stream_exception */
 yaooc_stream_exception_class_table_t yaooc_stream_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .isa = (const char* (*) (const_pointer)) yaooc_stream_exception_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) yaooc_exception_is_descendant,
+  .type_name_ = (const char*) "yaooc_stream_exception_t",
   .swap = (void (*) (pointer,pointer)) yaooc_exception_swap,
   .what = (const char* (*) (const_pointer)) yaooc_stream_exception_what,
 };

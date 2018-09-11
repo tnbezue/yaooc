@@ -48,8 +48,6 @@ yaooc_class(yaooc_ordered_array_container);
 #define yaooc_ordered_array_container_ctor_ti yaooc_array_container_ctor_ti
 
 /* Prototypes for yaooc_ordered_array_container class table*/
-const char* yaooc_ordered_array_container_isa(const_pointer);
-#define yaooc_ordered_array_container_is_descendant yaooc_array_container_is_descendant
 #define yaooc_ordered_array_container_increase_capacity yaooc_pod_array_increase_capacity
 #define yaooc_ordered_array_container_size_needed yaooc_pod_array_size_needed
 

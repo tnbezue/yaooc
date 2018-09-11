@@ -62,7 +62,6 @@ void yaoocpp_element_assign(pointer,const_pointer);
 
 /* Table prototypes for yaoocpp_element */
 const char* yaoocpp_element_isa(const_pointer);
-#define yaoocpp_element_is_descendant yaooc_object_is_descendant
 #define yaoocpp_element_swap yaooc_object_swap
 #define yaoocpp_element_print_class_table_definition NULL
 #define yaoocpp_element_print_class_instance_definition NULL
@@ -95,7 +94,6 @@ yaooc_class(yaoocpp_type);
 
 /* Table prototypes for yaoocpp_type */
 const char* yaoocpp_type_isa(const_pointer);
-#define yaoocpp_type_is_descendant yaoocpp_element_is_descendant
 #define yaoocpp_type_swap yaoocpp_element_swap
 void yaoocpp_type_print_class_table_definition(const_pointer,ostream_pointer);
 #define yaoocpp_type_print_class_instance_definition yaoocpp_type_print_class_table_definition
@@ -132,7 +130,6 @@ void yaoocpp_variable_assign(pointer,const_pointer);
 
 /* Table prototypes for yaoocpp_variable */
 const char* yaoocpp_variable_isa(const_pointer);
-#define yaoocpp_variable_is_descendant yaoocpp_element_is_descendant
 #define yaoocpp_variable_swap yaoocpp_element_swap
 void yaoocpp_variable_print_class_table_definition(const_pointer,ostream_pointer);
 #define yaoocpp_variable_print_class_instance_definition yaoocpp_variable_print_class_table_definition
@@ -167,7 +164,6 @@ void yaoocpp_constructor_assign(pointer,const_pointer);
 
 /* Table prototypes for yaoocpp_constructor */
 const char* yaoocpp_constructor_isa(const_pointer);
-#define yaoocpp_constructor_is_descendant yaoocpp_element_is_descendant
 #define yaoocpp_constructor_swap yaoocpp_element_swap
 #define yaoocpp_constructor_print_class_table_definition NULL
 #define yaoocpp_constructor_print_class_instance_definition NULL
@@ -202,7 +198,6 @@ void yaoocpp_method_assign(pointer,const_pointer);
 
 /* Table prototypes for yaoocpp_method */
 const char* yaoocpp_method_isa(const_pointer);
-#define yaoocpp_method_is_descendant yaoocpp_constructor_is_descendant
 #define yaoocpp_method_swap yaoocpp_constructor_swap
 void yaoocpp_method_print_class_table_definition(const_pointer,ostream_pointer);
 #define yaoocpp_method_print_class_instance_definition yaoocpp_method_print_class_table_definition
@@ -252,7 +247,6 @@ bool yaoocpp_container_less_than_compare(const_pointer,const_pointer);
 
 /* Table prototypes for yaoocpp_container */
 const char* yaoocpp_container_isa(const_pointer);
-#define yaoocpp_container_is_descendant yaooc_object_is_descendant
 #define yaoocpp_container_swap yaooc_object_swap
 #define yaoocpp_container_print_to_header NULL
 #define yaoocpp_container_print_to_source NULL
@@ -282,7 +276,6 @@ yaooc_class(yaoocpp_struct);
 
 /* Table prototypes for yaoocpp_struct */
 const char* yaoocpp_struct_isa(const_pointer);
-#define yaoocpp_struct_is_descendant yaoocpp_container_is_descendant
 #define yaoocpp_struct_swap yaoocpp_container_swap
 void yaoocpp_struct_print_to_header(const_pointer,ostream_pointer);
 void yaoocpp_struct_print_to_source(const_pointer,ostream_pointer);
@@ -314,7 +307,6 @@ void yaoocpp_container_with_class_table_assign(pointer,const_pointer);
 
 /* Table prototypes for yaoocpp_container_with_class_table */
 const char* yaoocpp_container_with_class_table_isa(const_pointer);
-#define yaoocpp_container_with_class_table_is_descendant yaoocpp_container_is_descendant
 #define yaoocpp_container_with_class_table_swap yaoocpp_container_swap
 void yaoocpp_container_with_class_table_print_to_header(const_pointer, ostream_pointer);
 void yaoocpp_container_with_class_table_print_to_source(const_pointer, ostream_pointer);
@@ -341,7 +333,6 @@ yaooc_class(yaoocpp_union);
 
 /* Table prototypes for yaoocpp_union */
 const char* yaoocpp_union_isa(const_pointer);
-#define yaoocpp_union_is_descendant yaoocpp_container_is_descendant
 #define yaoocpp_union_swap yaoocpp_container_swap
 void yaoocpp_union_print_to_header(const_pointer,ostream_pointer);
 void yaoocpp_union_print_to_source(const_pointer,ostream_pointer);
@@ -374,7 +365,6 @@ bool yaoocpp_class_less_than_compare(const_pointer,const_pointer);
 
 /* Table prototypes for yaoocpp_class */
 const char* yaoocpp_class_isa(const_pointer);
-#define yaoocpp_class_is_descendant yaoocpp_container_is_descendant
 #define yaoocpp_class_swap yaoocpp_container_swap
 void yaoocpp_class_print_to_header(const_pointer,ostream_pointer);
 void yaoocpp_class_print_to_source(const_pointer,ostream_pointer);
@@ -405,7 +395,6 @@ yaooc_class(yaoocpp_class);
 
 /* Table prototypes for yaoocpp_class */
 const char* yaoocpp_class_isa(const_pointer);
-#define yaoocpp_class_is_descendant yaoocpp_container_with_class_table_is_descendant
 #define yaoocpp_class_swap yaoocpp_container_with_class_table_swap
 void yaoocpp_class_print_to_header(const_pointer, ostream_pointer);
 void yaoocpp_class_print_to_source(const_pointer, ostream_pointer);
@@ -436,7 +425,6 @@ yaooc_class(yaoocpp_union);
 
 /* Table prototypes for yaoocpp_union */
 const char* yaoocpp_union_isa(const_pointer);
-#define yaoocpp_union_is_descendant yaoocpp_container_with_class_table_is_descendant
 #define yaoocpp_union_swap yaoocpp_container_with_class_table_swap
 void yaoocpp_union_print_to_header(const_pointer, ostream_pointer);
 void yaoocpp_union_print_to_source(const_pointer, ostream_pointer);

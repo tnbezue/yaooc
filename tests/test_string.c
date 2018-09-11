@@ -311,6 +311,7 @@ void test_find()
 	TEST("rfindchr('H',string_npos) not found",pos==yaooc_string_npos);
 	pos=M(s1,rfindchr,'h',yaooc_string_npos);
 	TEST("rfindchr('h',string_npos) found at 93",pos==93);
+	printf("BB %zu %zu\n",pos,(size_t)-1);
 	pos=M(s1,rfindchr,'h',33);
 	TEST("rfindchr('h',33) found at 24",pos==24);
 	printf("**** %zu\n",pos);

@@ -153,8 +153,6 @@ void my_string_erase_space(pointer p,size_t pos,size_t n)
 }
 
 /* Class table methods for my_string */
-const char* my_string_isa(const_pointer p) { return "my_string_t"; }
-
 void my_string_swap(pointer p,pointer o)
 {
   my_string_pointer this=p;
@@ -270,8 +268,7 @@ char* my_string_end(const_pointer p)
 my_string_class_table_t my_string_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .isa = (const char* (*) (const_pointer)) my_string_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) yaooc_object_is_descendant,
+  .type_name_ = (const char*) "my_string_t",
   .swap = (void (*) (pointer,pointer)) my_string_swap,
   .my_string_n_pos = (const size_t) -1,
   .get = (const char* (*) (const_pointer)) my_string_get,
@@ -324,8 +321,6 @@ void my_string_exception_ctor_ccs(pointer p,va_list args)
 /* my_string_exception protected members */
 
 /* Class table methods for my_string_exception */
-const char* my_string_exception_isa(const_pointer p) { return "my_string_exception_t"; }
-
 const char* my_string_exception_what(const_pointer p)
 {
   my_string_exception_const_pointer this=p;
@@ -336,8 +331,7 @@ const char* my_string_exception_what(const_pointer p)
 my_string_exception_class_table_t my_string_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .isa = (const char* (*) (const_pointer)) my_string_exception_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) yaooc_exception_is_descendant,
+  .type_name_ = (const char*) "my_string_exception_t",
   .swap = (void (*) (pointer,pointer)) yaooc_exception_swap,
   .what = (const char* (*) (const_pointer)) my_string_exception_what,
 };
@@ -357,14 +351,12 @@ void my_string_insert_exception_default_ctor(pointer p)
 /* my_string_insert_exception protected members */
 
 /* Class table methods for my_string_insert_exception */
-const char* my_string_insert_exception_isa(const_pointer p) { return "my_string_insert_exception_t"; }
 
 /* Class table for my_string_insert_exception */
 my_string_insert_exception_class_table_t my_string_insert_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &my_string_exception_class_table,
-  .isa = (const char* (*) (const_pointer)) my_string_insert_exception_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) my_string_exception_is_descendant,
+  .type_name_ = (const char*) "my_string_insert_exception_t",
   .swap = (void (*) (pointer,pointer)) my_string_exception_swap,
   .what = (const char* (*) (const_pointer)) my_string_exception_what,
 };
@@ -384,14 +376,12 @@ void my_string_erase_exception_default_ctor(pointer p)
 /* my_string_erase_exception protected members */
 
 /* Class table methods for my_string_erase_exception */
-const char* my_string_erase_exception_isa(const_pointer p) { return "my_string_erase_exception_t"; }
 
 /* Class table for my_string_erase_exception */
 my_string_erase_exception_class_table_t my_string_erase_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &my_string_exception_class_table,
-  .isa = (const char* (*) (const_pointer)) my_string_erase_exception_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) my_string_exception_is_descendant,
+  .type_name_ = (const char*) "my_string_erase_exception_t",
   .swap = (void (*) (pointer,pointer)) my_string_exception_swap,
   .what = (const char* (*) (const_pointer)) my_string_exception_what,
 };
@@ -411,14 +401,12 @@ void my_string_at_exception_default_ctor(pointer p)
 /* my_string_at_exception protected members */
 
 /* Class table methods for my_string_at_exception */
-const char* my_string_at_exception_isa(const_pointer p) { return "my_string_at_exception_t"; }
 
 /* Class table for my_string_at_exception */
 my_string_at_exception_class_table_t my_string_at_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &my_string_exception_class_table,
-  .isa = (const char* (*) (const_pointer)) my_string_at_exception_isa,
-  .is_descendant = (bool (*) (const_pointer,const char*)) my_string_exception_is_descendant,
+  .type_name_ = (const char*) "my_string_at_exception_t",
   .swap = (void (*) (pointer,pointer)) my_string_exception_swap,
   .what = (const char* (*) (const_pointer)) my_string_exception_what,
 };

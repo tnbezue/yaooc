@@ -54,8 +54,6 @@ void yaooc_regex_exception_ctor_ccs(pointer,va_list);
 #define yaooc_regex_exception_ctor_v yaooc_exception_ctor_v
 
 /* Prototypes for yaooc_regex_exception class table */
-const char* yaooc_regex_exception_isa(const_pointer);
-#define yaooc_regex_exception_is_descendant yaooc_exception_is_descendant
 #define yaooc_regex_exception_swap yaooc_exception_swap
 #define yaooc_regex_exception_what yaooc_exception_what
 
@@ -94,8 +92,6 @@ void yaooc_matchdata_assign(pointer,const_pointer);
 /* Constructors for yaooc_matchdata */
 
 /* Prototypes for yaooc_matchdata class table*/
-const char* yaooc_matchdata_isa(const_pointer);
-#define yaooc_matchdata_is_descendant yaooc_object_is_descendant
 void yaooc_matchdata_swap(pointer,pointer);
 yaooc_string_pointer yaooc_matchdata_at(const_pointer,size_t);
 yaooc_string_pointer yaooc_matchdata_exec(pointer,const char*);
@@ -142,8 +138,6 @@ void yaooc_regex_assign(pointer,const_pointer);
 void yaooc_regex_ctor_ccs_int(pointer,va_list);
 
 /* Prototypes for yaooc_regex class table*/
-#define yaooc_regex_isa yaooc_object_isa
-#define yaooc_regex_is_descendant yaooc_object_is_descendant
 #define yaooc_regex_swap yaooc_object_swap
 void yaooc_regex_set_pattern_flags(pointer,const char*,int);
 const char* yaooc_regex_get_pattern(const_pointer);

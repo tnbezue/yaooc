@@ -13,7 +13,6 @@ class yaooc_unique_ptr : yaooc_object
     operator<();
 
   table:
-    const char* isa() const;
     void swap(pointer ptr);
     pointer get();
     pointer release();
@@ -33,7 +32,6 @@ class yaooc_shared_ptr : yaooc_object
   private:
     void acquire(yaooc_counter_t* counter);
   table:
-    const char* isa() const;
     void swap(pointer ptr);
     pointer get();
     pointer release();
