@@ -571,7 +571,7 @@ yaooc_terminal_t yaooc_base_parser_string_until_matching_chr(pointer p,char lch,
   for(;*pos!= 0;pos++) {
     if(*pos==lch) {
       level++;
-    } if(*pos==rch) {
+    } else if(*pos==rch) {
       if(--level==0) {
         ret.end_=pos;
         this->current_pos_=pos+1;
