@@ -4640,7 +4640,7 @@ fi
 
 
 
-CFLAGS="$CFLAGS -fms-extensions -pthread -D_GNU_SOURCE"
+CFLAGS="$CFLAGS -fms-extensions -pthread -D_GNU_SOURCE -Wall"
 
 # Checks for header files.
 for ac_header in fcntl.h inttypes.h stddef.h stdint.h stdlib.h string.h unistd.h
