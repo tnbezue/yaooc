@@ -50,7 +50,7 @@ void yaooc_istringstream_ctor_ccs(pointer p,va_list args)
   yaooc_istringstream_pointer this=p;
 	yaooc_base_stream_default_ctor(p);
   const char* str = va_arg(args,const char*);
-	yaooc_istringstream_setn(p,str,SIZE_MAX);
+	yaooc_istringstream_setn(this,str,SIZE_MAX);
 }
 
 void yaooc_istringstream_ctor_ccs_n(pointer p,va_list args)
@@ -59,7 +59,7 @@ void yaooc_istringstream_ctor_ccs_n(pointer p,va_list args)
 	yaooc_base_stream_default_ctor(p);
   const char* str = va_arg(args,const char*);
   size_t n = va_arg(args,size_t);
-	yaooc_istringstream_setn(p,str,SIZE_MAX);
+	yaooc_istringstream_setn(this,str,n);
 }
 
 /* yaooc_istringstream protected members */
