@@ -194,8 +194,9 @@ yaooc_ostringstream_class_table_t yaooc_ostringstream_class_table =
   .printf = (int (*) (pointer,const char*,...)) yaooc_ostream_printf,
   .vprintf = (int (*) (pointer,const char*,va_list)) yaooc_ostream_vprintf,
   .write = (size_t (*) (pointer,const void*,size_t,size_t)) yaooc_ostream_write,
-  .puts = (void (*) (pointer,const char*)) yaooc_ostream_puts,
-  .c_str = (const char* (*) (const_pointer)) yaooc_ostringstream_c_str,
+	.puts = (void (*) (pointer,const char*)) yaooc_ostream_puts,
+	.putc = (void (*) (pointer,const char*)) yaooc_ostream_putc,
+	.c_str = (const char* (*) (const_pointer)) yaooc_ostringstream_c_str,
   .reset = (void (*) (pointer)) yaooc_ostringstream_reset,
 };
 

@@ -109,6 +109,7 @@ void yaooc_ostringstream_dtor(pointer);
 #define yaooc_ostringstream_vprintf yaooc_ostream_vprintf
 #define yaooc_ostringstream_write yaooc_ostream_write
 #define yaooc_ostringstream_puts yaooc_ostream_puts
+#define yaooc_ostringstream_putc yaooc_ostream_putc
 const char* yaooc_ostringstream_c_str(const_pointer);
 void yaooc_ostringstream_reset(pointer);
 

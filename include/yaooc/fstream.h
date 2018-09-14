@@ -102,6 +102,7 @@ void yaooc_ofstream_ctor_fname_mode(pointer,va_list);
 #define yaooc_ofstream_vprintf yaooc_ostream_vprintf
 #define yaooc_ofstream_write yaooc_ostream_write
 #define yaooc_ofstream_puts yaooc_ostream_puts
+#define yaooc_ofstream_putc yaooc_ostream_putc
 void yaooc_ofstream_open(pointer,const char*,const char*);
 void yaooc_ofstream_close(pointer);
 

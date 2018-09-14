@@ -266,10 +266,16 @@ size_t yaooc_ostream_write(pointer p,const void* buffer,size_t size,size_t count
   return fwrite(buffer,size,count,this->handle_);
 }
 
-void yaooc_ostream_puts(pointer p,const char* str)
+int yaooc_ostream_puts(pointer p,const char* str)
 {
-  yaooc_ostream_pointer this=p;
-	fputs(str,this->handle_);
+	yaooc_ostream_pointer this=p;
+	return fputs(str,this->handle_);
+}
+
+int yaooc_ostream_putc(pointer p,int c)
+{
+	yaooc_ostream_pointer this=p;
+	return fputc(c,this->handle_);
 }
 
 
@@ -284,7 +290,8 @@ yaooc_ostream_class_table_t yaooc_ostream_class_table =
   .printf = (int (*) (pointer,const char*,...)) yaooc_ostream_printf,
   .vprintf = (int (*) (pointer,const char*,va_list)) yaooc_ostream_vprintf,
   .write = (size_t (*) (pointer,const void*,size_t,size_t)) yaooc_ostream_write,
-  .puts = (void (*) (pointer,const char*)) yaooc_ostream_puts,
+	.puts = (int (*) (pointer,const char*)) yaooc_ostream_puts,
+	.putc = (int (*) (pointer,int)) yaooc_ostream_putc,
 };
 
 	DEFINE_TYPE_INFO(yaooc_ostream,Y,N,N,N,N,N,N,Y,yaooc_base_stream)

@@ -151,7 +151,8 @@ yaooc_class_table(yaooc_ostream)
 	int (*printf)(pointer,const char*,...);
   int (*vprintf)(pointer,const char*,va_list);
   size_t (*write)(pointer,const void*,size_t,size_t);
-  void (*puts)(pointer,const char*);
+	int (*puts)(pointer,const char*);
+	int (*putc)(pointer,int);
 };
 #define yaooc_ostream_parent_class_table ((yaooc_base_stream_class_table_t*)(yaooc_ostream_class_table.parent_class_table_))
 
@@ -178,7 +179,8 @@ void yaooc_ostream_stream(pointer,...);
 int yaooc_ostream_printf(pointer,const char*,...);
 int yaooc_ostream_vprintf(pointer,const char*,va_list);
 size_t yaooc_ostream_write(pointer,const void*,size_t,size_t);
-void yaooc_ostream_puts(pointer,const char*);
+int yaooc_ostream_puts(pointer,const char*);
+int yaooc_ostream_putc(pointer,int);
 
 /* Prototypes for yaooc_ostream protected members */
 
