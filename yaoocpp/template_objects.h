@@ -140,6 +140,40 @@ void yaoocpp_variable_print_class_table_implementation(const_pointer,ostream_poi
 /* Protected prototypes for yaoocpp_variable */
 
 /*
+  Class Definition for yaoocpp_raw_struct_union
+*/
+yaooc_class_table(yaoocpp_raw_struct_union) {
+  yaoocpp_element_class_table_t;
+};
+#define yaoocpp_raw_struct_union_parent_class_table ((yaoocpp_element_class_table_t*)(yaoocpp_raw_struct_union_class_table.parent_class_table_))
+
+yaooc_class_instance(yaoocpp_raw_struct_union) {
+  yaoocpp_element_class_instance_t;
+  yaooc_string_t raw_string_;
+};
+
+yaooc_class(yaoocpp_raw_struct_union);
+
+/* Type Info Prototypes for yaoocpp_raw_struct_union */
+void yaoocpp_raw_struct_union_default_ctor(pointer);
+void yaoocpp_raw_struct_union_dtor(pointer);
+void yaoocpp_raw_struct_union_copy_ctor(pointer,const_pointer);
+void yaoocpp_raw_struct_union_assign(pointer,const_pointer);
+
+/* Constructors prototypes for yaoocpp_raw_struct_union */
+
+/* Table prototypes for yaoocpp_raw_struct_union */
+#define yaoocpp_raw_struct_union_isa yaoocpp_element_isa
+#define yaoocpp_raw_struct_union_swap yaoocpp_element_swap
+void yaoocpp_raw_struct_union_print_class_table_definition(const_pointer, ostream_pointer);
+void yaoocpp_raw_struct_union_print_class_instance_definition(const_pointer, ostream_pointer);
+void yaoocpp_raw_struct_union_print_prototype(const_pointer, ostream_pointer, const char*, const char*);
+void yaoocpp_raw_struct_union_print_implementation(const_pointer, ostream_pointer, const char*, const char*);
+void yaoocpp_raw_struct_union_print_class_table_implementation(const_pointer, ostream_pointer, const char*);
+
+/* Protected prototypes for yaoocpp_raw_struct_union */
+
+/*
   Class Definition for yaoocpp_constructor
 */
 yaooc_class_table(yaoocpp_constructor) {

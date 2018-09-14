@@ -50,8 +50,9 @@ class yaoocpp_parser : yaooc_base_parser
     void parse_arguments(yaoocpp_argument_vector_t* args);
     bool parse_constructor(pointer cc);
     yaoocpp_element_pointer parse_method();
-    yaoocpp_element_pointer parse_variable();
-    yaoocpp_element_pointer parse_type();
+		yaoocpp_element_pointer parse_variable();
+		yaoocpp_element_pointer parse_raw_struct_union();
+		yaoocpp_element_pointer parse_type();
     bool parse_sub_section(const char *section,yaoocpp_element_pointer_vector_t* element_vector);
     yaoocpp_container_pointer parse_class();
     yaoocpp_container_pointer parse_struct();

@@ -103,6 +103,7 @@ static void yaoocpp_parser_parse_arguments(pointer,yaoocpp_argument_vector_t*);
 static bool yaoocpp_parser_parse_constructor(pointer,pointer);
 static yaoocpp_element_pointer yaoocpp_parser_parse_method(pointer);
 static yaoocpp_element_pointer yaoocpp_parser_parse_variable(pointer);
+static yaoocpp_element_pointer yaoocpp_parser_parse_raw_struct_union(pointer);
 static yaoocpp_element_pointer yaoocpp_parser_parse_type(pointer);
 static bool yaoocpp_parser_parse_sub_section(pointer,const char*,yaoocpp_element_pointer_vector_t*);
 static yaoocpp_container_pointer yaoocpp_parser_parse_class(pointer);
@@ -487,32 +488,54 @@ static yaoocpp_element_pointer yaoocpp_parser_parse_method(pointer p)
 
 static yaoocpp_element_pointer yaoocpp_parser_parse_variable(pointer p)
 {
-  yaoocpp_parser_pointer this=p;
-  M(this,rule_start);
-  yaoocpp_variable_t* var=NULL;
-  yaoocpp_argument_pointer arg=(yaoocpp_argument_pointer)yaoocpp_parser_parse_argument(p);
-  if(arg) {
-    yaooc_terminal_t value=default_terminal;
-    if(M(this,chr,'=').end_) {
-      value=M(this,string_until_chrs,";");
-    }
-    if(M(this,chr,';').end_) {
-      var=new(yaoocpp_variable);
-      M(&var->type_,set,M(&arg->type_,c_str));
-      M(&var->name_,set,M(&arg->name_,c_str));
+	yaoocpp_parser_pointer this=p;
+	M(this,rule_start);
+	yaoocpp_variable_t* var=NULL;
+	yaoocpp_argument_pointer arg=(yaoocpp_argument_pointer)yaoocpp_parser_parse_argument(p);
+	if(arg) {
+		yaooc_terminal_t value=default_terminal;
+		if(M(this,chr,'=').end_) {
+			value=M(this,string_until_chrs,";");
+		}
+		if(M(this,chr,';').end_) {
+			var=new(yaoocpp_variable);
+			M(&var->type_,set,M(&arg->type_,c_str));
+			M(&var->name_,set,M(&arg->name_,c_str));
 			assign_static(&var->array_size_,&arg->array_size_,yaooc_string);
 			var->is_array_=arg->is_array_;
-      if(value.end_)
-        M(&var->default_value_,setn,value.beg_,value.end_-value.beg_);
-      else
-        M(&var->default_value_,set,"0");
-      M(this,rule_success);
-      delete(arg);
-      return (yaoocpp_element_pointer)var;
-    }
+			if(value.end_)
+				M(&var->default_value_,setn,value.beg_,value.end_-value.beg_);
+			else
+				M(&var->default_value_,set,"0");
+			M(this,rule_success);
+			delete(arg);
+			return (yaoocpp_element_pointer)var;
+		}
 	}
 	M(this,rule_fail);
-  return (yaoocpp_element_pointer)NULL;
+	return (yaoocpp_element_pointer)NULL;
+}
+
+static yaoocpp_element_pointer yaoocpp_parser_parse_raw_struct_union(pointer p)
+{
+	yaoocpp_parser_pointer this=p;
+	M(this,rule_start);
+	const char* beg=this->current_pos_;
+	if((M(this,str,"struct").end_ || M(this,str,"union").end_) && M(this,chr,'{').end_) {
+		yaooc_terminal_t t=M(this,string_until_matching_chr,'{','}');
+		if(t.end_) {
+			t=M(this,ident);
+			const char* end=this->current_pos_;
+			if(M(this,chr,';').end_) {
+				yaoocpp_raw_struct_union_pointer rsu=new(yaoocpp_raw_struct_union);
+				M(&rsu->raw_string_,setn,beg,end-beg);
+				M(this,rule_success);
+				return (yaoocpp_element_pointer)rsu;
+			}
+		}
+	}
+	M(this,rule_fail);
+	return (yaoocpp_element_pointer)NULL;
 }
 
 static yaoocpp_element_pointer yaoocpp_parser_parse_type(pointer p)
@@ -548,13 +571,19 @@ static bool yaoocpp_parser_parse_sub_section(pointer p,const char* section,yaooc
           ((yaoocpp_method_pointer)*orig)->state_=OVERRIDDEN;
           M(&((yaoocpp_method_pointer)*orig)->implementation_method_,clear);
         }
-      } else if((mp=PB_SAVE(yaoocpp_parser_parse_variable(this)))!=NULL) {
-        if(yaooc_find(yaoocpp_element_pointer,M(element_vector,begin),M(element_vector,end),&mp) == M(element_vector,end))
-          M(element_vector,push_back,&mp);
-        else
-          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-							"Duplicate variable %s defined\n",M(&((yaoocpp_variable_pointer)mp)->name_,c_str)));
-      } else if((mp=PB_SAVE(yaoocpp_parser_parse_type(this)))!=NULL) {
+			} else if((mp=PB_SAVE(yaoocpp_parser_parse_variable(this)))!=NULL) {
+				if(yaooc_find(yaoocpp_element_pointer,M(element_vector,begin),M(element_vector,end),&mp) == M(element_vector,end))
+					M(element_vector,push_back,&mp);
+				else
+					THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+										"Duplicate variable %s defined\n",M(&((yaoocpp_variable_pointer)mp)->name_,c_str)));
+			} else if((mp=PB_SAVE(yaoocpp_parser_parse_raw_struct_union(this)))!=NULL) {
+				if(yaooc_find(yaoocpp_element_pointer,M(element_vector,begin),M(element_vector,end),&mp) == M(element_vector,end))
+					M(element_vector,push_back,&mp);
+				else
+					THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+										"Duplicate variable %s defined\n",M(&((yaoocpp_variable_pointer)mp)->name_,c_str)));
+			} else if((mp=PB_SAVE(yaoocpp_parser_parse_type(this)))!=NULL) {
         M(element_vector,push_back,&mp);
       } else
         break;

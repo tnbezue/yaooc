@@ -79,7 +79,7 @@ class yaoocpp_raw_struct_union : yaoocpp_element
     void print_implementation(ostream_pointer o,const char* class_name,const char* storage_class) const;
     void print_class_table_implementation(ostream_pointer o,const char* class_name) const;
 	instance:
-		yaoocpp_string_t raw_string_;
+		yaooc_string_t raw_string_;
 };
 
 class yaoocpp_constructor : yaoocpp_element

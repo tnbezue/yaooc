@@ -17,6 +17,7 @@
 
 #include "template_objects.h"
 #include <string.h>
+#include <ctype.h>
 #include <yaooc/regex.h>
 
 /* Private variables implementation for yaoocpp_argument */
@@ -302,6 +303,104 @@ yaoocpp_variable_class_table_t yaoocpp_variable_class_table =
 
 /* Type info structure for yaoocpp_variable */
 DEFINE_TYPE_INFO(yaoocpp_variable,Y,Y,Y,Y,N,N,N,Y,yaoocpp_element);
+
+/* Private variables implementation for yaoocpp_raw_struct_union */
+
+/* Private methods prototypes for yaoocpp_raw_struct_union */
+
+/* Type Info implemmentation for yaoocpp_raw_struct_union */
+void yaoocpp_raw_struct_union_default_ctor(pointer p)
+{
+  yaoocpp_raw_struct_union_pointer this=p;
+  yaoocpp_element_default_ctor(this);
+  newp(&this->raw_string_,yaooc_string);
+}
+
+void yaoocpp_raw_struct_union_dtor(pointer p)
+{
+  yaoocpp_raw_struct_union_pointer this=p;
+  deletep(&this->raw_string_,yaooc_string);
+}
+
+void yaoocpp_raw_struct_union_copy_ctor(pointer p,const_pointer s)
+{
+  yaoocpp_raw_struct_union_default_ctor(p);
+  yaoocpp_raw_struct_union_assign(p,s);
+}
+
+void yaoocpp_raw_struct_union_assign(pointer p,const_pointer s)
+{
+  yaoocpp_raw_struct_union_pointer this=p;
+  yaoocpp_raw_struct_union_const_pointer src=s;
+  yaoocpp_element_assign(this,src);
+  assign_static(&this->raw_string_,&src->raw_string_,yaooc_string);
+}
+
+/* Constructors implementation for yaoocpp_raw_struct_union */
+
+/* Private methods implementation for yaoocpp_raw_struct_union */
+
+/* Protected implementation for yaoocpp_raw_struct_union */
+
+/* Table implementation for yaoocpp_raw_struct_union */
+void yaoocpp_raw_struct_union_print_class_table_definition(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_raw_struct_union_const_pointer this=p;
+}
+
+void yaoocpp_raw_struct_union_print_class_instance_definition(const_pointer p,ostream_pointer o)
+{
+  yaoocpp_raw_struct_union_const_pointer this=p;
+	yaooc_ostream_pointer ostrm=o;
+	const char* ptr=M(&this->raw_string_,c_str);
+	M(ostrm,printf,"  ");
+	for(;*ptr;ptr++) {
+		if(*ptr != '\r') {
+			if(*ptr == '\n') {
+				M(ostrm,printf,"\n  ");
+				for(;*ptr;ptr++)
+					if(!isspace(*ptr)) {
+						--ptr;
+						break;
+					}
+			} else
+				M(ostrm,putc,*ptr);
+		}
+	}
+	M(ostrm,printf,";\n");
+}
+
+void yaoocpp_raw_struct_union_print_prototype(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
+{
+  yaoocpp_raw_struct_union_const_pointer this=p;
+}
+
+void yaoocpp_raw_struct_union_print_implementation(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
+{
+  yaoocpp_raw_struct_union_const_pointer this=p;
+}
+
+void yaoocpp_raw_struct_union_print_class_table_implementation(const_pointer p,ostream_pointer o,const char* class_name)
+{
+  yaoocpp_raw_struct_union_const_pointer this=p;
+}
+
+
+/* Class table definition for yaoocpp_raw_struct_union */
+yaoocpp_raw_struct_union_class_table_t yaoocpp_raw_struct_union_class_table =
+{
+  .parent_class_table_ = (const class_table_t*) &yaoocpp_element_class_table,
+  .type_name_ = (const char*) "yaoocpp_raw_struct_union_t",
+  .swap = (void(*)(pointer, pointer)) yaoocpp_raw_struct_union_swap,
+  .print_class_table_definition = (void(*)(const_pointer, ostream_pointer)) yaoocpp_raw_struct_union_print_class_table_definition,
+  .print_class_instance_definition = (void(*)(const_pointer, ostream_pointer)) yaoocpp_raw_struct_union_print_class_instance_definition,
+  .print_prototype = (void(*)(const_pointer, ostream_pointer, const char*, const char*)) yaoocpp_raw_struct_union_print_prototype,
+  .print_implementation = (void(*)(const_pointer, ostream_pointer, const char*, const char*)) yaoocpp_raw_struct_union_print_implementation,
+  .print_class_table_implementation = (void(*)(const_pointer, ostream_pointer, const char*)) yaoocpp_raw_struct_union_print_class_table_implementation,
+};
+
+/* Type info structure for yaoocpp_raw_struct_union */
+DEFINE_TYPE_INFO(yaoocpp_raw_struct_union,Y,Y,Y,Y,N,N,N,Y,yaoocpp_element);
 
 /* Private variables implementation for yaoocpp_constructor */
 
