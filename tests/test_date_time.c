@@ -28,7 +28,7 @@ void test_construtor()
 {
 	time_t now=time(NULL);
 	yaooc_date_time_t* dt=new(yaooc_date_time);
-	TEST("Time is current",(dt->time_-now)<=1);
+	TEST("Time is current",M(dt,get)==now);
 	delete(dt);
 
 	dt=new_ctor(yaooc_date_time,yaooc_date_time_ctor_ymdhms,2016,10,10,2,37,21);

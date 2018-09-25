@@ -228,13 +228,13 @@ void yaooc_date_time_swap(pointer p,pointer o)
 	SWAP(time_t,this->time_,other->time_);
 }
 
-void yaooc_date_time_set(pointer p,int t)
+void yaooc_date_time_set(pointer p,time_t t)
 {
   yaooc_date_time_pointer this=p;
 	this->time_=t;
 }
 
-int yaooc_date_time_get(const_pointer p)
+time_t yaooc_date_time_get(const_pointer p)
 {
   yaooc_date_time_const_pointer this=p;
 	return this->time_;
@@ -305,8 +305,8 @@ yaooc_date_time_class_table_t yaooc_date_time_class_table =
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
   .type_name_ = (const char*) "yaooc_date_time_t",
   .swap = (void (*) (pointer,pointer)) yaooc_date_time_swap,
-  .set = (void (*) (pointer,int)) yaooc_date_time_set,
-  .get = (int (*) (const_pointer)) yaooc_date_time_get,
+  .set = (void (*) (pointer,time_t)) yaooc_date_time_set,
+  .get = (time_t (*) (const_pointer)) yaooc_date_time_get,
   .month = (int (*) (const_pointer)) yaooc_date_time_month,
   .day = (int (*) (const_pointer)) yaooc_date_time_day,
   .year = (int (*) (const_pointer)) yaooc_date_time_year,

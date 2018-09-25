@@ -30,8 +30,8 @@
 yaooc_class_table(yaooc_date_time)
 {
   yaooc_object_class_table_t;
-  void (*set)(pointer,int);
-  int (*get)(const_pointer);
+  void (*set)(pointer,time_t);
+  time_t (*get)(const_pointer);
   int (*month)(const_pointer);
   int (*day)(const_pointer);
   int (*year)(const_pointer);
@@ -68,8 +68,8 @@ void yaooc_date_time_ctor_ccs(pointer,va_list);
 
 /* Prototypes for yaooc_date_time class table */
 void yaooc_date_time_swap(pointer,pointer);
-void yaooc_date_time_set(pointer,int);
-int yaooc_date_time_get(const_pointer);
+void yaooc_date_time_set(pointer,time_t);
+time_t yaooc_date_time_get(const_pointer);
 int yaooc_date_time_month(const_pointer);
 int yaooc_date_time_day(const_pointer);
 int yaooc_date_time_year(const_pointer);

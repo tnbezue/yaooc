@@ -18,8 +18,8 @@ class yaooc_date_time : yaooc_object {
 	table:
 
 		void swap(pointer o);
-		void set(int t);
-		int get() const;
+		void set(time_t t);
+		time_t get() const;
 		int month() const;
 		int day() const;
 		int year() const;
