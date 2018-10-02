@@ -113,7 +113,7 @@ check_PROGRAMS = tests/test_algorithm$(EXEEXT) \
 	tests/test_unique_array_container$(EXEEXT) \
 	tests/test_unique_index_array_container$(EXEEXT) \
 	tests/test_unique_ordered_array_container$(EXEEXT) \
-	tests/test_vector$(EXEEXT)
+	tests/test_variant$(EXEEXT) tests/test_vector$(EXEEXT)
 bin_PROGRAMS = yaoocpp/yaoocpp$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -172,7 +172,8 @@ am_lib_libyaooc_la_OBJECTS = src/algorithm.lo src/array_container.lo \
 	src/string.lo src/thread.lo src/types.lo \
 	src/unique_array_container.lo \
 	src/unique_index_array_container.lo \
-	src/unique_ordered_array_container.lo src/vector.lo
+	src/unique_ordered_array_container.lo src/variant.lo \
+	src/vector.lo
 lib_libyaooc_la_OBJECTS = $(am_lib_libyaooc_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -314,6 +315,10 @@ tests_test_unique_ordered_array_container_OBJECTS =  \
 	tests/test_unique_ordered_array_container.$(OBJEXT)
 tests_test_unique_ordered_array_container_LDADD = $(LDADD)
 tests_test_unique_ordered_array_container_DEPENDENCIES =
+tests_test_variant_SOURCES = tests/test_variant.c
+tests_test_variant_OBJECTS = tests/test_variant.$(OBJEXT)
+tests_test_variant_LDADD = $(LDADD)
+tests_test_variant_DEPENDENCIES =
 tests_test_vector_SOURCES = tests/test_vector.c
 tests_test_vector_OBJECTS = tests/test_vector.$(OBJEXT)
 tests_test_vector_LDADD = $(LDADD)
@@ -377,7 +382,8 @@ SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c \
-	tests/test_vector.c $(yaoocpp_yaoocpp_SOURCES)
+	tests/test_variant.c tests/test_vector.c \
+	$(yaoocpp_yaoocpp_SOURCES)
 DIST_SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_array_container.c tests/test_base_parser.c \
 	tests/test_date_time.c tests/test_exception.c \
@@ -393,7 +399,8 @@ DIST_SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c \
-	tests/test_vector.c $(yaoocpp_yaoocpp_SOURCES)
+	tests/test_variant.c tests/test_vector.c \
+	$(yaoocpp_yaoocpp_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -637,6 +644,7 @@ src/types.c \
 src/unique_array_container.c \
 src/unique_index_array_container.c \
 src/unique_ordered_array_container.c \
+src/variant.c \
 src/vector.c
 
 lib_libyaooc_la_LDFLAGS = -version-info $(YAOOC_MAJOR_VERSION):$(YAOOC_MINOR_VERSION):$(YAOOC_PATCH_VERSION)
@@ -675,6 +683,7 @@ include/yaooc/unique_array_container.h \
 include/yaooc/unique_index_array_container.h \
 include/yaooc/unique_ordered_array_container.h \
 include/yaooc/vector.h \
+include/yaooc/variant.h \
 include/yaooc/yaooc_debug.h
 
 LDADD = -L$(top_srcdir)/lib -lyaooc
@@ -799,6 +808,7 @@ src/unique_index_array_container.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/unique_ordered_array_container.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/variant.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/vector.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 lib/$(am__dirstamp):
 	@$(MKDIR_P) lib
@@ -1050,6 +1060,12 @@ tests/test_unique_ordered_array_container.$(OBJEXT):  \
 tests/test_unique_ordered_array_container$(EXEEXT): $(tests_test_unique_ordered_array_container_OBJECTS) $(tests_test_unique_ordered_array_container_DEPENDENCIES) $(EXTRA_tests_test_unique_ordered_array_container_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test_unique_ordered_array_container$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_unique_ordered_array_container_OBJECTS) $(tests_test_unique_ordered_array_container_LDADD) $(LIBS)
+tests/test_variant.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test_variant$(EXEEXT): $(tests_test_variant_OBJECTS) $(tests_test_variant_DEPENDENCIES) $(EXTRA_tests_test_variant_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test_variant$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_variant_OBJECTS) $(tests_test_variant_LDADD) $(LIBS)
 tests/test_vector.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1147,6 +1163,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/unique_array_container.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/unique_index_array_container.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/unique_ordered_array_container.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/variant.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/vector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_algorithm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_array_container.Po@am__quote@
@@ -1178,6 +1195,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_unique_array_container.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_unique_index_array_container.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_unique_ordered_array_container.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_variant.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_vector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@yaoocpp/$(DEPDIR)/parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@yaoocpp/$(DEPDIR)/template_objects.Po@am__quote@

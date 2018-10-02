@@ -83,6 +83,7 @@ src/types.c \
 src/unique_array_container.c \
 src/unique_index_array_container.c \
 src/unique_ordered_array_container.c \
+src/variant.c \
 src/vector.c
 
 lib_libyaooc_la_LDFLAGS=-version-info $(YAOOC_MAJOR_VERSION):$(YAOOC_MINOR_VERSION):$(YAOOC_PATCH_VERSION)
@@ -122,6 +123,7 @@ include/yaooc/unique_array_container.h \
 include/yaooc/unique_index_array_container.h \
 include/yaooc/unique_ordered_array_container.h \
 include/yaooc/vector.h \
+include/yaooc/variant.h \
 include/yaooc/yaooc_debug.h
 
 
@@ -155,6 +157,7 @@ tests/test_union \
 tests/test_unique_array_container \
 tests/test_unique_index_array_container \
 tests/test_unique_ordered_array_container \
+tests/test_variant \
 tests/test_vector
 
 LDADD=-L$(top_srcdir)/lib -lyaooc
