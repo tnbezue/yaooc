@@ -1,0 +1,30 @@
+#ifndef __SOCKET_INCLUDED__
+#define __SOCKET_INCLUDED__
+
+#include "object.yaooc"
+
+class yaooc_ipaddress : yaooc_object
+{
+		yaooc_ipaddress();
+		~yaooc_ipaddress();
+		yaooc_ipaddress(yaooc_ipaddress);
+		yaooc_ipaddress_ctor_ccs(const char* ip_str);
+		operator=();
+		operator<();
+		operator<<();
+
+	instance:
+		int type_;  // 0 = UNDEFINED, 1=IP4, 2=IP6
+		char buf_[16];
+
+	table:
+		void set(const char* ip_str);
+		bool is_ip4() const;
+		bool is_ip6() const;
+		bool is_undefined() const;
+		bool is_loopback() const;
+		int type() const;
+};
+
+
+#endif
