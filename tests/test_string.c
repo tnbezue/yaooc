@@ -464,10 +464,12 @@ void test_gsub()
 
 	M(str,set,"This<this will>is<be>a<replaced>test");
 	M(str,gsub_,"/<.*?>/"," ");
+	puts(M(str,c_str));
 	TEST("Replace things in < > with a single space",strcmp(M(str,c_str),"This is a test")==0);
 	M(str,set,"aaaaa");
 	M(str,gsub_,"a","ab");
 	TEST("replace 'a' with 'ab'",strcmp(M(str,c_str),"ababababab")==0);
+	puts(M(str,c_str));
 	delete(str);
 }
 

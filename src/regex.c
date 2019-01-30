@@ -20,6 +20,30 @@
 #include <yaooc/regex.h>
 #include <yaooc/stream.h>
 
+yaooc_regex_regexp_match_info_t yaooc_regex_is_re_string(const char* pat)
+{
+	yaooc_regex_regexp_match_info_t ret= { .pattern_ = NULL, .flags_ = REG_EXTENDED };
+	if(pat && *pat == '/') {
+		const char* end=pat+strlen(pat)-1;
+		for(;end > (pat+1);end--) {
+			if(*end == 'm') {
+				ret.flags_ |= REG_NEWLINE;
+			} else if(*end == 'i') {
+				ret.flags_ |= REG_ICASE;
+			} else if(*end == '/') {
+				size_t n=end-pat;
+				ret.pattern_=MALLOC(n);
+				strncpy(ret.pattern_,pat+1,n-1);
+				ret.pattern_[n-1]=0;
+				break;
+			} else {
+				break; /* Not a regular expression. */
+			}
+		}
+	}
+	return ret;
+}
+
 /*  Begin YAOOC PreProcessor generated content */
 /* yaooc_regex_exception private members */
 
@@ -209,21 +233,6 @@ void yaooc_regex_compile(pointer p)
   }
 }
 
-#define min(x,y) ((x)<(y)) ? (x) : (y)
-int yaooc_regex_regexec(const regex_t* re,const char* subject,int ofs,size_t n,regmatch_t* ov,int eflags)
-{
-  int result=regexec(re,subject+ofs,n,ov,eflags);
-  if(result == 0 && ofs > 0) {
-    size_t i;
-    n=min(re->re_nsub+1,n);
-    for(i=0;i<n;i++) {
-      ov[i].rm_so+=ofs;
-      ov[i].rm_eo+=ofs;
-    }
-  }
-  return result;
-}
-
 bool yaooc_regex_match_private(yaooc_regex_const_pointer this,yaooc_matchdata_pointer md,int offset)
 {
   bool ret=false;
@@ -240,8 +249,24 @@ bool yaooc_regex_match_private(yaooc_regex_const_pointer this,yaooc_matchdata_po
   }
   return ret;
 }
-/* Protected items for yaooc_regex */
 
+/* Protected items for yaooc_regex */
+#define yaooc_min(x,y) ((x)<(y)) ? (x) : (y)
+int yaooc_regex_regexec(const regex_t* re,const char* subject,int ofs,size_t n_ov,regmatch_t*ov,int eflags)
+{
+	int result=regexec(re,subject+ofs,n_ov,ov,eflags);
+	if(result == 0 && ofs > 0) {
+    size_t i;
+		n_ov = yaooc_min(re->re_nsub+1,n_ov); // Should be same, but check anyway
+		for(i=0;i<n_ov;i++) {
+			if(ov[i].rm_so >= 0) { // negative values indicate that no information was captured
+				ov[i].rm_so+=ofs;
+				ov[i].rm_eo+=ofs;
+			}
+		}
+	}
+	return result;
+}
 
 /* Typeinfo for yaooc_regex */
 void yaooc_regex_default_ctor(pointer p)

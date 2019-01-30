@@ -55,6 +55,7 @@ void yaooc_ifstream_ctor_fname_mode(pointer,va_list);
 #define yaooc_ifstream_tell yaooc_istream_tell
 #define yaooc_ifstream_bool yaooc_istream_bool
 #define yaooc_ifstream_stream yaooc_istream_stream
+#define yaooc_ifstream_peek yaooc_istream_peek
 #define yaooc_ifstream_scanf yaooc_istream_scanf
 #define yaooc_ifstream_vscanf yaooc_istream_vscanf
 #define yaooc_ifstream_read yaooc_istream_read

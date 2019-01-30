@@ -77,345 +77,48 @@ extern map_odbc_string_string_t* yaooc_odbc_environment_get_drivers(pointer);
 extern map_odbc_string_string_t* yaooc_odbc_environment_get_sources(pointer);
 
 /*
-  Class Definition for yaooc_odbc_value
-*/
-yaooc_class_table(yaooc_odbc_value) {
-  yaooc_object_class_table_t;
-  SQLSMALLINT (*c_data_type)(const_pointer);
-  SQLLEN (*column_size)(const_pointer);
-  void* (*data)(pointer);
-};
-#define yaooc_odbc_value_parent_class_table ((yaooc_object_class_table_t*)(yaooc_odbc_value_class_table.parent_class_table_))
-
-yaooc_class_instance(yaooc_odbc_value) {
-  yaooc_object_class_instance_t;
-};
-
-yaooc_class(yaooc_odbc_value);
-
-/* Type Info Prototypes for yaooc_odbc_value */
-//void yaooc_odbc_value_default_ctor(pointer);
-//void yaooc_odbc_value_dtor(pointer);
-//void yaooc_odbc_value_copy_ctor(pointer,const_pointer);
-//void yaooc_odbc_value_assign(pointer,const_pointer);
-
-/* Constructors prototypes for yaooc_odbc_value */
-
-/* Table prototypes for yaooc_odbc_value */
-#define yaooc_odbc_value_swap yaooc_object_swap
-SQLSMALLINT yaooc_odbc_value_c_data_type(const_pointer);
-SQLLEN yaooc_odbc_value_column_size(const_pointer);
-void* yaooc_odbc_value_data(pointer);
-
-/* Protected prototypes for yaooc_odbc_value */
-
-/*
-  Class Definition for yaooc_odbc_integer
-*/
-yaooc_class_table(yaooc_odbc_integer) {
-  yaooc_odbc_value_class_table_t;
-  long long (*get)(const_pointer);
-  void (*set)(pointer, long long);
-};
-#define yaooc_odbc_integer_parent_class_table ((yaooc_odbc_value_class_table_t*)(yaooc_odbc_integer_class_table.parent_class_table_))
-
-yaooc_class_instance(yaooc_odbc_integer) {
-  yaooc_odbc_value_class_instance_t;
-  long long value_;
-};
-
-yaooc_class(yaooc_odbc_integer);
-
-/* Type Info Prototypes for yaooc_odbc_integer */
-void yaooc_odbc_integer_default_ctor(pointer);
-#define yaooc_odbc_integer_dtor yaooc_odbc_value_dtor
-void yaooc_odbc_integer_copy_ctor(pointer,const_pointer);
-void yaooc_odbc_integer_assign(pointer,const_pointer);
-
-/* Constructors prototypes for yaooc_odbc_integer */
-
-/* Table prototypes for yaooc_odbc_integer */
-#define yaooc_odbc_integer_swap yaooc_odbc_value_swap
-SQLSMALLINT yaooc_odbc_integer_c_data_type(const_pointer);
-SQLLEN yaooc_odbc_integer_column_size(const_pointer);
-void* yaooc_odbc_integer_data(pointer);
-long long yaooc_odbc_integer_get(const_pointer);
-void yaooc_odbc_integer_set(pointer, long long);
-
-/* Protected prototypes for yaooc_odbc_integer */
-
-/*
-  Class Definition for yaooc_odbc_unsigned_integer
-*/
-yaooc_class_table(yaooc_odbc_unsigned_integer) {
-  yaooc_odbc_value_class_table_t;
-  unsigned long long (*get)(const_pointer);
-  void (*set)(pointer, unsigned long long);
-};
-#define yaooc_odbc_unsigned_integer_parent_class_table ((yaooc_odbc_value_class_table_t*)(yaooc_odbc_unsigned_integer_class_table.parent_class_table_))
-
-yaooc_class_instance(yaooc_odbc_unsigned_integer) {
-  yaooc_odbc_value_class_instance_t;
-  unsigned long long value_;
-};
-
-yaooc_class(yaooc_odbc_unsigned_integer);
-
-/* Type Info Prototypes for yaooc_odbc_unsigned_integer */
-void yaooc_odbc_unsigned_integer_default_ctor(pointer);
-#define yaooc_odbc_unsigned_integer_dtor yaooc_odbc_value_dtor
-void yaooc_odbc_unsigned_integer_copy_ctor(pointer,const_pointer);
-void yaooc_odbc_unsigned_integer_assign(pointer,const_pointer);
-
-/* Constructors prototypes for yaooc_odbc_unsigned_integer */
-
-/* Table prototypes for yaooc_odbc_unsigned_integer */
-#define yaooc_odbc_unsigned_integer_swap yaooc_odbc_value_swap
-SQLSMALLINT yaooc_odbc_unsigned_integer_c_data_type(const_pointer);
-SQLLEN yaooc_odbc_unsigned_integer_column_size(const_pointer);
-void* yaooc_odbc_unsigned_integer_data(pointer);
-unsigned long long yaooc_odbc_unsigned_integer_get(const_pointer);
-void yaooc_odbc_unsigned_integer_set(pointer, unsigned long long);
-
-/* Protected prototypes for yaooc_odbc_unsigned_integer */
-
-/*
-  Class Definition for yaooc_odbc_real
-*/
-yaooc_class_table(yaooc_odbc_real) {
-  yaooc_odbc_value_class_table_t;
-  double (*get)(const_pointer);
-  void (*set)(pointer, double);
-};
-#define yaooc_odbc_real_parent_class_table ((yaooc_odbc_value_class_table_t*)(yaooc_odbc_real_class_table.parent_class_table_))
-
-yaooc_class_instance(yaooc_odbc_real) {
-  yaooc_odbc_value_class_instance_t;
-  double value_;
-};
-
-yaooc_class(yaooc_odbc_real);
-
-/* Type Info Prototypes for yaooc_odbc_real */
-void yaooc_odbc_real_default_ctor(pointer);
-#define yaooc_odbc_real_dtor yaooc_odbc_value_dtor
-void yaooc_odbc_real_copy_ctor(pointer,const_pointer);
-void yaooc_odbc_real_assign(pointer,const_pointer);
-
-/* Constructors prototypes for yaooc_odbc_real */
-
-/* Table prototypes for yaooc_odbc_real */
-#define yaooc_odbc_real_swap yaooc_odbc_value_swap
-SQLSMALLINT yaooc_odbc_real_c_data_type(const_pointer);
-SQLLEN yaooc_odbc_real_column_size(const_pointer);
-void* yaooc_odbc_real_data(pointer);
-double yaooc_odbc_real_get(const_pointer);
-void yaooc_odbc_real_set(pointer, double);
-
-/* Protected prototypes for yaooc_odbc_real */
-
-/*
-  Class Definition for yaooc_odbc_string
-*/
-yaooc_class_table(yaooc_odbc_string) {
-  yaooc_odbc_value_class_table_t;
-  const char* (*get)(const_pointer);
-  void (*set)(pointer, const char*);
-  void (*setn)(pointer, const char*, size_t);
-};
-#define yaooc_odbc_string_parent_class_table ((yaooc_odbc_value_class_table_t*)(yaooc_odbc_string_class_table.parent_class_table_))
-
-yaooc_class_instance(yaooc_odbc_string) {
-  yaooc_odbc_value_class_instance_t;
-  size_t size_;
-  char* value_;
-};
-
-yaooc_class(yaooc_odbc_string);
-
-/* Type Info Prototypes for yaooc_odbc_string */
-void yaooc_odbc_string_default_ctor(pointer);
-void yaooc_odbc_string_dtor(pointer);
-void yaooc_odbc_string_copy_ctor(pointer,const_pointer);
-void yaooc_odbc_string_assign(pointer,const_pointer);
-
-/* Constructors prototypes for yaooc_odbc_string */
-void yaooc_odbc_string_size(pointer,va_list);
-
-/* Table prototypes for yaooc_odbc_string */
-#define yaooc_odbc_string_swap yaooc_odbc_value_swap
-SQLSMALLINT yaooc_odbc_string_c_data_type(const_pointer);
-SQLLEN yaooc_odbc_string_column_size(const_pointer);
-void* yaooc_odbc_string_data(pointer);
-const char* yaooc_odbc_string_get(const_pointer);
-void yaooc_odbc_string_set(pointer, const char*);
-void yaooc_odbc_string_setn(pointer, const char*, size_t);
-
-/* Protected prototypes for yaooc_odbc_string */
-
-/*
-  Class Definition for yaooc_odbc_blob
-*/
-yaooc_class_table(yaooc_odbc_blob) {
-  yaooc_odbc_value_class_table_t;
-  void* (*get)(const_pointer);
-  void (*setn)(pointer, void*, size_t);
-};
-#define yaooc_odbc_blob_parent_class_table ((yaooc_odbc_value_class_table_t*)(yaooc_odbc_blob_class_table.parent_class_table_))
-
-yaooc_class_instance(yaooc_odbc_blob) {
-  yaooc_odbc_value_class_instance_t;
-  size_t size_;
-  void* value_;
-};
-
-yaooc_class(yaooc_odbc_blob);
-
-/* Type Info Prototypes for yaooc_odbc_blob */
-void yaooc_odbc_blob_default_ctor(pointer);
-void yaooc_odbc_blob_dtor(pointer);
-void yaooc_odbc_blob_copy_ctor(pointer,const_pointer);
-void yaooc_odbc_blob_assign(pointer,const_pointer);
-
-/* Constructors prototypes for yaooc_odbc_blob */
-void yaooc_odbc_blob_size(pointer,va_list);
-
-/* Table prototypes for yaooc_odbc_blob */
-#define yaooc_odbc_blob_swap yaooc_odbc_value_swap
-SQLSMALLINT yaooc_odbc_blob_c_data_type(const_pointer);
-SQLLEN yaooc_odbc_blob_column_size(const_pointer);
-void* yaooc_odbc_blob_data(pointer);
-void* yaooc_odbc_blob_get(const_pointer);
-void yaooc_odbc_blob_set(pointer, void*, size_t);
-
-/* Protected prototypes for yaooc_odbc_blob */
-
-/*
-  Class Definition for yaooc_odbc_time
-*/
-yaooc_class_table(yaooc_odbc_time) {
-  yaooc_odbc_value_class_table_t;
-  TIME_STRUCT (*get)(const_pointer);
-  void (*set)(pointer, TIME_STRUCT);
-  int (*get_secs)(const_pointer);
-  void (*set_secs)(pointer, int);
-};
-#define yaooc_odbc_time_parent_class_table ((yaooc_odbc_value_class_table_t*)(yaooc_odbc_time_class_table.parent_class_table_))
-
-yaooc_class_instance(yaooc_odbc_time) {
-  yaooc_odbc_value_class_instance_t;
-  TIME_STRUCT value_;
-};
-
-yaooc_class(yaooc_odbc_time);
-
-/* Type Info Prototypes for yaooc_odbc_time */
-void yaooc_odbc_time_default_ctor(pointer);
-#define yaooc_odbc_time_dtor yaooc_odbc_value_dtor
-void yaooc_odbc_time_copy_ctor(pointer,const_pointer);
-void yaooc_odbc_time_assign(pointer,const_pointer);
-
-/* Constructors prototypes for yaooc_odbc_time */
-
-/* Table prototypes for yaooc_odbc_time */
-#define yaooc_odbc_time_swap yaooc_odbc_value_swap
-SQLSMALLINT yaooc_odbc_time_c_data_type(const_pointer);
-SQLLEN yaooc_odbc_time_column_size(const_pointer);
-void* yaooc_odbc_time_data(pointer);
-TIME_STRUCT yaooc_odbc_time_get(const_pointer);
-void yaooc_odbc_time_set(pointer, TIME_STRUCT);
-
-/* Protected prototypes for yaooc_odbc_time */
-
-/*
-  Class Definition for yaooc_odbc_date
-*/
-yaooc_class_table(yaooc_odbc_date) {
-  yaooc_odbc_value_class_table_t;
-  DATE_STRUCT (*get)(const_pointer);
-  void (*set)(pointer, DATE_STRUCT);
-  time_t (*get_time)(const_pointer);
-  void (*set_time)(pointer, time_t);
-};
-#define yaooc_odbc_date_parent_class_table ((yaooc_odbc_value_class_table_t*)(yaooc_odbc_date_class_table.parent_class_table_))
-
-yaooc_class_instance(yaooc_odbc_date) {
-  yaooc_odbc_value_class_instance_t;
-  DATE_STRUCT value_;
-};
-
-yaooc_class(yaooc_odbc_date);
-
-/* Type Info Prototypes for yaooc_odbc_date */
-void yaooc_odbc_date_default_ctor(pointer);
-#define yaooc_odbc_date_dtor yaooc_odbc_value_dtor
-void yaooc_odbc_date_copy_ctor(pointer,const_pointer);
-void yaooc_odbc_date_assign(pointer,const_pointer);
-
-/* Constructors prototypes for yaooc_odbc_date */
-
-/* Table prototypes for yaooc_odbc_date */
-#define yaooc_odbc_date_swap yaooc_odbc_value_swap
-SQLSMALLINT yaooc_odbc_date_c_data_type(const_pointer);
-SQLLEN yaooc_odbc_date_column_size(const_pointer);
-void* yaooc_odbc_date_data(pointer);
-DATE_STRUCT yaooc_odbc_date_get(const_pointer);
-void yaooc_odbc_date_set(pointer, DATE_STRUCT);
-
-/* Protected prototypes for yaooc_odbc_date */
-
-/*
-  Class Definition for yaooc_odbc_timestamp
-*/
-yaooc_class_table(yaooc_odbc_timestamp) {
-  yaooc_odbc_value_class_table_t;
-  TIMESTAMP_STRUCT (*get)(const_pointer);
-  void (*set)(pointer, TIMESTAMP_STRUCT);
-  time_t (*get_time)(const_pointer);
-  void (*set_time)(pointer, time_t);
-};
-#define yaooc_odbc_timestamp_parent_class_table ((yaooc_odbc_value_class_table_t*)(yaooc_odbc_timestamp_class_table.parent_class_table_))
-
-yaooc_class_instance(yaooc_odbc_timestamp) {
-  yaooc_odbc_value_class_instance_t;
-  TIMESTAMP_STRUCT value_;
-};
-
-yaooc_class(yaooc_odbc_timestamp);
-
-/* Type Info Prototypes for yaooc_odbc_timestamp */
-void yaooc_odbc_timestamp_default_ctor(pointer);
-#define yaooc_odbc_timestamp_dtor yaooc_odbc_value_dtor
-void yaooc_odbc_timestamp_copy_ctor(pointer,const_pointer);
-void yaooc_odbc_timestamp_assign(pointer,const_pointer);
-
-/* Constructors prototypes for yaooc_odbc_timestamp */
-
-/* Table prototypes for yaooc_odbc_timestamp */
-#define yaooc_odbc_timestamp_swap yaooc_odbc_value_swap
-SQLSMALLINT yaooc_odbc_timestamp_c_data_type(const_pointer);
-SQLLEN yaooc_odbc_timestamp_column_size(const_pointer);
-void* yaooc_odbc_timestamp_data(pointer);
-TIMESTAMP_STRUCT yaooc_odbc_timestamp_get(const_pointer);
-void yaooc_odbc_timestamp_set(pointer, TIMESTAMP_STRUCT);
-
-/* Protected prototypes for yaooc_odbc_timestamp */
-
-/*
   Class Definition for yaooc_odbc_statement
 */
 yaooc_class_table(yaooc_odbc_statement) {
   yaooc_object_class_table_t;
-  bool (*bindcols)(pointer, void*, ...);
-  bool (*bindparams)(pointer, void*, ...);
+  bool (*bindcol_chr)(pointer, char*);
+  bool (*bindcol_uchr)(pointer, unsigned char*);
+  bool (*bindcol_short)(pointer, short*);
+  bool (*bindcol_ushort)(pointer, unsigned short*);
+  bool (*bindcol_int)(pointer, int*);
+  bool (*bindcol_uint)(pointer, unsigned int*);
+  bool (*bindcol_long)(pointer, long long*);
+  bool (*bindcol_ulong)(pointer, unsigned long long*);
+  bool (*bindcol_dbl)(pointer, double*);
+  bool (*bindcol_str)(pointer, char*, SQLLEN);
+  bool (*bindcol_blob)(pointer, void*, SQLLEN);
+  bool (*bindcol_time)(pointer, TIME_STRUCT*);
+  bool (*bindcol_date)(pointer, DATE_STRUCT*);
+  bool (*bindcol_ts)(pointer, TIMESTAMP_STRUCT*);
+  bool (*bindparam_chr)(pointer, char*);
+  bool (*bindparam_uchr)(pointer, unsigned char*);
+  bool (*bindparam_short)(pointer, short*);
+  bool (*bindparam_ushort)(pointer, unsigned short*);
+  bool (*bindparam_int)(pointer, int*);
+  bool (*bindparam_uint)(pointer, unsigned int*);
+  bool (*bindparam_long)(pointer, long long*);
+  bool (*bindparam_ulong)(pointer, unsigned long long*);
+  bool (*bindparam_dbl)(pointer, double*);
+  bool (*bindparam_str)(pointer, char*, SQLLEN);
+  bool (*bindparam_blob)(pointer, void*, SQLLEN);
+  bool (*bindparam_time)(pointer, TIME_STRUCT*);
+  bool (*bindparam_date)(pointer, DATE_STRUCT*);
+  bool (*bindparam_ts)(pointer, TIMESTAMP_STRUCT*);
   bool (*fetch)(pointer);
   bool (*execute)(pointer);
 };
 #define yaooc_odbc_statement_parent_class_table ((yaooc_object_class_table_t*)(yaooc_odbc_statement_class_table.parent_class_table_))
 
+
 yaooc_class_instance(yaooc_odbc_statement) {
   yaooc_object_class_instance_t;
   SQLHSTMT statement_handle_;
+	unsigned int icol_;
 };
 
 yaooc_class(yaooc_odbc_statement);
@@ -430,12 +133,40 @@ void yaooc_odbc_statement_assign(pointer,const_pointer);
 
 /* Table prototypes for yaooc_odbc_statement */
 #define yaooc_odbc_statement_swap yaooc_object_swap
-bool yaooc_odbc_statement_bindcols(pointer, void*, ...);
-bool yaooc_odbc_statement_bindparams(pointer, void*, ...);
+bool yaooc_odbc_statement_bindcol_chr(pointer, char*);
+bool yaooc_odbc_statement_bindcol_uchr(pointer, unsigned char*);
+bool yaooc_odbc_statement_bindcol_short(pointer, short*);
+bool yaooc_odbc_statement_bindcol_ushort(pointer, unsigned short*);
+bool yaooc_odbc_statement_bindcol_int(pointer, int*);
+bool yaooc_odbc_statement_bindcol_uint(pointer, unsigned int*);
+bool yaooc_odbc_statement_bindcol_long(pointer, long long*);
+bool yaooc_odbc_statement_bindcol_ulong(pointer, unsigned long long*);
+bool yaooc_odbc_statement_bindcol_dbl(pointer, double*);
+bool yaooc_odbc_statement_bindcol_str(pointer, char*, SQLLEN);
+bool yaooc_odbc_statement_bindcol_blob(pointer, void*, SQLLEN);
+bool yaooc_odbc_statement_bindcol_time(pointer, TIME_STRUCT*);
+bool yaooc_odbc_statement_bindcol_date(pointer, DATE_STRUCT*);
+bool yaooc_odbc_statement_bindcol_ts(pointer, TIMESTAMP_STRUCT*);
+bool yaooc_odbc_statement_bindparam_chr(pointer, char*);
+bool yaooc_odbc_statement_bindparam_uchr(pointer, unsigned char*);
+bool yaooc_odbc_statement_bindparam_short(pointer, short*);
+bool yaooc_odbc_statement_bindparam_ushort(pointer, unsigned short*);
+bool yaooc_odbc_statement_bindparam_int(pointer, int*);
+bool yaooc_odbc_statement_bindparam_uint(pointer, unsigned int*);
+bool yaooc_odbc_statement_bindparam_long(pointer, long long*);
+bool yaooc_odbc_statement_bindparam_ulong(pointer, unsigned long long*);
+bool yaooc_odbc_statement_bindparam_dbl(pointer, double*);
+bool yaooc_odbc_statement_bindparam_str(pointer, char*, SQLLEN);
+bool yaooc_odbc_statement_bindparam_blob(pointer, void*, SQLLEN);
+bool yaooc_odbc_statement_bindparam_time(pointer, TIME_STRUCT*);
+bool yaooc_odbc_statement_bindparam_date(pointer, DATE_STRUCT*);
+bool yaooc_odbc_statement_bindparam_ts(pointer, TIMESTAMP_STRUCT*);
 bool yaooc_odbc_statement_fetch(pointer);
 bool yaooc_odbc_statement_execute(pointer);
 
 /* Protected prototypes for yaooc_odbc_statement */
+bool yaooc_odbc_statement_bindcol(pointer, void*, SQLLEN, SQLSMALLINT);
+bool yaooc_odbc_statement_bindparam(pointer, void*, SQLLEN, SQLSMALLINT);
 
 /*
   Class Definition for yaooc_odbc_connection

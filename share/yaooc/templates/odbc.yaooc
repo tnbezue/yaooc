@@ -21,160 +21,48 @@ class yaooc_odbc_environment : yaooc_object {
 		SQLHENV henv_ = SQL_NULL_HANDLE;
 };
 
-class yaooc_odbc_value : yaooc_object {
-	table:
-		SQLSMALLINT c_data_type() const;
-		SQLLEN column_size() const;
-		void* data();
-};
-
-/*
-	All types of signed integer -- bit, bigint, smallint, etc
-*/
-class yaooc_odbc_integer : yaooc_odbc_value {
-		yaooc_odbc_integer();
-		yaooc_odbc_integer(yaooc_odbc_integer);
-		operator=();
-	instance:
-		long long value_;
-	table:
-		SQLSMALLINT c_data_type() const;
-		SQLLEN column_size() const;
-		void* data();
-		long long get() const;
-		void set(long long v);
-};
-
-/*
-	All types of unsigned integer
-*/
-class yaooc_odbc_unsigned_integer : yaooc_odbc_value {
-		yaooc_odbc_unsigned_integer();
-		yaooc_odbc_unsigned_integer(yaooc_odbc_unsigned_integer);
-		operator=();
-	instance:
-		unsigned long long value_;
-	table:
-		SQLSMALLINT c_data_type() const;
-		SQLLEN column_size() const;
-		void* data();
-		unsigned long long get() const;
-		void set(unsigned long long v);
-};
-
-/*
-	Real types -- decimal, float, double
-*/
-class yaooc_odbc_real : yaooc_odbc_value {
-		yaooc_odbc_real();
-		yaooc_odbc_real(yaooc_odbc_real);
-		operator=();
-	instance:
-		double value_;
-	table:
-		SQLSMALLINT c_data_type() const;
-		SQLLEN column_size() const;
-		void* data();
-		double get() const;
-		void set(double v);
-};
-
-/*
-	all char types -- char, varchar, text
-*/
-class yaooc_odbc_string : yaooc_odbc_value {
-		yaooc_odbc_string();
-		yaooc_odbc_string_size(size_t size);
-		~yaooc_odbc_string();
-		yaooc_odbc_string(yaooc_odbc_string);
-		operator=();
-	instance:
-		size_t size_;
-		char * value_;
-	table:
-		SQLSMALLINT c_data_type() const;
-		SQLLEN column_size() const;
-		void* data();
-		const char* get() const;
-		void set(const char* v,size_t n);
-};
-
-class yaooc_odbc_blob : yaooc_odbc_value {
-		yaooc_odbc_blob();
-		yaooc_odbc_blob_size(size_t size);
-		~yaooc_odbc_blob();
-		yaooc_odbc_blob(yaooc_odbc_blob);
-		operator=();
-	instance:
-		size_t size_;
-		void * value_;
-	table:
-		SQLSMALLINT c_data_type() const;
-		SQLLEN column_size() const;
-		void* data();
-		void* get() const;
-		void set(void* v,size_t n);
-};
-
-class yaooc_odbc_time : yaooc_odbc_value {
-		yaooc_odbc_time();
-		yaooc_odbc_time(yaooc_odbc_time);
-		operator=();
-	instance:
-		TIME_STRUCT value_;
-	table:
-		SQLSMALLINT c_data_type() const;
-		SQLLEN column_size() const;
-		void* data();
-		TIME_STRUCT get() const;
-		void set(TIME_STRUCT v);
-		int get_secs() const;
-		void set_secs(int secs);
-};
-
-class yaooc_odbc_date : yaooc_odbc_value {
-		yaooc_odbc_date();
-		yaooc_odbc_date(yaooc_odbc_date);
-		operator=();
-	instance:
-		DATE_STRUCT value_;
-	table:
-		SQLSMALLINT c_data_type() const;
-		SQLLEN column_size() const;
-		void* data();
-		DATE_STRUCT get() const;
-		void set(DATE_STRUCT v);
-		time_t get_time() const;
-		void set_time(time_t t);
-};
-
-class yaooc_odbc_timestamp : yaooc_odbc_value {
-		yaooc_odbc_timestamp();
-		yaooc_odbc_timestamp(yaooc_odbc_timestamp);
-		operator=();
-	instance:
-		TIMESTAMP_STRUCT value_;
-	table:
-		SQLSMALLINT c_data_type() const;
-		SQLLEN column_size() const;
-		void* data();
-		TIMESTAMP_STRUCT get() const;
-		void set(TIMESTAMP_STRUCT v);
-		time_t get_time() const;
-		void set_time(time_t t);
-};
-
 class yaooc_odbc_statement : yaooc_object {
 		yaooc_odbc_statement();
 		~yaooc_odbc_statement();
 		operator=();
 	table:
-		bool bindcols(odbc_value_t* v,...);
-		bool bindparams(odbc_value_t* v,...);
+		bool bindcol_chr(char* v);  // A single character
+		bool bindcol_uchr(unsigned char* v);
+		bool bindcol_short(short* v);
+		bool bindcol_ushort(unsigned short* v);
+		bool bindcol_int(int* v);
+		bool bindcol_uint(unsigned int* v);
+		bool bindcol_long(long long* v);
+		bool bindcol_ulong(unsigned long long* v);
+		bool bindcol_dbl(double* v);
+		bool bindcol_str(char* v,SQLLEN l); // a zero terminated string of characters
+		bool bindcol_blob(void* v,SQLLEN l);
+		bool bindcol_time(TIME_STRUCT* v);
+		bool bindcol_date(DATE_STRUCT* v);
+		bool bindcol_ts(TIMESTAMP_STRUCT* v);
+
+		bool bindparamc_hr(char* v);  // A single character
+		bool bindparam_uchr(unsigned char* v);
+		bool bindparam_short(short* v);
+		bool bindparam_ushort(unsigned short* v);
+		bool bindparam_int(int* v);
+		bool bindparam_uint(unsigned int* v);
+		bool bindparam_long(long long* v);
+		bool bindparam_ulong(unsigned long long* v);
+		bool bindparam_dbl(double* v);
+		bool bindparam_str(char* v,SQLLEN l); // a zero terminated string of characters
+		bool bindparam_blob(void* v,SQLLEN l);
+		bool bindparam_time(TIME_STRUCT* v);
+		bool bindparam_date(DATE_STRUCT* v);
+		bool bindparam_ts(TIMESTAMP_STRUCT* v);
 		bool fetch();
 		bool execute();
 	instance:
 		SQLHSTMT statement_handle_;
+		unsigned int icol_; // Column number for bindcol and bindparam
+	protected:
+		bool bindcol(void* data,SQLLEN column_size,SQLSMALLINT c_data_type);
+		bool bindparam(void* data,SQLLEN column_size,SQLSMALLINT c_data_type);
 	private:
 		void set_handle(SQLHSTMT h);
 

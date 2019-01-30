@@ -137,6 +137,17 @@ void yaooc_istream_stream(pointer p,...)
 	va_end(args);
 }
 
+int yaooc_istream_peek(pointer p)
+{
+  yaooc_istream_pointer this=p;
+	int c=0;
+	if(this->handle_) {
+		c=fgetc(this->handle_);
+		ungetc(c,this->handle_);
+	}
+	return c;
+}
+
 int yaooc_istream_scanf(pointer p,const char* fmt,...)
 {
   yaooc_istream_pointer this=p;
@@ -174,6 +185,7 @@ yaooc_istream_class_table_t yaooc_istream_class_table =
   .tell = (size_t (*) (const_pointer)) yaooc_base_stream_tell,
   .bool = (bool (*) (const_pointer)) yaooc_base_stream_bool,
 	.stream = (void (*) (pointer,...)) yaooc_istream_stream,
+  .peek = (int (*) (pointer)) yaooc_istream_peek,
   .scanf = (int (*) (pointer,const char*,...)) yaooc_istream_scanf,
   .vscanf = (int (*) (pointer,const char*,va_list)) yaooc_istream_vscanf,
   .read = (size_t (*) (pointer,void*,size_t,size_t)) yaooc_istream_read,

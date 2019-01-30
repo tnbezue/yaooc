@@ -46,9 +46,14 @@ class yaooc_string : yaooc_pod_array
     void trim_();
 		yaooc_string_pointer sub(const char* pat,const char* str) const;
 		void sub_(const char* pat,const char* str);
+		yaooc_string_pointer sub_re(const char* pat,yaooc_regex_const_pointer re) const;
+		void sub_re_(const char* pat,yaooc_regex_const_pointer re);
 		yaooc_string_pointer gsub(const char* pat,const char* str) const;
 		void gsub_(const char* pat,const char* str);
+		yaooc_string_pointer gsub(const char* pat,yaooc_regex_const_pointer re) const;
+		void gsub_(const char* pat,yaooc_regex_const_pointer re);
 		bool match(const char* pat) const;
+		bool match_re(yaooc_regex_const_pointer re) const;
     bool starts_with(const char* str) const;
     bool ends_with(const char* str) const;
     void clear();
@@ -57,7 +62,7 @@ class yaooc_string : yaooc_pod_array
     size_t findchr(char ch,size_t pos);
     size_t rfindchr(char ch,size_t pos);
     yaooc_string_vector_pointer split(const char* str,size_t max) const;
-//    yaooc_string_vector_pointer split_re(const char* re_str,size_t max) const;
+    yaooc_string_vector_pointer split_re(yaooc_regex_const_pointer re,size_t max) const;
     const char* c_str() const = yaooc_pod_array_begin;
 };
 

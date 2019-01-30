@@ -6,17 +6,7 @@
 
 class yaooc_regex_exception : yaooc_exception {
 		yaooc_regex_exception();
-		~yaooc_regex_exception();
-		yaooc_regex_exception(yaooc_regex_exception);
-		operator=();
-		yaooc_regex_exception_ctor_ccs(const char* s);
-
-	table:
-		void swap(pointer o);
-		const char* what() const;
-	instance:
-		char* what_;
-
+		yaooc_regex_exception_ctor_v(const char* s) = yaooc_exception_ctor_v;
 };
 
 class yaooc_matchdata : yaooc_object {
@@ -47,6 +37,8 @@ class yaooc_regex : yaooc_object {
   private:
     void compile();
     bool match_private(yaooc_matchdata_pointer md,int offset);
+	protected:
+		int regexec(const regex_t*,const char*,int,size_t,regmatch_t*,int);
   table:
     void set_pattern_flags(const char* pattern,int flags);
     const char* get_pattern() const;

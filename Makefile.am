@@ -58,15 +58,19 @@ lib_libyaooc_la_SOURCES=src/algorithm.c \
 src/array_container.c \
 src/base_parser.c \
 src/date_time.c \
+src/dir.c \
 src/exception.c \
+src/file.c \
 src/fstream.c \
 src/index_array_container.c \
 src/integer.c \
+src/ipaddress.c \
 src/json.c \
 src/json_parser.c \
 src/memory.c \
 src/new.c \
 src/object.c \
+src/odbc.c \
 src/ordered_array_container.c \
 src/pair.c \
 src/pod_array.c \
@@ -83,6 +87,7 @@ src/types.c \
 src/unique_array_container.c \
 src/unique_index_array_container.c \
 src/unique_ordered_array_container.c \
+src/utils.c \
 src/variant.c \
 src/vector.c
 
@@ -92,10 +97,13 @@ pkginclude_HEADERS=include/yaooc/algorithm.h \
 include/yaooc/array_container.h \
 include/yaooc/base_parser.h \
 include/yaooc/date_time.h \
+include/yaooc/dir.h \
 include/yaooc/exception.h \
+include/yaooc/file.h \
 include/yaooc/fstream.h \
 include/yaooc/index_array_container.h \
 include/yaooc/integer.h \
+include/yaooc/ipaddress.h \
 include/yaooc/json.h \
 include/yaooc/json_parser.h \
 include/yaooc/macros.h \
@@ -103,6 +111,7 @@ include/yaooc/map.h \
 include/yaooc/memory.h \
 include/yaooc/new.h \
 include/yaooc/object.h \
+include/yaooc/odbc.h \
 include/yaooc/ordered_array_container.h \
 include/yaooc/ordered_map.h \
 include/yaooc/ordered_set.h \
@@ -122,6 +131,7 @@ include/yaooc/types.h \
 include/yaooc/unique_array_container.h \
 include/yaooc/unique_index_array_container.h \
 include/yaooc/unique_ordered_array_container.h \
+include/yaooc/utils.h \
 include/yaooc/vector.h \
 include/yaooc/variant.h \
 include/yaooc/yaooc_debug.h
@@ -131,8 +141,11 @@ check_PROGRAMS=tests/test_algorithm \
 tests/test_array_container \
 tests/test_base_parser \
 tests/test_date_time \
+tests/test_dir \
 tests/test_exception \
+tests/test_file \
 tests/test_index_array_container \
+tests/test_ipaddress \
 tests/test_json \
 tests/test_json_parser \
 tests/test_map \
@@ -140,6 +153,7 @@ tests/test_memory \
 tests/test_new \
 tests/test_number \
 tests/test_object \
+tests/test_odbc \
 tests/test_ordered_array_container \
 tests/test_ordered_map \
 tests/test_ordered_set \
@@ -157,12 +171,15 @@ tests/test_union \
 tests/test_unique_array_container \
 tests/test_unique_index_array_container \
 tests/test_unique_ordered_array_container \
+tests/test_utils \
 tests/test_variant \
 tests/test_vector
 
 LDADD=-L$(top_srcdir)/lib -lyaooc
 
 bin_PROGRAMS=yaoocpp/yaoocpp
+
+yaoocpp_yaoocpp_DEPENDENCIES = $(lib_LTLIBRARIES)
 
 bin_SCRIPTS=yaooc-config
 

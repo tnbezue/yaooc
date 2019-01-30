@@ -20,9 +20,13 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <unistd.h>
+#include <libgen.h>
 #include <yaooc/odbc.h>
 #include <yaooc/stream.h>
 #include "test_harness.h"
+
+char sqlite_connect_string[1024]="DRIVER=SQLite3;Database=";
 
 void test_get_drivers()
 {
@@ -46,30 +50,40 @@ void test_get_sources()
 
 void test_sqlite_select()
 {
-	yaooc_odbc_integer_t* id = new(yaooc_odbc_integer);
+/*	yaooc_odbc_integer_t* id = new(yaooc_odbc_integer);
 	yaooc_odbc_string_t* lname = new(yaooc_odbc_string);
 	yaooc_odbc_string_t* fname =  new(yaooc_odbc_string);
 	yaooc_odbc_timestamp_t* birthday =  new(yaooc_odbc_timestamp);
-	yaooc_odbc_real_t* salary =  new(yaooc_odbc_real);
-
+	yaooc_odbc_real_t* salary =  new(yaooc_odbc_real);*/
+	int id;
+	char lname[64],fname[64];
+	char birthday[64];
+	double salary;
 	yaooc_odbc_connection_t* con = new(yaooc_odbc_connection);
 //	con.connect("DRIVER=SQLite;Database=mytest.db");
-	M(con,connect,"DSN=mytest_yaooc.db");
+	M(con,connect,sqlite_connect_string);
 	TEST("Connection",con);
 	if(con) {
 		yaooc_odbc_statement_t* stmt = M(con,exec_direct,"select * from Demo");
 		if(stmt) {
-				M(stmt,bindcols,id,lname,fname,birthday,salary,NULL);
+				M(stmt,bindcol_int,&id);
+				M(stmt,bindcol_str,lname,64);
+				M(stmt,bindcol_str,fname,64);
+				M(stmt,bindcol_str,birthday,64);
+				M(stmt,bindcol_dbl,&salary);
 //			stmt.bindcols(row);
 			while(M(stmt,fetch)) {
-				printf("%lld %s %s %ld %.2lf\n",M(id,get),M(lname,get),M(fname,get),
-						M(birthday,get_time),M(salary,get));
+/*				struct tm tm=M(birthday,get_tm);
+				char date_str[64];
+				strftime(date_str,64,"%c",&tm);*/
+				printf("%d %s %s %s %.2lf\n",id,lname,fname,birthday,salary);
 			}
 			delete(stmt);
 		}
 	} else
 		puts("Failed connect");
-	DELETE(id,lname,fname,birthday,salary,con);
+//	DELETE(id,lname,fname,birthday,salary,con);
+	delete(con);
 }
 
 typedef struct  {
@@ -80,35 +94,39 @@ typedef struct  {
 } sqlite_schema_t;
 
 sqlite_schema_t sdata[] = {
-	{ "Dorsey","Carol","1950-01-12 00:00:00",88000.0 },
-	{ "Simpson","Homer","1980-09-28 17:32:53",50000.20 }
+	{ "Mouse","Mickey","1928-11-29 00:00:00",88000.0 },
+	{ "Bunny","Bugs","1940-07-27 00:00:00",88000.0 },
+	{ "Simpson","Homer","1956-05-12 17:32:53",50000.20 }
 };
 
 void test_sqlite_insert()
 {
-	yaooc_odbc_string_t* lname = new(yaooc_odbc_string);
-	yaooc_odbc_string_t* fname = new(yaooc_odbc_string);
-	yaooc_odbc_timestamp_t* birthday  = new(yaooc_odbc_timestamp);
-	yaooc_odbc_real_t* salary = new(yaooc_odbc_real);
 	yaooc_odbc_connection_t* con = new(yaooc_odbc_connection);
-	M(con,connect,"DRIVER=SQLite3;Database=tests/mytest.db");
+	char lname[64],fname[64];
+	char birthday[64];
+	double salary;
+	M(con,connect,sqlite_connect_string);
 	TEST("Connection",con);
 	int nData=sizeof(sdata)/sizeof(sdata[0]);
 	if(con) {
 		yaooc_odbc_statement_t *stmt=M(con,prepare,"insert into Demo (lname,fname,birthday,salary) values (?,?,?,?)");
 		if(stmt) {
-			if(M(stmt,bindparams,lname,fname,birthday,salary,NULL)) {
+			bool rc = M(stmt,bindparam_str,lname,64);
+			rc = rc && M(stmt,bindparam_str,fname,64);
+			rc = rc && M(stmt,bindparam_str,birthday,64);
+			rc = rc && M(stmt,bindparam_dbl,&salary);
+			if(rc) {
 				for(int i=0;i<nData;i++) {
-					M(lname,set,sdata[i].lname);
-					M(fname,set,sdata[i].fname);
-					struct tm tm;
+					strcpy(lname,sdata[i].lname);
+					strcpy(fname,sdata[i].fname);
+/*					struct tm tm;
 					memset(&tm,0,sizeof(struct tm));
-					char* ptr=strptime(sdata[i].birthday,"%Y-%m-%d %H:%M:%S",&tm);
+					strptime(sdata[i].birthday,"%Y-%m-%d %H:%M:%S",&tm);*/
 /*					if(*ptr != 0)
 						puts("Failed");
 					printf("%zd\n",mktime(&tm));*/
-					M(birthday,set_time,mktime(&tm));
-					M(salary,set,sdata[i].salary);
+					strcpy(birthday,sdata[i].birthday);
+					salary = sdata[i].salary;
 					if(!M(stmt,execute)) {
 						puts("Execute failed");
 						break;
@@ -122,7 +140,6 @@ void test_sqlite_insert()
 		}
 		delete(con);
 	}
-	DELETE(lname,fname,birthday,salary);
 }
 
 #if 0
@@ -200,6 +217,31 @@ test_function tests[]=
 	test_sqlite_insert,
 };
 
+void create_sqlite_db(const char* exe)
+{
+	// get location of this executable
+	char* ptr=sqlite_connect_string + strlen(sqlite_connect_string);
+	if(exe[0]=='/') { // absolute path
+		strncpy(ptr,exe,1023);
+	} else { // relative path
+		getcwd(ptr,1024);
+		strcat(ptr,"/");
+		strcat(ptr,exe);
+	}
+	// Make connect string
+	strcpy(ptr,dirname(ptr));
+	strcat(ptr,"/test_sqlite.db");
+
+	// If database does not exist, create if
+	if(access(ptr,R_OK) != 0) {
+		yaooc_odbc_connection_t* con = new(yaooc_odbc_connection);
+		M(con,connect,sqlite_connect_string);
+		M(con,exec_direct,"CREATE TABLE Demo (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, lname varchar(255),fname varchar(255),birthday timestamp, salary decimal(12,2));");
+		M(con,commit);
+		delete(con);
+	}
+}
+
 int main(int argc,char*argv[])
 {
 	setbuf(stdout,NULL);
@@ -207,7 +249,10 @@ int main(int argc,char*argv[])
 	output=(char*)malloc(10240);
 	optr=NULL;
   srand(time(NULL));
+
 	yaooc_odbc_environment_t* env=new(yaooc_odbc_environment);
+	create_sqlite_db(argv[0]);
+
 	int ntest=sizeof(tests)/sizeof(tests[0]);
 	if(argc == 1)
 		{ TEST_ALL(tests); }

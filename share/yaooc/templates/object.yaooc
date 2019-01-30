@@ -5,7 +5,6 @@ class yaooc_object {
   table:
     const class_table_t* parent_class_table_ = NULL;
     const char* type_name_ = "yaooc_object_t";
-    bool isa(const char* cls) const;
     void swap(pointer p2);
 };
 

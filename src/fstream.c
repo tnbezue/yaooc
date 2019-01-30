@@ -76,6 +76,7 @@ yaooc_ifstream_class_table_t yaooc_ifstream_class_table =
   .tell = (size_t (*) (const_pointer)) yaooc_istream_tell,
   .bool = (bool (*) (const_pointer)) yaooc_istream_bool,
 	.stream = (void (*) (pointer,...)) yaooc_ifstream_stream,
+  .peek = (int (*) (pointer)) yaooc_istream_peek,
   .scanf = (int (*) (pointer,const char*,...)) yaooc_istream_scanf,
   .vscanf = (int (*) (pointer,const char*,va_list)) yaooc_istream_vscanf,
   .read = (size_t (*) (pointer,void*,size_t,size_t)) yaooc_istream_read,

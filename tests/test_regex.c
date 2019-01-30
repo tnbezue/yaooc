@@ -60,6 +60,42 @@ void test_regex_regexec()
 
 }
 
+typedef struct
+{
+	const char* re_str;
+	const char* pat;
+	int flags;
+} regexp_match_test_info_t;
+
+regexp_match_test_info_t regexp_match_test_cases[] =
+{
+	{ "apple",NULL,REG_EXTENDED },
+	{ "/apple/","apple",REG_EXTENDED },
+	{ "/apple/i","apple",REG_EXTENDED|REG_ICASE },
+	{ "/apple/m","apple",REG_EXTENDED|REG_NEWLINE },
+	{ "/apple/mi","apple",REG_EXTENDED|REG_NEWLINE|REG_ICASE },
+	{ "/apple/im","apple",REG_EXTENDED|REG_NEWLINE|REG_ICASE },
+	{ "/appleim",NULL,REG_EXTENDED },
+	{ "//im",NULL,REG_EXTENDED },
+  { NULL, NULL, 0 }
+};
+
+void test_match_info()
+{
+	char msg[128];
+	regexp_match_test_info_t* rmti=regexp_match_test_cases;
+	for(;rmti->re_str!=NULL;rmti++) {
+		yaooc_regex_regexp_match_info_t rmi=yaooc_regex_is_re_string(rmti->re_str);
+		sprintf(msg,"'%s' has re of '%s'",rmti->re_str,(rmti->pat == NULL ? "NULL" : rmti->pat));
+		if(rmti->pat) {
+			TEST(msg,strcmp(rmi.pattern_,rmti->pat)==0)
+    } else
+			TEST(msg,rmi.pattern_==rmti->pat);
+		sprintf(msg,"'%s' has flags of '%x'",rmti->re_str,rmti->flags);
+		TEST(msg,rmi.flags_)
+	}
+}
+
 void test_regex()
 {
   PB_INIT;
@@ -121,6 +157,7 @@ void test_next()
 test_function tests[]=
 {
   test_regex_regexec,
+	test_match_info,
 	test_regex,
 	test_next
 };

@@ -132,6 +132,15 @@ typedef struct {
 	Objects allocated by new must define a type_info_t structure.
   type_size must be defined and not zero, others may be NULL
 */
+typedef struct ood_type_info_s pod_type_info_t;
+struct pod_type_info_s {
+	unsigned int is_pod_; // set to 1 if pod
+	unsigned int type_size_; // object size
+	less_than_compare less_than_compare_;
+	to_stream to_stream_;
+	from_stream from_stream_;
+};
+
 typedef struct type_info_s type_info_t;
 struct type_info_s {
 	size_t type_size_;											// object size

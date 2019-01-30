@@ -226,6 +226,18 @@ void test_insert()
   delete(bc);
 }
 
+#define MAX_RANDOMS 102400
+void test_big_insert()
+{
+	int_index_array_container_pointer bc=new(int_index_array_container);
+	srand((unsigned) time(NULL));
+	int i;
+	for(i=0;i<MAX_RANDOMS;i++) {
+		int numb=rand();
+		M(bc,insert,M(bc,end),&numb);
+	}
+}
+
 void test_erase()
 {
 	int_t values[] = { 14, 8, 6, 2 ,99, 17, 21, 56, 31, 8, 17, 24, 18, 18, 21, 88, 99 , -8, 32, 57, 35 };
@@ -504,6 +516,7 @@ test_function tests[]=
 	test_sizes,
 	test_constructor,
   test_insert,
+  test_big_insert,
 	test_erase,
 	test_copy,
 	test_assign,

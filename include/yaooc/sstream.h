@@ -60,6 +60,7 @@ void yaooc_istringstream_ctor_ccs_n(pointer,va_list);
 #define yaooc_istringstream_stream yaooc_istream_stream
 #define yaooc_istringstream_tell yaooc_istream_tell
 #define yaooc_istringstream_bool yaooc_istream_bool
+#define yaooc_istringstream_peek yaooc_istream_peek
 #define yaooc_istringstream_scanf yaooc_istream_scanf
 #define yaooc_istringstream_vscanf yaooc_istream_vscanf
 #define yaooc_istringstream_read yaooc_istream_read

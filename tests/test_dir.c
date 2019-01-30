@@ -33,11 +33,12 @@ void test_entries()
 
 void test_glob()
 {
-	yaooc_file_vector_t* files = yaooc_dir_glob("tests/*.c");
-	yaooc_file_vector_const_iterator i;
+	yaooc_file_vector_t* files = yaooc_dir_glob("tests/test_*.c");
+	printf("%zu\n",M(files,size));
+/*	yaooc_file_vector_const_iterator i;
 	FOR_EACH(i,files) {
 		printf("%s\n",i->name_);
-	}
+	}*/
 	delete(files);
 }
 

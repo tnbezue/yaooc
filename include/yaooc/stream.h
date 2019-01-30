@@ -107,6 +107,7 @@ yaooc_class_table(yaooc_istream)
 {
   yaooc_base_stream_class_table_t;
 	void (*stream)(pointer,...);
+	int (*peek)(pointer);
 	int (*scanf)(pointer,const char*,...);
   int (*vscanf)(pointer,const char*,va_list);
   size_t (*read)(pointer,void*,size_t,size_t);
@@ -134,6 +135,7 @@ void yaooc_istream_default_ctor(pointer);
 #define yaooc_istream_tell yaooc_base_stream_tell
 #define yaooc_istream_bool yaooc_base_stream_bool
 void yaooc_istream_stream(pointer,...);
+int yaooc_istream_peek(pointer);
 int yaooc_istream_scanf(pointer,const char*,...);
 int yaooc_istream_vscanf(pointer,const char*,va_list);
 size_t yaooc_istream_read(pointer,void*,size_t,size_t);

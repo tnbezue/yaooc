@@ -51,7 +51,7 @@ void yaooc_exception_assign(pointer p,const_pointer s)
 	yaooc_exception_pointer this=p;
 	yaooc_exception_const_pointer src=p;
 	yaooc_exception_dtor(p);
-	this->what_ = src->what_ ? strdup(src->what_) : NULL; // Don't use STRDUP
+	this->what_ = src->what_ ? strdup(src->what_) : NULL; // Don't use STRDUP -- see destructor
 }
 
 void yaooc_exception_ctor_v(pointer p,va_list args)

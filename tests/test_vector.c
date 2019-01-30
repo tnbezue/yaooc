@@ -98,9 +98,9 @@ void test_str_8()
 	if(fpos != M(vec,end))
 		printf("%s\n",fpos->str);
 
-  str_8_vector_const_iterator z;
+/*  str_8_vector_const_iterator z;
   for(z=M(vec,begin);z!=M(vec,end);z++)
-    printf("%s\n",z->str);
+    printf("%s\n",z->str);*/
   delete(vec);
 }
 

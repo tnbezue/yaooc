@@ -37,6 +37,7 @@ class yaooc_istream : yaooc_base_stream
 {
 		yaooc_istream();
 	table:
+		int peek();
 		int scanf(const char* fmt,...);
 		int vscanf(const char* fmt,va_list args);
 		size_t read(void* buffer,size_t size,size_t count);
@@ -51,7 +52,8 @@ class yaooc_ostream : yaooc_base_stream
 		int printf(const char* fmt,...);
 		int vprintf(const char* fmt,va_list args);
 		size_t write(const void* buffer,size_t size,size_t count);
-		void puts(const char* str);
+		int puts(const char* str);
+		int putc(int c);
 };
 
 #endif

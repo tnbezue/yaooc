@@ -63,9 +63,14 @@ yaooc_class_table(yaooc_string)
   void (*trim_)(pointer);
 	yaooc_string_pointer (*sub)(const_pointer,const char*,const char*);
 	void (*sub_)(pointer,const char*,const char*);
+	yaooc_string_pointer (*sub_re)(const_pointer,yaooc_regex_const_pointer,const char*);
+	void (*sub_re_)(pointer,yaooc_regex_const_pointer,const char*);
 	yaooc_string_pointer (*gsub)(const_pointer,const char*,const char*);
 	void (*gsub_)(pointer,const char*,const char*);
+	yaooc_string_pointer (*gsub_re)(const_pointer,yaooc_regex_const_pointer,const char*);
+	void (*gsub_re_)(pointer,yaooc_regex_const_pointer,const char*);
 	bool (*match)(const_pointer,const char*);
+	bool (*match_re)(yaooc_regex_const_pointer,const char*);
   bool (*starts_with)(const_pointer,const char*);
   bool (*ends_with)(const_pointer,const char*);
   void (*clear)(pointer);
@@ -74,6 +79,7 @@ yaooc_class_table(yaooc_string)
   size_t (*findchr)(pointer,char,size_t);
   size_t (*rfindchr)(pointer,char,size_t);
   yaooc_string_vector_pointer(*split)(const_pointer,const char*,size_t);
+  yaooc_string_vector_pointer(*split_re)(const_pointer,yaooc_regex_const_pointer,size_t);
   const char* (*c_str)(const_pointer);
 };
 
@@ -134,9 +140,14 @@ yaooc_string_pointer yaooc_string_trim(const_pointer);
 void yaooc_string_trim_(pointer);
 yaooc_string_pointer yaooc_string_sub(const_pointer,const char*,const char*);
 void yaooc_string_sub_(pointer,const char*,const char*);
+yaooc_string_pointer yaooc_string_sub_re(const_pointer,yaooc_regex_const_pointer,const char*);
+void yaooc_string_sub_re_(pointer,yaooc_regex_const_pointer,const char*);
 yaooc_string_pointer yaooc_string_gsub(const_pointer,const char*,const char*);
 void yaooc_string_gsub_(pointer,const char*,const char*);
+yaooc_string_pointer yaooc_string_gsub_re(const_pointer,yaooc_regex_const_pointer,const char*);
+void yaooc_string_gsub_re_(pointer,yaooc_regex_const_pointer,const char*);
 bool yaooc_string_match(const_pointer,const char*);
+bool yaooc_string_match_re(const_pointer,yaooc_regex_const_pointer);
 bool yaooc_string_starts_with(const_pointer,const char*);
 bool yaooc_string_ends_with(const_pointer,const char*);
 size_t yaooc_string_findstr(pointer,const char*,size_t);
@@ -144,7 +155,7 @@ size_t yaooc_string_rfindstr(pointer,const char*,size_t);
 size_t yaooc_string_findchr(pointer,char,size_t);
 size_t yaooc_string_rfindchr(pointer,char,size_t);
 yaooc_string_vector_pointer yaooc_string_split(const_pointer,const char*,size_t);
-//yaooc_string_vector_pointer yaooc_string_split_re(const_pointer,const char*,size_t);
+yaooc_string_vector_pointer yaooc_string_split_re(const_pointer,yaooc_regex_const_pointer,size_t);
 #define yaooc_string_c_str yaooc_pod_array_begin
 
 

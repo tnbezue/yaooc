@@ -18,6 +18,29 @@
 #ifndef __REGEX_INCLUDED__
 #define __REGEX_INCLUDED__
 
+/*
+	Utility for determining if string should be considered a regular expression
+	If string:
+		a) begins with '/'
+		b) ends with '/' and optional flags 'm' and 'i'
+
+	General format is:
+		/re_str/mi  -- either m or i is optional
+
+	Example:
+		1) "/apple"  -- Invalid -- does not end with '/'
+		2) "/apple/" -- Valid
+		3) "/apple/mi" -- Valid -- ends with '/' and valid flags
+		3) "/apple/iiimmmiimmmi" -- Valid -- flags can be repeated
+		4) "/apple/xmi" -- Invalid -- 'x' is an invalid flag
+		5) "//mi"  -- Invalid -- re_str length should be greater than 0
+*/
+typedef struct {
+	char* pattern_;  // Will be NULL if string is not an re
+	int flags_;
+} yaooc_regex_regexp_match_info_t;
+yaooc_regex_regexp_match_info_t yaooc_regex_is_re_string(const char*);
+
 #include <yaooc/string.h>
 #include <yaooc/exception.h>
 #ifdef __YAOOC_USE_TRE__
@@ -149,6 +172,7 @@ bool yaooc_regex_bool(const_pointer);
 /* Prototypes for yaooc_regex class instance*/
 
 /* Prototypes for yaooc_regex class protected items*/
+int yaooc_regex_regexec(const regex_t*,const char*,int,size_t,regmatch_t*,int);
 
 /*  End YAOOC PreProcessor generated content */
 

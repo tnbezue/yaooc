@@ -172,10 +172,6 @@ const char* str1="rpkjeiuhvlocynwtqdagzmfbxs";
 const char* str2="fzhcvtdkjpoxgyenluqrmawsib";
 const char* str3="vgztaiqfsphnjkydbxruewmocl";
 const char* str4="iufkyowzvmhljbsrxqgacnpted";
-/*const char *str1="khaxftwgdruinlcmoeqpjbzsvy";
-const char *str2="dhqypibsezntkfouxjlcwramvg";
-const char *str3="wtbaefdqucijhxkypovrzsmlgn";
-const char *str4="vnioqutyzsxcrgmbhljwpfkaed";*/
 
 void test_big()
 {
@@ -186,10 +182,8 @@ void test_big()
 	yaooc_string_int_map_pointer mfls=new(yaooc_string_int_map);
 	clock_t start=clock();
 //  M(mfls,reserve,456976);
-  printf("%zu\n",M(mfls,capacity));
 	const char *i,*j,*k,*l;
 	for(i=str1;*i!=0;i++) {
-		printf("%zu item\n",i-str1);
 		is[0]=*i;
 		for(j=str2;*j!=0;j++) {
 			is[1]=*j;
@@ -204,7 +198,7 @@ void test_big()
 		}
 	}
 
-	printf("%ld clock cycles to insert %zu items\n",clock()-start,M(mfls,size));
+	printf("%lg seconds to insert %zu items\n",((double)(clock()-start))/CLOCKS_PER_SEC,M(mfls,size));
 //	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
 /*	yaooc_string_int_map_const_iterator isi;
 	for(isi=M(mfls,begin);isi!=M(mfls,end);isi++) {
@@ -247,7 +241,7 @@ void test_big_unique_ptr()
 			}
 		}
 	}
-	printf("%ld clock cycles to insert %zu items\n",clock()-start,M(mfls,size));
+	printf("%lg seconds to insert %zu items\n",((double)(clock()-start))/CLOCKS_PER_SEC,M(mfls,size));
 //	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
 /*	yaooc_string_unique_ptr_int_map_const_iterator isi;
 	for(isi=M(mfls,begin);isi!=M(mfls,end);isi++) {

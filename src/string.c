@@ -19,14 +19,8 @@
 #include <yaooc/stream.h>
 #include <string.h>
 #include <ctype.h>
-#ifdef __YAOOC_USE_TRE__
-#include <tre/regex.h>
-#else
-#include <regex.h>
-#endif
+#include <yaooc/regex.h>
 
-extern int yaooc_regex_regexec(const regex_t*,const char*,int,size_t,regmatch_t*,int);
-static void yaooc_regex_flags_pat(const char* pat,char** re_pat,int* re_flags);
 
 const void *memrmem(const void *ptr, size_t size, const void *pat, size_t patsize)
 {
@@ -103,17 +97,18 @@ void yaooc_string_to_stream(const_pointer p,pointer s)
 	M(strm,printf,"%s",this->array_);
 }
 
-/*
-	Need to improve this for very long strings
-*/
 void yaooc_string_from_stream(pointer p,pointer s)
 {
 	yaooc_string_pointer this=p;
 	yaooc_istream_pointer strm=s;
-	char* temp=MALLOC(1024);
-	M(strm,scanf,"%s",temp);
-	M(this,set,temp);
-	FREE(temp);
+	M(this,clear);
+	char temp[256];
+	while(!M(strm,eof)) {
+		M(strm,scanf,"%255s",temp);
+		M(this,append,temp);
+		if(isspace(M(strm,peek)))
+			break;
+	}
 }
 
 /* Constructors for yaooc_string */
@@ -399,39 +394,43 @@ yaooc_string_pointer yaooc_string_sub(const_pointer p,const char* pat,const char
 	return ret;
 }
 
-bool yaooc_string_sub_re_(pointer p,const char* pat,int flags,const char *str)
-{
-	yaooc_string_pointer this=p;
-	regex_t re;
-	bool ret=false;
-	if(regcomp(&re,pat,REG_EXTENDED|flags) == 0) {
-		regmatch_t ov;
-		if(regexec(&re,this->array_,1,&ov,0) == 0) {
-			M(this,replace,ov.rm_so,ov.rm_eo-ov.rm_so,str);
-			ret=true;
-		}
-		regfree(&re);
-	}
-	return ret;
-}
-
 void yaooc_string_sub_(pointer p,const char* pat,const char* str)
 {
 	yaooc_string_pointer this=p;
 	if(pat) {
-		char* re_str;
-		int re_flags;
-		yaooc_regex_flags_pat(pat,&re_str,&re_flags);
-		if(re_str) {
-			yaooc_string_sub_re_(p,re_str,re_flags,str);
+		yaooc_regex_regexp_match_info_t rmi=yaooc_regex_is_re_string(pat);
+		if(rmi.pattern_) {
+			yaooc_regex_t* re = new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,rmi.pattern_,rmi.flags_);
+//			M(this,sub_re_,re,str);
+			yaooc_string_sub_re_(this,re,str);
+			delete(re);
+			FREE(rmi.pattern_);
 		} else if (strcmp(pat," ")==0) {
-			yaooc_string_sub_re_(p,"  +",REG_EXTENDED,str);
+			yaooc_regex_t* re = new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"\\s+",REG_EXTENDED);
+			yaooc_string_sub_re_(p,re,str);
+			delete(re);
 		} else {
 			char* ptr=strstr(this->array_,pat);
 			if(ptr)
 				M(this,replace,ptr-this->array_,strlen(pat),str);
 		}
 	}
+}
+
+void yaooc_string_sub_re_(pointer p,yaooc_regex_const_pointer re,const char *str)
+{
+	yaooc_string_pointer this=p;
+	regmatch_t ov;
+	if(yaooc_regex_regexec(re->re_,this->array_,0,1,&ov,0) == 0) {
+		M(this,replace,ov.rm_so,ov.rm_eo-ov.rm_so,str);
+	}
+}
+
+yaooc_string_pointer yaooc_string_sub_re(const_pointer p,yaooc_regex_const_pointer re,const char* str)
+{
+	yaooc_string_pointer ret=new_copy_static(yaooc_string,p);
+	yaooc_string_sub_re_(ret,re,str);
+	return ret;
 }
 
 yaooc_string_pointer yaooc_string_gsub(const_pointer p,const char* pat,const char* str)
@@ -441,37 +440,25 @@ yaooc_string_pointer yaooc_string_gsub(const_pointer p,const char* pat,const cha
 	return ret;
 }
 
-static void yaooc_string_gsub_re_(pointer p,const char* pat,int flags,const char* str)
-{
-	yaooc_string_pointer this=p;
-	regex_t re;
-	if(regcomp(&re,pat,REG_EXTENDED|flags) == 0) {
-		regmatch_t ov;
-		size_t ofs=0;
-		size_t l=strlen(str);
-		while(ofs < this->size_ && regexec(&re,this->array_+ofs,1,&ov,0) == 0) {
-			M(this,replace,ofs+ov.rm_so,ov.rm_eo-ov.rm_so,str);
-			ofs+=ov.rm_so+l;
-		}
-		regfree(&re);
-	}
-}
-
 void yaooc_string_gsub_(pointer p,const char* pat,const char* str)
 {
 	yaooc_string_pointer this=p;
-	size_t l;
 	size_t sl= str ? strlen(str) : 0;
-	if(pat && (l=strlen(pat))>0) {
-		char *re_str;
-		int re_flags;
-		yaooc_regex_flags_pat(pat,&re_str,&re_flags);
-		if(re_str) {
-			yaooc_string_gsub_re_(p,re_str,re_flags,str);
-			FREE(re_str);
+	if(pat) {
+		yaooc_regex_regexp_match_info_t rmi=yaooc_regex_is_re_string(pat);
+		if(rmi.pattern_) {
+			yaooc_regex_t* re = new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,rmi.pattern_,rmi.flags_);
+			yaooc_string_gsub_re_(this,re,str);
+			delete(re);
+			FREE(rmi.pattern_);
+		} else if(strcmp(pat," ")==0) {
+			yaooc_regex_t* re = new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"\\s+",REG_EXTENDED);
+			yaooc_string_gsub_re_(p,re,str);
+			delete(re);
 		} else {
+			size_t l=strlen(pat);
 			char* ptr;
-			int ofs=0;
+			size_t ofs=0;
 			while((ptr=strstr(this->array_+ofs,pat))!=NULL) {
 				size_t pos=ptr-this->array_;
 				M(this,replace,pos,l,str);
@@ -481,29 +468,48 @@ void yaooc_string_gsub_(pointer p,const char* pat,const char* str)
 	}
 }
 
+yaooc_string_pointer yaooc_string_gsub_re(const_pointer p,yaooc_regex_const_pointer re,const char* str)
+{
+	yaooc_string_pointer ret=new_copy_static(yaooc_string,p);
+	yaooc_string_gsub_re_(ret,re,str);
+	return ret;
+}
+
+void yaooc_string_gsub_re_(pointer p,yaooc_regex_const_pointer re,const char* str)
+{
+	yaooc_string_pointer this=p;
+	regmatch_t ov;
+	size_t ofs=0;
+	size_t l=strlen(str);
+	while(ofs < this->size_ && yaooc_regex_regexec(re->re_,this->array_,ofs,1,&ov,0) == 0) {
+		M(this,replace,ov.rm_so,ov.rm_eo-ov.rm_so,str);
+		ofs=ov.rm_so+l;
+	}
+}
+
+
 bool yaooc_string_match(const_pointer p,const char* pat)
 {
 	yaooc_string_const_pointer this=p;
 	bool ret=true;
 	if(pat) {
-		ret=false;
-		char* re_str;
-		int re_flags;
-		yaooc_regex_flags_pat(pat,&re_str,&re_flags);
-		if(re_str!=NULL) {
-			pat=re_str;
+		yaooc_regex_regexp_match_info_t rmi=yaooc_regex_is_re_string(pat);
+		if(rmi.pattern_) {
+			yaooc_regex_t* re = new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,rmi.pattern_,rmi.flags_);
+			ret = yaooc_string_match_re(this,re);
+			delete(re);
+			FREE(rmi.pattern_);
 		} else {
-			re_flags=REG_EXTENDED|REG_NEWLINE;
+			ret = strstr(this->array_,pat) != NULL;
 		}
-		regex_t re;
-		if(regcomp(&re,pat,re_flags|REG_EXTENDED|REG_NOSUB)==0) {
-			ret =regexec(&re,this->array_,0,NULL,0) == 0;
-			regfree(&re);
-		}
-		if(re_str)
-			FREE(re_str);
 	}
 	return ret;
+}
+
+bool yaooc_string_match_re(const_pointer p,yaooc_regex_const_pointer re)
+{
+	yaooc_string_const_pointer this=p;
+	return yaooc_regex_regexec(re->re_,this->array_,0,0,NULL,0) == 0;
 }
 
 bool yaooc_string_starts_with(const_pointer p,const char* str)
@@ -595,7 +601,7 @@ size_t yaooc_string_rfindchr(pointer p,char ch,size_t pos)
 	}
   return ret;
 }
-
+#if 0
 static void yaooc_regex_flags_pat(const char* pat,char** re_pat,int* re_flags)
 {
 	*re_flags=REG_EXTENDED|REG_NEWLINE;
@@ -619,64 +625,66 @@ static void yaooc_regex_flags_pat(const char* pat,char** re_pat,int* re_flags)
 	}
 	*re_pat=NULL;
 }
-static yaooc_string_vector_pointer yaooc_string_split_re(const_pointer,const char*,int,size_t);
+#endif
 yaooc_string_vector_pointer yaooc_string_split(const_pointer p,const char* str,size_t max)
 {
   yaooc_string_const_pointer this=p;
   yaooc_string_vector_t* ret=NULL; //new(yaooc_string_vector);
-  char* re_str;
-	int re_flags;
-	yaooc_regex_flags_pat(str,&re_str,&re_flags);
-	if(re_str) {
-    //delete(ret);
-    ret = yaooc_string_split_re(p,re_str,re_flags,max);
-		FREE(re_str);
-	} else {
-		ret=new(yaooc_string_vector);
-    char *beg,*end;
-		size_t l=strlen(str);
-    yaooc_string_t* temp=new(yaooc_string);
-    if(strcmp(str," ")==0) {
-      beg=this->array_;
-      do {
-        beg+=strspn(beg,whitespace);
-        size_t ofs=strcspn(beg,whitespace);
-        M(temp,setn,beg,ofs);
-        M(ret,push_back,temp);
-        beg+=ofs;
-      } while(*beg!=0);
-    } else {
-      beg=this->array_;
-      while((end=strstr(beg,str)) && --max > 0) {
-        M(temp,setn,beg,end-beg);
-        beg=end+l;
-        M(ret,push_back,temp);
-      }
-    }
-    if(*beg != 0) {
-      M(temp,set,beg);
-      M(ret,push_back,temp);
-    }
-    delete(temp);
-  }
-  /*
-    Remove null items at end
-  */
-  while(M(ret,size)>0 && M(M(ret,back),size)==0)
-    M(ret,pop_back);
-  return ret;
+	if(str) {
+		yaooc_regex_regexp_match_info_t rmi=yaooc_regex_is_re_string(str);
+		if(rmi.pattern_) {
+			yaooc_regex_t* re = new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,rmi.pattern_,rmi.flags_);
+			ret = yaooc_string_split_re(p,re,max);
+			delete(re);
+			FREE(rmi.pattern_);
+		} else {
+			ret=new(yaooc_string_vector);
+			char *beg,*end;
+			size_t l=strlen(str);
+			yaooc_string_t* temp=new(yaooc_string);
+			if(strcmp(str," ")==0) {
+				beg=this->array_;
+				do {
+					beg+=strspn(beg,whitespace);
+					size_t ofs=strcspn(beg,whitespace);
+					M(temp,setn,beg,ofs);
+					M(ret,push_back,temp);
+					beg+=ofs;
+				} while(*beg!=0);
+			} else {
+				beg=this->array_;
+				while((end=strstr(beg,str)) && --max > 0) {
+					M(temp,setn,beg,end-beg);
+					beg=end+l;
+					M(ret,push_back,temp);
+				}
+			}
+			if(*beg != 0) {
+				M(temp,set,beg);
+				M(ret,push_back,temp);
+			}
+			delete(temp);
+		}
+		/*
+			Remove null items at end
+		*/
+		while(M(ret,size)>0 && M(M(ret,back),size)==0)
+			M(ret,pop_back);
+	}
+  return ret ? ret : new(yaooc_string_vector);
 }
 
-static yaooc_string_vector_pointer yaooc_string_split_re(const_pointer p,const char* re_str,int flags,size_t max)
+yaooc_string_vector_pointer yaooc_string_split_re(const_pointer p,yaooc_regex_const_pointer re,size_t max)
 {
   yaooc_string_const_pointer this=p;
   yaooc_string_vector_pointer ret=new(yaooc_string_vector);
-  regex_t re;
+//  regex_t re;
   regmatch_t rm;
-  if(regcomp(&re,re_str,REG_EXTENDED|flags)==0) {
+//  if(regcomp(re->re_,re_str,REG_EXTENDED|flags)==0) {
+	if(re && re->re_) {
     yaooc_string_t* temp=new(yaooc_string);
     char* beg=this->array_;
-    while(regexec(&re,beg,1,&rm,0)==0) {
+    while(yaooc_regex_regexec(re->re_,beg,0,1,&rm,0)==0) {
       M(temp,setn,beg,rm.rm_so);
       beg+=rm.rm_eo;
       M(ret,push_back,temp);
@@ -685,7 +693,7 @@ static yaooc_string_vector_pointer yaooc_string_split_re(const_pointer p,const c
       M(temp,set,beg);
       M(ret,push_back,temp);
     }
-    regfree(&re);
+//    regfree(&re);
     delete(temp);
   }
   return ret;
@@ -745,7 +753,7 @@ yaooc_string_class_table_t yaooc_string_class_table =
   .findchr = (size_t (*) (pointer p,char,size_t)) yaooc_string_findchr,
   .rfindchr = (size_t (*) (pointer p,char,size_t)) yaooc_string_rfindchr,
   .split = (yaooc_string_vector_pointer (*) (const_pointer p,const char*,size_t)) yaooc_string_split,
-//  .split_re = (yaooc_string_vector_pointer (*) (const_pointer p,const char*,size_t)) yaooc_string_split_re,
+  .split_re = (yaooc_string_vector_pointer (*) (const_pointer p,yaooc_regex_const_pointer,size_t)) yaooc_string_split_re,
   .c_str = (const char* (*) (const_pointer p)) yaooc_pod_array_begin,
 };
 

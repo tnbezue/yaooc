@@ -184,9 +184,9 @@ void test_big()
 	yaooc_string_int_map_pointer mfls=new(yaooc_string_int_map);
 	clock_t start=clock();
 //  M(mfls,reserve,456976);
-  printf("%zu\n",M(mfls,capacity));
 	const char *i,*j,*k,*l;
-	for(i=str1+20;*i!=0;i++) {
+	// Took way to long to insert all the elements, reduced so a resonable time can be achieved
+	for(i=str1+17;*i!=0;i++) {
 		is[0]=*i;
 		for(j=str2;*j!=0;j++) {
 			is[1]=*j;
@@ -201,12 +201,12 @@ void test_big()
 		}
 	}
 
-	printf("%ld clock cycles to insert %zu items\n",clock()-start,M(mfls,size));
+	printf("%lg seconds to insert %zu items\n",((double)(clock()-start))/CLOCKS_PER_SEC,M(mfls,size));
 //	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
-	yaooc_string_int_map_const_iterator isi;
+/*	yaooc_string_int_map_const_iterator isi;
 	for(isi=M(mfls,begin);isi!=M(mfls,end);isi++) {
 		printf("%5s %6d\n",M(&isi->first,c_str),isi->second);
-	}
+	}*/
 	delete(mfls);
 	deletep(&str,yaooc_string);
 }

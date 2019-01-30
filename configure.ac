@@ -17,7 +17,7 @@ AC_CHECK_HEADER_STDBOOL
 AC_FUNC_MALLOC
 
 CFLAGS="$CFLAGS -fms-extensions -pthread -D_GNU_SOURCE -Wall"
-
+LIBS="$LIBS -lodbc"
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h inttypes.h stddef.h stdint.h stdlib.h string.h unistd.h])
 AC_CHECK_FUNCS([memchr memmove memset strchr ])
@@ -28,6 +28,8 @@ AC_MSG_RESULT([$enable_debug])
 if test "x$enable_debug" = "xyes"; then
 	CFLAGS="$CFLAGS -g -D__DEBUG__"
 fi
+
+AC_MSG_CHECKING(for sql support)
 
 AC_MSG_CHECKING(for garbage collection)
 AC_ARG_ENABLE(gc,[ --enable-gc   compile using garbage collection])
