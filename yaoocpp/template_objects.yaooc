@@ -210,4 +210,5 @@ class yaoocpp_union : yaoocpp_container_with_class_table
 };
 
 
+
 #endif

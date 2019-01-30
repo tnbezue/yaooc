@@ -23,13 +23,16 @@
 #include <yaooc/algorithm.h>
 #include <yaooc/fstream.h>
 #include <yaooc/sstream.h>
+#include <yaooc/utils.h>
 #include "parser.h"
 
 extern yaooc_string_t includes;
 extern yaooc_string_t cpp;
 extern yaooc_string_t defines;
+extern yaooc_string_t header_extra;
+extern yaooc_string_t source_extra;
 char current_file[256];
-
+char tempfile[256];
 
 /* Private variables implementation for yaoocpp_parser_exception */
 
@@ -133,21 +136,63 @@ void yaoocpp_parser_dtor(pointer p)
 
 /* Constructors implementation for yaoocpp_parser */
 
+void chomp(char* str)
+{
+	if(str) {
+		char* ptr=str+strlen(str);
+		for(;ptr >= str;ptr--)
+			if(*ptr != '\r' && *ptr != '\n')
+				break;
+	}
+}
 /* Private methods implementation for yaoocpp_parser */
 static void yaoocpp_parser_preprocess(pointer p)
 {
   yaoocpp_parser_pointer this=p;
   struct stat st;
   if(stat(this->file_,&st) == 0) {
+		yaooc_ifstream_t* input=new(yaooc_ifstream);
+		M(input,open,this->file_,"r");
+		strcpy(tempfile,"temp");
+		mkstemp_in_tmpdir(tempfile,256);
+		yaooc_ofstream_t* otemp = new(yaooc_ofstream);
+		M(otemp,open,tempfile,"w");
+		char line[1024];
+		yaooc_string_t* extra=NULL;
+		while(!M(input,eof)) {
+			if(M(input,gets,line,1024)) {
+				if(strncmp(line,"%h",2)==0) {
+					extra=&header_extra;
+					M(otemp,printf,"\n");
+					continue;
+				} else if(strncmp(line,"%c",2)==0) {
+					extra=&source_extra;
+					M(otemp,printf,"\n");
+					continue;
+				} else if(strncmp(line,"%%",2)==0 && extra != NULL) {
+					extra=NULL;
+					M(otemp,printf,"\n");
+					continue;
+				}
+				if(extra) {
+					M(extra,append,line);
+				} else {
+					M(otemp,printf,line);
+				}
+			}
+		}
+		M(otemp,close);
+		delete(otemp);
+		delete(input);
     yaooc_string_t cpp_cmd;//=YAOOC_STRING_STATIC_DEFAULT_CTOR;
 		newp(&cpp_cmd,yaooc_string);
     M(&cpp_cmd,set,M(&cpp,c_str));
     M(&cpp_cmd,append,M(&defines,c_str));
     M(&cpp_cmd,append,M(&includes,c_str));
     M(&cpp_cmd,append," ");
-    M(&cpp_cmd,append,this->file_);
+    M(&cpp_cmd,append,tempfile);
     M(&cpp_cmd,append," 2>&1");
-    FILE* pipe=popen(M(&cpp_cmd,c_str),"r");
+		FILE* pipe=popen(M(&cpp_cmd,c_str),"r");
     if(pipe) {
       size_t pos=0;
       while(!feof(pipe) && pos < OUTPUT_MAX) {
@@ -164,6 +209,7 @@ static void yaoocpp_parser_preprocess(pointer p)
       THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
 							"Error opening file %s.\n",this->file_));
     }
+		unlink(tempfile);
   } else {
     THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
             "File %s not found.\n",this->file_));
@@ -769,7 +815,7 @@ yaooc_terminal_t yaoocpp_parser_custom_whitespace(pointer p)
 //      M(cout,printf,"%d %s\n",ln,current_file);
       this->current_pos_+=2;
       this->line_no_=ln-1;
-      this->is_top_level_file_=strcmp(this->file_,current_file)==0;
+      this->is_top_level_file_=strcmp(tempfile,current_file)==0;
       for(;*this->current_pos_!=0;this->current_pos_++) {
         if(*this->current_pos_=='\n')
           break;
@@ -789,20 +835,6 @@ void yaoocpp_parser_parse_file(pointer p,const char* file)
     delete(this->classes_);
 	this->classes_=new(yaoocpp_container_pointer_vector);
 	yaoocpp_parser_preprocess(this);
-/*	char *beg=this->buffer_;
-	char *ptr=strstr(beg,"\n%h");
-	this->header_text_=NULL;
-	if(ptr!=NULL) {
-		this->header_text_=beg;
-		*ptr=0;
-		beg=ptr+3;
-	}
-	this->source_text_= NULL;
-	if((ptr=strstr(beg,"\n%c")) != NULL) {
-		this->source_text_=beg;
-		*ptr=0;
-		beg=ptr+3;
-	}*/
   M(this,set_parse_string,this->buffer_);
   M(this,set_whitespace_types,CRLF|CUSTOM_WHITESPACE);
   M(this,whitespace);

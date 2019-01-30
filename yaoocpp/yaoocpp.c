@@ -30,6 +30,8 @@ yaooc_string_t includes = YAOOC_STRING_STATIC_DEFAULT_CTOR;
 yaooc_string_t cpp = YAOOC_STRING_STATIC_DEFAULT_CTOR;
 yaooc_string_t defines = YAOOC_STRING_STATIC_DEFAULT_CTOR;
 yaooc_string_t output_file = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+yaooc_string_t header_extra = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+yaooc_string_t source_extra = YAOOC_STRING_STATIC_DEFAULT_CTOR;
 
 #define YAOOCPP_MAJOR 1
 #define YAOOCPP_MINOR 3
@@ -154,6 +156,8 @@ int main(int argc,char* argv[])
           M(&h_strm,printf,"#include <yaooc/object.h>\n"
                            "#include <yaooc/stream.h>\n"
                            "\n");
+					if(M(&header_extra,size)>0)
+						M(&h_strm,printf,"\n%s\n",M(&header_extra,c_str));
 
           char* source_fname=PB_SAVE(new_array(char,l));
           strcpy(source_fname,root);
@@ -161,6 +165,9 @@ int main(int argc,char* argv[])
           M(&c_strm,open,source_fname,"w");
           M(&c_strm,printf,"/* Begin YAOOCPP output */\n\n");
           M(&c_strm,printf,"#include \"%s.h\"\n\n",root);
+					if(M(&source_extra,size)>0)
+						M(&c_strm,printf,"\n%s\n",M(&source_extra,c_str));
+
           yaoocpp_container_pointer_vector_const_iterator k;
 
   //				M(cout,printf,"%zu classes defined\n",M(classes,size));
