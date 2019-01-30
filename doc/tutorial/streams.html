@@ -22,7 +22,7 @@
 <div style="overflow-y: scroll; height:900px">
 <h2>Input/Output Streams</h2>
 <p>
-One of the most notable C++ features is input and output stream.  For example:
+One of the most notable C++ features is input and output streams.  For example:
 </p>
 <pre><code>
   string b="Testing";
@@ -54,7 +54,7 @@ The arguments for the from_stream method is a pointer to object and pointer to s
     my_string_pointer this=p;
     yaooc_istream_pointer strm=s;
     char temp[256];
-    M(strm,scanf,"%s",temp);
+    M(strm,scanf,"%255s",temp);
     my_string_dtor(this);
     this->str=strdup(temp);
   }
@@ -76,23 +76,18 @@ Now my_string can be used in a stream as follows:
 </p>
 <pre><code>
   my_string_pointer sp1=new(my_string);
-  M(sp1,set,"Testing");
-  my_string_pointer msg=new(my_string);
-  M(msg,set,"The value of sp1 is ");
-  M(cout,stream,msg,sp1,endl,NULL);
-  M(msg,set,"Enter new value for sp1");
-  M(cout,stream,msg,endl,NULL);
+  M(cout,printf,"Enter value for sp1\n")
   M(cin,stream,sp1,NULL);
-  M(msg,set,"The new value for sp1 is");
-  M(cout,stream,msg,sp1,NULL);
+  M(cout,printf,"You entered: ");
+  M(cout,stream,sp1,endl,NULL);
 </code></pre>
 <p>
 Notice that for the stream method, NULL is used to indicate the end of argument list. Numerous times I've forgotten the NULL at the end which causes the program to crash.
 The STREAM macro provided by YAOOC can be used.  It adds NULL to the end of the argument list. 
 </p>
 <pre><code>
-  STREAM(cout,msg,sp1,endl);
   STREAM(cin,sp1);
+  STREAM(cout,sp1,endl);
 </code></pre>
 
 <p>

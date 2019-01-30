@@ -58,8 +58,7 @@ of yaooc_object.  The following shows how to have my_string class inherit from y
 </pre>
 
 <p>
-A struct should not have a class as a parent and a class should not have a struct as a parent.  However, in the yaooc_class_instance
-macro, a struct type name can be specified as a member (it must not be the first entry).
+A struct should not have a class as a parent and a class should not have a struct as a parent.
 </p>
 <p>
 yaooc_object has no instance members.  It has three table entries -- two variables and one method. They are:
@@ -70,7 +69,7 @@ yaooc_object has no instance members.  It has three table entries -- two variabl
   void (*swap)(pointer,pointer); /* Swaps contents of instances */
 </code></pre>
 <p>
-The parent class table is the class table of the parent and should always be specified.  The type_name_ variable should be set to the type name -- including the "_t".
+The parent class table is the class table of the parent.  The type_name_ variable should be set to the type name -- including the "_t".
 The swap method is used to swap the values of the two object.  It should be overridden as needed -- the yaooc_object version does nothing. 
 </p>
 <p>
@@ -94,7 +93,6 @@ The class table and DEFINE_TYPE_INFO for my_string will be:
   {
     .parent_class_table_=(const class_table_t*) &yaooc_object_class_table,
     .type_name_ = "my_string_t",
-    .is_descendant=yaooc_object_is_descendant,
     .swap = my_string_swap,
     .get = my_string_get,
     .set = my_string_set
@@ -108,7 +106,7 @@ When a class is inherited from another, the behavior of the type info methods is
 <h3>Default Constructor</h3>
 <p>
 If the default constructor for a derived class is defined, new will use it to initialize the object.  If the default constructor is not
-defined (NULL), then the parent default constructor is used.  If the parent default constructor is not defined, it's parent is used. This is continued until
+defined (NULL), then the parent default constructor is used.  If the parent default constructor is not defined, the parents' parent is used. This is continued until
 a non NULL default constructor is found or the root of the inheritance tree is reached.  If a non NULL default constructor is not found,
 no action is taken. 
 </p>

@@ -165,7 +165,7 @@ void my_string_ctor_chr_size(pointer p,va_list args)
 
 int main(int argc,char* argv[])
 {
-  /* Note how structor is initialized for a static object.  Another method is defined in later chapters */
+  /* Note how struct is initialized for a static object.  Another method is defined in later chapters */
   my_string_t ms1={ .class_table_=&my_string_class_table, .str = NULL };
 
   M(&ms1,set,"This is a test");

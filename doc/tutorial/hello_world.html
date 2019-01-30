@@ -38,7 +38,7 @@ Let's get started with the classic hello world program.
   }
 </code></pre>
 <p>
-Compile using gcc:
+Presently, gcc is the only supported compiler.  To compile:
 </p>
 <pre><code>
   gcc `yaooc-config --cflags` hello_world.c `yaooc-config --libs` -o hello_world
@@ -46,7 +46,7 @@ Compile using gcc:
 <p>
 The "new_array" method allocates space for an array of elements of the specified type -- in this case, 128 characters.  The allocated
 space can be used as it normally would.  The "delete" method frees the space allocated by "new_array".  "new_array" and "delete"
-do a lot more than what is demonstrated here.  The complete workings will be revealed in later chapters.
+do a lot more than what is demonstrated here.  The complete workings will be revealed in later lessons.
 </p>
 <h3>Naming Convention</h3>
 <p>
@@ -129,7 +129,7 @@ Note that in the hello world program, "char" was used rather than "char_t". The 
 
 <p>
 YAOOC makes extensive use of pointer and const_pointer as types for method parameters.
-This is done to avoid the many compiler warnings that would be generated. Note that both do not have "_t". 
+This is done to avoid the many compiler warnings that would be generated. Note that both do not have "_t".
 </p>
 
 </ul>

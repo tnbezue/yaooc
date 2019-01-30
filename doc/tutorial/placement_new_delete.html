@@ -23,8 +23,8 @@
 <h2>Placement New and Delete</h2>
 
 <p>
-In the previous chapter, static objects were introduced.  This chapter will introduce placement new to initialize
-static objects and a placement delete to destroy these objects. 
+In the previous lesson, static objects were introduced.  This lesson will introduce placement new to initialize
+static objects and a placement delete to destroy these objects.
 Note that C++ does not provide a placement delete but can be simulated by directly calling the destructor (ptr->~T()).
 </p>
 <div class="divTable">
@@ -53,7 +53,7 @@ Use newp_copy_static (below) to initialize from static object
 </div>
 <div class="divTableRow">
 <div class="divTableCell">Initialize new object from existing static object</div>
-<div class="divTableCell">new (ptr) T(ref);</div>
+<div class="divTableCell">N/A</div>
 <div class="divTableCell">newp_copy_static(dst_ptr,T,src_ptr);</div>
 </div>
 <div class="divTableRow">
@@ -77,12 +77,12 @@ Use newp_copy_static (below) to initialize from static object
 <div class="divTableCell">newp_array_ctor(ptr,T,n,ctor,args);</div>
 </div>
 <div class="divTableRow">
-<div class="divTableCell">Destory single object of type T</div>
+<div class="divTableCell">Destroy single object of type T</div>
 <div class="divTableCell">N/A</div>
 <div class="divTableCell">deletep(ptr,T);</div>
 </div>
 <div class="divTableRow">
-<div class="divTableCell">Destory array N objects of type T</div>
+<div class="divTableCell">Destroy array of N objects of type T</div>
 <div class="divTableCell">N/A</div>
 <div class="divTableCell">deletep_array(ptr,T,N);</div>
 </div>
@@ -102,15 +102,9 @@ Placement new can be used to initialize objects declared on the stack and delete
   deletep(&mys1,my_string);
   deletep(&mys2,my_string);
 </code></pre>
-<p>
-Variables declared on the stack can be manually initialized (rather than using newp) by assigning values to members of the class -- including the class table.
-</p>
-<pre><code>
-  my_string_t mys1 = { .class_table_=&my_string_class_table, .str = NULL };
-</code></pre>
 <h3>Static object in streams</h3>
 <p>
-Streams use dynamically allocated objects.  As mentioned in the memory layout chapter, the type info for dynamically allocated objects is readily 
+Streams use dynamically allocated objects.  As mentioned in the memory layout lesson, the type info for dynamically allocated objects is readily
 available.  This information is used by the stream class.  For POD and static objects, the type info has to be added to the stream.
 The macros below facilitate streams handing reading POD and static objects properly.
 </p>

@@ -2,7 +2,7 @@
 #include <string.h>
 #include <yaooc/new.h>
 
-/* Normall, From here <--- */
+/* Normally, From here <--- */
 yaooc_struct(my_string) {
   char* str;
 };

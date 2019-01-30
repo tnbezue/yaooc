@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Class Table and Instance</title>
+<title>Class Methods</title>
 <meta name="generator" content="Bluefish 2.2.10" >
 <meta name="copyright" content="">
 <meta name="keywords" content="">
@@ -20,22 +20,24 @@
 <script>menu();</script>
 <div id="content" class="content">
 <div style="overflow-y: scroll; height:900px">
-<h2>Class Table and Instance</h2>
+<h2>Class Methods</h2>
 <p>
-In this chapter the my_string class will be improved by adding two class methods. Addition macros will also be introduced for creating custom classes.
+In this lesson the my_string class will be improved by adding two class methods. Rather than using yaooc_struct to define a class,
+three additional macros will also be introduced for creating custom classes.
 </p>
 <p>
 In YAOOC, classes are divided into two parts -- table and instance. The class table has methods (and variables) that are shared
 by every instance of the class.  The class instance has variables (and methods) whose values are unique to a particular instance.
-YAOOC provides macros for creating the table and instance separately -- then combining into a single class. 
+YAOOC provides macros for creating the table and instance separately -- then combining into a single class.
 </p>
 <p>
-The class table is defined by using the yaooc_class_table macro.  It is normally used to define methods for the class.  However, it can
+The class table is defined by using the yaooc_class_table macro.  It is normally used to define methods for the class.  It can also
 be used to define variables that are common to every instance of the class.
 </p>
-<p> 
+<p>
 For the my_string class, a get and set method will be defined.  The get method returns a const pointer to the string and the set method sets the string.
-Note that the first argument of a method is a pointer (or const_pointer) to the object. The class table is created as follows:
+Note that the first argument of a method is a pointer (or, if the method does not change any instance member values, a const_pointer) to the object.
+The class table is created as follows:
 </p>
 <pre><code>
   yaooc_class_table(my_string) {
@@ -45,7 +47,7 @@ Note that the first argument of a method is a pointer (or const_pointer) to the 
 </code></pre>
 <p>
 The instance is created using the yaooc_class_instance macro.  It is normally used to define variables that are unique to each instance.
-However, it can be used to define methods that are unique to each instance.
+It can also be used to define methods that are unique to each instance.
 </p>
 <p>
 For my_string class, the instance will be the same as defined with the yaooc_struct macro.
@@ -62,7 +64,8 @@ To combine the table and instance parts, use the yaooc_class macro.
   yaooc_class(my_string);
 </code></pre>
 <p>
-The difference between using yaooc_struct and the above three macros is that yaooc_struct does not create a class table.  
+In C++, structs and classes are basically the same. In YAOOC, yaooc_struct and yaooc_class are different.  yaooc_struct does not create a class table -- thus methods
+are not supported.
 </p>
 <p>
 For the my_string class, the following code is created by the above three macros:
@@ -87,7 +90,7 @@ For the my_string class, the following code is created by the above three macros
 </code></pre>
 <p>
 A pointer to the class table is the first member of the combined class.  When new creates an instance of the class, it will set this variable to the
-class_table_ value in the type info structure -- therefore, constructors have access to the class methods.  NEVER use memset(this,0,sizeof(T)) to initialize an instance.
+class_table_ value in the type info structure -- therefore, constructors have access to the class methods.  <font color="red">NEVER</font> use memset(this,0,sizeof(T)) to initialize an object.
 Doing so will destroy the value of class_table_;
 </p>
 <p>
@@ -98,7 +101,7 @@ The method names should be the class name appended with underscore and method na
   {
     return ((my_string_const_pointer)p)->str;
   }
-  
+
   void my_string_set(pointer p,const char* s)
   {
     my_string_pointer this=p;
@@ -110,7 +113,7 @@ The method names should be the class name appended with underscore and method na
 Note that the first argument to methods is a pointer (or const_pointer) the object.
 </p>
 <p>
-The class table is then defined as:
+The class table is then initialized as:
 </p>
 <pre><code>
   my_string_class_table_t my_string_class_table =
@@ -129,19 +132,20 @@ And DEFINE_TYPE_INFO should now indicate that a class table exists.
 To call a class table method, use ptr->class_table_->method(ptr,args). For example,
 </p>
 <pre><code>
-  ptr->class_table_->set(ptr,"This is a test");
-  printf("%s\n",ptr->class_table_->get(ptr));
+  msp->class_table_->set(msp,"This is a test");
+  printf("%s\n",msp->class_table_->get(msp));
 </code></pre>
 Calling methods in this fashion becomes cumbersome after a few uses.
 YAOOC provides the M macro (M for method) to make calling methods easier. The syntax is M(ptr,method,args). The args portion is not used if a method does not have any arguments.
 </p>
 <pre><code>
-  M(ptr,set,"This is a test");
-  printf("%s\n",M(ptr,get));
+  M(msp,set,"This is a test");
+  printf("%s\n",M(msp,get));
 </code></pre>
 <p>
 Another macro that will have an occasional use is yaooc_class_forward.  As the name implies, yaooc_class_forward provides a forward declaration of a class.
-It defines the same types that the yaooc_class macro does.  The user must use yaooc_struct or the above three macros to completely define the class before it can be used.   
+It defines the same types that the yaooc_class macro does.  The user must use yaooc_struct or the combination of yaooc_class_table, yaooc_class_instance,
+and yaooc_class to completely define the class before it can be used.
 </p>
 <pre><code>
   yaooc_class_forward(class_name);

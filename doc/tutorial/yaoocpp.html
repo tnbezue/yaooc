@@ -27,7 +27,7 @@ Now, let's get back to developing the my_string class.
 <p>
 With multiple levels of inheritance and increasing number of methods, creating/maintaining a YAOOC class will become
 increasingly tedious.  The YAOOC PreProcessor (YAOOCPP) alleviates this tedious work.  Much of the manual work that has been presented
-in previous chapters is done by YAOOCPP.
+in previous lessons is done by YAOOCPP.
 </p>
 <p>
 Input to the YAOOC PreProcessor is a YAOOC class definition.
@@ -35,14 +35,14 @@ The syntax of the YAOOC class definition is shown below.
 </p>
 <pre><code>
   #include &lt;parent.yaooc&gt;
-  [ class | struct ] name : parent 
+  [ class | struct | union ] name : parent
   {
       &lt;Type Info&gt;
       &lt;Constructors&gt;
     table:
       &lt;Table methods and variables&gt;
     instance:
-      &lt;Instance methods and variables&gt;
+      &lt;Instance methods, variables, unions, and structs&gt;
     protected:
       &lt;Protected methods and variables&gt;
     private:
@@ -59,14 +59,14 @@ The include directive is used to include the class definition of the parent clas
 </p>
 <h3>Class Definition and inheritance</h3>
 <p>
-name is the type name of the struct or class (the "_t" should not be included).  parent is the parent class type name.
-Struts do not require a parent.  A class must have a parent.  If a parent is not specified for a class, yaooc_object is assumed.
+name is the type name of the class, struct, or union (the "_t" should not be included).  parent is the parent type name.
+Struts do not require a parent.  A class or union must have a parent.  If a parent is not specified for a class or union, yaooc_object is assumed.
 </p>
 <h3>Type Info</h3>
 <p>
 There are seven possible entries in the type info section which correspond to entries in the type info table.
 Any or all of the entries may be omitted.
-Those entries are shown below. 
+Those entries are shown below.
 </p>
 <pre>
 <code>
@@ -103,10 +103,10 @@ A pointer to the instance to initialize is automatically added as first argument
 </li>
 <li>
 Implementation_method is the name of an existing constructor.  If specified, a template for the method is not generated.  A "#define"
-statement is generated so that implementation_method is used as constructor. 
+statement is generated so that implementation_method is used as constructor.
 </li>
-</ul> 
-</p>   
+</ul>
+</p>
 <p>
 Items for type info and constructors can be intermixed.  That is, definition order could be default constructor,
 addition constructors, then remaining type info entries.  Or any other order.  However, the type info and constructor
@@ -135,7 +135,7 @@ Table methods from parent are inherited.  Only new or overridden methods need to
 If a method is overridden, it should have the same signature (return type, name, and arguments) as the parent method.
 </li>
 <li>
-It is implied that the first argument of the method is a pointer to object.  Thus it should not be specified.  
+It is implied that the first argument of the method is a pointer to object.  Thus it should not be specified.
 </li>
 <li>
 Arguments must specify type and name. Variadic argument (...) can be specified as last argument.
@@ -145,7 +145,7 @@ Specifying const will cause const_pointer to be used as first argument rather th
 </li>
 <li>
 Implementation_method is the name of an existing method.  If specified, a template for the method is not generated and
-the implementation method will be specified in the class table. 
+the implementation method will be specified in the class table.
 </li>
 </ul>
 
@@ -155,7 +155,7 @@ Items in instance section follow the same rules as the table section -- with a f
 </p>
 <ul>
 <li>
-Only new items can be added to instance -- methods can not be overridden. 
+Only new items can be added to instance -- methods can not be overridden.
 </li>
 <li>
 Values and implementation methods are ignored for instance members. These must be specified during runtime -- normally in the constructor.
@@ -163,15 +163,18 @@ Values and implementation methods are ignored for instance members. These must b
 <li>
 Can have an entry that indicates type only -- normally a struct type (i.e., custom_t).
 </li>
+<li>
+Unions and structs (standard C declarations, not YAOOC unions and structs) can be declared.
+</li>
 </ul>
 <h3>Protected</h3>
 <p>
-Protected members variables and methods that are not part of the class but are meant to be helpers to class and derived classes. The syntax
-is the same as table entries. 
+Protected does not have the same meaning as in C++ -- not even close.  Protected members are variables and methods that are not part of the class
+but are meant to be helpers to class and derived classes. The syntax is the same as table entries.
 </p>
 <h3>Private</h3>
 <p>
-Private variables and methods that are meant to only be used by the class being created.
+Private has a similar meaning as in C++.  Private variables and methods that are meant to only be used by the class being created.
 </p>
 <h3>Executing YAOOCPP</h3>
 The syntax for executing yaoocpp is similar to executing the C preprocessor.  In fact, yaoocpp uses the C preprocessor so many preprocessor directives
@@ -230,7 +233,7 @@ If a parent class (other than yaooc_object) is defined, the default constructor 
 For non inherited instance members, initialization will be attempted as follows:
 <ul>
 <li>
-If member type ends with "_t", it is assumed to be a static YAOOC object and is initialized with placement new (newp) 
+If member type ends with "_t", it is assumed to be a static YAOOC object and is initialized with placement new (newp)
 </li>
 <li>
 If member is a pointer (type ends with "*"), it is initialized to NULL.
@@ -252,10 +255,10 @@ If variable is a static YAOOC object (type name ends with "_t"), then placement 
 If variable instance member is a constant pointer (regardless of type), no action is taken.
 </li>
 <li>
-If variable instance member is a pointer to a YAOOC object (type name ends with "_t\s+*"), then delete is used.
+If variable instance member is a pointer to a YAOOC object (type name ends with "_t *"), then delete is used.
 </li>
 <li>
-If variable instance member is a pointer and does not point to a YAOOC object (type name does not end with "_t\s+*"), then free is used.
+If variable instance member is a pointer and does not point to a YAOOC object (type name does not end with "_t *"), then free is used.
 </li>
 <li>
 Otherwise, no action is taken.
@@ -303,10 +306,11 @@ Since YAOOCPP does the tedious work, a more robust string class can be created. 
       operator&lt;();                                                   /* less than compare */
       operator&lt;&lt;();                                                  /* to stream */
       operator&gt;&gt;();                                                  /* from stream */
-    
-  
+
+
     table:
-      const size_t my_string_n_pos = -1;                             /* variable in class table. */
+      const char* type_name_="my_string_t";                          /* Type name -- override value from object */
+      const size_t n_pos = -1;                                       /* variable in class table. */
       void swap(pointer o);                                          /* Override yaooc_object swap method */
       const char* get() const;                                       /* returns string value */
       const char* c_str() const = my_string_get;                     /* same as get */
@@ -328,11 +332,11 @@ Since YAOOCPP does the tedious work, a more robust string class can be created. 
       char* end() const;                                             /* Returns end of string */
     instance:
       char * str;                                                    /* The string */
-    
+
     private:
       size_t allocate_space(size_t n);                               /* Allocates space to hold string */
       char *strrstr(const char *pat) const;                          /* Find last pat in str */
-      
+
     protected:
       void insert_space(size_t pos,size_t n);                        /* Insert space in string */
       void erase_space(size_t pos,size_t n);                         /* erase space in string */

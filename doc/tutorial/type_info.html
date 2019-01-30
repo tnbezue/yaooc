@@ -20,8 +20,9 @@
 <script>menu();</script>
 <div id="content" class="content">
 <div style="overflow-y: scroll; height:900px">
+<h2>Type Information</h2>
 <p>
-In order to properly manage objects, type information has to be maintained for each data type. YAOOC requires 
+In order to properly manage (create, destroy, copy, etc) objects, type information has to be maintained for each data type. YAOOC requires
 a type information structure for each type -- even POD types like char or int.  The type info structure is shown below.
 </p>
 <pre><code>
@@ -34,17 +35,17 @@ a type information structure for each type -- even POD types like char or int.  
     void (*assignment)(pointer,const_pointer);  /* Assignment.  Operator= in C++ */
     bool (*less_than_compare)(const_pointer,const_pointer);  /* less than comparison of two objects. */
     void (*to_stream)(const_pointer,pointer) to_stream_; /* method to write object to stream */
-    void (*from_stream)(pointer,pointer) from_stream_; /* method to read object from stream */ 
+    void (*from_stream)(pointer,pointer) from_stream_; /* method to read object from stream */
     const class_table_t* class_table_; /* Class table */
     const type_info_t* parent_;  /* Pointer to parent type info */
   };
 </code></pre>
 <p>
-More on these entries in the chapter on custom classes.  For the hello world program, only the size is needed.  Therefore, the type
+More on these entries in the lesson on custom classes.  For the hello world program, only the size is needed.  Therefore, the type
 info structure for the char type is as follows.
 </p>
 <pre><code>
-  struct type_info __char_ti = {
+  const type_info_t __char_ti = {
     sizeof(char_t), /* size of char type = 1 */
     NULL,  /* No default constructor */
     NULL,  /* No destructor */
@@ -63,7 +64,7 @@ The size must be greater than zero.  The other entries can be NULL.
 </p>
 <p>
 For the hello world program, when new_array is called, it allocates space for 128 characters.  Since there is no default constructor, no initialization
-is performed.  Likewise, since a destructor is not defined, the memory is only freed. 
+is performed.  Likewise, since a destructor is not defined, the memory is only freed.
 </p>
 <h3>Naming Convention</h3>
 <p>

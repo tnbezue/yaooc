@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <yaooc/new.h>
+#include <yaooc/stream.h>
 
 /* Normally, From here <--- */
 yaooc_class_table(my_string) {
@@ -88,38 +89,17 @@ DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,N,N,Y,NULL);
 
 int main(int argc,char* argv[])
 {
-  /* Create a new my_string object */
   my_string_pointer sp1=new(my_string);
+	sp1->class_table_->set(sp1,"sp1 test string");  // Calling set using class table pointer
 
-  /* Assign value to sp1 */
-  M(sp1,set,"This is sp1 test string");
+  my_string_pointer sp2=new(my_string);
+  M(sp2,set,"sp2 test string");   // Calling set method using M macro
 
-  /* Using copy ctor to create another simple string object */
-  my_string_pointer sp2=new_copy(sp1);
-  M(sp2,set,"This is sp2 test string");
-
-  /* Create a new string object and assign sp2 value to it.  Same as using copy ctor */
-  /* Note that sp3=sp2 can not be used.  Assignment method must be used */
   my_string_pointer sp3=new(my_string);
-  assign(sp3,sp2);
-  M(sp3,set,"This is sp3 string");
+  M(sp3,set,"sp3 string");
 
-  printf("%s\n",M(sp1,get));
-  printf("%s\n",M(sp2,get));
-  printf("%s\n",M(sp3,get));
+	printf("SP1: %s\nSP2: %s\nSP3: %s\n",M(sp1,get),sp2->class_table_->get(sp2),M(sp3,get));
 
-  /*
-    Comparing objects.  Can not use ==, !=, <, <=, > , or >=.
-    Use op_eq, op_ne, op_lt, op_le, op_gt, and op_ge
-  */
-  printf("sp1 %s sp2\n",op_eq(sp1,sp2) ? "is equal" : "is not equal");
-  printf("sp1 %s sp2\n",op_ne(sp1,sp2) ? "is not equal" : "is equal");
-  printf("sp1 %s sp2\n",op_lt(sp1,sp2) ? "is less than" : "is not less than");
-  printf("sp1 %s sp2\n",op_le(sp1,sp2) ? "is less than or equal to" : "is not less than nor equal to");
-  printf("sp1 %s sp2\n",op_gt(sp1,sp2) ? "is greater than" : "is not greater than");
-  printf("sp1 %s sp2\n",op_ge(sp1,sp2) ? "is greater than or equal to" : "is not greater than nor equal to");
-
-  /* Delete allocated objects */
   delete(sp1);
   delete(sp2);
   delete(sp3);

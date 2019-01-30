@@ -93,7 +93,7 @@ The name of the assignment method should be the class name appended with "_assig
   }
 </code></pre>
 <p>
-In YAOOC, assignment is done using the assign method.  Assigning using the equal operator does not work as it does in C++. 
+In YAOOC, assignment is done using the assign method.  Assigning using the equal operator does not work as it does in C++.
 </p>
 <pre><code>
   my_string_pointer p1=new(my_string);
@@ -151,7 +151,7 @@ Each method takes two arguments -- pointers to the objects to compare.
 <div class="divTableCell">op_eq(p1,p2)</div>
 </div>
 <div class="divTableRow">
-<div class="divTableCell">Noy equal to</div>
+<div class="divTableCell">Not equal to</div>
 <div class="divTableCell">!=</div>
 <div class="divTableCell">op_ne(p1,p2)</div>
 </div>
@@ -179,7 +179,7 @@ Each method takes two arguments -- pointers to the objects to compare.
 </div>
 
 <h3>Type Info Structure</h3>
-The class table, parent, to/from stream type info entries will be covered in later chapters.  The type info structure for my_string sting is now:
+The to/from stream, class table, and parent type info entries will be covered in later lessons.  The type info structure for my_string sting is now:
 <pre><code>
   const type_info_t __my_string_ti =
   {
@@ -213,48 +213,8 @@ The DEFINE_TYPE_INFO for my_string is:
   DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,N,N,N,NULL)
 </code></pre>
 <p>
-Now let's give the my_string class a try.  Adding the following main program will demonstrate it. 
+See the example for this lesson for a demonstration of the class usage.
 </p>
-<pre><code>
-  int main(int argc,char* argv[])
-  {
-    /* Create a new my_string using default ctor */
-    my_string_pointer sp1=new(my_string);
-
-    /* Assign value to sp1 */
-    sp1->str=strdup("This is a sp1 test string");
-  
-    /* Using copy ctor to create another simple string */
-    my_string_pointer sp2=new_copy(sp1);
-    sp2->str[12]='2';
-  
-    /* Create a new string and assign sp2 value to it.  Same as using copy ctor */
-    /* Note that sp3=sp2 should not be used.  Assignment method should be used */
-    my_string_pointer sp3=new(my_string);
-    assign(sp3,sp2);
-    sp3->str[12]='3';
-  
-    printf("%s\n",sp1->str);
-    printf("%s\n",sp2->str);
-    printf("%s\n",sp3->str);
-
-    /*
-      Comparing objects.  Can not use ==, !=, <, <=, > , or >=.
-      Use op_eq, op_ne, op_lt, op_le, op_gt, and op_ge
-    */
-    printf("sp1 %s sp2\n",op_eq(sp1,sp2) ? "is equal" : "is not equal");
-    printf("sp1 %s sp2\n",op_ne(sp1,sp2) ? "is not equal" : "is equal");
-    printf("sp1 %s sp2\n",op_lt(sp1,sp2) ? "is less than" : "is not less than");
-    printf("sp1 %s sp2\n",op_le(sp1,sp2) ? "is less than or equal to" : "is not less than nor equal to");
-    printf("sp1 %s sp2\n",op_gt(sp1,sp2) ? "is greater than" : "is not greater than");
-    printf("sp1 %s sp2\n",op_ge(sp1,sp2) ? "is greater than or equal to" : "is not greater than nor equal to");
-
-    /* Delete allocated objects */
-    delete(sp1);
-    delete(sp2);
-    delete(sp3);
-  }
-</code></pre>
 
 </div>
 </div>

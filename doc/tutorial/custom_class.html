@@ -22,7 +22,7 @@
 <div style="overflow-y: scroll; height:900px">
 <h2>Custom Class</h2>
 <p>
-Over the next few chapters a custom class will be created.  The class will be a simple string class.
+Over the next few lessons a custom class will be created.  The class will be a simple string class.
 This is meant to show the features of YAOOC rather than good programming practice.
 </p>
 <p>
@@ -43,19 +43,47 @@ While structures can be defined using the above, it's better to use the macros p
 </code></pre>
 
 <p>
-The yaooc_struct macro creates the same structure.  However, it creates code 
+The yaooc_struct macro creates the same structure.  However, it creates code
 that defines supporting types.  For my_string class, the following code is created:
 </p>
 <pre><code>
   typedef struct my_string_s my_string_t;
-  typedef my_string_t* my_string_pointer;
-  typedef const my_string_t* my_string_const_pointer;
-  extern type_info_t __my_string_ti;
+  typedef my_string_t const * my_string_pointer;
+  typedef const my_string_t const * my_string_const_pointer;
+  extern const type_info_t __my_string_ti;
   extern const type_info_t* const my_string_ti;
   struct my_string_s {
     char* str;
   };
 </code></pre>
+<h3>Important Requirement</h3>
+<p>
+Before continuing with the my_string class, one important requirement for custom classes -- class instances must be movable.  For example:
+</p>
+<pre><code>
+  yaooc_struct(circular_buffer) {
+    char* beg;
+    char* end;
+    char buffer[32];
+  };
+</code></pre>
+<p>
+In the above example, if beg and end are pointers to locations within buffer, then the pointers would be invalidated if the object is
+moved to a different memory location -- thus it is an immovable object.
+</p>
+<p>
+If the class was defined as:
+</p>
+<pre><code>
+  yaooc_struct(circular_buffer) {
+    char* beg;
+    char* end;
+    char* buffer;
+  };
+</code></pre>
+<p>
+If beg and end are pointers to memory within memory pointed to by buffer, then moving the object will not invalidate the pointers -- thus it is a movable object.
+</p>
 </div>
 </div>
 </div>

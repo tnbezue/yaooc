@@ -67,7 +67,7 @@ All exceptions should be a descendant of yaooc_exception.  The class definition 
   class yaooc_exception : yaooc_object
   {
       yaooc_exception();
-      yaooc_exception_ctor_v(const char* fmt,...)
+      yaooc_exception_ctor_v(const char* fmt,...);
       ~yaooc_exception();
       yaooc_exception(yaooc_exception);
       operator=();
@@ -81,7 +81,7 @@ All exceptions should be a descendant of yaooc_exception.  The class definition 
 The constructor yaooc_exception_ctor_v creates an exception using printf syntax.  For example,
 </p>
 <pre><code>
-   THROW(new_ctor(yaooc_exception,yaooc_exception_ctor_v,"Error in file %s at line %d",file,line));
+   THROW(new_ctor(yaooc_exception,yaooc_exception_ctor_v,"Error in file %s at line %d",__FILE__,__LINE__));
 </code></pre>
 <h3>TRY/CATCH blocks have a pointer bag</h3>
 <p>

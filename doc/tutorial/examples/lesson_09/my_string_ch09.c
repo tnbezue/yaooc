@@ -152,10 +152,10 @@ void my_string_ctor_chr_size(pointer p,va_list args)
 int main(int argc,char* argv[])
 {
   /* Create a new my_string object using my_string_ctor_ccs_size ctor */
-  my_string_pointer sp1=new_ctor(my_string,my_string_ctor_ccs_size,"This is sp2 test string. This part will not be included.",24);
+  my_string_pointer sp1=new_ctor(my_string,my_string_ctor_ccs_size,"This is sp1 test string. This part will not be included.",24);
 
   /* Create a new my_string object using my_string_ctor_ccs ctor */
-  my_string_pointer sp2=new_ctor(my_string,my_string_ctor_ccs,"This is sp1 test string.");
+  my_string_pointer sp2=new_ctor(my_string,my_string_ctor_ccs,"This is sp2 test string.");
 
   /* Create a new my_string object using my_string_ctor_chr_size ctor */
   my_string_pointer sp3=new_ctor(my_string,my_string_ctor_chr_size,'Y',24);

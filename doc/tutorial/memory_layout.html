@@ -29,7 +29,7 @@ objects allocated.  This memory layout is shown below.
 <div class="divTable">
 <div class="divTableBody">
 <div class="divTableRow">
-<div class="divTableCell">Pointer to type info structure (type_info_t*)</div>
+<div class="divTableCell">Pointer to type info structure (const type_info_t*)</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">Number of elements allocated (size_t)</div>
@@ -54,12 +54,13 @@ The overhead is 8 bytes for a 32 bit system and 16 bytes for a 64 bit system.  N
 If a single character is allocated, 9 (or 17) bytes will actually be allocated.  An array of 100,000 characters would require 100,008 (or 100,016) bytes. 
 </p>
 <p>
-This memory allocation scheme allows the type info to be readily available for any method that uses it. For example, the assign method
+This memory allocation scheme allows the type info to be readily available for internal YAOOC methods that uses it. For example, the assign method
 can access the type info to apply the appropriate assignment method.  Likewise, the delete method can determine the destructor and number
-of elements to delete. 
+of elements to delete. User methods should not try to access the type info or element count.
 </p>
 <p>
-For variables declared on the stack or for elements beyond the first element of an array (henceforth, will be referred to as static objects), the above memory layout is not available.
+For variables declared on the stack or for elements beyond the first element of an array (henceforth, will be referred to as static objects),
+the type info structure is not available.
 Therefore, some of the methods that have been presented so far will not work on static objects.  Static versions of these methods (appended with "_static") will have to be used.
 Since the type info pointer is not available, the class type is included as an argument to the static versions.
 </p>
@@ -75,15 +76,15 @@ Static versions of assign and comparison methods are presented below.
 </div>
 <div class="divTableRow">
 <div class="divTableCell">assign_static(p1,p2,T)</div>
-<div class="divTableCell">Assign object of type T pointed to by p1 to object of type T pointed to by p2</div>
+<div class="divTableCell">Assign object p2 to object p1. Both are of type T</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">op_eq_static(p1,p2,T)</div>
-<div class="divTableCell">Compares if objects of type T pointer to by p1 and p2 are equal</div>
+<div class="divTableCell">Compares if objects p1 and p2 of type T are equal</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">op_ne_static(p1,p2,T)</div>
-<div class="divTableCell">Compares if objects of type T pointer to by p1 and p2 are not equal</div>
+<div class="divTableCell">Compares if objects p1 and p2 of type T are not equal</div>
 </div>
 <div class="divTableRow">
 <div class="divTableCell">op_lt_static(p1,p2,T)</div>
@@ -105,10 +106,11 @@ Static versions of assign and comparison methods are presented below.
 </div>
 
 <p>
-For example, to compare if two my_string objects are equal, use:
+For example, to compare if two static my_string objects are equal, use:
 </p>
 <pre><code>
-  #define INIT_STATIC_MY_STRING { .class_table_=&amp;my_string_class_table, .str=NULL } 
+  #define INIT_STATIC_MY_STRING { .parent_class_table_=(const class_table_t*) &amp;yaooc_object_class_table, \
+          .type_name_ = "my_string_t", .swap = my_string_swap,.class_table_=&amp;my_string_class_table, .str=NULL } 
   my_string_t ms1 = INIT_STATIC_MY_STRING;
   my_string_t ms2 = INIT_STATIC_MY_STRING;
   ....
@@ -116,8 +118,12 @@ For example, to compare if two my_string objects are equal, use:
     puts("Equal");
 </code></pre>
 <p>
-In C++, when a variable is declared, it is initialized by using the default constructor.  In C, this does not occur.  One way to 
-initialize static objects ms1 and ms2 is shown above.  Another method will be presented in the next chapter.
+<p>
+
+</p>
+In C, when a static YAOOC object is declared, the default constructor is not called to initialize the object.
+The above example shows how a static object may be initialized. This can be cumbersome for a class with many instance members.
+A more practical method will be presented in the next chapter.
 </p>
 <h3>Renew</h3>
 <p>
@@ -151,7 +157,7 @@ the destructor is called for each element removed before memory is reallocated. 
 </p>
 
 <pre><code>
-  my_string_t* demo=new_array(char,8); /* Initial size is 8 */
+  my_string_t* demo=new_array(my_string,8); /* Initial size is 8 */
   ...
   demo=renew(demo,20); /* Increase capacity to 20 */
   ...

@@ -69,7 +69,8 @@ Any iterators for an array may be invalidated when an item is inserted.
 </p>
 
 <p>
-The array_container is good for storing items that are appended to the end.  As the size increases, so does search time.
+The array_container is good for storing items that are appended to the end.  As the size increases, search time increases since
+the search is sequential.
 </p>
 <p>
 The unique_array_container is the same as array_container except items are unique.  As with array_container, as size
@@ -83,10 +84,9 @@ times may increase if items are not entered in order.
 The unique_ordered_array_container keeps items in an ordered fashion and eliminates duplicate items.
 </p>
 <p>
-The index_array_container maintains a shadow index array such that array[index[i]] (i=0 to size) will be ordered.  This
-allows items to be added to end of main array and move the index array.  The index array uses 4 byte integers so the time required
-to maintain the order of the index array is much less than trying to maintain the order of the main array. The index also
-allows much faster searches. 
+The index_array_container maintains a shadow index array such that array[index[i]] (i = 0 to size-1) will be ordered.  This
+allows items to be added to end of main array with inserts occurring in  the index array. This allows for faster inserts (since items are added to end)
+and faster searches (because of shadow index).
 </p>
 <p>
 The unique_index_array_container is the same as index_array_container except values are unique.
@@ -134,9 +134,18 @@ In the example below, if array is an integer array, the iterators i and j are no
   iterator j = M(array,at,5);
 </code></pre>
 <p>
-Since begin returns a generic iterator (void *), begin + 5 would be just 5 bytes beyond beginning of array -- which is most likely not what was intended.
+Since begin returns a generic iterator (void * -- which many compilers treat as char* in mathematical operations),
+begin + 5 would be just 5 bytes beyond beginning of array -- which is most likely not what was intended.
 The at method will return 5*sizeof(int) bytes beyond beginning of array -- which is probably what was intended.
 </p>
+<p>
+However, the following could be used:
+</p>
+<pre><code>
+   typedef int * integer_array_iterator;
+   integer_array_iterator i = M(array,begin);
+   i += 5;
+</code></pre>
 </div>
 </div>
 </div>

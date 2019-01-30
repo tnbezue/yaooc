@@ -34,8 +34,9 @@ There is additional memory overhead because of the index (4*capacity bytes). Ite
 If in doubt, use map instead of mini_map.
 </p>
 <p>
-ordered_map uses unique ordered array_container.  Should be used when a sorted map is desired.  Search speed is better than mini_map and about the same for map.  Insertion speed
-is faster than mini_map but slower than map.  Items are maintained in sorted order and will be iterated in sorted order.
+ordered_map uses unique ordered array_container.  Should be used when a sorted map is desired.  Search speed is better than mini_map and about the same for map.
+For a large number of items, insertion speed is faster than mini_map (because search speed is faster) but slower than map (because large chunks of memory is moved).
+Items are maintained in sorted order and will be iterated in sorted order.
 </p>
 <p>
 To use mini_map, in header file specify:
@@ -165,7 +166,7 @@ Map inherits the array methods and defines the following additional methods.
 </div>
 <div class="divTableRow">
 <div class="divTableCell">void clear()</div>
-<div class="divTableCell">Remove all items from vector</div>
+<div class="divTableCell">Remove all items from map</div>
 </div>
 
 </div>
@@ -173,20 +174,20 @@ Map inherits the array methods and defines the following additional methods.
 
 
 <p>
-To create a vector containing object of my_string type, use VECTOR_DEFINITION in the header file.
+To create a map for my_string and integer, use MAP_DEFINITION in the header file.
 </p>
 <pre><code>
-  #include &lt;yaooc/vector.h&gt;
+  #include &lt;yaooc/map.h&gt;
   ...
-  VECTOR_DEFINITION(my_string,my_string_vector)
+  MAP_DEFINITION(my_string,int,my_string_int_map)
   ...
 </code></pre>
 <p>
-And use VECTOR_IMPLEMENTATION in C source file.
+And use MAP_IMPLEMENTATION in C source file.
 </p>
 <pre><code>
   ...
-  VECTOR_IMPLEMENTATION(my_string,my_string_vector)
+  MAP_IMPLEMENTATION(my_string,int,my_string_int_map)
   ...
 </code></pre>
 

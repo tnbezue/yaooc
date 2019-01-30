@@ -35,6 +35,7 @@ class my_string : yaooc_object
 
     table:
       const char* type_name_="my_string_t";                          /* Type name */
+			const size_t n_pos = -1;                                       /* variable member of table */
       void swap(pointer o);                                          /* Override yaooc_object swap method */
       const char* get() const;                                       /* returns string value */
       const char* c_str() const = my_string_get;                     /* same as get */

@@ -7,13 +7,13 @@ document.write('\
 ');
 }
 var menu_items = [
-  ["index","Index"],
+  ["index","Introduction"],
   ["hello_world","Hello World"],
   ["new_delete","New/Delete"],
   ["type_info","Type Info"],
   ["custom_class","Custom Class"],
   ["custom_type_info","Custom Class Type Info"],
-  ["class_table_instance","Class Table and Instance"],
+  ["class_methods","Class Methods"],
   ["streams","Input/Output Streams"],
   ["constructors","Constructors"],
   ["inheritance","Inheritance"],
