@@ -1,0 +1,54 @@
+#ifndef __THREAD_YAOOC_INCLUDED__
+#define __THREAD_YAOOC_INCLUDED__
+
+#include <yaooc/object.yaooc>
+
+class yaooc_thread: yaooc_object
+{
+    yaooc_thread();
+    ~yaooc_thread();
+  private:
+    void* yaooc_thread_start_thread(void* arg);
+  table:
+    pthread_t id() const;
+    int join();
+    int cancel();
+    int detach();
+    yaooc_thread_state_t state() const;
+    bool is_detached() const;
+    bool start(void* data);
+  instance:
+    void* method(void* data);
+    pthread_t thread_id_;
+    yaooc_thread_state_t state_;
+    bool is_detached_;
+    bool request_exit_;
+};
+
+class yaooc_mutex : yaooc_object
+{
+    yaooc_mutex();
+    ~yaooc_mutex();
+  table:
+    bool lock();
+    bool trylock();
+    bool unlock();
+  instance:
+    pthread_mutex_t mutex_;
+}
+
+class yaooc_condition_variable : yaooc_mutex
+{
+    yaooc_condition_variable();
+    ~yaooc_condition_variable();
+
+  table:
+    bool signal();
+    bool broadcast();
+    int wait();
+    int timed_wait(double timeout);
+  instance:
+    pthread_cond_t condition_variable_;
+};
+
+#endif

@@ -1,0 +1,59 @@
+#ifndef __STREAM_YAOOC_DEFINED__
+#define __STREAM_YAOOC_DEFINED__
+
+#include <yaooc/object.yaooc>
+#include <yaooc/exception.yaooc>
+
+class yaooc_stream_exception : yaooc_exception
+{
+		yaooc_stream_exception();
+    yaooc_stream_exception(yaooc_stream_exception);
+		operator=();
+    ~yaooc_stream_exception();
+    yaooc_stream_exception_ctor_ccs(const char* str);
+  table:
+    const char* what() const;
+  instance:
+    char* exception_str_;
+};
+
+class yaooc_base_stream : yaooc_object
+{
+		yaooc_base_stream();
+	table:
+		bool eof() const;
+		bool seek(size_t ofs,int whence);
+		size_t tell() const;
+		bool bool() const;
+
+	instance:
+		FILE* handle_;
+
+	protected:
+		void set_handle(FILE* h);
+};
+
+class yaooc_istream : yaooc_base_stream
+{
+		yaooc_istream();
+	table:
+		int peek();
+		int scanf(const char* fmt,...);
+		int vscanf(const char* fmt,va_list args);
+		size_t read(void* buffer,size_t size,size_t count);
+		char* gets(char *buffer,size_t n);
+};
+
+class yaooc_ostream : yaooc_base_stream
+{
+		yaooc_ostream();
+	table:
+		void stream(...);
+		int printf(const char* fmt,...);
+		int vprintf(const char* fmt,va_list args);
+		size_t write(const void* buffer,size_t size,size_t count);
+		int puts(const char* str);
+		int putc(int c);
+};
+
+#endif

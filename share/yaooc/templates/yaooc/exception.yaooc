@@ -1,0 +1,20 @@
+#ifndef __EXCEPTION_YAOOC_INCLUDED__
+#define __EXCEPTION_YAOOC_INCLUDED__
+
+#include <yaooc/object.yaooc>
+
+class yaooc_exception : yaooc_object
+{
+		yaooc_exception();
+    yaooc_exception_ctor_v(onst char*fmt,...);
+		~yaooc_exception();
+		yaooc_exception(yaooc_exception);
+		operator=();
+
+  table:
+    const char* what() const;
+	instance:
+		char* what_;
+};
+
+#endif

@@ -1,0 +1,19 @@
+#ifndef __UNIQUE_ARRAY_CONTAINER_YAOOC_INCLUDED__
+#define __UNIQUE_ARRAY_CONTAINER_YAOOC_INCLUDED__
+
+#include <yaooc/array_container.yaooc>
+
+class yaooc_unique_array_container : yaooc_array_container
+{
+
+  private:
+  protected:
+    iterator insert(const_iterator pos,const_pointer value);
+    iterator insertn(const_iterator pos,size_t n,const_pointer val);
+    iterator insert_range(const_iterator pos,const_iterator f,const_iterator l);
+    void resize(size_t n);
+    void resize_value(size_t n,const_pointer value);
+  table:
+};
+
+#endif

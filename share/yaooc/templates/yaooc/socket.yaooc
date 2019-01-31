@@ -1,0 +1,114 @@
+	#ifndef __SOCKET_INCLUDED__
+#define __SOCKET_INCLUDED__
+
+#include <yaooc/object.yaooc>
+#include <yaooc/ipaddress.yaooc>
+#include <yaooc/exception.yaooc>
+%h
+#include <string.h>
+#include <unistd.h>
+#ifdef __WIN32__
+  #include <winsock2.h>         // for socket(), connect(), send(), and recv()
+  typedef int socklen_t;
+#else
+  #include <sys/types.h>
+  #include <sys/socket.h>      // for socket(), connect(), send(), and recv()
+  #include <sys/ioctl.h>
+  #include <netdb.h>           // for gethostbyname()
+  #include <arpa/inet.h>       // for sockaddr_in and inet_addr()
+#endif
+
+#ifdef _WIN32
+void yaooc_socket_startup();
+void yaooc_socket_cleanup();
+#else
+#define yaooc_socket_startup()
+#define yaooc_socket_cleanup()
+#endif
+%%
+
+%c
+#ifdef _WIN32
+void yaooc_socket_startup()
+{
+	WORD wVersionRequested;
+	WSADATA wsaData;
+	wVersionRequested = MAKEWORD(2, 2);				// Request Winsock v2.2
+	WSAStartup(wVersionRequested, &wsaData);  // Load Winsock DLL
+}
+
+void yaooc_socket_cleanup() { WSACleanup(); }
+#endif
+%%
+
+class yaooc_socket_exception : yaooc_exception
+{
+	yaooc_socket_exception_ctor_v(const char*fmt,...) = yaooc_exception_ctor_v;
+};
+
+class yaooc_socket : yaooc_object {
+		yaooc_socket();
+		~yaooc_socket();
+		yaooc_socket(yaooc_socket);
+		yaooc_socket_ctor_domain_type_protocol(int domain,int type,int protocol);
+		operator=();
+	instance:
+		int sock_fd_;
+
+	table:
+		void close();
+		int send(const char* s);
+		int sendn(const void* d,size_t n);
+		bool select(int m);
+		int recv(void* b,int n);
+		int set_blocking();
+		int set_non_blocking();
+		int set_async();
+		int set_sync();
+		bool is_open() const;
+		yaooc_ipaddress_pointer get_local_ip() const;
+		unsigned int get_local_port() const;
+		yaooc_ipaddress_pointer get_foreign_ip() const;
+		unsigned int get_remote_port() const;
+};
+
+class yaooc_socket_client : yaooc_socket
+{
+	table:
+		void connect(int domain, unsigned short port,int sock_type);
+};
+
+class yaooc_socket_server : yaooc_socket
+{
+	table:
+		void listen(unsigned int port,unsigned int max_connections);
+};
+
+class yaooc_tcp_socket : yaooc_socket_client
+{
+		yaooc_tcp_socket_ctor_host_port(const char* host,unsigned int port);
+	table:
+		void open(const char* host,unsigned port);
+
+};
+
+class yaooc_udp_socket : yaooc_socket_client
+{
+};
+
+class yaooc_tcp_socket_server : yaooc_socket_server
+{
+		yaooc_tcp_socket_server_ctor_port_n(unsigned int port,unsigned int max_connections);
+	table:
+		void listen(unsigned int port,unsigned int max_connections);
+};
+
+
+class yaooc_udp_socket_server : yaooc_socket_server
+{
+
+	table:
+
+};
+
+#endif

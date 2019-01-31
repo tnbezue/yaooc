@@ -1,0 +1,24 @@
+#ifndef __yaooc_real_INCLUDED__
+#define __yaooc_real_INCLUDED__
+
+#include <yaooc/object.yaooc>
+
+class yaooc_real : yaooc_object
+{
+    yaooc_real();
+    yaooc_real(yaooc_real);
+    yaooc_real_ctor_real(double value);
+    operator=();
+    operator<();
+
+  protected:
+  table:
+    void swap(pointer o);
+    void set(double value);
+    double get() const;
+
+  instance:
+    double value_;
+};
+
+#endif

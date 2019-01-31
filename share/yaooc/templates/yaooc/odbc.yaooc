@@ -1,0 +1,89 @@
+#ifndef __YAOOC_ODBC_INCLUDED__
+#define __YAOOC_ODBC_INCLUDED__
+
+#include <yaooc/object.yaooc>
+#include <yaooc/exception.yaooc>
+
+class yaooc_odbc_exception : yaooc_exception
+{
+	yaooc_odbc_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
+};
+
+class yaooc_odbc_environment : yaooc_object {
+		yaooc_odbc_environment();
+		~yaooc_odbc_environment();
+	table:
+		SQLHENV env();
+	protected:
+		map_odbc_string_string_t* get_drivers();
+		map_odbc_string_string_t* get_sources();
+	private:
+		SQLHENV henv_ = SQL_NULL_HANDLE;
+};
+
+class yaooc_odbc_statement : yaooc_object {
+		yaooc_odbc_statement();
+		~yaooc_odbc_statement();
+		operator=();
+	table:
+		bool bindcol_chr(char* v);  // A single character
+		bool bindcol_uchr(unsigned char* v);
+		bool bindcol_short(short* v);
+		bool bindcol_ushort(unsigned short* v);
+		bool bindcol_int(int* v);
+		bool bindcol_uint(unsigned int* v);
+		bool bindcol_long(long long* v);
+		bool bindcol_ulong(unsigned long long* v);
+		bool bindcol_dbl(double* v);
+		bool bindcol_str(char* v,SQLLEN l); // a zero terminated string of characters
+		bool bindcol_blob(void* v,SQLLEN l);
+		bool bindcol_time(TIME_STRUCT* v);
+		bool bindcol_date(DATE_STRUCT* v);
+		bool bindcol_ts(TIMESTAMP_STRUCT* v);
+
+		bool bindparamc_hr(char* v);  // A single character
+		bool bindparam_uchr(unsigned char* v);
+		bool bindparam_short(short* v);
+		bool bindparam_ushort(unsigned short* v);
+		bool bindparam_int(int* v);
+		bool bindparam_uint(unsigned int* v);
+		bool bindparam_long(long long* v);
+		bool bindparam_ulong(unsigned long long* v);
+		bool bindparam_dbl(double* v);
+		bool bindparam_str(char* v,SQLLEN l); // a zero terminated string of characters
+		bool bindparam_blob(void* v,SQLLEN l);
+		bool bindparam_time(TIME_STRUCT* v);
+		bool bindparam_date(DATE_STRUCT* v);
+		bool bindparam_ts(TIMESTAMP_STRUCT* v);
+		bool fetch();
+		bool execute();
+	instance:
+		SQLHSTMT statement_handle_;
+		unsigned int icol_; // Column number for bindcol and bindparam
+	protected:
+		bool bindcol(void* data,SQLLEN column_size,SQLSMALLINT c_data_type);
+		bool bindparam(void* data,SQLLEN column_size,SQLSMALLINT c_data_type);
+	private:
+		void set_handle(SQLHSTMT h);
+
+};
+
+class yaooc_odbc_connection : yaooc_object
+{
+	yaooc_odbc_connection();
+	yaooc_odbc_connection_connect_str(const char* str);
+	~yaooc_odbc_connection();
+
+	instance:
+		SQLHDBC connection_handle_;
+	table:
+		yaooc_odbc_statement_t* exec_direct(const char* str);
+		yaooc_odbc_statement_t* prepare(const char* str);
+		void connect(const char* str);
+		void disconnect();
+		void auto_commit(bool on);
+		void commit();
+		void rollback();
+};
+
+#endif

@@ -1,0 +1,37 @@
+#ifndef __DATE_TIME_YAOOC_INCLUDED__
+#define __DATE_TIME_YAOOC_INCLUDED__
+
+#include <yaooc/object.yaooc>
+
+class yaooc_date_time : yaooc_object {
+		yaooc_date_time();
+		yaooc_date_time(yaooc_date_time);
+		operator=();
+		operator<();
+		operator<<();
+		operator>>();
+
+		yaooc_date_time_ctor_int(int t);
+		yaooc_date_time_ctor_ymdhms(int y,int mon,int d,int h,int min,int s);
+		yaooc_date_time_ctor_tm(const struct tm* tm);
+		yaooc_date_time_ctor_ccs(const char* str);
+	table:
+
+		void swap(pointer o);
+		void set(time_t t);
+		time_t get() const;
+		int month() const;
+		int day() const;
+		int year() const;
+		int hour() const;
+		int minute() const;
+		int second() const;
+		int day_of_week() const;
+		int day_of_year() const;
+		char* strftime(const char* fmt) const;
+		void strptime(const char*);
+	instance:
+		time_t  time_;
+};
+
+#endif
