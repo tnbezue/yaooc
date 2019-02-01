@@ -26,12 +26,13 @@
 #include <libgen.h>
 #include "parser.h"
 
-yaooc_string_t includes = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+yaooc_string_t include_directories = YAOOC_STRING_STATIC_DEFAULT_CTOR;
 yaooc_string_t cpp = YAOOC_STRING_STATIC_DEFAULT_CTOR;
 yaooc_string_t defines = YAOOC_STRING_STATIC_DEFAULT_CTOR;
 yaooc_string_t output_file = YAOOC_STRING_STATIC_DEFAULT_CTOR;
 yaooc_string_t header_extra = YAOOC_STRING_STATIC_DEFAULT_CTOR;
 yaooc_string_t source_extra = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+yaooc_string_vector_t include_files;
 
 #define YAOOCPP_MAJOR 1
 #define YAOOCPP_MINOR 3
@@ -80,8 +81,8 @@ void parse_options(int argc,char* argv[])
   while((c=getopt_long(argc,argv,"hvI:p:D:",options,&option_index)) > 0) {
     switch(c) {
       case 'I':
-        M(&includes,append," -I");
-        M(&includes,append,optarg);
+        M(&include_directories,append," -I");
+        M(&include_directories,append,optarg);
         break;
 
       case 'D':
@@ -126,6 +127,9 @@ char* root_name(const char* fname)
 int main(int argc,char* argv[])
 {
 	PB_INIT;
+	newp(&include_files,yaooc_string_vector);
+	newp(&header_extra,yaooc_string);
+	newp(&source_extra,yaooc_string);
 	M(&cpp,set,"cpp -nostdinc");
   parse_options(argc,argv);
   yaooc_ofstream_t h_strm,c_strm;
@@ -137,6 +141,9 @@ int main(int argc,char* argv[])
 		TRY {
 			int i;
 			for(i=optind;i<argc;i++) {
+				M(&header_extra,clear);
+				M(&source_extra,clear);
+				M(&include_files,clear);
 				M(&class_parser,parse_file,argv[i]);
         if(M(class_parser.classes_,size) > 0) {
           char* root;
@@ -153,9 +160,15 @@ int main(int argc,char* argv[])
           M(&h_strm,printf,"#ifndef __%s_INCLUDED__\n"
                            "#define __%s_INCLUDED__\n\n",uc_root,uc_root);
           M(&h_strm,printf,"/* Begin YAOOCPP output */\n\n");
-          M(&h_strm,printf,"#include <yaooc/object.h>\n"
+/*          M(&h_strm,printf,"#include <yaooc/object.h>\n"
                            "#include <yaooc/stream.h>\n"
-                           "\n");
+                           "\n");*/
+					if(M(&include_files,size)>0) {
+						yaooc_string_vector_const_iterator ifile;
+						FOR_EACH(ifile,&include_files)
+							M(&h_strm,printf,"#include <%s.h>\n",M(ifile,c_str));
+						M(&h_strm,printf,"\n");
+					}
 					if(M(&header_extra,size)>0)
 						M(&h_strm,printf,"\n%s\n",M(&header_extra,c_str));
 
@@ -199,8 +212,11 @@ int main(int argc,char* argv[])
   deletep(&c_strm,yaooc_ofstream);
   deletep(&class_parser,yaoocpp_parser);
   deletep(&cpp,yaooc_string);
-  deletep(&includes,yaooc_string);
+  deletep(&include_directories,yaooc_string);
   deletep(&output_file,yaooc_string);
+	deletep(&header_extra,yaooc_string);
+	deletep(&source_extra,yaooc_string);
+	deletep(&include_files,yaooc_string_vector);
   PB_EXIT;
 	return 0;
 }

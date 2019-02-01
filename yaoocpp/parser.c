@@ -23,14 +23,17 @@
 #include <yaooc/algorithm.h>
 #include <yaooc/fstream.h>
 #include <yaooc/sstream.h>
+#include <yaooc/regex.h>
 #include <yaooc/utils.h>
 #include "parser.h"
 
-extern yaooc_string_t includes;
+extern yaooc_string_t include_directories;
 extern yaooc_string_t cpp;
 extern yaooc_string_t defines;
 extern yaooc_string_t header_extra;
 extern yaooc_string_t source_extra;
+extern yaooc_string_vector_t include_files;
+
 char current_file[256];
 char tempfile[256];
 
@@ -159,6 +162,7 @@ static void yaoocpp_parser_preprocess(pointer p)
 		M(otemp,open,tempfile,"w");
 		char line[1024];
 		yaooc_string_t* extra=NULL;
+		yaooc_regex_t* re_yaooc_include=new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"^\\s*#\\s*include\\s*(\"|<)(.+)\\.yaooc(\"|>)\\s*$",REG_EXTENDED);
 		while(!M(input,eof)) {
 			if(M(input,gets,line,1024)) {
 				if(strncmp(line,"%h",2)==0) {
@@ -178,17 +182,28 @@ static void yaoocpp_parser_preprocess(pointer p)
 					M(extra,append,line);
 				} else {
 					M(otemp,printf,line);
+					/*
+						If this is an include for a yaooc file, add name to include_files
+					*/
+					yaooc_matchdata_t* md=M(re_yaooc_include,match,line,0);
+					if(M(md,bool)) {
+						yaooc_string_t* inc_file=M(md,at,2);
+						M(&include_files,push_back,inc_file);
+						delete(inc_file);
+					}
+					delete(md);
 				}
 			}
 		}
 		M(otemp,close);
+		delete(re_yaooc_include);
 		delete(otemp);
 		delete(input);
     yaooc_string_t cpp_cmd;//=YAOOC_STRING_STATIC_DEFAULT_CTOR;
 		newp(&cpp_cmd,yaooc_string);
     M(&cpp_cmd,set,M(&cpp,c_str));
     M(&cpp_cmd,append,M(&defines,c_str));
-    M(&cpp_cmd,append,M(&includes,c_str));
+    M(&cpp_cmd,append,M(&include_directories,c_str));
     M(&cpp_cmd,append," ");
     M(&cpp_cmd,append,tempfile);
     M(&cpp_cmd,append," 2>&1");

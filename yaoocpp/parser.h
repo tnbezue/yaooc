@@ -3,6 +3,8 @@
 
 #include "template_objects.h"
 #include <yaooc/base_parser.h>
+#include <yaooc/vector.h>
+#include <yaooc/string.h>
 
 /*
   Class Definition for yaoocpp_parser_exception
