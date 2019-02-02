@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom Type Info</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Custom Class Type Info</h2>
+<p>
+Now that the my_string structure has been defined, the next step is to define the type info structure.
+</p>
+<h3>Default constructor</h3>
+<p>
+New allocates memory for the object and calls the default constructor with a pointer to the allocated memory.
+If the default constructor is NULL, then no initialization is done. The following is the default constructor for my_string class.
+</p>
+<pre><code>
+  void my_string_default_ctor(pointer p)
+  {
+    my_string_pointer this=p;
+    this->str=NULL;
+  }
+</code></pre>
+<p>
+Using the YAOOC naming convention, the name of the default constructor should be class name (as specified in the yaooc_struct macro)
+appended with "_default_ctor".  In our case, it's "my_string_default_ctor".
+</p>
+<h3>Destructor</h3>
+<p>
+The destructor is called when delete is used.  It is called before the memory is freed.  If the destructor is NULL, no action is taken.
+By naming convention, the name of the destructor should be class name appended with "_dtor".
+</p>
+<pre><code>
+  void my_string_dtor(pointer p)
+  {
+    my_string_pointer this=p;
+    if(this->str)
+      free(this->str);
+  }
+</code></pre>
+<h3>Copy constructor</h3>
+<p>The copy constructor creates a new object from an existing object.  The first argument is a pointer to the newly allocated memory.
+The second argument is const_pointer to the existing object. If the copy constructor is NULL, then the source object is copied
+(using memcpy) to the target object.  The name of the copy constructor should be class name appended with "_copy_ctor".
+</p>
+<p>
+For many objects, the copy constructor can use default constructor to initialize the target object followed by a call to the assignment function.
+This technique will be used for the my_string class.
+</p>
+<pre><code>
+  void my_string_copy_ctor(pointer p,const_pointer s)
+  {
+    my_string_default_ctor(p);
+    my_string_assign(p,s);
+  }
+</code></pre>
+<p>
+The copy constructor is called when new_copy is used.
+</p>
+<pre><code>
+  my_string_pointer sp1=new(my_string);
+  ...
+  my_string_pointer sp2=new_copy(sp1);
+</code></pre>
+<h3>Assigment</h3>
+<p>
+The assignment method assigns one object to another.  The first argument is a pointer the object to be assigned.  The second argument is a const_pointer to the source object.
+If the assignment method is NULL, then the source object is copied (using memcpy) to the target object.
+The name of the assignment method should be the class name appended with "_assign".
+</p>
+<pre><code>
+  void my_string_assign(pointer p,const_pointer s)
+  {
+    my_string_pointer this=p;
+    my_string_const_pointer src=s;
+    my_string_dtor(p);
+    this->str=src->str==NULL ? NULL : strdup(src->str);
+  }
+</code></pre>
+<p>
+In YAOOC, assignment is done using the assign method.  Assigning using the equal operator does not work as it does in C++.
+</p>
+<pre><code>
+  my_string_pointer p1=new(my_string);
+  my_string_pointer p2=new(my_string);
+  ....
+  p2=p1; /* Although valid C code, most likely not what was intended */
+  assign(p2,p1); /* Will perform assignment as specified by assign method */
+</code></pre>
+<p>
+Note that both objects in assignment must be initialized.  The following most likely will cause the program to crash:
+</p>
+<pre><code>
+  my_string_pointer p1=new(my_string);
+  ...
+  my_string_pointer p2;
+  assign(p2,p1);
+</code></pre>
+<p>
+In the above case, rather than assign, the new_copy method should be used.
+</p>
+<h3>Less than compare</h3>
+If comparisons (==, !=, <, <=, >, >=) of objects of this class type will be performed, then less than compare method should be defined.  The two arguments are constant
+pointers to the objects to be compared.  If the less than compare method is not defined (NULL),
+then it would be as if the method return false -- thus, all items of this type would be equal.
+The method name is class name appended with "_less_than_compare".
+<pre><code>
+  bool my_string_less_than_compare(const_pointer p1,const_pointer p2)
+  {
+    my_string_const_pointer msp1 = p1;
+    my_string_const_pointer msp2 = p2;
+    if(msp1->str == NULL) {
+      if(msp2->str == NULL)
+        return false; /* both NULL, equal -- not less  */
+      else
+        return true; /* 1st is NULL, 2nd is not.  NULL is less than not NULL */
+    } else if(msp2 == NULL)
+      return false; /* 1st is not NULL, 2nd is NULL. 1st is greater than 2nd, not less */
+    return strcmp(msp1->str,msp2->str) < 0; /* Both not null, compare the strings */
+  }
+</code></pre>
+<p>
+As with assignment, the normal comparison operators can not be used in YAOOC.  The following table shows the methods to use for comparison.
+Each method takes two arguments -- pointers to the objects to compare.
+</p>
+<div class="divTable">
+<div class="divTableBody">
+<div class="divTableRow">
+<div class="divTableHead">Description</div>
+<div class="divTableHead">Operator</div>
+<div class="divTableHead">YAOOC method</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Equal to</div>
+<div class="divTableCell">==</div>
+<div class="divTableCell">op_eq(p1,p2)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Not equal to</div>
+<div class="divTableCell">!=</div>
+<div class="divTableCell">op_ne(p1,p2)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Less than</div>
+<div class="divTableCell"><</div>
+<div class="divTableCell">op_lt(p1,p2)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Less than or equal to</div>
+<div class="divTableCell"><=</div>
+<div class="divTableCell">op_le(p1,p2)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Greater than</div>
+<div class="divTableCell">></div>
+<div class="divTableCell">op_gt(p1,p2)</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Greater than or equal to</div>
+<div class="divTableCell">>=</div>
+<div class="divTableCell">op_ge(p1,p2)</div>
+</div>
+</div>
+</div>
+
+<h3>Type Info Structure</h3>
+The to/from stream, class table, and parent type info entries will be covered in later lessons.  The type info structure for my_string sting is now:
+<pre><code>
+  const type_info_t __my_string_ti =
+  {
+    sizeof(my_string_t),
+    my_string_default_ctor,
+    my_string_dtor,
+    my_string_copy_ctor,
+    my_string_assign,
+    my_string_less_than_compare,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+  };
+  const type_info_t* my_string_ti=&__my_string_ti;
+</code></pre>
+
+<p>
+Since creation of type info structures is so common, the DEFINE_TYPE_INFO macro is much easier to use.  To use DEFINE_TYPE_INFO, the naming convention must be used.
+</p>
+<pre><code>
+  DEFINE_TYPE_INFO(TYPE,HAS_DEFAULT_CTOR,HAS_DTOR,HAS_COPY_CTOR,HAS_ASSIGN,HAS_LESS_THAN_COMPARE,HAS_TO_STREAM,HAS_FROM_STREAM,HAS_CLASS_TABLE,PARENT)
+</code></pre>
+<p>
+TYPE is the type name -- without "_t".  The entries beginning with "HAS" require a Y or N entry to indicate if the type has the indicated method.  PARENT is the parent class -- also without "_t".
+</p>
+<p>
+The DEFINE_TYPE_INFO for my_string is:
+</p>
+<pre><code>
+  DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,N,N,N,NULL)
+</code></pre>
+<p>
+See the example for this lesson for a demonstration of the class usage.
+</p>
+
+</div>
+</div>
+</div>
+</body>
+</html>

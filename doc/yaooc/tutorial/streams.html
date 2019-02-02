@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Input/Output Streams</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Input/Output Streams</h2>
+<p>
+One of the most notable C++ features is input and output streams.  For example:
+</p>
+<pre><code>
+  string b="Testing";
+  cout &lt;&lt; "The value of be is " &lt;&lt; b &lt;&lt; endl;
+  cout &lt;&lt; "Enter new value for b" &lt;&lt; endl;
+  cin &gt;&gt; b;
+</code></pre>
+<p>
+In YAOOC, this behavior is also implemented.  If a class is to use I/O streams, the to_stream and from_stream methods have to be implemented.
+If the class is used in a stream and to/from stream methods are not defined, an exception (more on exceptions later) is thrown.
+</p>
+<p>
+The arguments for the to_stream method is a const_pointer to object and a pointer to stream.  For the my_string class, the to_stream method is:  
+</p>
+<pre><code>
+  my_string_to_stream(const_pointer p,ostream_pointer s)
+  {
+    my_string_const_pointer this=p;
+    yaooc_ostream_pointer strm=s;
+    M(strm,printf,"%s",this->str);
+  }
+</code></pre>
+<p>
+The arguments for the from_stream method is a pointer to object and pointer to stream.  For the my_string class, the from_stream method is:
+</p>
+<pre><code>
+  my_string_from_stream(pointer p,istream_pointer s)
+  {
+    my_string_pointer this=p;
+    yaooc_istream_pointer strm=s;
+    char temp[256];
+    M(strm,scanf,"%255s",temp);
+    my_string_dtor(this);
+    this->str=strdup(temp);
+  }
+</code></pre>
+
+<p>
+In the methods above, you may have noticed the use of printf and scanf.  Yes, in YAOOC, streams are a wrapper class for the C FILE type.  Many of the
+C methods that use FILE* (printf, scanf, feof, puts, gets, etc) are available in YAOOC streams.  YAOOC provides cout (stdout), cin (stdin), and cerr (stderr)
+streams.
+</p>
+<p>
+The DEFINE_TYPE_INFO for my_string is now:
+</p>
+<pre><code>
+  DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,<font color="red">Y</font>,<font color="red">Y</font>,Y,NULL);
+</code></pre>
+<p>
+Now my_string can be used in a stream as follows:
+</p>
+<pre><code>
+  my_string_pointer sp1=new(my_string);
+  M(cout,printf,"Enter value for sp1\n")
+  M(cin,stream,sp1,NULL);
+  M(cout,printf,"You entered: ");
+  M(cout,stream,sp1,endl,NULL);
+</code></pre>
+<p>
+Notice that for the stream method, NULL is used to indicate the end of argument list. Numerous times I've forgotten the NULL at the end which causes the program to crash.
+The STREAM macro provided by YAOOC can be used.  It adds NULL to the end of the argument list. 
+</p>
+<pre><code>
+  STREAM(cin,sp1);
+  STREAM(cout,sp1,endl);
+</code></pre>
+
+<p>
+YAOOC provides the following stream classes.
+</p>
+
+<div class="divTable">
+<div class="divTableBody">
+<div class="divTableRow">
+<div class="divTableHead">Type</div>
+<div class="divTableHead">Input</div>
+<div class="divTableHead">Output</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">Base stream</div>
+<div class="divTableCell">yaooc_istream</div>
+<div class="divTableCell">yaooc_ostream</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">File</div>
+<div class="divTableCell">yaooc_ifstream</div>
+<div class="divTableCell">yaooc_ofstream</div>
+</div>
+<div class="divTableRow">
+<div class="divTableCell">String</div>
+<div class="divTableCell">yaooc_istringstream</div>
+<div class="divTableCell">yaooc_ostringstream</div>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+</div>
+</body>
+</html>
