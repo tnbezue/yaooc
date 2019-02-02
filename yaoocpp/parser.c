@@ -111,7 +111,7 @@ static yaoocpp_element_pointer yaoocpp_parser_parse_method(pointer);
 static yaoocpp_element_pointer yaoocpp_parser_parse_variable(pointer);
 static yaoocpp_element_pointer yaoocpp_parser_parse_raw_struct_union(pointer);
 static yaoocpp_element_pointer yaoocpp_parser_parse_type(pointer);
-static bool yaoocpp_parser_parse_sub_section(pointer,const char*,yaoocpp_element_pointer_vector_t*);
+static bool yaoocpp_parser_parse_sub_section(pointer,const char*,yaoocpp_element_pointer_vector_t*,bool);
 static yaoocpp_container_pointer yaoocpp_parser_parse_class(pointer);
 static yaoocpp_container_pointer yaoocpp_parser_parse_struct(pointer);
 static yaoocpp_container_pointer yaoocpp_parser_parse_union(pointer);
@@ -616,26 +616,32 @@ static yaoocpp_element_pointer yaoocpp_parser_parse_type(pointer p)
   return (yaoocpp_element_pointer) ret;
 }
 
-static bool yaoocpp_parser_parse_sub_section(pointer p,const char* section,yaoocpp_element_pointer_vector_t* element_vector)
+static bool yaoocpp_parser_parse_sub_section(pointer p,const char* section,yaoocpp_element_pointer_vector_t* element_vector,bool allow_override)
 {
   yaoocpp_parser_pointer this=p;
   PB_INIT;
   bool ret=false;
+	yaoocpp_element_pointer_pointer orig;
   if(M(this,str,section).end_ && M(this,chr,':').end_) {
     while(true) {
       yaoocpp_element_t* mp;
       if((mp=PB_SAVE(yaoocpp_parser_parse_method(this)))!=NULL) {
-        yaoocpp_element_pointer_pointer orig=yaooc_find(yaoocpp_element_pointer,M(element_vector,begin),M(element_vector,end),&mp);
+        orig=yaooc_find(yaoocpp_element_pointer,M(element_vector,begin),M(element_vector,end),&mp);
         if(orig == M(element_vector,end))
           M(element_vector,push_back,&mp);
-        else {
+        else if(allow_override) {
           ((yaoocpp_method_pointer)*orig)->state_=OVERRIDDEN;
           M(&((yaoocpp_method_pointer)*orig)->implementation_method_,clear);
-        }
+        } else {
+					THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+										"Duplicate method %s defined\n",M(&((yaoocpp_method_pointer)mp)->name_,c_str)));
+				}
 			} else if((mp=PB_SAVE(yaoocpp_parser_parse_variable(this)))!=NULL) {
-				if(yaooc_find(yaoocpp_element_pointer,M(element_vector,begin),M(element_vector,end),&mp) == M(element_vector,end))
+				if((orig=yaooc_find(yaoocpp_element_pointer,M(element_vector,begin),M(element_vector,end),&mp)) == M(element_vector,end))
 					M(element_vector,push_back,&mp);
-				else
+				else if(allow_override) {
+					assign_static(&((yaoocpp_variable_pointer)*orig)->default_value_,&((yaoocpp_variable_pointer)mp)->default_value_,yaooc_string);
+				} else
 					THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
 										"Duplicate variable %s defined\n",M(&((yaoocpp_variable_pointer)mp)->name_,c_str)));
 			} else if((mp=PB_SAVE(yaoocpp_parser_parse_raw_struct_union(this)))!=NULL) {
@@ -643,7 +649,7 @@ static bool yaoocpp_parser_parse_sub_section(pointer p,const char* section,yaooc
 					M(element_vector,push_back,&mp);
 				else
 					THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-										"Duplicate variable %s defined\n",M(&((yaoocpp_variable_pointer)mp)->name_,c_str)));
+										"Duplicate struct/union %s defined\n",M(&((yaoocpp_variable_pointer)mp)->name_,c_str)));
 			} else if((mp=PB_SAVE(yaoocpp_parser_parse_type(this)))!=NULL) {
         M(element_vector,push_back,&mp);
       } else
@@ -678,10 +684,10 @@ static yaoocpp_container_pointer yaoocpp_parser_parse_class(pointer p)
 		if(M(this,chr,'{' ).end_) {
 			yaoocpp_parser_parse_type_info(this,ret);
       while(true) {
-        if(!yaoocpp_parser_parse_sub_section(this,"table",&ret->table_))
-          if(!yaoocpp_parser_parse_sub_section(this,"instance",&ret->instance_))
-            if(!yaoocpp_parser_parse_sub_section(this,"protected",&ret->protected_))
-              if(!yaoocpp_parser_parse_sub_section(this,"private",&ret->private_))
+        if(!yaoocpp_parser_parse_sub_section(this,"table",&ret->table_,true))
+          if(!yaoocpp_parser_parse_sub_section(this,"instance",&ret->instance_,false))
+            if(!yaoocpp_parser_parse_sub_section(this,"protected",&ret->protected_,false))
+              if(!yaoocpp_parser_parse_sub_section(this,"private",&ret->private_,false))
                 break;
       }
 			if(!(M(this,chr,'}').end_ && M(this,chr,';').end_)) {
@@ -712,9 +718,9 @@ static yaoocpp_container_pointer yaoocpp_parser_parse_struct(pointer p)
 		if(M(this,chr,'{').end_) {
 			yaoocpp_parser_parse_type_info(this,ret);
       while(true) {
-        if(!yaoocpp_parser_parse_sub_section(this,"instance",&ret->instance_))
-          if(!yaoocpp_parser_parse_sub_section(this,"protected",&ret->protected_))
-            if(!yaoocpp_parser_parse_sub_section(this,"private",&ret->private_))
+        if(!yaoocpp_parser_parse_sub_section(this,"instance",&ret->instance_,false))
+          if(!yaoocpp_parser_parse_sub_section(this,"protected",&ret->protected_,false))
+            if(!yaoocpp_parser_parse_sub_section(this,"private",&ret->private_,false))
               break;
       }
 			if(!(M(this,chr,'}').end_ && M(this,chr,';').end_)) {
@@ -750,10 +756,10 @@ static yaoocpp_container_pointer yaoocpp_parser_parse_union(pointer p)
 		if(M(this,chr,'{' ).end_) {
 			yaoocpp_parser_parse_type_info(this,ret);
       while(true) {
-        if(!yaoocpp_parser_parse_sub_section(this,"table",&ret->table_))
-          if(!yaoocpp_parser_parse_sub_section(this,"instance",&ret->instance_))
-            if(!yaoocpp_parser_parse_sub_section(this,"protected",&ret->protected_))
-              if(!yaoocpp_parser_parse_sub_section(this,"private",&ret->private_))
+        if(!yaoocpp_parser_parse_sub_section(this,"table",&ret->table_,true))
+          if(!yaoocpp_parser_parse_sub_section(this,"instance",&ret->instance_,false))
+            if(!yaoocpp_parser_parse_sub_section(this,"protected",&ret->protected_,false))
+              if(!yaoocpp_parser_parse_sub_section(this,"private",&ret->private_,false))
                 break;
       }
 			if(!(M(this,chr,'}').end_ && M(this,chr,';').end_)) {
