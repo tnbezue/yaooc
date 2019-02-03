@@ -3,16 +3,18 @@
 
 /* C and C++ comments can be used */
 
-#include <yaooc/object.yaooc>   // This will be converted to "#include <yaooc/object.h" in header file
+// The following will be converted to "#include <yaooc/object.h" in header file
+#include <yaooc/object.yaooc>
 /* The following will be copied as is to header file */
 #if 0 // HEADER
 #include <string.h>
+#include <yaooc/stream.h>
 #endif // HEADER
 /* The following will be copied as is to source file */
 #if 0 // SOURCE
 #include <stdio.h>
 #include <stdlib.h>
-#endif
+#endif // SOURCE
 
 class my_string : yaooc_object   /* my_string inherits from yaooc_object */
 {

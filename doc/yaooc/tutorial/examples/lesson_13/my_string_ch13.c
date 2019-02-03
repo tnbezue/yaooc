@@ -1,14 +1,16 @@
+/* Begin YAOOCPP output */
+
 #include "my_string_ch13.h"
-#include <string.h>
 
-/*  Begin YAOOC PreProcessor generated content */
 
+#include <stdio.h>
+#include <stdlib.h>
 
 /* Private variables implementation for my_string */
 
 /* Private methods prototypes for my_string */
-static void my_string_allocate_space(pointer,size_t);
-static char* my_string_strrstr(const_pointer,const char*);
+static void my_string_allocate_space(pointer, size_t);
+static char* my_string_strrstr(const_pointer, const char*);
 
 /* Type Info implemmentation for my_string */
 void my_string_default_ctor(pointer p)
@@ -40,18 +42,18 @@ void my_string_assign(pointer p,const_pointer s)
   this->str = src->str ? strdup(src->str) : NULL;
 }
 
-bool my_string_less_than_compare(const_pointer p1,const_pointer p2)
+bool my_string_less_than_compare(const_pointer lhs_cp,const_pointer rhs_cp)
 {
-  my_string_const_pointer vp1=p1;
-  my_string_const_pointer vp2=p2;
-  if(vp1->str == NULL) {
-    if(vp2->str == NULL)
+  my_string_const_pointer lhs=lhs_cp;
+  my_string_const_pointer rhs=rhs_cp;
+  if(lhs->str == NULL) {
+    if(rhs->str == NULL)
       return false;
     else
       return true;
-  } else if(vp2 == NULL)
+  } else if(rhs->str == NULL)
     return false;
-  return strcmp(vp1->str,vp2->str) < 0;
+  return strcmp(lhs->str,rhs->str) < 0;
 }
 
 void my_string_to_stream(const_pointer p,ostream_pointer o){
@@ -64,7 +66,7 @@ void my_string_from_stream(pointer p,istream_pointer i){
   my_string_pointer this=p;
   yaooc_istream_pointer istrm=i;
 	char temp[256];
-	M(istrm,scanf,"%s",temp);
+	M(istrm,scanf,"%255s",temp);
 	if(this->str)
 		free(this->str);
 	this->str=strdup(temp);
@@ -74,8 +76,8 @@ void my_string_from_stream(pointer p,istream_pointer i){
 void my_string_ctor_ccs_size(pointer p,va_list args)
 {
   my_string_pointer this=p;
-  const char* str = va_arg(args,const char*);
-  size_t n = va_arg(args,size_t);
+	const char* str= va_arg(args, const char*);
+	size_t n= va_arg(args, size_t);
   my_string_default_ctor(p);
   if(str != NULL) {
     if(n > strlen(str))
@@ -90,15 +92,15 @@ void my_string_ctor_ccs_size(pointer p,va_list args)
 
 void my_string_ctor_ccs(pointer p,va_list args)
 {
-  const char* str = va_arg(args,const char*);
+	const char* str= va_arg(args, const char*);
   call_constructor(p,my_string_ctor_ccs_size,str,SIZE_MAX);
 }
 
 void my_string_ctor_chr_size(pointer p,va_list args)
 {
   my_string_pointer this=p;
-  int ch = va_arg(args,int);
-  size_t n = va_arg(args,size_t);
+	int ch= va_arg(args, int);
+	size_t n= va_arg(args, size_t);
   my_string_default_ctor(p);
   if(ch && n > 0) {
     my_string_insert_space(this,0,n);
@@ -106,6 +108,7 @@ void my_string_ctor_chr_size(pointer p,va_list args)
     this->str[n]=0;
   }
 }
+
 
 /* Private methods implementation for my_string */
 static void my_string_allocate_space(pointer p,size_t n)
@@ -119,7 +122,6 @@ static char* my_string_strrstr(const_pointer p,const char* pat)
   my_string_const_pointer this=p;
   char* ret = NULL;
   const char* ptr=this->str;
-//	char *p;
 
 	if(ptr != NULL && pat != NULL) {
     size_t size = strlen(ptr);
@@ -159,10 +161,10 @@ void my_string_erase_space(pointer p,size_t pos,size_t n)
 
 
 /* Table implementation for my_string */
-void my_string_swap(pointer p,pointer o)
+void my_string_swap(pointer p,pointer p2)
 {
   my_string_pointer this=p;
-  my_string_pointer other=o;
+  my_string_pointer other=p2;
   char* temp=this->str;
   this->str=other->str;
   other->str=temp;
@@ -279,22 +281,22 @@ my_string_class_table_t my_string_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
   .type_name_ = (const char*) "my_string_t",
-  .swap = (void(*)(pointer,pointer)) my_string_swap,
-  .my_string_n_pos = (const size_t) -1,
+  .swap = (void(*)(pointer, pointer)) my_string_swap,
+  .n_pos = (const size_t) -1,
   .get = (const char*(*)(const_pointer)) my_string_get,
   .c_str = (const char*(*)(const_pointer)) my_string_c_str,
-  .set = (void(*)(pointer,const char*)) my_string_set,
-  .substr = (my_string_pointer(*)(pointer,size_t,size_t)) my_string_substr,
-  .insert = (void(*)(pointer,size_t,const char*)) my_string_insert,
-  .insertn = (void(*)(pointer,size_t,const char*,size_t)) my_string_insertn,
-  .erase = (void(*)(pointer,size_t,size_t)) my_string_erase,
-  .append = (void(*)(pointer,const char*)) my_string_append,
-  .appendn = (void(*)(pointer,const char*,size_t)) my_string_appendn,
-  .find = (const char*(*)(const_pointer,const char*)) my_string_find,
-  .rfind = (const char*(*)(const_pointer,const char*)) my_string_rfind,
-  .find_chr = (const char*(*)(const_pointer,char)) my_string_find_chr,
-  .rfind_chr = (const char*(*)(const_pointer,char)) my_string_rfind_chr,
-  .at = (char*(*)(pointer,size_t)) my_string_at,
+  .set = (void(*)(pointer, const char*)) my_string_set,
+  .substr = (my_string_pointer(*)(pointer, size_t, size_t)) my_string_substr,
+  .insert = (void(*)(pointer, size_t, const char*)) my_string_insert,
+  .insertn = (void(*)(pointer, size_t, const char*, size_t)) my_string_insertn,
+  .erase = (void(*)(pointer, size_t, size_t)) my_string_erase,
+  .append = (void(*)(pointer, const char*)) my_string_append,
+  .appendn = (void(*)(pointer, const char*, size_t)) my_string_appendn,
+  .find = (const char*(*)(const_pointer, const char*)) my_string_find,
+  .rfind = (const char*(*)(const_pointer, const char*)) my_string_rfind,
+  .find_chr = (const char*(*)(const_pointer, char)) my_string_find_chr,
+  .rfind_chr = (const char*(*)(const_pointer, char)) my_string_rfind_chr,
+  .at = (char*(*)(pointer, size_t)) my_string_at,
   .size = (size_t(*)(const_pointer)) my_string_size,
   .length = (size_t(*)(const_pointer)) my_string_length,
   .begin = (char*(*)(const_pointer)) my_string_begin,
@@ -304,8 +306,7 @@ my_string_class_table_t my_string_class_table =
 /* Type info structure for my_string */
 DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,Y,Y,Y,yaooc_object);
 
-/*  End YAOOC PreProcessor generated content */
-
+/* End YAOOCPP output */
 int main(int argc,char* argv[])
 {
   /* Create a new my_string object using my_string_ctor_ccs ctor */
@@ -327,3 +328,4 @@ int main(int argc,char* argv[])
   delete(sp);
 
 }
+
