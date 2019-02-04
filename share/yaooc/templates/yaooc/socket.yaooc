@@ -1,21 +1,21 @@
-	#ifndef __SOCKET_INCLUDED__
+#ifndef __SOCKET_INCLUDED__
 #define __SOCKET_INCLUDED__
 
 #include <yaooc/object.yaooc>
 #include <yaooc/ipaddress.yaooc>
 #include <yaooc/exception.yaooc>
-%h
+#if 0 // HEADER
 #include <string.h>
 #include <unistd.h>
 #ifdef __WIN32__
-  #include <winsock2.h>         // for socket(), connect(), send(), and recv()
+# include <winsock2.h>         // for socket(), connect(), send(), and recv()
   typedef int socklen_t;
 #else
-  #include <sys/types.h>
-  #include <sys/socket.h>      // for socket(), connect(), send(), and recv()
-  #include <sys/ioctl.h>
-  #include <netdb.h>           // for gethostbyname()
-  #include <arpa/inet.h>       // for sockaddr_in and inet_addr()
+# include <sys/types.h>
+# include <sys/socket.h>      // for socket(), connect(), send(), and recv()
+# include <sys/ioctl.h>
+# include <netdb.h>           // for gethostbyname()
+# include <arpa/inet.h>       // for sockaddr_in and inet_addr()
 #endif
 
 #ifdef _WIN32
@@ -25,9 +25,10 @@ void yaooc_socket_cleanup();
 #define yaooc_socket_startup()
 #define yaooc_socket_cleanup()
 #endif
-%%
+#endif // HEADER
 
-%c
+#if 0 // SOURCE
+#include <poll.h>
 #ifdef _WIN32
 void yaooc_socket_startup()
 {
@@ -39,7 +40,7 @@ void yaooc_socket_startup()
 
 void yaooc_socket_cleanup() { WSACleanup(); }
 #endif
-%%
+#endif // SOURCE
 
 class yaooc_socket_exception : yaooc_exception
 {
@@ -47,10 +48,9 @@ class yaooc_socket_exception : yaooc_exception
 };
 
 class yaooc_socket : yaooc_object {
-		yaooc_socket();
+		yaooc_socket();  // throws exception, do not allow to create an socket
 		~yaooc_socket();
 		yaooc_socket(yaooc_socket);
-		yaooc_socket_ctor_domain_type_protocol(int domain,int type,int protocol);
 		operator=();
 	instance:
 		int sock_fd_;
@@ -58,57 +58,57 @@ class yaooc_socket : yaooc_object {
 	table:
 		void close();
 		int send(const char* s);
-		int sendn(const void* d,size_t n);
-		bool select(int m);
-		int recv(void* b,int n);
-		int set_blocking();
-		int set_non_blocking();
-		int set_async();
-		int set_sync();
+		int sendn(const void* buffer,size_t n);
+		int poll(int timeout_ms);
+		int recv(void* buffer,int n);
+		int blocking();
+		int non_blocking();
+		int async();
+		int sync();
+		void debug(bool v);
+		void reuseaddr(bool v);
+		void keepalive(int opt_value);
 		bool is_open() const;
 		yaooc_ipaddress_pointer get_local_ip() const;
 		unsigned int get_local_port() const;
 		yaooc_ipaddress_pointer get_foreign_ip() const;
 		unsigned int get_remote_port() const;
+
+	protected:
+		int setsockopt(int level, int option_name,const void *option_value, socklen_t option_len);
 };
 
-class yaooc_socket_client : yaooc_socket
+class yaooc_tcp_socket : yaooc_socket
 {
-	table:
-		void connect(int domain, unsigned short port,int sock_type);
-};
-
-class yaooc_socket_server : yaooc_socket
-{
-	table:
-		void listen(unsigned int port,unsigned int max_connections);
-};
-
-class yaooc_tcp_socket : yaooc_socket_client
-{
+		yaooc_tcp_socket();
 		yaooc_tcp_socket_ctor_host_port(const char* host,unsigned int port);
-	table:
-		void open(const char* host,unsigned port);
-
-};
-
-class yaooc_udp_socket : yaooc_socket_client
-{
-};
-
-class yaooc_tcp_socket_server : yaooc_socket_server
-{
-		yaooc_tcp_socket_server_ctor_port_n(unsigned int port,unsigned int max_connections);
-	table:
-		void listen(unsigned int port,unsigned int max_connections);
-};
-
-
-class yaooc_udp_socket_server : yaooc_socket_server
-{
+		yaooc_tcp_socket_ctor_host_service(const char* host,const char* service);
 
 	table:
+		void connect_service(const char* host,const char* service);
+		void connect_port(const char* host, unsigned int port);
+};
 
+class yaooc_tcp_socket_server : yaooc_socket
+{
+		yaooc_tcp_socket_server();
+		yaooc_tcp_socket_server_ctor_service_n(const char* service, unsigned int n);
+		yaooc_tcp_socket_server_ctor_port_n(unsigned int port,unsigned int n);
+	table:
+		void listen_service( const char* service,unsigned int max_connections);
+		void listen_port(unsigned int port,unsigned int max_connections);
+		yaooc_tcp_socket_pointer accept();
+};
+
+class yaooc_udp_socket : yaooc_socket
+{
+		yaooc_udp_socket();
+		yaooc_udp_socket_ctor_host_port(const char* host,unsigned int port);
+		yaooc_udp_socket_ctor_host_service(const char* host,unsigned int port);
+	table:
+		void broadcast(bool v);
+		void connect_service(const char* host,const char* service);
+		void connect_port(const char* host,unsigned int port);
 };
 
 #endif

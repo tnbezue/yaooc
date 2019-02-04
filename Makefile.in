@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-#SUBDIRS = lib yaoocpp doc doc/tutorial doc/tutorial/examples
+#SUBDIRS = lib yaoocpp doc doc/yaooc/tutorial doc/yaooc/tutorial/examples
 
 
 
@@ -110,8 +110,9 @@ check_PROGRAMS = tests/test_algorithm$(EXEEXT) \
 	tests/test_pod_array$(EXEEXT) tests/test_pointer_bag$(EXEEXT) \
 	tests/test_queue$(EXEEXT) tests/test_regex$(EXEEXT) \
 	tests/test_set$(EXEEXT) tests/test_stack$(EXEEXT) \
-	tests/test_stream$(EXEEXT) tests/test_string$(EXEEXT) \
-	tests/test_thread$(EXEEXT) tests/test_union$(EXEEXT) \
+	tests/test_stream$(EXEEXT) tests/test_socket$(EXEEXT) \
+	tests/test_string$(EXEEXT) tests/test_thread$(EXEEXT) \
+	tests/test_union$(EXEEXT) \
 	tests/test_unique_array_container$(EXEEXT) \
 	tests/test_unique_index_array_container$(EXEEXT) \
 	tests/test_unique_ordered_array_container$(EXEEXT) \
@@ -173,9 +174,9 @@ am_lib_libyaooc_la_OBJECTS = src/algorithm.lo src/array_container.lo \
 	src/json.lo src/json_parser.lo src/memory.lo src/new.lo \
 	src/object.lo src/odbc.lo src/ordered_array_container.lo \
 	src/pair.lo src/pod_array.lo src/pointer_bag.lo src/queue.lo \
-	src/real.lo src/regex.lo src/sstream.lo src/stack.lo \
-	src/stream.lo src/string.lo src/thread.lo src/types.lo \
-	src/unique_array_container.lo \
+	src/real.lo src/regex.lo src/socket.lo src/sstream.lo \
+	src/stack.lo src/stream.lo src/string.lo src/thread.lo \
+	src/types.lo src/unique_array_container.lo \
 	src/unique_index_array_container.lo \
 	src/unique_ordered_array_container.lo src/utils.lo \
 	src/variant.lo src/vector.lo
@@ -297,6 +298,10 @@ tests_test_set_SOURCES = tests/test_set.c
 tests_test_set_OBJECTS = tests/test_set.$(OBJEXT)
 tests_test_set_LDADD = $(LDADD)
 tests_test_set_DEPENDENCIES =
+tests_test_socket_SOURCES = tests/test_socket.c
+tests_test_socket_OBJECTS = tests/test_socket.$(OBJEXT)
+tests_test_socket_LDADD = $(LDADD)
+tests_test_socket_DEPENDENCIES =
 tests_test_stack_SOURCES = tests/test_stack.c
 tests_test_stack_OBJECTS = tests/test_stack.$(OBJEXT)
 tests_test_stack_LDADD = $(LDADD)
@@ -385,9 +390,10 @@ am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	src/$(DEPDIR)/pair.Plo src/$(DEPDIR)/pod_array.Plo \
 	src/$(DEPDIR)/pointer_bag.Plo src/$(DEPDIR)/queue.Plo \
 	src/$(DEPDIR)/real.Plo src/$(DEPDIR)/regex.Plo \
-	src/$(DEPDIR)/sstream.Plo src/$(DEPDIR)/stack.Plo \
-	src/$(DEPDIR)/stream.Plo src/$(DEPDIR)/string.Plo \
-	src/$(DEPDIR)/thread.Plo src/$(DEPDIR)/types.Plo \
+	src/$(DEPDIR)/socket.Plo src/$(DEPDIR)/sstream.Plo \
+	src/$(DEPDIR)/stack.Plo src/$(DEPDIR)/stream.Plo \
+	src/$(DEPDIR)/string.Plo src/$(DEPDIR)/thread.Plo \
+	src/$(DEPDIR)/types.Plo \
 	src/$(DEPDIR)/unique_array_container.Plo \
 	src/$(DEPDIR)/unique_index_array_container.Plo \
 	src/$(DEPDIR)/unique_ordered_array_container.Plo \
@@ -409,9 +415,10 @@ am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	tests/$(DEPDIR)/test_pair.Po tests/$(DEPDIR)/test_pod_array.Po \
 	tests/$(DEPDIR)/test_pointer_bag.Po \
 	tests/$(DEPDIR)/test_queue.Po tests/$(DEPDIR)/test_regex.Po \
-	tests/$(DEPDIR)/test_set.Po tests/$(DEPDIR)/test_stack.Po \
-	tests/$(DEPDIR)/test_stream.Po tests/$(DEPDIR)/test_string.Po \
-	tests/$(DEPDIR)/test_thread.Po tests/$(DEPDIR)/test_union.Po \
+	tests/$(DEPDIR)/test_set.Po tests/$(DEPDIR)/test_socket.Po \
+	tests/$(DEPDIR)/test_stack.Po tests/$(DEPDIR)/test_stream.Po \
+	tests/$(DEPDIR)/test_string.Po tests/$(DEPDIR)/test_thread.Po \
+	tests/$(DEPDIR)/test_union.Po \
 	tests/$(DEPDIR)/test_unique_array_container.Po \
 	tests/$(DEPDIR)/test_unique_index_array_container.Po \
 	tests/$(DEPDIR)/test_unique_ordered_array_container.Po \
@@ -449,9 +456,9 @@ SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_ordered_map.c tests/test_ordered_set.c \
 	tests/test_pair.c tests/test_pod_array.c \
 	tests/test_pointer_bag.c tests/test_queue.c tests/test_regex.c \
-	tests/test_set.c tests/test_stack.c tests/test_stream.c \
-	tests/test_string.c tests/test_thread.c tests/test_union.c \
-	tests/test_unique_array_container.c \
+	tests/test_set.c tests/test_socket.c tests/test_stack.c \
+	tests/test_stream.c tests/test_string.c tests/test_thread.c \
+	tests/test_union.c tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c tests/test_utils.c \
 	tests/test_variant.c tests/test_vector.c \
@@ -467,9 +474,9 @@ DIST_SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_ordered_map.c tests/test_ordered_set.c \
 	tests/test_pair.c tests/test_pod_array.c \
 	tests/test_pointer_bag.c tests/test_queue.c tests/test_regex.c \
-	tests/test_set.c tests/test_stack.c tests/test_stream.c \
-	tests/test_string.c tests/test_thread.c tests/test_union.c \
-	tests/test_unique_array_container.c \
+	tests/test_set.c tests/test_socket.c tests/test_stack.c \
+	tests/test_stream.c tests/test_string.c tests/test_thread.c \
+	tests/test_union.c tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c tests/test_utils.c \
 	tests/test_variant.c tests/test_vector.c \
@@ -643,46 +650,46 @@ YAOOC_PATCH_VERSION = 1
 AM_CFLAGS = -I$(top_srcdir)/include
 AM_LDFLAGS = -L$(top_srcdir)/lib -pthread
 ACLOCAL_AMFLAGS = -I m4
-DOC_FILES = doc/tutorial/map.html \
-doc/tutorial/type_info.html \
-doc/tutorial/pointer_bag.html \
-doc/tutorial/streams.html \
-doc/tutorial/vector.html \
-doc/tutorial/memory_layout.html \
-doc/tutorial/placement_new_delete.html \
-doc/tutorial/new_delete.html \
-doc/tutorial/constructors.html \
-doc/tutorial/inheritance.html \
-doc/tutorial/examples/ch17/my_string_vector.c \
-doc/tutorial/examples/ch17/my_string_vector.h \
-doc/tutorial/examples/ch06/my_string_ch06.c \
-doc/tutorial/examples/ch07/my_string_ch07.c \
-doc/tutorial/examples/ch02/hello_world.c \
-doc/tutorial/examples/ch08/my_string_ch08.c \
-doc/tutorial/examples/ch18/my_string_map.h \
-doc/tutorial/examples/ch18/my_string_map.c \
-doc/tutorial/examples/ch08/my_string_ch08.c \
-doc/tutorial/examples/ch09/my_string_ch09.c \
-doc/tutorial/examples/ch10/my_string_ch10.c \
-doc/tutorial/examples/ch11/my_string_ch11.c \
-doc/tutorial/examples/ch12/my_string_ch12.c \
-doc/tutorial/examples/ch13/my_string_ch13.c \
-doc/tutorial/examples/ch13/my_string_ch13.h \
-doc/tutorial/examples/ch14/my_string_ch14.c \
-doc/tutorial/examples/ch14/my_string_ch14.h \
-doc/tutorial/examples/ch15/my_string_ch15.c \
-doc/tutorial/examples/ch15/my_string_ch15.h \
-doc/tutorial/containers.html \
-doc/tutorial/custom_type_info.html \
-doc/tutorial/type_info_revisited.html \
-doc/tutorial/custom_class.html \
-doc/tutorial/exceptions.html \
-doc/tutorial/hello_world.html \
-doc/tutorial/yaoocpp.html \
-doc/tutorial/index.html \
-doc/tutorial/class_table_instance.html \
-doc/tutorial/yaooc.js \
-doc/tutorial/yaooc.css
+DOC_FILES = doc/yaooc/tutorial/map.html \
+doc/yaooc/tutorial/type_info.html \
+doc/yaooc/tutorial/pointer_bag.html \
+doc/yaooc/tutorial/streams.html \
+doc/yaooc/tutorial/vector.html \
+doc/yaooc/tutorial/memory_layout.html \
+doc/yaooc/tutorial/placement_new_delete.html \
+doc/yaooc/tutorial/new_delete.html \
+doc/yaooc/tutorial/constructors.html \
+doc/yaooc/tutorial/inheritance.html \
+doc/yaooc/tutorial/examples/ch17/my_string_vector.c \
+doc/yaooc/tutorial/examples/ch17/my_string_vector.h \
+doc/yaooc/tutorial/examples/ch06/my_string_ch06.c \
+doc/yaooc/tutorial/examples/ch07/my_string_ch07.c \
+doc/yaooc/tutorial/examples/ch02/hello_world.c \
+doc/yaooc/tutorial/examples/ch08/my_string_ch08.c \
+doc/yaooc/tutorial/examples/ch18/my_string_map.h \
+doc/yaooc/tutorial/examples/ch18/my_string_map.c \
+doc/yaooc/tutorial/examples/ch08/my_string_ch08.c \
+doc/yaooc/tutorial/examples/ch09/my_string_ch09.c \
+doc/yaooc/tutorial/examples/ch10/my_string_ch10.c \
+doc/yaooc/tutorial/examples/ch11/my_string_ch11.c \
+doc/yaooc/tutorial/examples/ch12/my_string_ch12.c \
+doc/yaooc/tutorial/examples/ch13/my_string_ch13.c \
+doc/yaooc/tutorial/examples/ch13/my_string_ch13.h \
+doc/yaooc/tutorial/examples/ch14/my_string_ch14.c \
+doc/yaooc/tutorial/examples/ch14/my_string_ch14.h \
+doc/yaooc/tutorial/examples/ch15/my_string_ch15.c \
+doc/yaooc/tutorial/examples/ch15/my_string_ch15.h \
+doc/yaooc/tutorial/containers.html \
+doc/yaooc/tutorial/custom_type_info.html \
+doc/yaooc/tutorial/type_info_revisited.html \
+doc/yaooc/tutorial/custom_class.html \
+doc/yaooc/tutorial/exceptions.html \
+doc/yaooc/tutorial/hello_world.html \
+doc/yaooc/tutorial/yaoocpp.html \
+doc/yaooc/tutorial/index.html \
+doc/yaooc/tutorial/class_table_instance.html \
+doc/yaooc/tutorial/yaooc.js \
+doc/yaooc/tutorial/yaooc.css
 
 EXTRA_DIST = yaooc-config.in ${DOC_FILES} tests/test_harness.h tests/demo_def.inc \
   tests/shape.inc tests/simple_object.inc tests/test_utils.inc
@@ -712,6 +719,7 @@ src/pointer_bag.c \
 src/queue.c \
 src/real.c \
 src/regex.c \
+src/socket.c \
 src/sstream.c \
 src/stack.c \
 src/stream.c \
@@ -755,6 +763,7 @@ include/yaooc/queue.h \
 include/yaooc/real.h \
 include/yaooc/regex.h \
 include/yaooc/set.h \
+include/yaooc/socket.h \
 include/yaooc/sstream.h \
 include/yaooc/stack.h \
 include/yaooc/stream.h \
@@ -942,6 +951,7 @@ src/pointer_bag.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/queue.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/real.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/regex.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/socket.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/sstream.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/stack.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/stream.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
@@ -1125,6 +1135,12 @@ tests/test_set.$(OBJEXT): tests/$(am__dirstamp) \
 tests/test_set$(EXEEXT): $(tests_test_set_OBJECTS) $(tests_test_set_DEPENDENCIES) $(EXTRA_tests_test_set_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test_set$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_set_OBJECTS) $(tests_test_set_LDADD) $(LIBS)
+tests/test_socket.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test_socket$(EXEEXT): $(tests_test_socket_OBJECTS) $(tests_test_socket_DEPENDENCIES) $(EXTRA_tests_test_socket_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test_socket$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_socket_OBJECTS) $(tests_test_socket_LDADD) $(LIBS)
 tests/test_stack.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1277,6 +1293,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/queue.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/real.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/regex.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/socket.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/sstream.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/stack.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/stream.Plo@am__quote@ # am--include-marker
@@ -1315,6 +1332,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_queue.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_regex.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_set.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_socket.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_stack.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_stream.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_string.Po@am__quote@ # am--include-marker
@@ -1697,6 +1715,7 @@ distclean: distclean-am
 	-rm -f src/$(DEPDIR)/queue.Plo
 	-rm -f src/$(DEPDIR)/real.Plo
 	-rm -f src/$(DEPDIR)/regex.Plo
+	-rm -f src/$(DEPDIR)/socket.Plo
 	-rm -f src/$(DEPDIR)/sstream.Plo
 	-rm -f src/$(DEPDIR)/stack.Plo
 	-rm -f src/$(DEPDIR)/stream.Plo
@@ -1735,6 +1754,7 @@ distclean: distclean-am
 	-rm -f tests/$(DEPDIR)/test_queue.Po
 	-rm -f tests/$(DEPDIR)/test_regex.Po
 	-rm -f tests/$(DEPDIR)/test_set.Po
+	-rm -f tests/$(DEPDIR)/test_socket.Po
 	-rm -f tests/$(DEPDIR)/test_stack.Po
 	-rm -f tests/$(DEPDIR)/test_stream.Po
 	-rm -f tests/$(DEPDIR)/test_string.Po
@@ -1821,6 +1841,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f src/$(DEPDIR)/queue.Plo
 	-rm -f src/$(DEPDIR)/real.Plo
 	-rm -f src/$(DEPDIR)/regex.Plo
+	-rm -f src/$(DEPDIR)/socket.Plo
 	-rm -f src/$(DEPDIR)/sstream.Plo
 	-rm -f src/$(DEPDIR)/stack.Plo
 	-rm -f src/$(DEPDIR)/stream.Plo
@@ -1859,6 +1880,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/$(DEPDIR)/test_queue.Po
 	-rm -f tests/$(DEPDIR)/test_regex.Po
 	-rm -f tests/$(DEPDIR)/test_set.Po
+	-rm -f tests/$(DEPDIR)/test_socket.Po
 	-rm -f tests/$(DEPDIR)/test_stack.Po
 	-rm -f tests/$(DEPDIR)/test_stream.Po
 	-rm -f tests/$(DEPDIR)/test_string.Po

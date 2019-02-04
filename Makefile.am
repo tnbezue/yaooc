@@ -1,4 +1,4 @@
-#SUBDIRS = lib yaoocpp doc doc/tutorial doc/tutorial/examples
+#SUBDIRS = lib yaoocpp doc doc/yaooc/tutorial doc/yaooc/tutorial/examples
 
 YAOOC_MAJOR_VERSION=1
 YAOOC_MINOR_VERSION=3
@@ -8,46 +8,46 @@ AM_CFLAGS=-I$(top_srcdir)/include
 AM_LDFLAGS=-L$(top_srcdir)/lib -pthread
 ACLOCAL_AMFLAGS=-I m4
 
-DOC_FILES=doc/tutorial/map.html \
-doc/tutorial/type_info.html \
-doc/tutorial/pointer_bag.html \
-doc/tutorial/streams.html \
-doc/tutorial/vector.html \
-doc/tutorial/memory_layout.html \
-doc/tutorial/placement_new_delete.html \
-doc/tutorial/new_delete.html \
-doc/tutorial/constructors.html \
-doc/tutorial/inheritance.html \
-doc/tutorial/examples/ch17/my_string_vector.c \
-doc/tutorial/examples/ch17/my_string_vector.h \
-doc/tutorial/examples/ch06/my_string_ch06.c \
-doc/tutorial/examples/ch07/my_string_ch07.c \
-doc/tutorial/examples/ch02/hello_world.c \
-doc/tutorial/examples/ch08/my_string_ch08.c \
-doc/tutorial/examples/ch18/my_string_map.h \
-doc/tutorial/examples/ch18/my_string_map.c \
-doc/tutorial/examples/ch08/my_string_ch08.c \
-doc/tutorial/examples/ch09/my_string_ch09.c \
-doc/tutorial/examples/ch10/my_string_ch10.c \
-doc/tutorial/examples/ch11/my_string_ch11.c \
-doc/tutorial/examples/ch12/my_string_ch12.c \
-doc/tutorial/examples/ch13/my_string_ch13.c \
-doc/tutorial/examples/ch13/my_string_ch13.h \
-doc/tutorial/examples/ch14/my_string_ch14.c \
-doc/tutorial/examples/ch14/my_string_ch14.h \
-doc/tutorial/examples/ch15/my_string_ch15.c \
-doc/tutorial/examples/ch15/my_string_ch15.h \
-doc/tutorial/containers.html \
-doc/tutorial/custom_type_info.html \
-doc/tutorial/type_info_revisited.html \
-doc/tutorial/custom_class.html \
-doc/tutorial/exceptions.html \
-doc/tutorial/hello_world.html \
-doc/tutorial/yaoocpp.html \
-doc/tutorial/index.html \
-doc/tutorial/class_table_instance.html \
-doc/tutorial/yaooc.js \
-doc/tutorial/yaooc.css
+DOC_FILES=doc/yaooc/tutorial/map.html \
+doc/yaooc/tutorial/type_info.html \
+doc/yaooc/tutorial/pointer_bag.html \
+doc/yaooc/tutorial/streams.html \
+doc/yaooc/tutorial/vector.html \
+doc/yaooc/tutorial/memory_layout.html \
+doc/yaooc/tutorial/placement_new_delete.html \
+doc/yaooc/tutorial/new_delete.html \
+doc/yaooc/tutorial/constructors.html \
+doc/yaooc/tutorial/inheritance.html \
+doc/yaooc/tutorial/examples/ch17/my_string_vector.c \
+doc/yaooc/tutorial/examples/ch17/my_string_vector.h \
+doc/yaooc/tutorial/examples/ch06/my_string_ch06.c \
+doc/yaooc/tutorial/examples/ch07/my_string_ch07.c \
+doc/yaooc/tutorial/examples/ch02/hello_world.c \
+doc/yaooc/tutorial/examples/ch08/my_string_ch08.c \
+doc/yaooc/tutorial/examples/ch18/my_string_map.h \
+doc/yaooc/tutorial/examples/ch18/my_string_map.c \
+doc/yaooc/tutorial/examples/ch08/my_string_ch08.c \
+doc/yaooc/tutorial/examples/ch09/my_string_ch09.c \
+doc/yaooc/tutorial/examples/ch10/my_string_ch10.c \
+doc/yaooc/tutorial/examples/ch11/my_string_ch11.c \
+doc/yaooc/tutorial/examples/ch12/my_string_ch12.c \
+doc/yaooc/tutorial/examples/ch13/my_string_ch13.c \
+doc/yaooc/tutorial/examples/ch13/my_string_ch13.h \
+doc/yaooc/tutorial/examples/ch14/my_string_ch14.c \
+doc/yaooc/tutorial/examples/ch14/my_string_ch14.h \
+doc/yaooc/tutorial/examples/ch15/my_string_ch15.c \
+doc/yaooc/tutorial/examples/ch15/my_string_ch15.h \
+doc/yaooc/tutorial/containers.html \
+doc/yaooc/tutorial/custom_type_info.html \
+doc/yaooc/tutorial/type_info_revisited.html \
+doc/yaooc/tutorial/custom_class.html \
+doc/yaooc/tutorial/exceptions.html \
+doc/yaooc/tutorial/hello_world.html \
+doc/yaooc/tutorial/yaoocpp.html \
+doc/yaooc/tutorial/index.html \
+doc/yaooc/tutorial/class_table_instance.html \
+doc/yaooc/tutorial/yaooc.js \
+doc/yaooc/tutorial/yaooc.css
 
 EXTRA_DIST=yaooc-config.in ${DOC_FILES} tests/test_harness.h tests/demo_def.inc \
   tests/shape.inc tests/simple_object.inc tests/test_utils.inc
@@ -78,6 +78,7 @@ src/pointer_bag.c \
 src/queue.c \
 src/real.c \
 src/regex.c \
+src/socket.c \
 src/sstream.c \
 src/stack.c \
 src/stream.c \
@@ -122,6 +123,7 @@ include/yaooc/queue.h \
 include/yaooc/real.h \
 include/yaooc/regex.h \
 include/yaooc/set.h \
+include/yaooc/socket.h \
 include/yaooc/sstream.h \
 include/yaooc/stack.h \
 include/yaooc/stream.h \
@@ -165,6 +167,7 @@ tests/test_regex \
 tests/test_set \
 tests/test_stack \
 tests/test_stream \
+tests/test_socket \
 tests/test_string \
 tests/test_thread \
 tests/test_union \

@@ -20,7 +20,16 @@ CFLAGS="$CFLAGS -fms-extensions -pthread -D_GNU_SOURCE -Wall"
 LIBS="$LIBS -lodbc"
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h inttypes.h stddef.h stdint.h stdlib.h string.h unistd.h])
-AC_CHECK_FUNCS([memchr memmove memset strchr ])
+AC_CHECK_FUNCS([memchr memmove memset strchr getcwd gettimeofday socket strcasecmp strcspn strdup strrchr strspn strstr])
+AC_FUNC_REALLOC
+AC_TYPE_INT64_T
+AC_TYPE_MODE_T
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_TYPE_UID_T
+AC_TYPE_UINT32_T
+AC_FUNC_MKTIME
 
 AC_MSG_CHECKING(for debuggin)
 AC_ARG_ENABLE(debug,[ --enable-debug   compile for debugging])
@@ -29,8 +38,9 @@ if test "x$enable_debug" = "xyes"; then
 	CFLAGS="$CFLAGS -g -D__DEBUG__"
 fi
 
-AC_MSG_CHECKING(for sql support)
-
+AC_MSG_CHECKING(for ODBC support)
+AC_CHECK_HEADER(sql.h)
+AC_CHECK_LIB(odbc,SQLAllocHandle)
 AC_MSG_CHECKING(for garbage collection)
 AC_ARG_ENABLE(gc,[ --enable-gc   compile using garbage collection])
 AC_MSG_RESULT([$enable_gc])
