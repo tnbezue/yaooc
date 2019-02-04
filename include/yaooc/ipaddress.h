@@ -9,7 +9,7 @@
 /*
   Class Definition for yaooc_ipaddress
 */
-typedef enum { UNDEFINED=0, IP4, IP6 } iptype_t;
+//typedef enum { UNDEFINED=0, IP4, IP6 } iptype_t;
 yaooc_class_table(yaooc_ipaddress) {
   yaooc_object_class_table_t;
   void (*set)(pointer, const char*);
@@ -17,13 +17,13 @@ yaooc_class_table(yaooc_ipaddress) {
   bool (*is_ip6)(const_pointer);
   bool (*is_undefined)(const_pointer);
   bool (*is_loopback)(const_pointer);
-  iptype_t (*type)(const_pointer);
+  int (*type)(const_pointer);
 };
 #define yaooc_ipaddress_parent_class_table ((yaooc_object_class_table_t*)(yaooc_ipaddress_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_ipaddress) {
   yaooc_object_class_instance_t;
-  iptype_t type_;
+  int type_;
   char buf_[16];
 };
 
@@ -47,7 +47,7 @@ bool yaooc_ipaddress_is_ip4(const_pointer);
 bool yaooc_ipaddress_is_ip6(const_pointer);
 bool yaooc_ipaddress_is_undefined(const_pointer);
 bool yaooc_ipaddress_is_loopback(const_pointer);
-iptype_t yaooc_ipaddress_type(const_pointer);
+int yaooc_ipaddress_type(const_pointer);
 
 /* Protected prototypes for yaooc_ipaddress */
 

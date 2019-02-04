@@ -20,6 +20,12 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stddef.h>
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#else
+#include <arpa/inet.h>
+#endif
 #include <yaooc/ipaddress.h>
 #include <yaooc/sstream.h>
 #include "test_harness.h"
@@ -34,7 +40,7 @@ void test_default_ctor()
 {
 	yaooc_ipaddress_t* ip=new(yaooc_ipaddress);
 	yaooc_ostringstream_t* os=new(yaooc_ostringstream);
-	TEST("Type is undefined",M(ip,type)==UNDEFINED);
+	TEST("Type is undefined",M(ip,type)!=AF_INET && M(ip,type)!=AF_INET6);
 	TEST("Is not loopback",!M(ip,is_loopback));
 	STREAM(os,ip);
 	TEST("Ouput is '(nil)'",strcmp(M(os,c_str),"(nil)")==0);
@@ -47,13 +53,13 @@ void test_ip4()
 	yaooc_ipaddress_t* ip4=new_ctor(yaooc_ipaddress,yaooc_ipaddress_ctor_ccs,"127.0.0.1");
 	yaooc_ostringstream_t* os=new(yaooc_ostringstream);
 
-	TEST("Type is IP4",M(ip4,type)==IP4);
+	TEST("Type is IP4",M(ip4,type)==AF_INET);
 	TEST("Is loopback",M(ip4,is_loopback));
 	STREAM(os,ip4);
 	TEST("Ouput is '127.0.0.1'",strcmp(M(os,c_str),"127.0.0.1")==0);
 
 	M(ip4,set,"192.168.1.87");
-	TEST("Type is IP4",M(ip4,type)==IP4);
+	TEST("Type is IP4",M(ip4,type)==AF_INET);
 	TEST("Is not loopback",!M(ip4,is_loopback));
 	M(os,seek,0,SEEK_SET);
 	STREAM(os,ip4);
@@ -68,13 +74,13 @@ void test_ip6()
 	yaooc_ipaddress_t* ip6=new_ctor(yaooc_ipaddress,yaooc_ipaddress_ctor_ccs,"::1");
 	yaooc_ostringstream_t* os=new(yaooc_ostringstream);
 
-	TEST("Type is IP6",M(ip6,type)==IP6);
+	TEST("Type is IP6",M(ip6,type)==AF_INET6);
 	TEST("Is loopback",M(ip6,is_loopback));
 	STREAM(os,ip6);
 	TEST("Ouput is '::1'",strcmp(M(os,c_str),"::1")==0);
 
 	M(ip6,set,"2600:1700:3901:1b80:7a2b:cbff:fea1:b6d");
-	TEST("Type is IP6",M(ip6,type)==IP6);
+	TEST("Type is IP6",M(ip6,type)==AF_INET6);
 	TEST("Is not loopback",!M(ip6,is_loopback));
 	M(os,seek,0,SEEK_SET);
 	STREAM(os,ip6);

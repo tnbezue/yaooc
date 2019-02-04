@@ -52,16 +52,17 @@ void yaooc_ipaddress_to_stream(const_pointer p,ostream_pointer o){
   yaooc_ostream_pointer ostrm=o;
 	char temp[INET6_ADDRSTRLEN];
 	switch(this->type_) {
-		case UNDEFINED:
-			strcpy(temp,"(nil)");
-			break;
 
-		case IP4:
+		case AF_INET:
 			inet_ntop(AF_INET,(void*)this->buf_,temp,INET_ADDRSTRLEN);
 			break;
 
-		case IP6:
+		case AF_INET6:
 			inet_ntop(AF_INET6,(void*)this->buf_,temp,INET6_ADDRSTRLEN);
+			break;
+
+		default:
+			strcpy(temp,"(nil)");
 			break;
 	}
 	M(ostrm,printf,temp);
@@ -83,27 +84,27 @@ void yaooc_ipaddress_ctor_ccs(pointer p,va_list args)
 void yaooc_ipaddress_set(pointer p,const char* ip_str)
 {
   yaooc_ipaddress_pointer this=p;
-	this->type_=UNDEFINED;
+	this->type_=0;
 	if (inet_pton(AF_INET, ip_str, this->buf_ ) == 1) {
-		this->type_ = IP4;
+		this->type_ = AF_INET;
 	} else if (inet_pton(AF_INET6, ip_str, this->buf_ ) == 1) {
-		this->type_ = IP6;
+		this->type_ = AF_INET6;
 	}
 }
 
 bool yaooc_ipaddress_is_ip4(const_pointer p)
 {
-  return ((yaooc_ipaddress_const_pointer)p)->type_==IP4;
+  return ((yaooc_ipaddress_const_pointer)p)->type_==AF_INET;
 }
 
 bool yaooc_ipaddress_is_ip6(const_pointer p)
 {
-  return ((yaooc_ipaddress_const_pointer)p)->type_==IP6;
+  return ((yaooc_ipaddress_const_pointer)p)->type_==AF_INET6;
 }
 
 bool yaooc_ipaddress_is_undefined(const_pointer p)
 {
-  return ((yaooc_ipaddress_const_pointer)p)->type_==UNDEFINED;
+  return ((yaooc_ipaddress_const_pointer)p)->type_!=AF_INET && ((yaooc_ipaddress_const_pointer)p)->type_!=AF_INET;
 }
 
 bool yaooc_ipaddress_is_loopback(const_pointer p)
@@ -112,15 +113,12 @@ bool yaooc_ipaddress_is_loopback(const_pointer p)
 	bool ret=false;
 	char buf[16];
 	switch(this->type_) {
-		case UNDEFINED:
-			break;
-
-		case IP4:
+		case AF_INET:
 			inet_pton(AF_INET, "127.0.0.1", buf );
 			ret = memcmp(this->buf_,buf,4)==0;
 			break;
 
-		case IP6:
+		case AF_INET6:
 			inet_pton(AF_INET6, "::1", buf );
 			ret = memcmp(this->buf_,buf,16)==0;
 			break;
@@ -128,7 +126,7 @@ bool yaooc_ipaddress_is_loopback(const_pointer p)
 	return ret;
 }
 
-iptype_t yaooc_ipaddress_type(const_pointer p)
+int yaooc_ipaddress_type(const_pointer p)
 {
 	return ((yaooc_ipaddress_const_pointer)p)->type_;
 }
@@ -145,7 +143,7 @@ yaooc_ipaddress_class_table_t yaooc_ipaddress_class_table =
   .is_ip6 = (bool(*)(const_pointer)) yaooc_ipaddress_is_ip6,
   .is_undefined = (bool(*)(const_pointer)) yaooc_ipaddress_is_undefined,
   .is_loopback = (bool(*)(const_pointer)) yaooc_ipaddress_is_loopback,
-  .type = (iptype_t(*)(const_pointer)) yaooc_ipaddress_type,
+  .type = (int(*)(const_pointer)) yaooc_ipaddress_type,
 };
 
 /* Type info structure for yaooc_ipaddress */
