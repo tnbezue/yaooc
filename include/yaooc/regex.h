@@ -158,6 +158,7 @@ void yaooc_regex_copy_ctor(pointer,const_pointer);
 void yaooc_regex_assign(pointer,const_pointer);
 
 /* Constructors for yaooc_regex */
+void yaooc_regex_ctor_ccs(pointer,va_list);
 void yaooc_regex_ctor_ccs_int(pointer,va_list);
 
 /* Prototypes for yaooc_regex class table*/

@@ -44,6 +44,12 @@ yaooc_regex_regexp_match_info_t yaooc_regex_is_re_string(const char* pat)
 	return ret;
 }
 
+void yaooc_regex_destory_match_info(yaooc_regex_regexp_match_info_t* rmi)
+{
+	if(rmi->pattern_)
+		FREE(rmi->pattern_);
+}
+
 /*  Begin YAOOC PreProcessor generated content */
 /* yaooc_regex_exception private members */
 
@@ -144,7 +150,8 @@ yaooc_string_pointer yaooc_matchdata_at(const_pointer p,size_t i)
   yaooc_matchdata_const_pointer this=p;
   yaooc_string_pointer ret=new(yaooc_string);
   if(this->ovector_  && this->match_result_==0 && i>= 0 && i < this->n_captures_) {
-    M(ret,insertn,0,this->subject_+this->ovector_[i].rm_so,this->ovector_[i].rm_eo-this->ovector_[i].rm_so);
+		if(this->ovector_[i].rm_so >= 0)
+			M(ret,insertn,0,this->subject_+this->ovector_[i].rm_so,this->ovector_[i].rm_eo-this->ovector_[i].rm_so);
   }
   return ret;
 }
@@ -306,6 +313,17 @@ void yaooc_regex_assign(pointer p,const_pointer s)
 }
 
 /* Constructors for yaooc_regex */
+void yaooc_regex_ctor_ccs(pointer p,va_list args)
+{
+  const char* pattern=va_arg(args,const char*);
+	yaooc_regex_regexp_match_info_t rmi = yaooc_regex_is_re_string(pattern);
+	if(rmi.pattern_)
+		pattern=rmi.pattern_;
+	yaooc_regex_default_ctor(p);
+  yaooc_regex_set_pattern_flags(p,pattern,rmi.flags_);
+	yaooc_regex_destory_match_info(&rmi);
+}
+
 void yaooc_regex_ctor_ccs_int(pointer p,va_list args)
 {
   const char* pattern=va_arg(args,const char*);
