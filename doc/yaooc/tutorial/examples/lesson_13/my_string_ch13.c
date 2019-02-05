@@ -37,9 +37,7 @@ void my_string_assign(pointer p,const_pointer s)
 {
   my_string_pointer this=p;
   my_string_const_pointer src=s;
-  if(this->str != NULL)
-    free(this->str);
-  this->str = src->str ? strdup(src->str) : NULL;
+	my_string_set(this,src->str);
 }
 
 bool my_string_less_than_compare(const_pointer lhs_cp,const_pointer rhs_cp)
@@ -179,8 +177,10 @@ const char* my_string_get(const_pointer p)
 void my_string_set(pointer p,const char* s)
 {
   my_string_pointer this=p;
-  my_string_dtor(this);
-  this->str = s ? strdup(s) : NULL;
+  deletep(this,my_string);
+	my_string_default_ctor(this);
+	if(s)
+		this->str = strdup(s);
 }
 
 my_string_pointer my_string_substr(pointer p,size_t beg,size_t n)

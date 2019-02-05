@@ -89,6 +89,10 @@ For the my_string class, the following code is created by the above three macros
   };
 </code></pre>
 <p>
+Note that not only is a type associated with the class (my_string_t), the class table and class instance also have a type (my_string_class_table_t and my_string_class_instance_t).
+This is required to initialize the class table and when the class is inherited.  Inheritance is covered in a later lesson.
+</p>
+<p>
 A pointer to the class table is the first member of the combined class.  When new creates an instance of the class, it will set this variable to the
 class_table_ value in the type info structure -- therefore, constructors have access to the class methods.  <font color="red">NEVER</font> use memset(this,0,sizeof(T)) to initialize an object.
 Doing so will destroy the value of class_table_;
@@ -110,7 +114,7 @@ The method names should be the class name appended with underscore and method na
   }
 </code></pre>
 <p>
-Note that the first argument to methods is a pointer (or const_pointer) the object.
+Note that the first argument to methods is a pointer (or const_pointer) to the object.
 </p>
 <p>
 The class table is then initialized as:
@@ -142,6 +146,9 @@ YAOOC provides the M macro (M for method) to make calling methods easier. The sy
   M(msp,set,"This is a test");
   printf("%s\n",M(msp,get));
 </code></pre>
+<p>
+You may have noticed that the my_string_assign method was changed slightly to use the my_string_set_method.
+</p>
 <p>
 Another macro that will have an occasional use is yaooc_class_forward.  As the name implies, yaooc_class_forward provides a forward declaration of a class.
 It defines the same types that the yaooc_class macro does.  The user must use yaooc_struct or the combination of yaooc_class_table, yaooc_class_instance,

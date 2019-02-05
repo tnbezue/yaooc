@@ -22,9 +22,9 @@
 <div style="overflow-y: scroll; height:900px">
 <h2>Memory Layout</h2>
 <p>
-Before continuing with the my_string class, it's helpful to understand how memory allocation is handled in YAOOC. 
+Before continuing with the my_string class, it's helpful to understand how memory allocation is handled in YAOOC.
 When an object (or array of objects) is allocated, additional memory is allocated for a pointer to type info structure and the number of
-objects allocated.  This memory layout is shown below. 
+objects allocated.  This memory layout is shown below.
 </p>
 <div class="divTable">
 <div class="divTableBody">
@@ -50,8 +50,8 @@ objects allocated.  This memory layout is shown below.
 </div>
 
 <p>
-The overhead is 8 bytes for a 32 bit system and 16 bytes for a 64 bit system.  Note that this is per allocation -- not per element.  
-If a single character is allocated, 9 (or 17) bytes will actually be allocated.  An array of 100,000 characters would require 100,008 (or 100,016) bytes. 
+The overhead is 8 bytes for a 32 bit system and 16 bytes for a 64 bit system.  Note that this is per allocation -- not per element.
+If a single character is allocated, 9 (or 17) bytes will actually be allocated.  An array of 100,000 characters would require 100,008 (or 100,016) bytes.
 </p>
 <p>
 This memory allocation scheme allows the type info to be readily available for internal YAOOC methods that uses it. For example, the assign method
@@ -65,7 +65,7 @@ Therefore, some of the methods that have been presented so far will not work on 
 Since the type info pointer is not available, the class type is included as an argument to the static versions.
 </p>
 <p>
-Static versions of assign and comparison methods are presented below.   
+Static versions of assign and comparison methods are presented below.
 </p>
 
 <div class="divTable">
@@ -110,7 +110,7 @@ For example, to compare if two static my_string objects are equal, use:
 </p>
 <pre><code>
   #define INIT_STATIC_MY_STRING { .parent_class_table_=(const class_table_t*) &amp;yaooc_object_class_table, \
-          .type_name_ = "my_string_t", .swap = my_string_swap,.class_table_=&amp;my_string_class_table, .str=NULL } 
+          .type_name_ = "my_string_t", .swap = my_string_swap,.class_table_=&amp;my_string_class_table, .str=NULL }
   my_string_t ms1 = INIT_STATIC_MY_STRING;
   my_string_t ms2 = INIT_STATIC_MY_STRING;
   ....
@@ -121,9 +121,9 @@ For example, to compare if two static my_string objects are equal, use:
 <p>
 
 </p>
-In C, when a static YAOOC object is declared, the default constructor is not called to initialize the object.
+In C, when a YAOOC object is declared on the stack (static), the default constructor is not called to initialize the object.
 The above example shows how a static object may be initialized. This can be cumbersome for a class with many instance members.
-A more practical method will be presented in the next chapter.
+A more practical method will be presented in the next lesson.
 </p>
 <h3>Renew</h3>
 <p>

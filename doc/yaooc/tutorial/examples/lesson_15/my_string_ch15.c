@@ -179,8 +179,10 @@ const char* my_string_get(const_pointer p)
 void my_string_set(pointer p,const char* s)
 {
   my_string_pointer this=p;
-  my_string_dtor(this);
-  this->str = s ? strdup(s) : NULL;
+  deletep(this,my_string);
+	my_string_default_ctor(this);
+	if(s)
+		this->str = strdup(s);
 }
 
 my_string_pointer my_string_substr(pointer p,size_t beg,size_t n)

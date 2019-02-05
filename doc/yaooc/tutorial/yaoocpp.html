@@ -71,12 +71,13 @@ would be converted to the following in the C header file.
 <pre><code>
   #include &lt;yaooc/object.h&gt;
 </code></pre>
-
+<h3>Header/Source Block</h3>
 <p>
 The header_block contains code that will be copied to the header template file.
 The header starts with &quot;#if 0 // HEADER&quot; and ends with &quot;#endif // HEADER&quot;.
-FYI, the &quot;#if&quot; and &quot;#endif&quot; are needed so that the preproccesor will ignore
-lines of the file between &quot;#if&quot; and &quot;#endif&quot;.
+FYI, the &quot;#if&quot; and &quot;#endif&quot; are needed because YAOOCPP uses the C preproccesor
+in the background. The &quot;#if&quot; and &quot;#endif&quot; will cause the C preprocessor
+to ignore that portion of the file. The header and source block are optional.
 </p>
 <p>
 The source_block contains code that will be copied to the source template file.
@@ -145,7 +146,7 @@ Class table entries are defined in the table section.  The syntax for variable m
   var_type var_name [ = value ];
 </code></pre>
 <p>
-For the table section, the value is optional but should be specified.  If value is a string, it should be
+The value is optional but should be specified.  If value is a string, it should be
 enclosed in double quotes. If value is not specified, 0 (zero) is assumed.
 </p>
 <p>The syntax for method definition is:</p>
@@ -200,6 +201,7 @@ but are meant to be helpers to class and derived classes. The syntax is the same
 <h3>Private</h3>
 <p>
 Private has a similar meaning as in C++.  Private variables and methods that are meant to only be used by the class being created.
+The entries here will be defined as static in the C source file -- thus not available outside of the C source file.
 </p>
 <h3>Executing YAOOCPP</h3>
 The syntax for executing yaoocpp is similar to executing the C preprocessor.  In fact, yaoocpp uses the C preprocessor so many preprocessor directives
@@ -273,7 +275,7 @@ Otherwise the value is set to zero (0).
 </ul>
 </p>
 <p>
-YAOOCPP will create a destructor using the following rules:
+YAOOCPP will create a destructor using the following rules (only applies to non-inherited variables):
 <ul>
 <li>
 If variable is a static YAOOC object (type name ends with &quot;_t&quot;), then placement delete (deletep) is used.
@@ -317,63 +319,103 @@ Otherwise, the instance is equated to the source value.
 Since YAOOCPP does the tedious work, a more robust string class can be created.  The class definition for the my_string class is shown below.
 </p>
 <pre><code>
-  #ifndef __MY_STRING_YAOOC_INCLUDED__
-  #define __MY_STRING_YAOOC_INCLUDED__
-  #include &quot;object.yaooc&quot;
+#ifndef __MY_STRING_YAOOC_INCLUDED__
+#define __MY_STRING_YAOOC_INCLUDED__
 
-  class my_string : yaooc_object
-  {
-      my_string();                                                   /* default constructor. */
-      my_string_ctor_ccs_size(const char* s,size_t n);               /* Constructor 1 */
-      my_string_ctor_ccs(const char* s);                             /* Constructor 2 */
-      my_string_ctor_chr_size(int ch,size_t n);                      /* Constructor 3 */
-      ~my_string();                                                  /* destructor */
-      my_string(my_string);                                          /* copy constructor */
-      operator=();                                                   /* assignment */
-      operator&lt;();                                                   /* less than compare */
-      operator&lt;&lt;();                                                  /* to stream */
-      operator&gt;&gt;();                                                  /* from stream */
+/* C and C++ comments can be used */
 
+// The following will be converted to &quot;#include &lt;yaooc/object.h&gt;&quot; in header file
+#include &lt;yaooc/object.yaooc&gt;
+/* The following will be copied as is to header file */
+#if 0 // HEADER
+#include &lt;string.h&gt;
+#include &lt;yaooc/stream.h&gt;
+#endif // HEADER
+/* The following will be copied as is to source file */
+#if 0 // SOURCE
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#endif // SOURCE
+
+class my_string : yaooc_object   /* my_string inherits from yaooc_object */
+{
+    /*
+      Type info methods.
+      Can be specified in any order.  Any of these may be omitted.  A value of NULL
+      is used in the type info table if not specified
+    */
+    my_string();              /* default constructor. */
+    ~my_string();             /* destructor */
+    my_string(my_string);     /* copy constructor */
+    operator=();              /* assignment */
+    operator&lt;();              /* less than compare */
+    operator&lt;&lt;();             /* to stream */
+    operator&gt;&gt;();             /* from stream */
+    /*
+      Constructors
+    */
+    my_string_ctor_ccs_size(const char* str,size_t n);  /* Create from n characters of string */
+    my_string_ctor_ccs(const char* str);                /* Create from entire string */
+    my_string_ctor_chr_size(int ch,size_t n);           /* Create using n copies of ch */
+
+    /*
+      Table entries.
+    */
 
     table:
-      const char* type_name_=&quot;my_string_t&quot;;                          /* Type name -- override value from object */
-      const size_t n_pos = -1;                                       /* variable in class table. */
-      void swap(pointer o);                                          /* Override yaooc_object swap method */
-      const char* get() const;                                       /* returns string value */
-      const char* c_str() const = my_string_get;                     /* same as get */
-      void set(const char* s);                                       /* Sets string */
-      my_string_pointer substr(size_t beg,size_t n);                 /* Return new string object created from substring of this string */
-      void insert(size_t pos,const char* s);                         /* Insert string at position */
-      void insertn(size_t pos,const char* s,size_t n);               /* Insert n chars from string at position */
-      void erase(size_t pos,size_t n);                               /* Erase n chars starting at pos */
-      void append(const char* s);                                    /* Append string */
-      void appendn(const char* s,size_t n);                          /* Append n characters from string */
-      const char* find(const char* s) const;                         /* return pointer to first occurance of substring s in this string */
-      const char* rfind(const char* s) const;                        /* return pointer to last occurance of substring s in this string */
-      const char* find_chr(char ch) const;                           /* return pointer to last occurance of character ch in this string */
-      const char* rfind_chr(char ch) const;                          /* return pointer to last occurance of character ch in this string */
-      char * at(size_t i);                                           /* Return pointer to character at index i */
-      size_t size() const;                                           /* Return size of string */
-      size_t length() const = my_string_size;                        /* Same as size */
-      char* begin() const = my_string_get;                           /* Return beginning of string. Same as get */
-      char* end() const;                                             /* Returns end of string */
+      const char* type_name_=&quot;my_string_t&quot;;                  /* Type name. If not specified, YAOOCPP adds it */
+      const size_t n_pos = -1;                               /* variable member of table */
+      void swap(pointer o);                                  /* Override yaooc_object swap method */
+      const char* get() const;                               /* returns string value */
+      const char* c_str() const = my_string_get;             /* same as get */
+      void set(const char* s);                               /* Sets string */
+      my_string_pointer substr(size_t beg,size_t n);         /* Return new string object created from substring of this string */
+      void insert(size_t pos,const char* s);                 /* Insert string at position */
+      void insertn(size_t pos,const char* s,size_t n);       /* Insert n chars from string at position */
+      void erase(size_t pos,size_t n);                       /* Erase n chars starting at pos */
+      void append(const char* s);                            /* Append string */
+      void appendn(const char* s,size_t n);                  /* Append n characters from string */
+      const char* find(const char* s) const;                 /* return pointer to first occurance of substring s in this string */
+      const char* rfind(const char* s) const;                /* return pointer to last occurance of substring s in this string */
+      const char* find_chr(char ch) const;                   /* return pointer to last occurance of character ch in this string */
+      const char* rfind_chr(char ch) const;                  /* return pointer to last occurance of character ch in this string */
+      char * at(size_t i);                                   /* Return pointer to character at index i */
+      size_t size() const;                                   /* Return size of string */
+
+    /*
+      Instance members
+    */
     instance:
-      char * str;                                                    /* The string */
+      char * str;                                            /* The string */
 
-    private:
-      size_t allocate_space(size_t n);                               /* Allocates space to hold string */
-      char *strrstr(const char *pat) const;                          /* Find last pat in str */
-
+    /*
+      Protected members
+    */
     protected:
-      void insert_space(size_t pos,size_t n);                        /* Insert space in string */
-      void erase_space(size_t pos,size_t n);                         /* erase space in string */
-  };
-  #endif
+      void insert_space(size_t pos,size_t n);                /* Insert space in string */
+      void erase_space(size_t pos,size_t n);                 /* erase space in string */
+
+    /*
+      Private methods and variables are meant for use only by this class.  They will be declared as
+      static in the C source file.
+    */
+    private:
+      void allocate_space(size_t n);                         /* Allocates space to hold string */
+      char *strrstr(const char *pat) const;                  /* Find last pat in str */
+
+    table: /* More things to add to table */
+      size_t length() const = my_string_size;                /* Same as size */
+      char* begin() const = my_string_get;                   /* Return beginning of string. Same as get */
+      char* end() const;                                     /* Returns end of string */
+};
+
+#endif
 </code></pre>
 <p>
-Review the files in the examples/ch13 folder.  Examine the contents of my_string_ch13.h.template and my_string_ch13.c.template to understand the output of yaoocpp.  Compare to my_string_ch13.h
-and my_string_ch13.c to see what code was added.
+Review the files in the examples folder for this lesson.  Examine the contents of my_string.h.template and my_string.c.template to understand the output of yaoocpp.
+Compare to my_string.h and my_string.c to see what code was added.
 </p>
+
 </div>
 </div>
 </div>

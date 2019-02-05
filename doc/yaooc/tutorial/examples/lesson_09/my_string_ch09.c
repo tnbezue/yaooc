@@ -52,8 +52,7 @@ void my_string_assign(pointer p,const_pointer s)
 {
   my_string_pointer this=p;
   my_string_const_pointer src=s;
-  my_string_dtor(p);
-  this->str = src->str == NULL ? NULL : strdup(src->str);
+	my_string_set(this,src->str);
 }
 
 bool my_string_less_than_compare(const_pointer p1,const_pointer p2)

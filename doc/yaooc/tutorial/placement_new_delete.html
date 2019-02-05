@@ -94,13 +94,14 @@ Use newp_copy_static (below) to initialize from static object
 Placement new can be used to initialize objects declared on the stack and deletep can be used to destroy these objects. For example:
 </p>
 <pre><code>
-  my_string_t mys1;  /* Note that the "_t" is used */
-  newp(&mys1,my_string);
-  my_string_t mys2;
-  newp_ctor(&mys2,my_string,my_string_ctor_ccs,"This is a test");
-  assign_static(&mys1,&mys2,my_string);
-  deletep(&mys1,my_string);
-  deletep(&mys2,my_string);
+	my_string_t mys1;  /* Note that the &quot;_t&quot; is used */
+	newp(&mys1,my_string);
+	my_string_t mys2;
+	newp_ctor(&mys2,my_string,my_string_ctor_ccs,&quot;This is a test&quot;);
+	assign_static(&mys1,&mys2,my_string);
+	M(&mys2,set,&quot;Changed value for mys2&quot;);
+	deletep(&mys1,my_string);
+	deletep(&mys2,my_string);
 </code></pre>
 <h3>Static object in streams</h3>
 <p>
@@ -164,7 +165,39 @@ The macros below facilitate streams handing reading POD and static objects prope
 </div>
 
 <p>
-For writing POD and static objects to streams, use "O_" rather than "I_" for macros in above table.
+For writing POD and static objects to streams, use &quot;O_&quot; rather than &quot;I_&quot; for macros in above table.
+</p>
+
+<pre><code>
+	my_string_t ms;
+	newp(&ms,my_string);
+	STREAM(cout,O_CCS(&quot;Enter a string value&quot),endl);
+	STREAM(cin,I_OBJ(my_string,ms));
+	STREAM(cout,O_CSS(&quot;The value enter was: &quot),O_OBJ(my_string,ms),endl);
+</code></pre>
+<h3>Important Note</h3>
+<p>
+You may have noticed that in the my_string_set method, the my_string_dtor method was called directly.
+While calling the destructor in this case has no adverse affects, in other situations it may have unexpected results.
+For example, if a class has 5 levels of inheritance (that is, child, parent, grand parent, great grand parent, great great grand parent),
+then calling the destructor method directly only destroys the portion created by child.  It does not destory the parts created
+by ancestors. It may be desirable to use deletep followed by newp.  The my_string_set method could be written as:
+</p>
+
+<pre><code>
+void my_string_set(pointer p,const char* s)
+{
+	my_string_pointer this=p;
+	deletep(this,my_string);  // Calls this destructor and ancestor destructors -- memory pointer to by this is not freed
+	newp(this,my_string);     // Initializes object (however, it is ok to just call the default constructor directly)
+	if(s)
+		this->str = strdup(s);
+}
+</code></pre>
+<p>
+Although the destructor should not be called directly, the default constructor, copy constructor, and assign method can be called
+directly using the method name.  This is because the constructors and assign method must call any ancestor methods required to
+initialize/assign the object.  The destructor is only required to destroy the portion that was created by the child.
 </p>
 
 </div>
