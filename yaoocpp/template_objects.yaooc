@@ -186,7 +186,7 @@ class yaoocpp_container_with_class_table : yaoocpp_container
     void inherit();
 
   private:
-    void print_class_table_implementation(ostream_pointer o);
+//    void print_class_table_implementation(ostream_pointer o);
 };
 
 class yaoocpp_class: yaoocpp_container_with_class_table

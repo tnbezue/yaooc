@@ -345,7 +345,7 @@ void yaoocpp_raw_struct_union_assign(pointer p,const_pointer s)
 /* Table implementation for yaoocpp_raw_struct_union */
 void yaoocpp_raw_struct_union_print_class_table_definition(const_pointer p,ostream_pointer o)
 {
-  yaoocpp_raw_struct_union_const_pointer this=p;
+//  yaoocpp_raw_struct_union_const_pointer this=p;
 }
 
 void yaoocpp_raw_struct_union_print_class_instance_definition(const_pointer p,ostream_pointer o)
@@ -372,17 +372,17 @@ void yaoocpp_raw_struct_union_print_class_instance_definition(const_pointer p,os
 
 void yaoocpp_raw_struct_union_print_prototype(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
 {
-  yaoocpp_raw_struct_union_const_pointer this=p;
+//  yaoocpp_raw_struct_union_const_pointer this=p;
 }
 
 void yaoocpp_raw_struct_union_print_implementation(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
 {
-  yaoocpp_raw_struct_union_const_pointer this=p;
+//  yaoocpp_raw_struct_union_const_pointer this=p;
 }
 
 void yaoocpp_raw_struct_union_print_class_table_implementation(const_pointer p,ostream_pointer o,const char* class_name)
 {
-  yaoocpp_raw_struct_union_const_pointer this=p;
+//  yaoocpp_raw_struct_union_const_pointer this=p;
 }
 
 
@@ -856,8 +856,8 @@ static void yaoocpp_container_print_type_info_implementation(const_pointer p,ost
   if(this->has_lt_cmp_)
     M(ostrm,printf,"bool %s_less_than_compare(const_pointer p1,const_pointer p2)\n"
                   "{\n"
-                  "  %s_const_pointer vp1=p1;\n"
-                  "  %s_const_pointer vp2=p2;\n"
+                  "  %s_const_pointer rhs=p1;\n"
+                  "  %s_const_pointer lhs=p2;\n"
                   "  bool ret=false;\n"
                   "  return ret;\n"
                   "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));
@@ -1037,7 +1037,6 @@ yaoocpp_struct_class_table_t yaoocpp_struct_class_table =
 /* Private variables implementation for yaoocpp_container_with_class_table */
 
 /* Private methods prototypes for yaoocpp_container_with_class_table */
-static void yaoocpp_container_with_class_table_print_class_table_implementation(pointer, ostream_pointer);
 
 /* Type Info implemmentation for yaoocpp_container_with_class_table */
 void yaoocpp_container_with_class_table_default_ctor(pointer p)
@@ -1070,10 +1069,6 @@ void yaoocpp_container_with_class_table_assign(pointer p,const_pointer s)
 /* Constructors implementation for yaoocpp_container_with_class_table */
 
 /* Private methods implementation for yaoocpp_container_with_class_table */
-static void yaoocpp_container_with_class_table_print_class_table_implementation(pointer p,ostream_pointer o)
-{
-  yaoocpp_container_with_class_table_pointer this=p;
-}
 
 
 /* Protected implementation for yaoocpp_container_with_class_table */
@@ -1113,12 +1108,12 @@ void yaoocpp_container_with_class_table_inherit(pointer p)
 /* Table implementation for yaoocpp_container_with_class_table */
 void yaoocpp_container_with_class_table_print_to_header(const_pointer p,ostream_pointer o)
 {
-  yaoocpp_container_with_class_table_const_pointer this=p;
+//  yaoocpp_container_with_class_table_const_pointer this=p;
 }
 
 void yaoocpp_container_with_class_table_print_to_source(const_pointer p,ostream_pointer o)
 {
-  yaoocpp_container_with_class_table_const_pointer this=p;
+//  yaoocpp_container_with_class_table_const_pointer this=p;
 }
 
 
