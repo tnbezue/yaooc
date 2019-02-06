@@ -165,7 +165,7 @@ int main(int argc,char* argv[])
                            "\n");*/
 					if(M(&include_files,size)>0) {
 						yaooc_string_vector_const_iterator ifile;
-						FOR_EACH(ifile,&include_files)
+						CFOR_EACH(ifile,&include_files)
 							M(&h_strm,printf,"#include <%s.h>\n",M(ifile,c_str));
 						M(&h_strm,printf,"\n");
 					}
@@ -184,7 +184,7 @@ int main(int argc,char* argv[])
           yaoocpp_container_pointer_vector_const_iterator k;
 
   //				M(cout,printf,"%zu classes defined\n",M(classes,size));
-          FOR_EACH(k,class_parser.classes_) {
+          CFOR_EACH(k,class_parser.classes_) {
             if((*k)->defined_in_top_level_file_) {
               M(*k,print_to_header,&h_strm);
               M(*k,print_to_source,&c_strm);

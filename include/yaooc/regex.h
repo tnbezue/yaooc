@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,11 +18,19 @@
 #ifndef __REGEX_INCLUDED__
 #define __REGEX_INCLUDED__
 
+#include <yaooc/string.h>
+#include <yaooc/exception.h>
+#ifdef __YAOOC_USE_TRE__
+#include <tre/regex.h>
+#else
+#include <regex.h>
+#endif
+
 /*
 	Utility for determining if string should be considered a regular expression
 	If string:
 		a) begins with '/'
-		b) ends with '/' and optional flags 'm' and 'i'
+		b) ends with '/' and optional flags 'm' (match newline) and 'i' (ignore case)
 
 	General format is:
 		/re_str/mi  -- either m or i is optional
@@ -41,13 +49,6 @@ typedef struct {
 } yaooc_regex_regexp_match_info_t;
 yaooc_regex_regexp_match_info_t yaooc_regex_is_re_string(const char*);
 
-#include <yaooc/string.h>
-#include <yaooc/exception.h>
-#ifdef __YAOOC_USE_TRE__
-#include <tre/regex.h>
-#else
-#include <regex.h>
-#endif
 /*  Begin YAOOC PreProcessor generated content */
 
 /*

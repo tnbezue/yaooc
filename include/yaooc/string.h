@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ yaooc_class_forward(yaooc_string_vector);
 */
 yaooc_class_table(yaooc_string)
 {
-  yaooc_pod_array_class_table_t;
+  yaooc_array_container_class_table_t;
   yaooc_string_iterator (*at)(const_pointer,size_t);
   void (*reserve)(pointer,size_t);
   void (*insert)(pointer,size_t,const char*);
@@ -85,7 +85,7 @@ yaooc_class_table(yaooc_string)
 
 yaooc_class_instance(yaooc_string)
 {
-  yaooc_pod_array_class_instance_t;
+  yaooc_array_container_class_instance_t;
 };
 
 yaooc_class(yaooc_string);
@@ -102,16 +102,16 @@ void yaooc_string_ctor_ccs_n(pointer,va_list);
 void yaooc_string_ctor_n_chr(pointer,va_list);
 
 /* Prototypes for yaooc_string class table*/
-#define yaooc_string_swap yaooc_pod_array_swap
-bool yaooc_string_increase_capacity(pointer,size_t);
+#define yaooc_string_swap yaooc_array_container_swap
+#define yaooc_string_increase_capacity yaooc_array_container_increase_capacity
 size_t yaooc_string_size_needed(const_pointer,size_t);
-#define yaooc_string_size yaooc_pod_array_size
-#define yaooc_string_capacity yaooc_pod_array_capacity
-#define yaooc_string_empty yaooc_pod_array_empty
-#define yaooc_string_begin yaooc_pod_array_begin
-#define yaooc_string_end yaooc_pod_array_end
-#define yaooc_string_at yaooc_pod_array_at
-#define yaooc_string_reserve yaooc_pod_array_reserve
+#define yaooc_string_size yaooc_array_container_size
+#define yaooc_string_capacity yaooc_array_container_capacity
+#define yaooc_string_empty yaooc_array_container_empty
+#define yaooc_string_begin yaooc_array_container_begin
+#define yaooc_string_end yaooc_array_container_end
+#define yaooc_string_at yaooc_array_container_at
+#define yaooc_string_reserve yaooc_array_container_reserve
 void yaooc_string_insert(pointer,size_t,const char*);
 void yaooc_string_insertn(pointer,size_t,const char*,size_t);
 void yaooc_string_insert_chr(pointer,size_t,char);
@@ -124,7 +124,7 @@ void yaooc_string_replace(pointer,size_t,size_t,const char*);
 void yaooc_string_replacen(pointer,size_t,size_t,const char*,size_t);
 void yaooc_string_resize(pointer,size_t);
 void yaooc_string_resize_value(pointer,size_t,char);
-#define yaooc_string_shrink_to_fit yaooc_pod_array_shrink_to_fit
+#define yaooc_string_shrink_to_fit yaooc_array_container_shrink_to_fit
 void yaooc_string_append(pointer,const char*);
 void yaooc_string_appendn(pointer,const char*,size_t);
 yaooc_string_pointer yaooc_string_substr(const_pointer,size_t,size_t);
@@ -156,7 +156,7 @@ size_t yaooc_string_findchr(pointer,char,size_t);
 size_t yaooc_string_rfindchr(pointer,char,size_t);
 yaooc_string_vector_pointer yaooc_string_split(const_pointer,const char*,size_t);
 yaooc_string_vector_pointer yaooc_string_split_re(const_pointer,yaooc_regex_const_pointer,size_t);
-#define yaooc_string_c_str yaooc_pod_array_begin
+#define yaooc_string_c_str yaooc_array_container_begin
 
 
 /* Prototypes for yaooc_string class instance*/
@@ -167,7 +167,7 @@ extern const size_t yaooc_string_npos;
 /*  End YAOOC PreProcessor generated content */
 
 #define YAOOC_STRING_STATIC_DEFAULT_CTOR { .class_table_ = &yaooc_string_class_table, .array_=NULL, \
-		.type_info_=&__char_ti,.size_=0,.capacity_=0 }
+		.type_info_=(const type_info_t*)&__char_ti,.size_=0,.capacity_=0 }
 
 VECTOR_DEFINITION(yaooc_string,yaooc_string_vector)
 

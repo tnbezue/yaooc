@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ iterator yaooc_unique_index_array_container_insert_range(pointer p,const_iterato
 {
 //  yaooc_unique_index_array_container_pointer this=p;
   size_t n = DISTANCE(TYPE_INFO(p),f,l);
-  yaooc_array_index_t idx=INDEX(p,pos);
+  yaooc_index_array_container_index_t idx=INDEX(p,pos);
   yaooc_index_array_container_increase_capacity(p,n);
   yaooc_private_const_iterator first=f;
   yaooc_private_const_iterator last=l;
@@ -94,12 +94,14 @@ yaooc_unique_index_array_container_class_table_t yaooc_unique_index_array_contai
   .type_name_ = (const char*) "yaooc_unique_index_array_container_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_unique_index_array_container_swap,
   .increase_capacity = (bool (*) (pointer,size_t))yaooc_index_array_container_increase_capacity,
-  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_unique_index_array_container_size_needed,
   .size = (size_t (*) (const_pointer p)) yaooc_unique_index_array_container_size,
   .capacity = (size_t (*) (const_pointer p)) yaooc_unique_index_array_container_capacity,
   .empty = (bool (*) (const_pointer p)) yaooc_unique_index_array_container_empty,
-  .begin = (iterator (*) (const_pointer p)) yaooc_unique_index_array_container_begin,
-  .end = (iterator (*) (const_pointer p)) yaooc_unique_index_array_container_end,
+  .begin = (iterator (*) (pointer p)) yaooc_unique_index_array_container_begin,
+  .end = (iterator (*) (pointer p)) yaooc_unique_index_array_container_end,
+  .cbegin = (const_iterator (*) (const_pointer p)) yaooc_unique_index_array_container_begin,
+  .cend = (const_iterator (*) (const_pointer p)) yaooc_unique_index_array_container_end,
 };
 
 

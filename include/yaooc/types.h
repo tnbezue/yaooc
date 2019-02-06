@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <limits.h>
 
 /* bool type */
 #ifndef __bool_true_false_are_defined
@@ -131,16 +132,25 @@ typedef struct {
 /*
 	Objects allocated by new must define a type_info_t structure.
   type_size must be defined and not zero, others may be NULL
+
+	The first structure (pod_type_info_s) is for Plain Old Data (POD).
+		-- Does not have a default constructor nor destructor
+		-- copy and assign is done by coping (memcpy)
+		-- No class table
+		-- No parent
+
+	The second structure is for non POD types.
 */
-typedef struct ood_type_info_s pod_type_info_t;
+typedef struct pod_type_info_s pod_type_info_t;
 struct pod_type_info_s {
-	unsigned int is_pod_; // set to 1 if pod
-	unsigned int type_size_; // object size
+	size_t type_size_; // object size
 	less_than_compare less_than_compare_;
 	to_stream to_stream_;
 	from_stream from_stream_;
 };
-
+#define POD_FLAG ((size_t)1 << (__WORDSIZE-1))
+#define is_pod(ti) ((((pod_type_info_t*)ti)->type_size_) & POD_FLAG)
+#define yaooc_sizeof(ti) ((((pod_type_info_t*)ti)->type_size_) & LONG_MAX)
 typedef struct type_info_s type_info_t;
 struct type_info_s {
 	size_t type_size_;											// object size
@@ -192,7 +202,7 @@ typedef N ## _t* const N ## _pointer; \
 typedef const N ## _t* const N ##_const_pointer; \
 void N ## _to_stream(const_pointer,pointer); \
 void N ## _from_stream(pointer,pointer); \
-extern const type_info_t __ ## N ## _ti; \
+extern const pod_type_info_t __ ## N ## _ti; \
 extern const type_info_t* const N ## _ti;
 
 POD_DEFINITION(char,char)

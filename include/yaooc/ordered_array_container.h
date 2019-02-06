@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -48,8 +48,8 @@ yaooc_class(yaooc_ordered_array_container);
 #define yaooc_ordered_array_container_ctor_ti yaooc_array_container_ctor_ti
 
 /* Prototypes for yaooc_ordered_array_container class table*/
-#define yaooc_ordered_array_container_increase_capacity yaooc_pod_array_increase_capacity
-#define yaooc_ordered_array_container_size_needed yaooc_pod_array_size_needed
+#define yaooc_ordered_array_container_increase_capacity yaooc_array_container_increase_capacity
+#define yaooc_ordered_array_container_size_needed yaooc_array_container_size_needed
 
 #define yaooc_ordered_array_container_swap yaooc_array_container_swap
 #define yaooc_ordered_array_container_size yaooc_array_container_size

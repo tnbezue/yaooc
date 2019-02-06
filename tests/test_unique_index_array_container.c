@@ -74,7 +74,7 @@ void print_value(int_unique_index_array_container_const_pointer this)
   optr=output;
   *optr=0;
   size_t i;
-  int_unique_index_array_container_const_iterator array=M(this,begin);
+  int_unique_index_array_container_const_iterator array=M(this,cbegin);
   for(i=0;i<M(this,size);i++)
     optr+=sprintf(optr,"%d ",array[i]);
 }
@@ -84,7 +84,7 @@ void print_in_order(int_unique_index_array_container_const_pointer this)
   optr=output;
   *optr=0;
   size_t i;
-  int_unique_index_array_container_const_iterator array=M(this,begin);
+  int_unique_index_array_container_const_iterator array=M(this,cbegin);
   for(i=0;i<M(this,size);i++)
     optr+=sprintf(optr,"%d ",array[this->indexes_[i]]);
 }
@@ -92,7 +92,7 @@ void print_in_order(int_unique_index_array_container_const_pointer this)
 bool index_ordered(int_unique_index_array_container_const_pointer this)
 {
   size_t i;
-  int_unique_index_array_container_const_iterator array=M(this,begin);
+  int_unique_index_array_container_const_iterator array=M(this,cbegin);
   for(i=1;i<M(this,size);i++)
     if(array[this->indexes_[i-1]] > array[this->indexes_[i]])
       return false;
@@ -105,12 +105,14 @@ int_unique_index_array_container_class_table_t int_unique_index_array_container_
   .type_name_ = (const char*) "int_unique_index_array_container_t",
   .swap = yaooc_index_array_container_swap, /* swap  */
   .increase_capacity = (bool(*)(pointer,size_t)) yaooc_index_array_container_increase_capacity,
-  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
-  .size = (size_t (*) (const_pointer)) yaooc_pod_array_size,
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_index_array_container_size_needed,
+  .size = (size_t (*) (const_pointer)) yaooc_index_array_container_size,
   .capacity =  yaooc_array_container_capacity, /* capacity */
   .empty = yaooc_array_container_empty, /* empty */
-  .begin = (iterator (*) (const_pointer)) yaooc_array_container_begin, /* begin */
-  .end = (iterator (*) (const_pointer)) yaooc_array_container_end, /*end  */
+  .begin = (iterator (*) (pointer)) yaooc_array_container_begin, /* begin */
+  .end = (iterator (*) (pointer)) yaooc_array_container_end, /*end  */
+  .cbegin = (const_iterator (*) (const_pointer)) yaooc_array_container_begin, /* begin */
+  .cend = (const_iterator (*) (const_pointer)) yaooc_array_container_end, /*end  */
 	.find = (int_unique_index_array_container_iterator (*)(const_pointer,const_pointer))yaooc_index_array_container_find, /* find */
 	.insert = (int_unique_index_array_container_const_iterator (*)(const_pointer,const_iterator,const_pointer))yaooc_unique_index_array_container_insert,  /* insert */
 	.insert_range = (int_unique_index_array_container_const_iterator (*)(const_pointer,const_iterator,const_iterator,const_iterator))yaooc_unique_index_array_container_insert_range,  /* insert_range */

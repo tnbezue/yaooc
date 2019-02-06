@@ -387,24 +387,24 @@ void test_resize_shrink()
 
 	M(s1,shrink_to_fit);
 	TEST("After shrink size is 150",M(s1,size)==150);
-	TEST("Capacity is 150",M(s1,capacity)==150);
+	TEST("Capacity is 256",M(s1,capacity)==256);
 	TEST("String not changed",strcmp(M(s1,c_str),"This should be a long string.  I would make it longer but I'm tired of typingaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")==0);
 
   printf("&&&&&  %zu %zu %s\n",M(s1,size),M(s1,capacity),M(s1,c_str));
 	M(s1,resize_value,100,'a');
 	TEST("Resize to 100 changes size to 100",M(s1,size)==100);
-	TEST("Resize to 100 does not change capacity",M(s1,capacity)==150);
+	TEST("Resize to 100 does not change capacity",M(s1,capacity)==256);
   printf("&&&&&  %zu %zu %s\n",M(s1,size),M(s1,capacity),M(s1,c_str));
 	TEST("String changed",strcmp(M(s1,c_str),"This should be a long string.  I would make it longer but I'm tired of typingaaaaaaaaaaaaaaaaaaaaaaa")==0);
 
 	M(s1,shrink_to_fit);
 	TEST("After shrink size is 100",M(s1,size)==100);
-	TEST("capacity to 100",M(s1,capacity)==100);
+	TEST("capacity to 128",M(s1,capacity)==128);
 	TEST("String not changed",strcmp(M(s1,c_str),"This should be a long string.  I would make it longer but I'm tired of typingaaaaaaaaaaaaaaaaaaaaaaa")==0);
 
 	M(s1,resize_value,0,'b');
 	TEST("Resize string to 0 length.  Size is 0",M(s1,size)==0);
-	TEST("Resize string to 0 length.  Capacity is 100",M(s1,capacity)==100);
+	TEST("Resize string to 0 length.  Capacity is 128",M(s1,capacity)==128);
 	TEST("Resize string to 0 length.  sting is ''",strcmp(M(s1,c_str),"")==0);
 
 	M(s1,shrink_to_fit);

@@ -1,3 +1,19 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 /* Begin YAOOCPP output */
 
 #include <yaooc/socket.h>
@@ -542,8 +558,8 @@ void yaooc_udp_socket_default_ctor(pointer p)
 void yaooc_udp_socket_ctor_host_port(pointer p,va_list args)
 {
   yaooc_udp_socket_pointer this=p;
- const char* host= va_arg(args, const char*);
- unsigned int port= va_arg(args, unsigned int);
+	const char* host= va_arg(args, const char*);
+	unsigned int port= va_arg(args, unsigned int);
 }
 
 
@@ -555,7 +571,7 @@ void yaooc_udp_socket_ctor_host_port(pointer p,va_list args)
 void yaooc_udp_socket_broadcast(pointer p,bool v)
 {
 	int option_value = v ? 1 : 0;
-	return yaooc_socket_setsockopt(p,SOL_SOCKET,SO_BROADCAST,&option_value,sizeof(int));
+	yaooc_socket_setsockopt(p,SOL_SOCKET,SO_BROADCAST,&option_value,sizeof(int));
 }
 
 void yaooc_udp_socket_connect_service(pointer p,const char* host,const char* service)

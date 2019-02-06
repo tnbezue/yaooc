@@ -61,13 +61,15 @@ int_unique_container_class_table_t int_unique_container_class_table=
   .parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table, /* parent_class_table_ */
   .type_name_ = (const char*) "int_unique_container_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_array_container_swap, /* swap */
-  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
-  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
+  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_array_container_increase_capacity,
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_array_container_size_needed,
   .size = (size_t (*) (const_pointer p)) yaooc_array_container_size, /* size */
   .capacity = (size_t (*) (const_pointer p)) yaooc_array_container_capacity, /* capacity */
   .empty = (bool (*) (const_pointer p)) yaooc_array_container_empty, /* empty */
-	.begin = (iterator (*)(const_pointer))yaooc_array_container_begin,
-	.end = (iterator (*)(const_pointer))yaooc_array_container_end,
+	.begin = (iterator (*)(pointer))yaooc_array_container_begin,
+	.end = (iterator (*)(pointer))yaooc_array_container_end,
+	.cbegin = (const_iterator (*)(const_pointer))yaooc_array_container_begin,
+	.cend = (const_iterator (*)(const_pointer))yaooc_array_container_end,
 	.find = (int_unique_container_iterator (*)(const_pointer,const_pointer))yaooc_array_container_find,
 	.insert = (int_unique_container_const_iterator (*)(pointer,const_iterator,const_pointer))yaooc_unique_array_container_insert,
 	.insert_range = (int_unique_container_const_iterator (*)(pointer,const_iterator,const_iterator,const_iterator))yaooc_unique_array_container_insert_range,
@@ -85,7 +87,7 @@ DEFINE_TYPE_INFO(int_unique_container,Y,N,N,N,N,N,N,Y,yaooc_array_container)
 void test_sizes()
 {
 //	printf("%zu\n",sizeof(int_unique_container_t));
-	TEST("SIZE container == 32",sizeof(int_unique_container_t)== 32);
+	TEST("SIZE container == 40",sizeof(int_unique_container_t)== 40);
 }
 
 void test_constructor()
@@ -250,13 +252,15 @@ simple_object_unique_container_class_table_t simple_object_unique_container_clas
   .parent_class_table_ = (const class_table_t*) &yaooc_unique_array_container_class_table, /* parent_class_table_ */
   .type_name_ = (const char*) "int_unique_container_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_array_container_swap, /* swap */
-  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
-  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
+  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_array_container_increase_capacity,
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_array_container_size_needed,
   .size = (size_t (*) (const_pointer p)) yaooc_array_container_size, /* size */
   .capacity = (size_t (*) (const_pointer p)) yaooc_array_container_capacity, /* capacity */
   .empty = (bool (*) (const_pointer p)) yaooc_array_container_empty, /* empty */
-	.begin = (iterator (*)(const_pointer))yaooc_array_container_begin,
-	.end = (iterator (*)(const_pointer))yaooc_array_container_end,
+	.begin = (iterator (*)(pointer))yaooc_array_container_begin,
+	.end = (iterator (*)(pointer))yaooc_array_container_end,
+	.cbegin = (const_iterator (*)(const_pointer))yaooc_array_container_begin,
+	.cend = (const_iterator (*)(const_pointer))yaooc_array_container_end,
 	.find = (simple_object_unique_container_iterator (*)(const_pointer,const_pointer))yaooc_array_container_find,
 	.insert = (simple_object_unique_container_iterator (*)(const_pointer,const_iterator,const_pointer))yaooc_unique_array_container_insert,
 	.insert_range = (simple_object_unique_container_iterator (*)(const_pointer,const_iterator,const_iterator,const_iterator))yaooc_unique_array_container_insert_range,

@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,11 +38,13 @@ static void __yaooc_gc_finalizer__(GC_PTR obj, GC_PTR x)
 */
 bool has_destructor(const type_info_t* ti)
 {
-  while(ti) {
-    if(ti->dtor_)
-      return true;
-    ti=ti->parent_;
-  }
+	if(!is_pod(ti)) {
+		while(ti) {
+			if(ti->dtor_)
+				return true;
+			ti=ti->parent_;
+		}
+	}
   return false;
 }
 
@@ -52,8 +54,8 @@ bool has_destructor(const type_info_t* ti)
 */
 memory_header_t* allocate_memory(const type_info_t* ti,size_t n_elements)
 {
-  assert(ti->type_size_ > 0 && "Cannot allocate element of size 0");
-	memory_header_t* mh=MALLOC(n_elements*ti->type_size_+offsetof(memory_header_t,ptr_));
+  assert(yaooc_sizeof(ti) > 0 && "Cannot allocate element of size 0");
+	memory_header_t* mh=MALLOC(n_elements*yaooc_sizeof(ti)+offsetof(memory_header_t,ptr_));
 	assert(mh);
 
 #ifdef __YAOOC_USE_GC__
@@ -71,12 +73,14 @@ memory_header_t* allocate_memory(const type_info_t* ti,size_t n_elements)
 */
 default_constructor get_default_ctor(const type_info_t* ti)
 {
-  while(ti != NULL) {
-    if(ti->default_ctor_ != NULL) {
-      return ti->default_ctor_;
-    }
-    ti=ti->parent_;
-  }
+	if(!is_pod(ti)) {
+		while(ti != NULL) {
+			if(ti->default_ctor_ != NULL) {
+				return ti->default_ctor_;
+			}
+			ti=ti->parent_;
+		}
+	}
 	return NULL;
 }
 
@@ -84,21 +88,23 @@ pointer __newp_array(pointer ptr,const type_info_t* ti,size_t n_elements)
 {
 	size_t i;
 	yaooc_private_iterator iptr;
-	default_constructor default_ctor=get_default_ctor(ti);
-	const class_table_t* ct=ti->class_table_;
-	size_t element_size=ti->type_size_;
-	if(ct) {
-		iptr=ptr;
-		for(i=0;i<n_elements;i++) {
-			copy_class_table(iptr,ct);
-			iptr+=element_size;
+	if(!is_pod(ti)) {
+		default_constructor default_ctor=get_default_ctor(ti);
+		const class_table_t* ct=ti->class_table_;
+		size_t element_size=yaooc_sizeof(ti);
+		if(ct) {
+			iptr=ptr;
+			for(i=0;i<n_elements;i++) {
+				copy_class_table(iptr,ct);
+				iptr+=element_size;
+			}
 		}
-	}
-	if(default_ctor) {
-		iptr=ptr;
-		for(i=0;i<n_elements;i++) {
-			default_ctor(iptr);
-			iptr+=element_size;
+		if(default_ctor) {
+			iptr=ptr;
+			for(i=0;i<n_elements;i++) {
+				default_ctor(iptr);
+				iptr+=element_size;
+			}
 		}
 	}
 	return ptr;
@@ -117,12 +123,14 @@ pointer __new_array(const type_info_t* ti,size_t n)
 */
 copy_constructor get_copy_ctor(const type_info_t* ti)
 {
-  while(ti != NULL) {
-    if(ti->copy_ctor_ != NULL) {
-      return ti->copy_ctor_;
-    }
-    ti=ti->parent_;
-  }
+	if(!is_pod(ti)) {
+		while(ti != NULL) {
+			if(ti->copy_ctor_ != NULL) {
+				return ti->copy_ctor_;
+			}
+			ti=ti->parent_;
+		}
+	}
 	return NULL;
 }
 
@@ -133,7 +141,7 @@ pointer __newp_array_copy_static(pointer dst,const type_info_t* ti,const_pointer
 {
 	yaooc_private_iterator idst;//=dst;
 	size_t i;
-	size_t element_size=ti->type_size_;
+	size_t element_size=yaooc_sizeof(ti);
 	copy_constructor copy_ctor=get_copy_ctor(ti);
 //	bool has_class_table = ti->class_table_ != NULL;
   if(copy_ctor) {
@@ -173,7 +181,7 @@ pointer __newp_array_copy_range_static(pointer dst,const type_info_t* ti,const_p
 	yaooc_private_iterator idst; //=dst;
   yaooc_private_const_iterator isrc;//=src;
 	size_t i;
-	size_t element_size=ti->type_size_;
+	size_t element_size=yaooc_sizeof(ti);
 //	bool has_class_table = ti->class_table_ != NULL;
 	copy_constructor copy_ctor=get_copy_ctor(ti);
   if(copy_ctor) {
@@ -213,12 +221,19 @@ pointer __newp_array_copy_range(pointer dst,const_pointer src,size_t n)
 static void new_ctor_private(yaooc_private_iterator ptr,const type_info_t* ti,size_t n_elements,constructor ctor,va_list args)
 {
 	size_t i;
-	const class_table_t* ct=ti->class_table_;
-	size_t element_size=ti->type_size_;
+	size_t element_size=yaooc_sizeof(ti);
+	if(!is_pod(ti)) {
+		const class_table_t* ct=ti->class_table_;
+		if(ct) {
+			yaooc_private_iterator iptr=ptr;
+			for(i=0;i<n_elements;i++) {
+				copy_class_table(iptr,ct);
+				iptr+=element_size;
+			}
+		}
+	}
 	va_list args2;
 	for(i=0;i<n_elements;i++) {
-		if(ct)
-			copy_class_table(ptr,ct);
 		va_copy(args2,args);
 		ctor(ptr,args2);
 		va_end(args2);
@@ -257,33 +272,41 @@ void call_constructor(pointer ptr,constructor ctor,...)
 const class_table_t* super_class_table(const_pointer p)
 {
   memory_header_t* mh=get_memory_header(p);
-  return mh->type_info_->parent_==NULL ? NULL : mh->type_info_->parent_->class_table_;
+	if(!is_pod(mh->type_info_)) {
+		return mh->type_info_->parent_==NULL ? NULL : mh->type_info_->parent_->class_table_;
+	}
+	return NULL;
 }
 /* **************** Delete ************* */
 void __deletep_array(void* ptr,const type_info_t* ti,size_t n)
 {
 	size_t i;
   // Execute dtors for each item (if not null)
-  while(ti != NULL) {
-    if(ti->dtor_ != NULL) {
-      void* obj=ptr;
-      for(i=0;i<n;i++) {
-        ti->dtor_(obj);
-        obj+=ti->type_size_;
-      }
-    }
-    ti=ti->parent_;
-  }
+	if(!is_pod(ti)) {
+		size_t type_size=yaooc_sizeof(ti);
+		while(ti != NULL) {
+			if(ti->dtor_ != NULL) {
+				void* obj=ptr;
+				for(i=0;i<n;i++) {
+					ti->dtor_(obj);
+					obj+=type_size;
+				}
+			}
+			ti=ti->parent_;
+		}
+	}
 }
 
 void delete_array(void* ptr)
 {
 	if(ptr) {
 		memory_header_t* mh=get_memory_header(ptr);
+		if(!is_pod(mh->type_info_)) {
 #ifdef __YAOOC_USE_GC__
-    GC_register_finalizer(mh, 0, 0, 0, 0);  // Remove finalizer
+			GC_register_finalizer(mh, 0, 0, 0, 0);  // Remove finalizer
 #endif
-		__deletep_array(ptr,mh->type_info_,mh->n_elem_);
+			__deletep_array(ptr,mh->type_info_,mh->n_elem_);
+		}
     FREE(mh);
 	}
 }
@@ -315,11 +338,12 @@ memory_header_t* reallocate_memory(pointer old_ptr,size_t n)
 			If shrinking array, delete items at end and adjust size.
 			If increasing array, calling routine must intialize addition space and adjust size
 		*/
+		size_t type_size=yaooc_sizeof(mh->type_info_);
 		if(n < mh->n_elem_) {
-			__deletep_array(mh->ptr_+n*mh->type_info_->type_size_,mh->type_info_,mh->n_elem_-n);
+			__deletep_array(mh->ptr_+n*type_size,mh->type_info_,mh->n_elem_-n);
 			mh->n_elem_=n;
 		}
-		mh=REALLOC(mh,n*mh->type_info_->type_size_+offsetof(memory_header_t,ptr_));
+		mh=REALLOC(mh,n*type_size+offsetof(memory_header_t,ptr_));
 #ifdef __YAOOC_USE_GC__
   if(has_destructor(mh->type_info_))
     GC_register_finalizer(mh, __yaooc_gc_finalizer__, 0, 0, 0);
@@ -332,7 +356,7 @@ pointer renew_array(pointer ptr,size_t n)
 {
 	memory_header_t* mh=reallocate_memory(ptr,n);
 	if(n > mh->n_elem_) {
-		__newp_array(mh->ptr_+mh->n_elem_*mh->type_info_->type_size_,mh->type_info_,n-mh->n_elem_);
+		__newp_array(mh->ptr_+mh->n_elem_*yaooc_sizeof(mh->type_info_),mh->type_info_,n-mh->n_elem_);
 		mh->n_elem_=n;
 	}
 	return mh->ptr_;
@@ -342,7 +366,7 @@ pointer renew_array_copy(pointer ptr,size_t n,const_pointer src)
 {
 	memory_header_t* mh=reallocate_memory(ptr,n);
 	if(n > mh->n_elem_) {
-		__newp_array_copy_static(mh->ptr_+mh->n_elem_*mh->type_info_->type_size_,mh->type_info_,src,n-mh->n_elem_);
+		__newp_array_copy_static(mh->ptr_+mh->n_elem_*yaooc_sizeof(mh->type_info_),mh->type_info_,src,n-mh->n_elem_);
 		mh->n_elem_=n;
 	}
 	return mh->ptr_;
@@ -354,7 +378,7 @@ pointer renew_array_ctor(pointer ptr,size_t n,constructor ctor,...)
 	if(n > mh->n_elem_) {
 		va_list args;
 		va_start(args,ctor);
-		new_ctor_private(mh->ptr_+mh->n_elem_*mh->type_info_->type_size_,mh->type_info_,n-mh->n_elem_,ctor,args);
+		new_ctor_private(mh->ptr_+mh->n_elem_*yaooc_sizeof(mh->type_info_),mh->type_info_,n-mh->n_elem_,ctor,args);
 		va_end(args);
 		mh->n_elem_=n;
 	}
@@ -370,10 +394,12 @@ pointer renew_array_ctor(pointer ptr,size_t n,constructor ctor,...)
 */
 assignment get_assignment(const type_info_t* ti)
 {
-	while(ti) {
-		if(ti->assign_)
-			return ti->assign_;
-		ti=ti->parent_;
+	if(!is_pod(ti)) {
+		while(ti) {
+			if(ti->assign_)
+				return ti->assign_;
+			ti=ti->parent_;
+		}
 	}
 	return NULL;
 }
@@ -387,7 +413,7 @@ pointer __assign_static(pointer dst,const_pointer src,const type_info_t* ti)
     /*
       If no assignment function found, assume this is POD
     */
-		memcpy(dst,src,ti->type_size_);
+		memcpy(dst,src,yaooc_sizeof(ti));
 	}
 	return dst;
 }
@@ -397,6 +423,9 @@ pointer __assign_static(pointer dst,const_pointer src,const type_info_t* ti)
 */
 less_than_compare get_lt_cmp(const type_info_t* ti)
 {
+	if(is_pod(ti)) {
+		return ((pod_type_info_t*)ti)->less_than_compare_;
+	}
 	while(ti) {
 		if(ti->less_than_compare_)
 			return ti->less_than_compare_;
@@ -479,6 +508,9 @@ bool __op_le_static(const_pointer v1,const_pointer v2,const type_info_t* ti)
 
 to_stream get_to_stream(const type_info_t* ti)
 {
+	if(is_pod(ti)) {
+		return ((pod_type_info_t*)ti)->to_stream_;
+	}
 	while(ti != NULL) {
 		if(ti->to_stream_ != NULL)
 			return ti->to_stream_;
@@ -489,6 +521,9 @@ to_stream get_to_stream(const type_info_t* ti)
 
 from_stream get_from_stream(const type_info_t* ti)
 {
+	if(is_pod(ti)) {
+		return ((pod_type_info_t*)ti)->from_stream_;
+	}
 	while(ti != NULL) {
 		if(ti->from_stream_ != NULL)
 			return ti->from_stream_;

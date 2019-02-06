@@ -1,8 +1,39 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #ifndef __REGEX_YAOOC_INCLUDED__
 #define __REGEX_YAOOC_INCLUDED__
 
 #include <yaooc/object.yaooc>
 #include <yaooc/exception.yaooc>
+#include <yaooc/string.yaooc>
+#if 0 // HEADER
+#ifdef __YAOOC_USE_TRE
+#include <tre/regex.h>
+#else
+#include <regex.h>
+#endif
+typedef struct {
+	char* pattern_;  // Will be NULL if string is not an re
+	int flags_;
+} yaooc_regex_regexp_match_info_t;
+yaooc_regex_regexp_match_info_t yaooc_regex_is_re_string(const char*);
+
+#endif // HEADER
 
 class yaooc_regex_exception : yaooc_exception {
 		yaooc_regex_exception();
@@ -40,6 +71,7 @@ class yaooc_regex : yaooc_object {
 	protected:
 		int regexec(const regex_t*,const char*,int,size_t,regmatch_t*,int);
   table:
+    void set_pattern_flags(const char* pattern);
     void set_pattern_flags(const char* pattern,int flags);
     const char* get_pattern() const;
     int get_flags() const;

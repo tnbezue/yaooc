@@ -107,12 +107,11 @@ check_PROGRAMS = tests/test_algorithm$(EXEEXT) \
 	tests/test_ordered_array_container$(EXEEXT) \
 	tests/test_ordered_map$(EXEEXT) \
 	tests/test_ordered_set$(EXEEXT) tests/test_pair$(EXEEXT) \
-	tests/test_pod_array$(EXEEXT) tests/test_pointer_bag$(EXEEXT) \
-	tests/test_queue$(EXEEXT) tests/test_regex$(EXEEXT) \
-	tests/test_set$(EXEEXT) tests/test_stack$(EXEEXT) \
-	tests/test_stream$(EXEEXT) tests/test_socket$(EXEEXT) \
-	tests/test_string$(EXEEXT) tests/test_thread$(EXEEXT) \
-	tests/test_union$(EXEEXT) \
+	tests/test_pointer_bag$(EXEEXT) tests/test_queue$(EXEEXT) \
+	tests/test_regex$(EXEEXT) tests/test_set$(EXEEXT) \
+	tests/test_stack$(EXEEXT) tests/test_stream$(EXEEXT) \
+	tests/test_socket$(EXEEXT) tests/test_string$(EXEEXT) \
+	tests/test_thread$(EXEEXT) tests/test_union$(EXEEXT) \
 	tests/test_unique_array_container$(EXEEXT) \
 	tests/test_unique_index_array_container$(EXEEXT) \
 	tests/test_unique_ordered_array_container$(EXEEXT) \
@@ -173,10 +172,10 @@ am_lib_libyaooc_la_OBJECTS = src/algorithm.lo src/array_container.lo \
 	src/index_array_container.lo src/integer.lo src/ipaddress.lo \
 	src/json.lo src/json_parser.lo src/memory.lo src/new.lo \
 	src/object.lo src/odbc.lo src/ordered_array_container.lo \
-	src/pair.lo src/pod_array.lo src/pointer_bag.lo src/queue.lo \
-	src/real.lo src/regex.lo src/socket.lo src/sstream.lo \
-	src/stack.lo src/stream.lo src/string.lo src/thread.lo \
-	src/types.lo src/unique_array_container.lo \
+	src/pair.lo src/pointer_bag.lo src/queue.lo src/real.lo \
+	src/regex.lo src/socket.lo src/sstream.lo src/stack.lo \
+	src/stream.lo src/string.lo src/thread.lo src/types.lo \
+	src/unique_array_container.lo \
 	src/unique_index_array_container.lo \
 	src/unique_ordered_array_container.lo src/utils.lo \
 	src/variant.lo src/vector.lo
@@ -278,10 +277,6 @@ tests_test_pair_SOURCES = tests/test_pair.c
 tests_test_pair_OBJECTS = tests/test_pair.$(OBJEXT)
 tests_test_pair_LDADD = $(LDADD)
 tests_test_pair_DEPENDENCIES =
-tests_test_pod_array_SOURCES = tests/test_pod_array.c
-tests_test_pod_array_OBJECTS = tests/test_pod_array.$(OBJEXT)
-tests_test_pod_array_LDADD = $(LDADD)
-tests_test_pod_array_DEPENDENCIES =
 tests_test_pointer_bag_SOURCES = tests/test_pointer_bag.c
 tests_test_pointer_bag_OBJECTS = tests/test_pointer_bag.$(OBJEXT)
 tests_test_pointer_bag_LDADD = $(LDADD)
@@ -387,13 +382,12 @@ am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	src/$(DEPDIR)/memory.Plo src/$(DEPDIR)/new.Plo \
 	src/$(DEPDIR)/object.Plo src/$(DEPDIR)/odbc.Plo \
 	src/$(DEPDIR)/ordered_array_container.Plo \
-	src/$(DEPDIR)/pair.Plo src/$(DEPDIR)/pod_array.Plo \
-	src/$(DEPDIR)/pointer_bag.Plo src/$(DEPDIR)/queue.Plo \
-	src/$(DEPDIR)/real.Plo src/$(DEPDIR)/regex.Plo \
-	src/$(DEPDIR)/socket.Plo src/$(DEPDIR)/sstream.Plo \
-	src/$(DEPDIR)/stack.Plo src/$(DEPDIR)/stream.Plo \
-	src/$(DEPDIR)/string.Plo src/$(DEPDIR)/thread.Plo \
-	src/$(DEPDIR)/types.Plo \
+	src/$(DEPDIR)/pair.Plo src/$(DEPDIR)/pointer_bag.Plo \
+	src/$(DEPDIR)/queue.Plo src/$(DEPDIR)/real.Plo \
+	src/$(DEPDIR)/regex.Plo src/$(DEPDIR)/socket.Plo \
+	src/$(DEPDIR)/sstream.Plo src/$(DEPDIR)/stack.Plo \
+	src/$(DEPDIR)/stream.Plo src/$(DEPDIR)/string.Plo \
+	src/$(DEPDIR)/thread.Plo src/$(DEPDIR)/types.Plo \
 	src/$(DEPDIR)/unique_array_container.Plo \
 	src/$(DEPDIR)/unique_index_array_container.Plo \
 	src/$(DEPDIR)/unique_ordered_array_container.Plo \
@@ -412,7 +406,7 @@ am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	tests/$(DEPDIR)/test_ordered_array_container.Po \
 	tests/$(DEPDIR)/test_ordered_map.Po \
 	tests/$(DEPDIR)/test_ordered_set.Po \
-	tests/$(DEPDIR)/test_pair.Po tests/$(DEPDIR)/test_pod_array.Po \
+	tests/$(DEPDIR)/test_pair.Po \
 	tests/$(DEPDIR)/test_pointer_bag.Po \
 	tests/$(DEPDIR)/test_queue.Po tests/$(DEPDIR)/test_regex.Po \
 	tests/$(DEPDIR)/test_set.Po tests/$(DEPDIR)/test_socket.Po \
@@ -454,11 +448,11 @@ SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_new.c tests/test_number.c tests/test_object.c \
 	tests/test_odbc.c tests/test_ordered_array_container.c \
 	tests/test_ordered_map.c tests/test_ordered_set.c \
-	tests/test_pair.c tests/test_pod_array.c \
-	tests/test_pointer_bag.c tests/test_queue.c tests/test_regex.c \
-	tests/test_set.c tests/test_socket.c tests/test_stack.c \
-	tests/test_stream.c tests/test_string.c tests/test_thread.c \
-	tests/test_union.c tests/test_unique_array_container.c \
+	tests/test_pair.c tests/test_pointer_bag.c tests/test_queue.c \
+	tests/test_regex.c tests/test_set.c tests/test_socket.c \
+	tests/test_stack.c tests/test_stream.c tests/test_string.c \
+	tests/test_thread.c tests/test_union.c \
+	tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c tests/test_utils.c \
 	tests/test_variant.c tests/test_vector.c \
@@ -472,11 +466,11 @@ DIST_SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_new.c tests/test_number.c tests/test_object.c \
 	tests/test_odbc.c tests/test_ordered_array_container.c \
 	tests/test_ordered_map.c tests/test_ordered_set.c \
-	tests/test_pair.c tests/test_pod_array.c \
-	tests/test_pointer_bag.c tests/test_queue.c tests/test_regex.c \
-	tests/test_set.c tests/test_socket.c tests/test_stack.c \
-	tests/test_stream.c tests/test_string.c tests/test_thread.c \
-	tests/test_union.c tests/test_unique_array_container.c \
+	tests/test_pair.c tests/test_pointer_bag.c tests/test_queue.c \
+	tests/test_regex.c tests/test_set.c tests/test_socket.c \
+	tests/test_stack.c tests/test_stream.c tests/test_string.c \
+	tests/test_thread.c tests/test_union.c \
+	tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c tests/test_utils.c \
 	tests/test_variant.c tests/test_vector.c \
@@ -714,7 +708,6 @@ src/object.c \
 src/odbc.c \
 src/ordered_array_container.c \
 src/pair.c \
-src/pod_array.c \
 src/pointer_bag.c \
 src/queue.c \
 src/real.c \
@@ -757,7 +750,6 @@ include/yaooc/ordered_array_container.h \
 include/yaooc/ordered_map.h \
 include/yaooc/ordered_set.h \
 include/yaooc/pair.h \
-include/yaooc/pod_array.h \
 include/yaooc/pointer_bag.h \
 include/yaooc/queue.h \
 include/yaooc/real.h \
@@ -946,7 +938,6 @@ src/odbc.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/ordered_array_container.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/pair.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
-src/pod_array.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/pointer_bag.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/queue.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/real.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
@@ -1105,12 +1096,6 @@ tests/test_pair.$(OBJEXT): tests/$(am__dirstamp) \
 tests/test_pair$(EXEEXT): $(tests_test_pair_OBJECTS) $(tests_test_pair_DEPENDENCIES) $(EXTRA_tests_test_pair_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test_pair$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_pair_OBJECTS) $(tests_test_pair_LDADD) $(LIBS)
-tests/test_pod_array.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
-
-tests/test_pod_array$(EXEEXT): $(tests_test_pod_array_OBJECTS) $(tests_test_pod_array_DEPENDENCIES) $(EXTRA_tests_test_pod_array_DEPENDENCIES) tests/$(am__dirstamp)
-	@rm -f tests/test_pod_array$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(tests_test_pod_array_OBJECTS) $(tests_test_pod_array_LDADD) $(LIBS)
 tests/test_pointer_bag.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1288,7 +1273,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/odbc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ordered_array_container.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/pair.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/pod_array.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/pointer_bag.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/queue.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/real.Plo@am__quote@ # am--include-marker
@@ -1327,7 +1311,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_ordered_map.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_ordered_set.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_pair.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_pod_array.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_pointer_bag.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_queue.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_regex.Po@am__quote@ # am--include-marker
@@ -1710,7 +1693,6 @@ distclean: distclean-am
 	-rm -f src/$(DEPDIR)/odbc.Plo
 	-rm -f src/$(DEPDIR)/ordered_array_container.Plo
 	-rm -f src/$(DEPDIR)/pair.Plo
-	-rm -f src/$(DEPDIR)/pod_array.Plo
 	-rm -f src/$(DEPDIR)/pointer_bag.Plo
 	-rm -f src/$(DEPDIR)/queue.Plo
 	-rm -f src/$(DEPDIR)/real.Plo
@@ -1749,7 +1731,6 @@ distclean: distclean-am
 	-rm -f tests/$(DEPDIR)/test_ordered_map.Po
 	-rm -f tests/$(DEPDIR)/test_ordered_set.Po
 	-rm -f tests/$(DEPDIR)/test_pair.Po
-	-rm -f tests/$(DEPDIR)/test_pod_array.Po
 	-rm -f tests/$(DEPDIR)/test_pointer_bag.Po
 	-rm -f tests/$(DEPDIR)/test_queue.Po
 	-rm -f tests/$(DEPDIR)/test_regex.Po
@@ -1836,7 +1817,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f src/$(DEPDIR)/odbc.Plo
 	-rm -f src/$(DEPDIR)/ordered_array_container.Plo
 	-rm -f src/$(DEPDIR)/pair.Plo
-	-rm -f src/$(DEPDIR)/pod_array.Plo
 	-rm -f src/$(DEPDIR)/pointer_bag.Plo
 	-rm -f src/$(DEPDIR)/queue.Plo
 	-rm -f src/$(DEPDIR)/real.Plo
@@ -1875,7 +1855,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/$(DEPDIR)/test_ordered_map.Po
 	-rm -f tests/$(DEPDIR)/test_ordered_set.Po
 	-rm -f tests/$(DEPDIR)/test_pair.Po
-	-rm -f tests/$(DEPDIR)/test_pod_array.Po
 	-rm -f tests/$(DEPDIR)/test_pointer_bag.Po
 	-rm -f tests/$(DEPDIR)/test_queue.Po
 	-rm -f tests/$(DEPDIR)/test_regex.Po

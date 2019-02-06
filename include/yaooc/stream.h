@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -196,7 +196,8 @@ extern yaooc_ostream_pointer cerr;
 #define OSTREAM STREAM
 #define ISTREAM STREAM
 
-#define S_OBJ(T) ((memory_header_t){ .type_info_=T ## _ti , .n_elem_=(size_t)-1 }).ptr_
+#define __S_OBJ(ti) ((memory_header_t){ .type_info_=ti , .n_elem_=(size_t)-1 }).ptr_
+#define S_OBJ(T) __S_OBJ(T ## _ti)
 #define O_OBJ(T,O) S_OBJ(T),&O
 #define O_CHR(c) S_OBJ(char),c
 #define O_UCHR(uc) S_OBJ(uchar),uc

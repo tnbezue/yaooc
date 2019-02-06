@@ -66,13 +66,15 @@ int_array_container_class_table_t int_array_container_class_table=
   .parent_class_table_ = (const class_table_t*)&yaooc_array_container_class_table,
   .type_name_ = (const char*) "int_array_container_t",
   .swap = yaooc_array_container_swap, /* swap  */
-  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
-  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
+  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_array_container_increase_capacity,
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_array_container_size_needed,
   .size = yaooc_array_container_size, /* size */
   .capacity = yaooc_array_container_capacity, /* capacity */
   .empty = yaooc_array_container_empty, /* empty */
-  .begin = (iterator (*) (const_pointer)) yaooc_array_container_begin, /* begin */
-  .end = (iterator (*) (const_pointer)) yaooc_array_container_end, /*end  */
+  .begin = (iterator (*) (pointer)) yaooc_array_container_begin, /* begin */
+  .end = (iterator (*) (pointer)) yaooc_array_container_end, /*end  */
+  .cbegin = (const_iterator (*) (const_pointer)) yaooc_array_container_begin, /* cbegin */
+  .cend = (const_iterator (*) (const_pointer)) yaooc_array_container_end, /* cend  */
   .at = (int_array_container_iterator (*)(const_pointer,size_t)) yaooc_array_container_at, /* at */
 	.find = (int_array_container_iterator (*)(const_pointer,const_pointer))yaooc_array_container_find, /* find */
 	.insert = (int_array_container_const_iterator (*)(const_pointer,const_iterator,const_pointer))yaooc_array_container_insert,  /* insert */
@@ -93,7 +95,7 @@ void print_int_container(int_array_container_const_pointer array)
 {
   int_array_container_const_iterator ia;
   optr=output;
-  for(ia=M(array,begin);ia!=M(array,end);ia++)
+  for(ia=M(array,cbegin);ia!=M(array,cend);ia++)
     optr+=sprintf(optr,"%d ",*ia);
 }
 
@@ -313,13 +315,15 @@ simple_object_array_container_class_table_t simple_object_array_container_class_
   .parent_class_table_ = (const class_table_t*)&yaooc_array_container_class_table, /* parent_class_table_ */
   .type_name_ = (const char*) "simple_object_array_container_t",
   .swap = yaooc_array_container_swap, /* swap  */
-  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
-  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
+  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_array_container_increase_capacity,
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_array_container_size_needed,
   .size = yaooc_array_container_size, /* size */
   .capacity = yaooc_array_container_capacity, /* capacity */
   .empty = yaooc_array_container_empty, /* empty */
-  .begin = (iterator (*) (const_pointer)) yaooc_array_container_begin, /* begin */
-  .end = (iterator (*) (const_pointer)) yaooc_array_container_end, /*end  */
+  .begin = (iterator (*) (pointer)) yaooc_array_container_begin, /* begin */
+  .end = (iterator (*) (pointer)) yaooc_array_container_end, /*end  */
+  .cbegin = (const_iterator (*) (const_pointer)) yaooc_array_container_begin, /* begin */
+  .cend = (const_iterator (*) (const_pointer)) yaooc_array_container_end, /*end  */
 	.find = (simple_object_array_container_iterator (*)(pointer,const_pointer))yaooc_array_container_find,
 	.insert = (simple_object_array_container_iterator (*)(const_pointer,const_iterator,const_pointer))yaooc_array_container_insert,
 	.insert_range = (void (*)(const_pointer,const_iterator,const_iterator,const_iterator))yaooc_array_container_insert_range,
@@ -393,14 +397,14 @@ void test_resize_shrink()
 	M(soc,shrink_to_fit);
 	TESTCASE("Shrink to fit");
 	TEST("Size is 20",M(soc,size)==20);
-	TEST("Capacity is 20",M(soc,capacity)==20);
+	TEST("Capacity is 32",M(soc,capacity)==32);
 	TEST("Output string",strcmp(output,"")==0);
 
 	optr=output;
 	M(soc,resize_value,10,so);
 	TESTCASE("Resize: Decrease size by 10");
 	TEST("Size is 10",M(soc,size)==10);
-	TEST("Capacity is 20",M(soc,capacity)==20);
+	TEST("Capacity is 32",M(soc,capacity)==32);
 	TEST("Output string",strcmp(output,"SODT:25 SODT:25 SODT:25 SODT:25 SODT:25 SODT:25 SODT:25 SODT:25 SODT:25 SODT:25 ")==0);
 
 	optr=output;

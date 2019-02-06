@@ -1,16 +1,65 @@
 #ifndef __ARRAY_CONTAINER_YAOOC_INCLUDED__
 #define __ARRAY_CONTAINER_YAOOC_INCLUDED__
 
-#include <yaooc/pod_array.yaooc>
+#include <yaooc/object.yaooc>
+#if 0 // HEADER
+#include <yaooc/stream.h>
 
-class yaooc_array_container : yaooc_pod_array
+/*
+	Helper macros for arrays
+*/
+#define YAOOC_ARRAY_CONTAINER_INITIAL_CAPACITY 16
+
+#define FOR_EACH(ITER,ARRAY) for(ITER=M(ARRAY,begin);ITER!=M(ARRAY,end);ITER++)
+#define CFOR_EACH(ITER,ARRAY) for(ITER=M(ARRAY,cbegin);ITER!=M(ARRAY,cend);ITER++)
+
+#define TYPE_INFO(p) (((yaooc_array_container_const_pointer)p)->type_info_)
+#define TYPE_SIZE(p) (yaooc_sizeof(TYPE_INFO(p)))
+#define SIZE(p)  (((yaooc_array_container_const_pointer)p)->size_)
+#define CAPACITY(p)  (((yaooc_array_container_const_pointer)p)->capacity_)
+#define BEGIN(p) (((yaooc_array_container_pointer)p)->array_)
+#define AT(p,i) (BEGIN(p)+((i)*TYPE_SIZE(p)))
+#define END(p)  AT(p,SIZE(p))
+#define INDEX(p,pos) (((yaooc_private_const_iterator)(pos)-BEGIN(p))/TYPE_SIZE(p))
+#endif // HEADER
+#if 0 // SOURCE
+#include <yaooc/algorithm.h>
+#include <yaooc/stream.h>
+#include <string.h>
+#endif // SOURCE
+
+class yaooc_array_container : yaooc_object
 {
+		yaooc_array_container();  // default contructor will throw exception -- must specify a type info
+		yaooc_array_container_ctor_ti(const type_info_t* ti);
     ~yaooc_array_container();
     yaooc_array_container(yaooc_array_container);
     operator=();
     operator<();
-  private:
-  protected:
+		operator<<();
+
+	instance:
+    char* array_;
+    const type_info_t* type_info_;
+    size_t size_;
+    size_t capacity_;
+
+	table:
+    void swap(pointer p2);
+    bool increase_capacity(size_t n);
+    size_t size_needed(size_t n) const;
+    size_t size() const;
+    size_t capacity() const;
+    bool empty() const;
+    iterator begin();
+    iterator end();
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+
+	protected:
+		iterator insert_space(const_iterator pos,size_t n);
+    iterator erase_space(const_iterator pos,size_t n);
+    iterator replace_space(const_iterator f,const_iterator n,size_t count);
     iterator find(const_pointer value);
     iterator insert(const_iterator pos,const_pointer value);
     iterator insertn(const_iterator pos,size_t n,const_pointer val);
@@ -18,11 +67,12 @@ class yaooc_array_container : yaooc_pod_array
     iterator erase(const_iterator pos);
     iterator erase_range(const_iterator f,const_iterator l);
     size_t erase_value(const_pointer value);
+    iterator at(size_t i) const;
+    void shrink_to_fit();
+    void reserve(size_t n);
     void resize(size_t n);
     void resize_value(size_t n,const_pointer value);
     void clear();
-
-  table:
 };
 
 #endif

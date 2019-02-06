@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -170,6 +170,22 @@ const type_info_t* const T ## _ti = &__ ## T ## _ti;
 	&__ ## PARENT ## _ti \
 )
 
+#define __DEFINE_POD_TYPE_INFO__(T,LT_COMPARE,TO_STREAM,FROM_STREAM) \
+const pod_type_info_t __ ## T ## _ti ={ \
+	.type_size_ = sizeof(T ## _t) | POD_FLAG,\
+	.less_than_compare_ = (less_than_compare) LT_COMPARE, \
+	.to_stream_ = (to_stream) TO_STREAM, \
+	.from_stream_ = (from_stream) FROM_STREAM \
+}; \
+const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti;
+
+#define DEFINE_POD_TYPE_INFO(T,HAS_LT_COMPARE,HAS_TO_STREAM,HAS_FROM_STREAM) \
+	__DEFINE_POD_TYPE_INFO__(T,\
+	LT_ ## HAS_LT_COMPARE(T),\
+	TOS_ ## HAS_TO_STREAM(T),\
+	FROMS_ ## HAS_FROM_STREAM(T)\
+)
+
 
 #define SWAP(T,x,y) { T __temp__=x; x=y; y=__temp__; }
 
@@ -180,6 +196,6 @@ const type_info_t* const T ## _ti = &__ ## T ## _ti;
 #define STACK_VAR_ARRAY(T,V,N) T ## _t V[N]; __newp_array(V,T ## _ti,N)
 #define STACK_VAR_ARRAY_CTOR(T,V,N,CTOR,...) T ## _t V[N]; __newp_array_ctor(V,T ## _ti,N,CTOR, ## __VA_ARGS__)
 
-#define DISTANCE(ti,first,last) ((((yaooc_private_const_iterator)last) - ((yaooc_private_const_iterator)first))/((const type_info_t*)ti)->type_size_)
+#define DISTANCE(ti,first,last) ((((yaooc_private_const_iterator)last) - ((yaooc_private_const_iterator)first))/yaooc_sizeof(ti))
 
 #endif

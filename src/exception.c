@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 */
 
 #include <yaooc/exception.h>
+#include <yaooc/pointer_bag.h>
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>

@@ -3,6 +3,13 @@
 
 #include <yaooc/object.yaooc>
 
+#if 0 // SOURCE
+#include <yaooc/algorithm.h>
+#include <yaooc/string.h>
+#include <yaooc/stream.h>
+#include <string.h>
+#endif // SOURCE
+
 class yaooc_pod_array : yaooc_object
 {
     yaooc_pod_array();
@@ -28,7 +35,6 @@ class yaooc_pod_array : yaooc_object
     void clear();
 
   table:
-    cont class_table_t* private_class_table_=&yaooc_pod_array_private_class_table;
     void swap(pointer p2);
     bool increase_capacity(size_t n);
     size_t size_needed(size_t n);

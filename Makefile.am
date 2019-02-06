@@ -73,7 +73,6 @@ src/object.c \
 src/odbc.c \
 src/ordered_array_container.c \
 src/pair.c \
-src/pod_array.c \
 src/pointer_bag.c \
 src/queue.c \
 src/real.c \
@@ -117,7 +116,6 @@ include/yaooc/ordered_array_container.h \
 include/yaooc/ordered_map.h \
 include/yaooc/ordered_set.h \
 include/yaooc/pair.h \
-include/yaooc/pod_array.h \
 include/yaooc/pointer_bag.h \
 include/yaooc/queue.h \
 include/yaooc/real.h \
@@ -160,7 +158,6 @@ tests/test_ordered_array_container \
 tests/test_ordered_map \
 tests/test_ordered_set \
 tests/test_pair \
-tests/test_pod_array \
 tests/test_pointer_bag \
 tests/test_queue \
 tests/test_regex \

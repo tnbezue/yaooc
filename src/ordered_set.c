@@ -1,3 +1,19 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 #include <yaooc/ordered_set.h>
 
 #include <string.h>
@@ -57,7 +73,7 @@ yaooc_ordered_set_pointer yaooc_ordered_set_sunion_(pointer p,const_pointer o)
 	yaooc_ordered_set_pointer this=p;
 	const char* is=(const char*)yaooc_array_container_cbegin(o);
 	const char* end=(const char*)yaooc_array_container_cend(o);
-	yaooc_size_type element_size=this->type_info_->type_size_;
+	yaooc_size_type element_size=yaooc_sizeof(this->type_info_);
 	for(;is!=end;is+=element_size)
 		yaooc_ordered_set_insert(this,is);
 	return this;
@@ -74,7 +90,7 @@ yaooc_ordered_set_pointer yaooc_ordered_set_sdiff_(pointer p,const_pointer o)
 	yaooc_ordered_set_pointer this=p;
 	const char* is=(const char*)yaooc_array_container_cbegin(o);
 	const char* end=(const char*)yaooc_array_container_cend(o);
-	yaooc_size_type element_size=this->type_info_->type_size_;
+	yaooc_size_type element_size=yaooc_sizeof(this->type_info_);
 	pointer item;
 	for(;is!=end;is+=element_size) {
 		item=M(this,find,is);

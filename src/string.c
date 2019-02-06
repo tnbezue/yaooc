@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -161,7 +161,7 @@ void yaooc_string_insertn(pointer p,size_t ipos,const char* str,size_t n)
     size_t l = strlen(str);
     n=n>l ? l : n;
 
-    yaooc_pod_array_insert_space(this,AT(p,ipos),n);
+    yaooc_array_container_insert_space(this,AT(p,ipos),n);
     memcpy(AT(p,ipos),str,n);
     *((yaooc_private_iterator)END(this))=0;
   }
@@ -174,7 +174,7 @@ void yaooc_string_insert_chr(pointer p,size_t pos,char ch)
 
 void yaooc_string_insertn_chr(pointer p,size_t pos,size_t count,char ch)
 {
-  yaooc_private_iterator ret=yaooc_pod_array_insert_space(p,AT(p,pos),count);
+  yaooc_private_iterator ret=yaooc_array_container_insert_space(p,AT(p,pos),count);
   memset(ret,ch,count);
   *((yaooc_private_iterator)END(p))=0;
 }
@@ -232,7 +232,7 @@ void yaooc_string_replacen(pointer p,size_t pos,size_t n,const char* str,size_t 
   if(pos > this->size_) pos=this->size_;
   if(n == yaooc_string_npos || this->size_ < (pos+n))
     n=this->size_-pos;
-  yaooc_private_iterator dpos = yaooc_pod_array_replace_space(this,AT(p,pos),AT(p,pos+n),count);
+  yaooc_private_iterator dpos = yaooc_array_container_replace_space(this,AT(p,pos),AT(p,pos+n),count);
   memcpy(dpos,str,count);
   *((yaooc_private_iterator)END(this))=0;
 }
@@ -702,18 +702,20 @@ yaooc_string_vector_pointer yaooc_string_split_re(const_pointer p,yaooc_regex_co
 /* Class table for yaooc_string */
 yaooc_string_class_table_t yaooc_string_class_table =
 {
-  .parent_class_table_ = (const class_table_t*) &yaooc_pod_array_class_table,
+  .parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table,
   .type_name_ = (const char*) "yaooc_string_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_pod_array_swap,
-  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
+  .swap = (void (*) (pointer p,pointer)) yaooc_array_container_swap,
+  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_string_increase_capacity,
   .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_string_size_needed,
-  .size = (size_t (*) (const_pointer p)) yaooc_pod_array_size,
-  .capacity = (size_t (*) (const_pointer p)) yaooc_pod_array_capacity,
-  .empty = (bool (*) (const_pointer p)) yaooc_pod_array_empty,
-  .begin = (iterator (*) (const_pointer p)) yaooc_pod_array_begin,
-  .end = (iterator (*) (const_pointer p)) yaooc_pod_array_end,
-  .at = (yaooc_string_iterator (*) (const_pointer p,size_t)) yaooc_pod_array_at,
-  .reserve = (void (*) (pointer p,size_t)) yaooc_pod_array_reserve,
+  .size = (size_t (*) (const_pointer p)) yaooc_array_container_size,
+  .capacity = (size_t (*) (const_pointer p)) yaooc_array_container_capacity,
+  .empty = (bool (*) (const_pointer p)) yaooc_array_container_empty,
+  .begin = (iterator (*) (pointer p)) yaooc_array_container_begin,
+  .end = (iterator (*) (pointer p)) yaooc_array_container_end,
+  .cbegin = (const_iterator (*) (const_pointer p)) yaooc_array_container_begin,
+  .cend = (const_iterator (*) (const_pointer p)) yaooc_array_container_end,
+  .at = (yaooc_string_iterator (*) (const_pointer p,size_t)) yaooc_array_container_at,
+  .reserve = (void (*) (pointer p,size_t)) yaooc_array_container_reserve,
   .insert = (void (*) (pointer p,size_t,const char*)) yaooc_string_insert,
   .insertn = (void (*) (pointer p,size_t,const char*,size_t)) yaooc_string_insertn,
   .insert_chr = (void (*) (pointer p,size_t,char)) yaooc_string_insert_chr,
@@ -726,7 +728,7 @@ yaooc_string_class_table_t yaooc_string_class_table =
   .replacen = (void (*) (pointer p,size_t,size_t,const char*,size_t)) yaooc_string_replacen,
   .resize = (void (*) (pointer p,size_t)) yaooc_string_resize,
   .resize_value = (void (*) (pointer p,size_t,char)) yaooc_string_resize_value,
-  .shrink_to_fit = (void (*) (pointer p)) yaooc_pod_array_shrink_to_fit,
+  .shrink_to_fit = (void (*) (pointer p)) yaooc_array_container_shrink_to_fit,
   .append = (void (*) (pointer p,const char*)) yaooc_string_append,
   .appendn = (void (*) (pointer p,const char*,size_t)) yaooc_string_appendn,
   .substr = (yaooc_string_pointer (*) (const_pointer p,size_t,size_t)) yaooc_string_substr,
@@ -754,7 +756,7 @@ yaooc_string_class_table_t yaooc_string_class_table =
   .rfindchr = (size_t (*) (pointer p,char,size_t)) yaooc_string_rfindchr,
   .split = (yaooc_string_vector_pointer (*) (const_pointer p,const char*,size_t)) yaooc_string_split,
   .split_re = (yaooc_string_vector_pointer (*) (const_pointer p,yaooc_regex_const_pointer,size_t)) yaooc_string_split_re,
-  .c_str = (const char* (*) (const_pointer p)) yaooc_pod_array_begin,
+  .c_str = (const char* (*) (const_pointer p)) yaooc_array_container_begin,
 };
 
 

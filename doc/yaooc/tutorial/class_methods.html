@@ -1,4 +1,20 @@
 <!DOCTYPE html>
+<!--
+  Copyright (C) 2016-2019  by Terry N Bezue
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 <html>
 <head>
 <title>Class Methods</title>
@@ -147,7 +163,9 @@ YAOOC provides the M macro (M for method) to make calling methods easier. The sy
   printf("%s\n",M(msp,get));
 </code></pre>
 <p>
-You may have noticed that the my_string_assign method was changed slightly to use the my_string_set_method.
+You may have noticed that the my_string_assign method was changed slightly to use the set method.
+This was done only to demonstrate calling a method using the M macro.  The full name of the method (my_string_set)
+could have also been used.
 </p>
 <p>
 Another macro that will have an occasional use is yaooc_class_forward.  As the name implies, yaooc_class_forward provides a forward declaration of a class.

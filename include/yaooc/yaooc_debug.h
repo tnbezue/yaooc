@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,9 @@
 #ifndef __YAOOC_DEBUG_LIST_INCLUDED__
 #define __YAOOC_DEBUG_LIST_INCLUDED__
 
-#define DEBUG_ALL 0xFFFFFFFF
+#include <limits.h>
+
+#define DEBUG_ALL SIZE_MAX
 #define DEBUG_NONE 0x0
 
 #ifdef	__DEBUG__
@@ -45,30 +47,29 @@
 
 #endif
 
-#define DEBUG_NEW     1
-#define DEBUG_OBJECT  1 << 1
-#define DEBUG_EXCEPTION  1 << 2
-#define DEBUG_ALGORITHM 1 << 3
-#define DEBUG_POD_ARRAY 1 << 4
-#define DEBUG_ARRAY_CONTAINER 1 << 5
-#define DEBUG_STRING 1 << 6
-#define DEBUG_VECTOR 1 << 7
-#define DEBUG_UNIQUE_ARRAY_CONTAINER 1 << 8
-#define DEBUG_ORDERED_ARRAY_CONTAINER 1 << 9
-#define DEBUG_UNIQUE_ORDERED_ARRAY_CONTAINER 1 << 10
-#define DEBUG_INDEX_ARRAY_CONTAINER 1 << 11
-#define DEBUG_UNIQUE_INDEX_ARRAY_CONTAINER 1 << 12
-#define DEBUG_MAP   1 << 13
-#define DEBUG_SET   1 << 14
-#define DEBUG_ORDERED_MAP   1 << 15
-#define DEBUG_ORDERED_SET   1 << 16
-#define DEBUG_STACK 1 << 17
-#define DEBUG_QUEUE 1 << 18
-#define DEBUG_MEMORY 1 << 19
-#define DEBUG_BASE_PARSER 1 << 20
-#define DEBUG_JSON  1 << 21
-#define DEBUG_JSON_PARSER  1 << 22
-#define DEBUG_REGEX  1 << 23
+#define DEBUG_NEW                            1
+#define DEBUG_OBJECT                         DEBUG_NEW << 1
+#define DEBUG_EXCEPTION                      DEBUG_OBJECT << 1
+#define DEBUG_ALGORITHM                      DEBUG_EXCEPTION << 1
+#define DEBUG_ARRAY_CONTAINER                DEBUG_ALGORITHM << 1
+#define DEBUG_STRING                         DEBUG_ARRAY_CONTAINER << 1
+#define DEBUG_VECTOR                         DEBUG_STRING << 1
+#define DEBUG_UNIQUE_ARRAY_CONTAINER         DEBUG_VECTOR << 1
+#define DEBUG_ORDERED_ARRAY_CONTAINER        DEBUG_UNIQUE_ARRAY_CONTAINER << 1
+#define DEBUG_UNIQUE_ORDERED_ARRAY_CONTAINER DEBUG_ORDERED_ARRAY_CONTAINER << 1
+#define DEBUG_INDEX_ARRAY_CONTAINER          DEBUG_UNIQUE_ORDERED_ARRAY_CONTAINER << 1
+#define DEBUG_UNIQUE_INDEX_ARRAY_CONTAINER   DEBUG_INDEX_ARRAY_CONTAINER << 1
+#define DEBUG_MAP                            DEBUG_UNIQUE_INDEX_ARRAY_CONTAINER << 1
+#define DEBUG_SET                            DEBUG_MAP << 1
+#define DEBUG_ORDERED_MAP                    DEBUG_SET << 1
+#define DEBUG_ORDERED_SET                    DEBUG_ORDERED_MAP << 1
+#define DEBUG_STACK                          DEBUG_ORDERED_SET << 1
+#define DEBUG_QUEUE                          DEBUG_STACK << 1
+#define DEBUG_MEMORY                         DEBUG_QUEUE << 1
+#define DEBUG_BASE_PARSER                    DEBUG_MEMORY << 1
+#define DEBUG_JSON                           DEBUG_BASE_PARSER << 1
+#define DEBUG_JSON_PARSER                    DEBUG_JSON << 1
+#define DEBUG_REGEX                          DEBUG_JSON_PARSER  << 1
 
 /*#define DEBUG_MASK DEBUG_NONE*/
 

@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,9 +23,10 @@ iterator __yaooc_find(const type_info_t* ti,const_iterator f,const_iterator l,co
 	yaooc_private_const_iterator first=f;
 	yaooc_private_const_iterator last=l;
   less_than_compare lt_cmp=get_lt_cmp(ti);
+	size_t type_size=yaooc_sizeof(ti);
   if(lt_cmp) {
     while(first!=last && (lt_cmp(first,value) || lt_cmp(value,first)))
-      first+=ti->type_size_;
+      first+=type_size;
   }
 	return (iterator)first;
 }
@@ -36,7 +37,8 @@ iterator __yaooc_copy(const type_info_t* ti,const_iterator f,const_iterator l,it
 	yaooc_private_const_iterator last=l;
   yaooc_private_iterator dst=d;
   if(get_assignment(ti)) {
-    for(;first!=last;dst+=ti->type_size_,first+=ti->type_size_)
+		size_t type_size=yaooc_sizeof(ti);
+    for(;first!=last;dst+=type_size,first+=type_size)
       __assign_static(dst,first,ti);
   } else {
     memcpy(dst,first,last-first);
@@ -50,12 +52,13 @@ void __yaooc_fill(const type_info_t* ti,iterator f,iterator l,const_pointer valu
  	yaooc_private_iterator first=f;
 	yaooc_private_iterator last=l;
   assignment assign_func=get_assignment(ti);
+	size_t type_size=yaooc_sizeof(ti);
   if(assign_func) {
-    for(;first!=last;first+=ti->type_size_)
+    for(;first!=last;first+=type_size)
       assign_func(first,value);
   } else {
-    for(;first!=last;first+=ti->type_size_)
-      memcpy(first,value,ti->type_size_);
+    for(;first!=last;first+=type_size)
+      memcpy(first,value,type_size);
   }
 }
 
@@ -70,14 +73,15 @@ iterator __yaooc_copy_if(const type_info_t* ti,const_iterator f,const_iterator l
 	yaooc_private_const_iterator last=l;
   yaooc_private_iterator dst=d;
   assignment assign_func=get_assignment(ti);
-  for(;first!=last;first+=ti->type_size_) {
+	size_t type_size=yaooc_sizeof(ti);
+  for(;first!=last;first+=type_size) {
     if(fun(first)) {
       if(assign_func) {
         assign_func(dst,first);
       } else {
-        memcpy(dst,first,ti->type_size_);
+        memcpy(dst,first,type_size);
       }
-      dst+=ti->type_size_;
+      dst+=type_size;
     }
   }
 	return dst;
@@ -88,7 +92,8 @@ void __yaooc_for_each(const type_info_t* ti,iterator f,iterator l,void(*fun)(voi
 {
 	yaooc_private_iterator first=f;
 	yaooc_private_iterator last=l;
-	for(;first!=last;first+=ti->type_size_) {
+	size_t type_size=yaooc_sizeof(ti);
+	for(;first!=last;first+=type_size) {
 		fun(first);
 	}
 }
@@ -99,12 +104,15 @@ size_t __yaooc_count(const type_info_t* ti,const_iterator f,const_iterator l,con
 	yaooc_private_const_iterator first=f;
 	yaooc_private_const_iterator last=l;
 	less_than_compare lt_cmp=get_lt_cmp(ti);
+	size_t type_size=yaooc_sizeof(ti);
   if(lt_cmp) {
-    for(;first!=last;first+=ti->type_size_) {
+    for(;first!=last;first+=type_size) {
       if(!(lt_cmp(first,value) || lt_cmp(value,first)))
         count++;
     }
-  }
+  } else { // All are equal if not lt_cmp
+		count=(last-first)/type_size;
+	}
 	return count;
 }
 
@@ -113,7 +121,8 @@ size_t __yaooc_count_if(const type_info_t*ti,const_iterator f,const_iterator l,b
   size_t count=0;
 	yaooc_private_const_iterator first=f;
 	yaooc_private_const_iterator last=l;
-	for(;first!=last;first+=ti->type_size_) {
+	size_t type_size=yaooc_sizeof(ti);
+	for(;first!=last;first+=type_size) {
 		if(fun(first))
 			count++;
 	}

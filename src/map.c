@@ -1,3 +1,19 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 #include <yaooc/map.h>
 
 #include <string.h>
@@ -11,14 +27,15 @@ yaooc_map_insert_result_t yaooc_map_insert(pointer p,const_iterator value)
   r.pos_=yaooc_unique_index_array_container_insert(p,yaooc_array_container_cend(this),value);*/
 	yaooc_index_array_container_find_result_t fr=yaooc_index_array_container_private_find(p,value);
   if(!fr.found_) {
-//    yaooc_size_type index=(ipos-(char*)BEGIN(this))/this->type_info_->type_size_;
+		size_t type_size=yaooc_sizeof(this->type_info_);
+//    yaooc_size_type index=(ipos-(char*)BEGIN(this))/type_size;
     yaooc_index_array_container_increase_capacity(this,1);
     yaooc_insert_index(this,fr.index_,1,this->size_,this->size_);
     yaooc_array_container_insert_n(this,yaooc_array_container_end(this),1,value);
-    r.pos_=(char*)BEGIN(this) + this->index_[fr.index_]*this->type_info_->type_size_;
+    r.pos_=(char*)BEGIN(this) + this->index_[fr.index_]*type_size;
     r.found_=false;
   } else {
-    r.pos_=(char*)BEGIN(this) + this->index_[fr.index_]*this->type_info_->type_size_;
+    r.pos_=(char*)BEGIN(this) + this->index_[fr.index_]*type_size;
     r.found_=true;
   }
 	return r;

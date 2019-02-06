@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -149,8 +149,8 @@ yaooc_ofstream_class_table_t yaooc_ofstream_class_table =
   .printf = (int (*) (pointer,const char*,...)) yaooc_ostream_printf,
   .vprintf = (int (*) (pointer,const char*,va_list)) yaooc_ostream_vprintf,
   .write = (size_t (*) (pointer,const void*,size_t,size_t)) yaooc_ostream_write,
-	.puts = (void (*) (pointer,const char*)) yaooc_ostream_puts,
-	.putc = (void (*) (pointer,const char*)) yaooc_ostream_putc,
+	.puts = (int (*) (pointer,const char*)) yaooc_ostream_puts,
+	.putc = (int (*) (pointer,int)) yaooc_ostream_putc,
 	.open = (void (*) (pointer,const char*,const char*)) yaooc_ofstream_open,
   .close = (void (*) (pointer)) yaooc_ofstream_close,
 };

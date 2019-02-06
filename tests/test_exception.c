@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <yaooc/exception.h>
+#include <yaooc/pointer_bag.h>
 #include "test_harness.h"
 #include "demo_def.inc"
 #include <pthread.h>
@@ -300,18 +301,18 @@ void test_nested()
             TRY { /* CB2_T1 */
               THROW(new(demo_exception));
             } CATCH(demo_exception,aed) { /* CB2_CB1 */
-              TYPE(aed);
+              M(aed,what);  // just to avoid warning of unused variable
               THROW(new(yaooc_exception));
             }
             ETRY
           }
         } CATCH(yaooc_exception,ye) { /* CB2_3 */
-          TYPE(ye);
+          M(ye,what);
         }
         ETRY
       }
     } CATCH(yaooc_exception,yye) { /* CB1 */
-			TYPE(yye);
+			M(yye,what);
     }
     ETRY
     printf("%d %s\n",i,path);

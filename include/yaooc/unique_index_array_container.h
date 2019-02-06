@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@ yaooc_class(yaooc_unique_index_array_container);
 #define yaooc_unique_index_array_container_empty yaooc_index_array_container_empty
 #define yaooc_unique_index_array_container_begin yaooc_index_array_container_begin
 #define yaooc_unique_index_array_container_end yaooc_index_array_container_end
+#define yaooc_unique_index_array_container_size_needed yaooc_index_array_container_size_needed
 
 /* Prototypes for yaooc_unique_index_array_container class instance*/
 

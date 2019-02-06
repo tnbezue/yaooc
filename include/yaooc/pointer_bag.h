@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,8 +18,7 @@
 #ifndef __POINTER_BAG_INCLUDED__
 #define __POINTER_BAG_INCLUDED__
 
-#include <yaooc/object.h>
-#include <yaooc/pod_array.h>
+#include <yaooc/array_container.h>
 
 /* YAOOC_POD_ARRAY_DEFINITION(pointer,pointer_bag_array) */
 
@@ -28,7 +27,7 @@
 */
 yaooc_class_table(yaooc_pointer_bag)
 {
-  yaooc_pod_array_class_table_t;
+  yaooc_array_container_class_table_t;
   pointer (*push)(pointer,pointer);
   void (*push_list)(pointer,...);
   void (*remove)(pointer,pointer);
@@ -38,7 +37,7 @@ yaooc_class_table(yaooc_pointer_bag)
 
 yaooc_class_instance(yaooc_pointer_bag)
 {
-  yaooc_pod_array_class_instance_t;
+  yaooc_array_container_class_instance_t;
 };
 
 yaooc_class(yaooc_pointer_bag);
@@ -53,6 +52,16 @@ void yaooc_pointer_bag_dtor(pointer);
 /* Prototypes for Constructors */
 
 /* Prototypes for class table members */
+#define yaooc_pointer_bag_swap yaooc_array_container_swap
+#define yaooc_pointer_bag_increase_capacity  yaooc_array_container_increase_capacity
+#define yaooc_pointer_bag_size_needed  yaooc_array_container_size_needed
+#define yaooc_pointer_bag_size  yaooc_array_container_size
+#define yaooc_pointer_bag_capacity  yaooc_array_container_capacity
+#define yaooc_pointer_bag_empty  yaooc_array_container_empty
+#define yaooc_pointer_bag_begin  yaooc_array_container_begin
+#define yaooc_pointer_bag_end  yaooc_array_container_end
+#define yaooc_pointer_bag_cbegin  yaooc_array_container_cbegin
+#define yaooc_pointer_bag_cend  yaooc_array_container_cend
 void yaooc_pointer_bag_swap(pointer,pointer);
 pointer yaooc_pointer_bag_push(pointer,pointer);
 void yaooc_pointer_bag_push_list(pointer,...);

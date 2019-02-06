@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,5 +41,5 @@ void __pair_from_stream(const type_info_t* k_ti,pointer k,const type_info_t* v_t
 		key_from_s(k,s);
 		value_from_s(v,s);
 	}
-  
+
 }

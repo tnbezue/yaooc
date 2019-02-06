@@ -235,7 +235,7 @@ static yaoocpp_container_const_pointer yaoocpp_parser_find_class(pointer p,const
 {
   yaoocpp_parser_pointer this=p;
 	yaoocpp_container_pointer_vector_const_iterator i;
-	FOR_EACH(i,this->classes_) {
+	CFOR_EACH(i,this->classes_) {
 		if(strcmp(name,M(&(*i)->name_,c_str))==0)
 			break;
 	}

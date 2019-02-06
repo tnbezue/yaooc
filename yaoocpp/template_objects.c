@@ -19,6 +19,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <yaooc/regex.h>
+#include <yaooc/pointer_bag.h>
 
 /* Private variables implementation for yaoocpp_argument */
 
@@ -464,7 +465,7 @@ void yaoocpp_constructor_print_implementation(const_pointer p,ostream_pointer o,
     M(ostrm,printf,"{\n");
     M(ostrm,printf,"  %s_pointer this=p;\n",class_name);
     yaoocpp_argument_vector_const_iterator iarg;
-    FOR_EACH(iarg,&this->arguments_) {
+    CFOR_EACH(iarg,&this->arguments_) {
       if(strcmp(M(&iarg->type_,c_str),"...") != 0) {
 				M(ostrm,printf," ");
 				yaoocpp_argument_print_type_name(iarg,o);
@@ -544,7 +545,7 @@ void yaoocpp_method_print_class_table_definition(const_pointer p,ostream_pointer
   M(ostrm,printf,"  %s (*%s)(%spointer",M(&this->return_type_,c_str),M(&this->name_,c_str),
         this->is_const_ ? "const_" : "");
   yaoocpp_argument_vector_const_iterator iarg;
-  FOR_EACH(iarg,&this->arguments_) {
+  CFOR_EACH(iarg,&this->arguments_) {
 		M(ostrm,printf,",");
 		yaoocpp_argument_print_type(iarg,ostrm);
 //    M(ostrm,printf,",%s",M(&iarg->type_,c_str));
@@ -560,7 +561,7 @@ void yaoocpp_method_print_prototype(const_pointer p,ostream_pointer o,const char
     M(ostrm,printf,"%s%s %s_%s(%spointer",storage_class,M(&this->return_type_,c_str),class_name,M(&this->name_,c_str),
             this->is_const_ ? "const_" : "");
     yaoocpp_argument_vector_const_iterator iarg;
-    FOR_EACH(iarg,&this->arguments_) {
+    CFOR_EACH(iarg,&this->arguments_) {
 			M(ostrm,printf,",");
 			yaoocpp_argument_print_type(iarg,ostrm);
 //      M(ostrm,printf,",%s",M(&iarg->type_,c_str));
@@ -579,7 +580,7 @@ void yaoocpp_method_print_implementation(const_pointer p,ostream_pointer o,const
     M(ostrm,printf,"%s%s %s_%s(%spointer p",storage_class,M(&this->return_type_,c_str),class_name,M(&this->name_,c_str),
             (this->is_const_ ? "const_" : ""));
     yaoocpp_argument_vector_const_iterator iarg;
-    FOR_EACH(iarg,&this->arguments_) {
+    CFOR_EACH(iarg,&this->arguments_) {
 			M(ostrm,printf,",");
 			yaoocpp_argument_print_type_name(iarg,ostrm);
 //      M(ostrm,printf,",%s %s",M(&iarg->type_,c_str),M(&iarg->name_,c_str));
@@ -601,7 +602,7 @@ void yaoocpp_method_print_class_table_implementation(const_pointer p,ostream_poi
   M(ostrm,printf,"  .%s = (%s(*)(%spointer",M(&this->name_,c_str),M(&this->return_type_,c_str),
         (this->is_const_ ? "const_": ""));
   yaoocpp_argument_vector_const_iterator iarg;
-  FOR_EACH(iarg,&this->arguments_) {
+  CFOR_EACH(iarg,&this->arguments_) {
 		M(ostrm,printf,",");
 		yaoocpp_argument_print_type(iarg,ostrm);
 //    M(ostrm,printf,",%s",M(&iarg->type_,c_str));
@@ -731,7 +732,7 @@ static void yaoocpp_container_print_default_ctor_implementation(const_pointer p,
     M(ostrm,printf,"  %s_default_ctor(this);\n",M(&this->parent_->name_,c_str));
   }
   yaoocpp_element_pointer_vector_const_iterator i;
-  FOR_EACH(i,&this->instance_) {
+  CFOR_EACH(i,&this->instance_) {
     if((*i)->state_ == INITIAL && ISA(*i,yaoocpp_variable)) {
       yaoocpp_variable_pointer ivar=(yaoocpp_variable_pointer)*i;
       if(M(&ivar->type_,ends_with,"*")) {
@@ -758,7 +759,7 @@ static void yaoocpp_container_print_dtor_implementation(const_pointer p,ostream_
                 "  %s_pointer this=p;\n",M(&this->name_,c_str),M(&this->name_,c_str));
   yaoocpp_element_pointer_vector_const_iterator i;
   yaooc_regex_pointer re=PB_SAVE(new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"(.*)_t\\s+\\*",0));
-  FOR_EACH(i,&this->instance_) {
+  CFOR_EACH(i,&this->instance_) {
     if((*i)->state_ == INITIAL && ISA(*i,yaoocpp_variable)) {
       yaoocpp_variable_pointer ivar=(yaoocpp_variable_pointer)*i;
       if(M(&ivar->type_,ends_with,"*")) {
@@ -800,7 +801,7 @@ static void yaoocpp_container_print_assign_implementation(const_pointer p,ostrea
   }
   yaooc_regex_pointer re=PB_SAVE(new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"(.*)_t\\s+\\*",0));
   yaoocpp_element_pointer_vector_const_iterator i;
-  FOR_EACH(i,&this->instance_) {
+  CFOR_EACH(i,&this->instance_) {
     if((*i)->state_ == INITIAL && ISA(*i,yaoocpp_variable)) {
       yaoocpp_variable_pointer ivar=(yaoocpp_variable_pointer)*i;
       if(M(&ivar->type_,ends_with,"*")) {
@@ -883,7 +884,7 @@ static void yaoocpp_container_print_element_prototype(const_pointer p,ostream_po
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"/* %s prototypes for %s */\n",sub_section,M(&this->name_,c_str));
   yaoocpp_element_pointer_vector_const_iterator iter;
-  FOR_EACH(iter,elements) {
+  CFOR_EACH(iter,elements) {
     if((pvt == PRINT_ANY) || ((pvt & PRINT_VAR) && ISA(*iter,yaoocpp_variable))
        || ((pvt & PRINT_METHOD) && ISA(*iter,yaoocpp_method)))
       M(*iter,print_prototype,ostrm,M(&this->name_,c_str),storage_class);
@@ -899,7 +900,7 @@ static void yaoocpp_container_print_element_implementation(const_pointer p,ostre
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"/* %s implementation for %s */\n",sub_section,M(&this->name_,c_str));
   yaoocpp_element_pointer_vector_const_iterator iter;
-  FOR_EACH(iter,elements) {
+  CFOR_EACH(iter,elements) {
     if((pvt == PRINT_ANY) || ((pvt & PRINT_VAR) && ISA(*iter,yaoocpp_variable))
        || ((pvt & PRINT_METHOD) && ISA(*iter,yaoocpp_method)))
       M(*iter,print_implementation,ostrm,M(&this->name_,c_str),storage_class);
@@ -998,7 +999,7 @@ void yaoocpp_struct_print_to_header(const_pointer p,ostream_pointer o)
   if(this->parent_)
     M(ostrm,printf,"  %s_t;\n",M(&this->parent_->name_,c_str));
   yaoocpp_element_pointer_vector_const_iterator iter;
-  FOR_EACH(iter,&this->instance_) {
+  CFOR_EACH(iter,&this->instance_) {
     if((*iter)->state_==INITIAL)
       M(*iter,print_class_instance_definition,ostrm);
   }
@@ -1155,7 +1156,7 @@ void yaoocpp_union_print_to_header(const_pointer p,ostream_pointer o)
   if(this->parent_)
     M(ostrm,printf,"  %s_class_table_t;\n",M(&this->parent_->name_,c_str));
   yaoocpp_element_pointer_vector_const_iterator iter;
-  FOR_EACH(iter,&this->table_) {
+  CFOR_EACH(iter,&this->table_) {
     if((*iter)->state_==INITIAL)
       M(*iter,print_class_table_definition,ostrm);
   }
@@ -1166,7 +1167,7 @@ void yaoocpp_union_print_to_header(const_pointer p,ostream_pointer o)
   M(ostrm,printf,"\nyaooc_union_instance(%s) {\n",M(&this->name_,c_str));
   if(this->parent_)
     M(ostrm,printf,"  %s_class_instance_t;\n",M(&this->parent_->name_,c_str));
-  FOR_EACH(iter,&this->instance_) {
+  CFOR_EACH(iter,&this->instance_) {
     if((*iter)->state_==INITIAL)
       M(*iter,print_class_instance_definition,ostrm);
   }
@@ -1223,7 +1224,7 @@ static void yaoocpp_class_print_class_table_implementation(const_pointer p,ostre
   M(ostrm,printf,"/* Class table definition for %s */\n",M(&this->name_,c_str));
   M(ostrm,printf,"%s_class_table_t %s_class_table = \n{\n",M(&this->name_,c_str),M(&this->name_,c_str));
   yaoocpp_element_pointer_vector_const_iterator i;
-  FOR_EACH(i,&this->table_) {
+  CFOR_EACH(i,&this->table_) {
     M(*i,print_class_table_implementation,ostrm,M(&this->name_,c_str));
   }
   M(ostrm,printf,"};\n\n");
@@ -1242,7 +1243,7 @@ void yaoocpp_class_print_to_header(const_pointer p,ostream_pointer o)
   if(this->parent_)
     M(ostrm,printf,"  %s_class_table_t;\n",M(&this->parent_->name_,c_str));
   yaoocpp_element_pointer_vector_const_iterator iter;
-  FOR_EACH(iter,&this->table_) {
+  CFOR_EACH(iter,&this->table_) {
     if((*iter)->state_==INITIAL)
       M(*iter,print_class_table_definition,ostrm);
   }
@@ -1253,7 +1254,7 @@ void yaoocpp_class_print_to_header(const_pointer p,ostream_pointer o)
   M(ostrm,printf,"\nyaooc_class_instance(%s) {\n",M(&this->name_,c_str));
   if(this->parent_)
     M(ostrm,printf,"  %s_class_instance_t;\n",M(&this->parent_->name_,c_str));
-  FOR_EACH(iter,&this->instance_) {
+  CFOR_EACH(iter,&this->instance_) {
     if((*iter)->state_==INITIAL)
       M(*iter,print_class_instance_definition,ostrm);
   }

@@ -65,13 +65,15 @@ int_unique_ordered_array_container_class_table_t int_unique_ordered_array_contai
   .parent_class_table_ = (const class_table_t*)&yaooc_ordered_array_container_class_table, /* parent_class_table_ */
   .type_name_ = (const char*) "int_unique_ordered_array_container_t",
   .swap = yaooc_array_container_swap, /* swap  */
-  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
-  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
+  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_array_container_increase_capacity,
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_array_container_size_needed,
   .size = yaooc_array_container_size, /* size */
   .capacity = yaooc_array_container_capacity, /* capacity */
   .empty = yaooc_array_container_empty, /* empty */
-  .begin = (iterator (*) (const_pointer)) yaooc_array_container_begin, /* begin */
-  .end = (iterator (*) (const_pointer)) yaooc_array_container_end, /*end  */
+  .begin = (iterator (*) (pointer)) yaooc_array_container_begin, /* begin */
+  .end = (iterator (*) (pointer)) yaooc_array_container_end, /*end  */
+  .cbegin = (const_iterator (*) (const_pointer)) yaooc_array_container_begin, /* begin */
+  .cend = (const_iterator (*) (const_pointer)) yaooc_array_container_end, /*end  */
 	.find = (int_unique_ordered_array_container_iterator (*)(const_pointer,const_pointer))yaooc_ordered_array_container_find, /* find */
 	.insert = (int_unique_ordered_array_container_const_iterator (*)(const_pointer,const_iterator,const_pointer))yaooc_unique_ordered_array_container_insert,  /* insert */
 	.insert_range = (int_unique_ordered_array_container_const_iterator (*)(const_pointer,const_iterator,const_iterator,const_iterator))yaooc_unique_ordered_array_container_insert_range,  /* insert_range */
@@ -89,8 +91,8 @@ DEFINE_TYPE_INFO(int_unique_ordered_array_container,Y,N,N,N,N,N,N,Y,yaooc_array_
 
 void test_sizes()
 {
-	printf("%zu\n",sizeof(int_unique_ordered_array_container_t));
-	TEST("SIZE container == 40",sizeof(int_unique_ordered_array_container_t)== 32);
+//	printf("%zu\n",sizeof(int_unique_ordered_array_container_t));
+	TEST("SIZE container == 40",sizeof(int_unique_ordered_array_container_t)== 40);
 }
 
 void test_constructor()
@@ -107,7 +109,7 @@ void test_constructor()
 bool is_ordered(int_unique_ordered_array_container_const_pointer oa)
 {
   int_unique_ordered_array_container_const_iterator ir;
-  for(ir=M(oa,at,1);ir!=M(oa,end);ir++)
+  for(ir=M(oa,at,1);ir!=M(oa,cend);ir++)
     if(*(ir-1) > *ir)
       return false;
   return true;
@@ -139,7 +141,7 @@ void test_insert()
 
 
 	for(i=18;i<n;i++) {
-		pos=M(bc,begin)+8;
+		pos=M(bc,cbegin)+8;
 		M(bc,insert,pos,values+i);
 	}
 	TEST("Size is 15",bc->size_==15);
@@ -147,7 +149,7 @@ void test_insert()
 
 	int_unique_ordered_array_container_const_iterator ii;
 	optr=output;
-	for(ii=M(bc,begin);ii!=M(bc,end);ii++)
+	for(ii=M(bc,cbegin);ii!=M(bc,end);ii++)
 		optr+=sprintf(optr,"%d ",*ii);
 	TEST("container values are '-8 2 6 8 14 17 18 21 24 31 32 35 57 88 99'",
 			strcmp(output,"-8 2 6 8 14 17 18 21 24 31 32 35 57 88 99 ")==0);
@@ -157,11 +159,11 @@ void test_insert()
   M(bc,clear);
   TEST("Size is 0",M(bc,size)==0);
   TEST("Empty",M(bc,empty));
-  pos=M(bc,begin);
+  pos=M(bc,cbegin);
   M(bc,insert_range,pos,values,values+n);
   TEST("Size is 15",bc->size_==15);
 	optr=output;
-	for(ii=M(bc,begin);ii!=M(bc,end);ii++)
+	for(ii=M(bc,cbegin);ii!=M(bc,end);ii++)
 		optr+=sprintf(optr,"%d ",*ii);
 	TEST("container values are '-8 2 6 8 14 17 18 21 24 31 32 35 57 88 99'",
 			strcmp(output,"-8 2 6 8 14 17 18 21 24 31 32 35 57 88 99 ")==0);
@@ -171,10 +173,10 @@ void test_insert()
   M(bc,clear);
   TEST("Size is 0",M(bc,size)==0);
   TEST("Empty",M(bc,empty));
-  pos=M(bc,begin);
+  pos=M(bc,cbegin);
   M(bc,insert_n,pos,20,values+10);
 	optr=output;
-	for(ii=M(bc,begin);ii!=M(bc,end);ii++)
+	for(ii=M(bc,cbegin);ii!=M(bc,end);ii++)
 		optr+=sprintf(optr,"%d ",*ii);
 	TEST("container values are '17'",
 			strcmp(output,"17 ")==0);
@@ -187,13 +189,13 @@ void test_erase()
 	int_t values[] = { 14, 2, 6, 2 ,99, 17, 21, 21, 31, 8, 17, 6, 24, 18, 18, 21, 88, 99 , -8, 32, 57, 35 };
 	int n=ARRAY_SIZE(values);
 	int_unique_ordered_array_container_pointer bc=new(int_unique_ordered_array_container);
-	int_unique_ordered_array_container_const_iterator pos=M(bc,begin);
+	int_unique_ordered_array_container_const_iterator pos=M(bc,cbegin);
 	M(bc,insert_range,pos,values,values+n);
 	TESTCASE("Erase");
 	TEST("Size is 15",M(bc,size)==15);
 	int_unique_ordered_array_container_const_iterator ii;
 	optr=output;
-	for(ii=M(bc,begin);ii!=M(bc,end);ii++)
+	for(ii=M(bc,cbegin);ii!=M(bc,end);ii++)
 		optr+=sprintf(optr,"%d ",*ii);
 	TEST("Array is '-8 2 6 8 14 17 18 21 24 31 32 35 57 88 99'",
 		strcmp("-8 2 6 8 14 17 18 21 24 31 32 35 57 88 99 ",output)==0);
@@ -204,7 +206,7 @@ void test_erase()
 //	int_unique_ordered_array_container_const_iterator ii;
 
 	optr=output;
-	for(ii=M(bc,begin);ii!=M(bc,end);ii++)
+	for(ii=M(bc,cbegin);ii!=M(bc,cend);ii++)
 		optr+=sprintf(optr,"%d ",*ii);
 //  puts(output);
 	TEST("Array is '-8 2 6 8 14 17 18 21 24 31 35 57 88 99'",
@@ -212,7 +214,7 @@ void test_erase()
   M(bc,erase_range,pos,pos+3);
 	TEST("Erase 3 items starting at position 10. Size is 11",M(bc,size)==11);
 	optr=output;
-	for(ii=M(bc,begin);ii!=M(bc,end);ii++)
+	for(ii=M(bc,cbegin);ii!=M(bc,end);ii++)
 		optr+=sprintf(optr,"%d ",*ii);
 	TEST("Array is '-8 2 6 8 14 17 18 21 24 31 99'",
 		strcmp("-8 2 6 8 14 17 18 21 24 31 99 ",output)==0);
@@ -242,7 +244,7 @@ void test_copy()
 	int_unique_ordered_array_container_pointer c2=new_copy(c1);
 	int_unique_ordered_array_container_const_iterator ic;
 	char* ptr=output;
-	for(ic=M(c2,begin);ic!=M(c2,end);ic++)
+	for(ic=M(c2,cbegin);ic!=M(c2,cend);ic++)
 		ptr+=sprintf(ptr,"%d ",*ic);
 //	puts(output);
 	TEST("Copy: new array si '2 6 8 14 99 '",strcmp(output,"2 6 8 14 99 ")==0);
@@ -261,11 +263,11 @@ void test_assign()
 	assign(c2,c1);
 	int_unique_ordered_array_container_const_iterator ic;
 	char* ptr=output;
-	for(ic=M(c1,begin);ic!=M(c1,end);ic++)
+	for(ic=M(c1,cbegin);ic!=M(c1,cend);ic++)
 		ptr+=sprintf(ptr,"%d ",*ic);
 //	puts(output);
 	ptr=output;
-	for(ic=M(c2,begin);ic!=M(c2,end);ic++)
+	for(ic=M(c2,cbegin);ic!=M(c2,cend);ic++)
 		ptr+=sprintf(ptr,"%d ",*ic);
 //	puts(output);
 	TEST("Assign: new array si '2 6 8 14 99 '",strcmp(output,"2 6 8 14 99 ")==0);
@@ -315,13 +317,15 @@ simple_object_ordered_container_class_table_t simple_object_ordered_container_cl
   .parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table, /* parent_class_table_ */
   .type_name_ = (const char*) "simple_object_ordered_container_t",
   .swap = (void (*) (pointer p,pointer)) yaooc_array_container_swap, /* swap */
-  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_pod_array_increase_capacity,
-  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_pod_array_size_needed,
+  .increase_capacity = (bool (*) (pointer,size_t)) yaooc_array_container_increase_capacity,
+  .size_needed = (size_t (*)(const_pointer,size_t)) yaooc_array_container_size_needed,
   .size = (size_t (*) (const_pointer p)) yaooc_array_container_size, /* size */
   .capacity = (size_t (*) (const_pointer p)) yaooc_array_container_capacity, /* capacity */
   .empty = (bool (*) (const_pointer p)) yaooc_array_container_empty, /* empty */
-	.begin = (iterator (*)(const_pointer))yaooc_array_container_begin,
-	.end = (iterator (*)(const_pointer))yaooc_array_container_end,
+  .begin = (iterator (*) (pointer)) yaooc_array_container_begin, /* begin */
+  .end = (iterator (*) (pointer)) yaooc_array_container_end, /*end  */
+  .cbegin = (const_iterator (*) (const_pointer)) yaooc_array_container_begin, /* begin */
+  .cend = (const_iterator (*) (const_pointer)) yaooc_array_container_end, /*end  */
 	.find = (simple_object_ordered_container_iterator (*)(const_pointer,const_pointer))yaooc_ordered_array_container_find,
 	.insert = (simple_object_ordered_container_const_iterator (*)(const_pointer,const_iterator,const_pointer))yaooc_unique_ordered_array_container_insert,
 	.insert_range = (simple_object_ordered_container_const_iterator (*)(const_pointer,const_iterator,const_iterator,const_iterator))yaooc_unique_ordered_array_container_insert_range,
@@ -354,7 +358,7 @@ void test_resize_shrink()
 	TEST("Output string",strcmp(output,"SOCC:X:24 ")==0);
 	simple_object_ordered_container_const_iterator ii;
 	char* ptr=output;
-	for(ii=M(soc,begin);ii!=M(soc,end);ii++)
+	for(ii=M(soc,cbegin);ii!=M(soc,cend);ii++)
 		ptr+=sprintf(ptr,"%d ",ii->x);
 	TEST("Output string",strcmp(output,"24 ")==0);
 
@@ -375,7 +379,7 @@ void test_resize_shrink()
 	TEST("Capacity is 16",M(soc,capacity)==16);
 	TEST("Output string",strcmp(output,"SOCC:X:20 ")==0);
 	ptr=output;
-	for(ii=M(soc,begin);ii!=M(soc,end);ii++)
+	for(ii=M(soc,cbegin);ii!=M(soc,cend);ii++)
 		ptr+=sprintf(ptr,"%d ",ii->x);
 	TEST("Output string",strcmp(output,"20 24 ")==0);
 
@@ -387,7 +391,7 @@ void test_resize_shrink()
 	TEST("Capacity is 16",M(soc,capacity)==16);
 	TEST("Output string",strcmp(output,"SOCC:X:25 ")==0);
 	ptr=output;
-	for(ii=M(soc,begin);ii!=M(soc,end);ii++)
+	for(ii=M(soc,cbegin);ii!=M(soc,cend);ii++)
 		ptr+=sprintf(ptr,"%d ",ii->x);
 	TEST("Output string",strcmp(output,"20 24 25 ")==0);
 

@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2018  by Terry N Bezue
+		Copyright (C) 2016-2019  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ NAME ## _iterator NAME ## _find(const_pointer p, const K ## _t* k) \
 { \
   NAME ## _pair_t pair; \
   make_ ## NAME ## _pair(&pair,k,NULL); \
-  return (NAME ## _iterator) yaooc_ ## C ## _container_find(p,&pair); \
+  return (NAME ## _iterator) yaooc_ ## C ## _container_find((pointer)p,&pair); \
 } \
 size_t NAME ## _erase_key(pointer p, const K ## _t* k) \
 { \
@@ -95,8 +95,10 @@ NAME ## _class_table_t NAME ## _class_table = { \
   .size = (size_t (*) (const_pointer p)) yaooc_ ## C ## _container_size, \
   .capacity = (size_t (*) (const_pointer p)) yaooc_ ## C ## _container_capacity, \
   .empty = (bool (*) (const_pointer p)) yaooc_ ## C ## _container_empty, \
-  .begin = (iterator (*) (const_pointer p)) yaooc_ ## C ## _container_begin, \
-  .end = (iterator (*) (const_pointer p)) yaooc_ ## C ## _container_end, \
+  .begin = (iterator (*) (pointer p)) yaooc_ ## C ## _container_begin, \
+  .end = (iterator (*) (pointer p)) yaooc_ ## C ## _container_end, \
+  .cbegin = (const_iterator (*) (const_pointer p)) yaooc_ ## C ## _container_begin, \
+  .cend = (const_iterator (*) (const_pointer p)) yaooc_ ## C ## _container_end, \
   .insert = NAME ## _insert, \
   .erase = (NAME ## _iterator (*) (pointer,NAME ## _const_iterator)) yaooc_ ## C ## _container_erase, \
   .erase_range = (NAME ## _iterator (*)(pointer,NAME ## _const_iterator,NAME ## _const_iterator)) yaooc_ ## C ## _container_erase_range, \

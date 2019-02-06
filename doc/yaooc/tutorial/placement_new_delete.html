@@ -1,4 +1,20 @@
 <!DOCTYPE html>
+<!--
+  Copyright (C) 2016-2019  by Terry N Bezue
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 <html>
 <head>
 <title>Placement New and Delete</title>
@@ -107,7 +123,7 @@ Placement new can be used to initialize objects declared on the stack and delete
 <p>
 Streams use dynamically allocated objects.  As mentioned in the memory layout lesson, the type info for dynamically allocated objects is readily
 available.  This information is used by the stream class.  For POD and static objects, the type info has to be added to the stream.
-The macros below facilitate streams handing reading POD and static objects properly.
+The macros below facilitate streams reading POD and static objects properly.
 </p>
 
 
@@ -185,14 +201,14 @@ by ancestors. It may be desirable to use deletep followed by newp.  The my_strin
 </p>
 
 <pre><code>
-void my_string_set(pointer p,const char* s)
-{
-	my_string_pointer this=p;
-	deletep(this,my_string);  // Calls this destructor and ancestor destructors -- memory pointer to by this is not freed
-	newp(this,my_string);     // Initializes object (however, it is ok to just call the default constructor directly)
-	if(s)
-		this->str = strdup(s);
-}
+  void my_string_set(pointer p,const char* s)
+  {
+    my_string_pointer this=p;
+    deletep(this,my_string);  // Calls this destructor and ancestor destructors -- memory pointer to by this is not freed
+    newp(this,my_string);     // Initializes object (however, it is ok to just call the default constructor directly)
+    if(s)
+      this->str = strdup(s);
+  }
 </code></pre>
 <p>
 Although the destructor should not be called directly, the default constructor, copy constructor, and assign method can be called
