@@ -251,12 +251,62 @@ void test_big_unique_ptr()
 	delete(mfls);
 
 }
+yaooc_pod_struct(temp_data) {
+	char temp[16];
+};
+
+bool temp_data_less_than_compare(const_pointer p1,const_pointer p2)
+{
+	const temp_data_t* lhs=p1;
+	const temp_data_t* rhs=p2;
+	return strcmp(lhs->temp,rhs->temp) < 0;
+};
+
+DEFINE_POD_TYPE_INFO(temp_data,Y,N,N);
+
+MAP_DEFINITION(temp_data,int,temp_int_map);
+MAP_IMPLEMENTATION(temp_data,int,temp_int_map);
+
+void test_pod()
+{
+	int_t counter=0;
+  temp_data_t temp;
+  memset(temp.temp,0,16);
+  temp_int_map_pointer mfls=new(temp_int_map);
+  char*ptr = temp.temp;
+	clock_t start=clock();
+//  M(mfls,reserve,456976);
+	const char *i,*j,*k,*l;
+	for(i=str1;*i!=0;i++) {
+		ptr[0]=*i;
+		for(j=str2;*j!=0;j++) {
+			ptr[1]=*j;
+			for(k=str3;*k!=0;k++) {
+				ptr[2]=*k;
+        for(l=str4;*l!=0;l++) {
+          ptr[3]=*l;
+          M(mfls,insert,&temp,&counter);
+          counter++;
+        }
+			}
+		}
+	}
+
+	printf("%lg seconds to insert %zu items\n",((double)(clock()-start))/CLOCKS_PER_SEC,M(mfls,size));
+//	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
+/*	yaooc_string_int_map_const_iterator isi;
+	for(isi=M(mfls,begin);isi!=M(mfls,end);isi++) {
+		printf("%5s %6d\n",M(&isi->first,c_str),isi->second);
+	}*/
+	delete(mfls);
+}
 
 test_function tests[]=
 {
 	test_basic,
 	test_big,
-  test_big_unique_ptr
+  test_big_unique_ptr,
+  test_pod,
 };
 
 STD_MAIN(tests)

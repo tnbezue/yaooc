@@ -1,0 +1,99 @@
+#ifndef __RBTREE_INDEX_ARRAY_CONTAINER_YAOOC_INCLUDED__
+#define __RBTREE_INDEX_ARRAY_CONTAINER_YAOOC_INCLUDED__
+
+#include <yaooc/array_container.yaooc>
+
+#if 0 // HEADER
+enum rbcolor {
+    red,
+    black
+};
+
+enum rbtraversal {
+    preorder,
+    inorder,
+    postorder
+};
+
+typedef struct yaooc_rbnode_s yaooc_rbnode_t;
+struct yaooc_rbnode_s {
+	yaooc_rbnode_t* left_;
+	yaooc_rbnode_t* right_;
+	yaooc_rbnode_t* parent_;
+	unsigned int index_;
+	enum rbcolor color_;
+};
+#define yaooc_rbtree_index_array_container_rbapply(t, f, c, o) \
+    yaooc_rbtree_index_array_container_rbapply_node((t), (t)->root_.left_, (f), (c), (o))
+#define yaooc_rbtree_index_array_container_rbisempty(t)		((t)->root.left_ == &(t)->nil_ && (t)->root_.right_ == &(t)->nil_)
+#define yaooc_rbtree_index_array_container_rbfirst(t)		((t)->root_.left_)
+#define yaooc_rbtree_index_array_container_rbroot(t)		(&(t)->root_)
+#define yaooc_rbtree_index_array_container_rbnil(t)		(&(t)->nil_)
+
+typedef struct yaooc_rbnode_s yaooc_rbnode_t;
+struct yaooc_rbnode_s {
+	yaooc_rbnode_t* left_;
+	yaooc_rbnode_t* right_;
+	yaooc_rbnode_t* parent_;
+	unsigned int index_;
+	enum rbcolor color_;
+};
+
+typedef int (*action_func)(yaooc_rbnode_t*, unsigned int,unsigned int*);
+int yaooc_rbnode_increment_index(yaooc_rbnode_t*, unsigned int,unsigned int*);
+int yaooc_rbnode_decrement_index(yaooc_rbnode_t*, unsigned int,unsigned int*);
+#endif // HEADER
+
+#if 0 // SOURCE
+#include <sys/types.h>
+#include <sys/param.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#endif // SOURCE
+
+class yaooc_rbtree_index_array_container : yaooc_array_container
+{
+    yaooc_rbtree_index_array_container_ctor_ti();
+    ~yaooc_rbtree_index_array_container();
+		yaooc_rbtree_index_array_container(yaooc_rbtree_index_array_container);
+    operator=();
+
+  private:
+  protected:
+    void insert_index(unsigned int index);
+    void remove_index(unsigned int index);
+
+    iterator insert(const_iterator pos,const_pointer value);
+    iterator insertn(const_iterator pos,size_t n,const_pointer val);
+    iterator insert_range(const_iterator pos,const_iterator f,const_iterator l);
+    iterator find(const_pointer value);
+    iterator erase(const_iterator pos);
+    size_t erase_value(const_pointer value);
+    iterator erase_range(const_iterator f,const_iterator l);
+    void resize(size_t n);
+    void resize_value(size_t n,const_pointer value);
+    void shrink_to_fit() = yaooc_array_container_shrink_to_fit;
+    void clear();
+		int rbapply_node(yaooc_rbnode_t* node, action_func func, pointer cookie,enum rbtraversal order);
+		yaooc_rbnode_t* rbfind(const_pointer value);
+		yaooc_rbnode_t* rbinsert(const_pointer value);
+		void rbdelete(yaooc_rbnode_t* z);
+
+  table:
+    void swap(pointer p2);
+
+  instance:
+		yaooc_rbnode_t root_;
+		yaooc_rbnode_t nil_;
+
+	private:
+		void rotate_left(yaooc_rbnode_t *node);
+		void rotate_right(yaooc_rbnode_t *node);
+		yaooc_rbnode_t* rbsuccessor(yaooc_rbnode_t* node);
+		void rbdestroy_private(yaooc_rbnode_t* node);
+		void rbrepair(yaooc_rbnode_t* node);
+};
+
+#endif

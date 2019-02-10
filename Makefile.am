@@ -75,6 +75,7 @@ src/ordered_array_container.c \
 src/pair.c \
 src/pointer_bag.c \
 src/queue.c \
+src/rbtree_index_array_container.c \
 src/real.c \
 src/regex.c \
 src/socket.c \
@@ -118,6 +119,7 @@ include/yaooc/ordered_set.h \
 include/yaooc/pair.h \
 include/yaooc/pointer_bag.h \
 include/yaooc/queue.h \
+include/yaooc/rbtree_index_array_container.h \
 include/yaooc/real.h \
 include/yaooc/regex.h \
 include/yaooc/set.h \
@@ -160,6 +162,7 @@ tests/test_ordered_set \
 tests/test_pair \
 tests/test_pointer_bag \
 tests/test_queue \
+tests/test_rbtree_index_array_container \
 tests/test_regex \
 tests/test_set \
 tests/test_stack \

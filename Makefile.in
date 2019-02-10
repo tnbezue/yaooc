@@ -108,6 +108,7 @@ check_PROGRAMS = tests/test_algorithm$(EXEEXT) \
 	tests/test_ordered_map$(EXEEXT) \
 	tests/test_ordered_set$(EXEEXT) tests/test_pair$(EXEEXT) \
 	tests/test_pointer_bag$(EXEEXT) tests/test_queue$(EXEEXT) \
+	tests/test_rbtree_index_array_container$(EXEEXT) \
 	tests/test_regex$(EXEEXT) tests/test_set$(EXEEXT) \
 	tests/test_stack$(EXEEXT) tests/test_stream$(EXEEXT) \
 	tests/test_socket$(EXEEXT) tests/test_string$(EXEEXT) \
@@ -172,9 +173,10 @@ am_lib_libyaooc_la_OBJECTS = src/algorithm.lo src/array_container.lo \
 	src/index_array_container.lo src/integer.lo src/ipaddress.lo \
 	src/json.lo src/json_parser.lo src/memory.lo src/new.lo \
 	src/object.lo src/odbc.lo src/ordered_array_container.lo \
-	src/pair.lo src/pointer_bag.lo src/queue.lo src/real.lo \
-	src/regex.lo src/socket.lo src/sstream.lo src/stack.lo \
-	src/stream.lo src/string.lo src/thread.lo src/types.lo \
+	src/pair.lo src/pointer_bag.lo src/queue.lo \
+	src/rbtree_index_array_container.lo src/real.lo src/regex.lo \
+	src/socket.lo src/sstream.lo src/stack.lo src/stream.lo \
+	src/string.lo src/thread.lo src/types.lo \
 	src/unique_array_container.lo \
 	src/unique_index_array_container.lo \
 	src/unique_ordered_array_container.lo src/utils.lo \
@@ -285,6 +287,12 @@ tests_test_queue_SOURCES = tests/test_queue.c
 tests_test_queue_OBJECTS = tests/test_queue.$(OBJEXT)
 tests_test_queue_LDADD = $(LDADD)
 tests_test_queue_DEPENDENCIES =
+tests_test_rbtree_index_array_container_SOURCES =  \
+	tests/test_rbtree_index_array_container.c
+tests_test_rbtree_index_array_container_OBJECTS =  \
+	tests/test_rbtree_index_array_container.$(OBJEXT)
+tests_test_rbtree_index_array_container_LDADD = $(LDADD)
+tests_test_rbtree_index_array_container_DEPENDENCIES =
 tests_test_regex_SOURCES = tests/test_regex.c
 tests_test_regex_OBJECTS = tests/test_regex.$(OBJEXT)
 tests_test_regex_LDADD = $(LDADD)
@@ -383,11 +391,13 @@ am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	src/$(DEPDIR)/object.Plo src/$(DEPDIR)/odbc.Plo \
 	src/$(DEPDIR)/ordered_array_container.Plo \
 	src/$(DEPDIR)/pair.Plo src/$(DEPDIR)/pointer_bag.Plo \
-	src/$(DEPDIR)/queue.Plo src/$(DEPDIR)/real.Plo \
-	src/$(DEPDIR)/regex.Plo src/$(DEPDIR)/socket.Plo \
-	src/$(DEPDIR)/sstream.Plo src/$(DEPDIR)/stack.Plo \
-	src/$(DEPDIR)/stream.Plo src/$(DEPDIR)/string.Plo \
-	src/$(DEPDIR)/thread.Plo src/$(DEPDIR)/types.Plo \
+	src/$(DEPDIR)/queue.Plo \
+	src/$(DEPDIR)/rbtree_index_array_container.Plo \
+	src/$(DEPDIR)/real.Plo src/$(DEPDIR)/regex.Plo \
+	src/$(DEPDIR)/socket.Plo src/$(DEPDIR)/sstream.Plo \
+	src/$(DEPDIR)/stack.Plo src/$(DEPDIR)/stream.Plo \
+	src/$(DEPDIR)/string.Plo src/$(DEPDIR)/thread.Plo \
+	src/$(DEPDIR)/types.Plo \
 	src/$(DEPDIR)/unique_array_container.Plo \
 	src/$(DEPDIR)/unique_index_array_container.Plo \
 	src/$(DEPDIR)/unique_ordered_array_container.Plo \
@@ -408,11 +418,12 @@ am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	tests/$(DEPDIR)/test_ordered_set.Po \
 	tests/$(DEPDIR)/test_pair.Po \
 	tests/$(DEPDIR)/test_pointer_bag.Po \
-	tests/$(DEPDIR)/test_queue.Po tests/$(DEPDIR)/test_regex.Po \
-	tests/$(DEPDIR)/test_set.Po tests/$(DEPDIR)/test_socket.Po \
-	tests/$(DEPDIR)/test_stack.Po tests/$(DEPDIR)/test_stream.Po \
-	tests/$(DEPDIR)/test_string.Po tests/$(DEPDIR)/test_thread.Po \
-	tests/$(DEPDIR)/test_union.Po \
+	tests/$(DEPDIR)/test_queue.Po \
+	tests/$(DEPDIR)/test_rbtree_index_array_container.Po \
+	tests/$(DEPDIR)/test_regex.Po tests/$(DEPDIR)/test_set.Po \
+	tests/$(DEPDIR)/test_socket.Po tests/$(DEPDIR)/test_stack.Po \
+	tests/$(DEPDIR)/test_stream.Po tests/$(DEPDIR)/test_string.Po \
+	tests/$(DEPDIR)/test_thread.Po tests/$(DEPDIR)/test_union.Po \
 	tests/$(DEPDIR)/test_unique_array_container.Po \
 	tests/$(DEPDIR)/test_unique_index_array_container.Po \
 	tests/$(DEPDIR)/test_unique_ordered_array_container.Po \
@@ -449,10 +460,10 @@ SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_odbc.c tests/test_ordered_array_container.c \
 	tests/test_ordered_map.c tests/test_ordered_set.c \
 	tests/test_pair.c tests/test_pointer_bag.c tests/test_queue.c \
-	tests/test_regex.c tests/test_set.c tests/test_socket.c \
-	tests/test_stack.c tests/test_stream.c tests/test_string.c \
-	tests/test_thread.c tests/test_union.c \
-	tests/test_unique_array_container.c \
+	tests/test_rbtree_index_array_container.c tests/test_regex.c \
+	tests/test_set.c tests/test_socket.c tests/test_stack.c \
+	tests/test_stream.c tests/test_string.c tests/test_thread.c \
+	tests/test_union.c tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c tests/test_utils.c \
 	tests/test_variant.c tests/test_vector.c \
@@ -467,10 +478,10 @@ DIST_SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_odbc.c tests/test_ordered_array_container.c \
 	tests/test_ordered_map.c tests/test_ordered_set.c \
 	tests/test_pair.c tests/test_pointer_bag.c tests/test_queue.c \
-	tests/test_regex.c tests/test_set.c tests/test_socket.c \
-	tests/test_stack.c tests/test_stream.c tests/test_string.c \
-	tests/test_thread.c tests/test_union.c \
-	tests/test_unique_array_container.c \
+	tests/test_rbtree_index_array_container.c tests/test_regex.c \
+	tests/test_set.c tests/test_socket.c tests/test_stack.c \
+	tests/test_stream.c tests/test_string.c tests/test_thread.c \
+	tests/test_union.c tests/test_unique_array_container.c \
 	tests/test_unique_index_array_container.c \
 	tests/test_unique_ordered_array_container.c tests/test_utils.c \
 	tests/test_variant.c tests/test_vector.c \
@@ -710,6 +721,7 @@ src/ordered_array_container.c \
 src/pair.c \
 src/pointer_bag.c \
 src/queue.c \
+src/rbtree_index_array_container.c \
 src/real.c \
 src/regex.c \
 src/socket.c \
@@ -752,6 +764,7 @@ include/yaooc/ordered_set.h \
 include/yaooc/pair.h \
 include/yaooc/pointer_bag.h \
 include/yaooc/queue.h \
+include/yaooc/rbtree_index_array_container.h \
 include/yaooc/real.h \
 include/yaooc/regex.h \
 include/yaooc/set.h \
@@ -940,6 +953,8 @@ src/ordered_array_container.lo: src/$(am__dirstamp) \
 src/pair.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/pointer_bag.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/queue.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/rbtree_index_array_container.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 src/real.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/regex.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/socket.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
@@ -1108,6 +1123,12 @@ tests/test_queue.$(OBJEXT): tests/$(am__dirstamp) \
 tests/test_queue$(EXEEXT): $(tests_test_queue_OBJECTS) $(tests_test_queue_DEPENDENCIES) $(EXTRA_tests_test_queue_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test_queue$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_queue_OBJECTS) $(tests_test_queue_LDADD) $(LIBS)
+tests/test_rbtree_index_array_container.$(OBJEXT):  \
+	tests/$(am__dirstamp) tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test_rbtree_index_array_container$(EXEEXT): $(tests_test_rbtree_index_array_container_OBJECTS) $(tests_test_rbtree_index_array_container_DEPENDENCIES) $(EXTRA_tests_test_rbtree_index_array_container_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test_rbtree_index_array_container$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_rbtree_index_array_container_OBJECTS) $(tests_test_rbtree_index_array_container_LDADD) $(LIBS)
 tests/test_regex.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1275,6 +1296,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/pair.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/pointer_bag.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/queue.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/rbtree_index_array_container.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/real.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/regex.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/socket.Plo@am__quote@ # am--include-marker
@@ -1313,6 +1335,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_pair.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_pointer_bag.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_queue.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_rbtree_index_array_container.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_regex.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_set.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_socket.Po@am__quote@ # am--include-marker
@@ -1695,6 +1718,7 @@ distclean: distclean-am
 	-rm -f src/$(DEPDIR)/pair.Plo
 	-rm -f src/$(DEPDIR)/pointer_bag.Plo
 	-rm -f src/$(DEPDIR)/queue.Plo
+	-rm -f src/$(DEPDIR)/rbtree_index_array_container.Plo
 	-rm -f src/$(DEPDIR)/real.Plo
 	-rm -f src/$(DEPDIR)/regex.Plo
 	-rm -f src/$(DEPDIR)/socket.Plo
@@ -1733,6 +1757,7 @@ distclean: distclean-am
 	-rm -f tests/$(DEPDIR)/test_pair.Po
 	-rm -f tests/$(DEPDIR)/test_pointer_bag.Po
 	-rm -f tests/$(DEPDIR)/test_queue.Po
+	-rm -f tests/$(DEPDIR)/test_rbtree_index_array_container.Po
 	-rm -f tests/$(DEPDIR)/test_regex.Po
 	-rm -f tests/$(DEPDIR)/test_set.Po
 	-rm -f tests/$(DEPDIR)/test_socket.Po
@@ -1819,6 +1844,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f src/$(DEPDIR)/pair.Plo
 	-rm -f src/$(DEPDIR)/pointer_bag.Plo
 	-rm -f src/$(DEPDIR)/queue.Plo
+	-rm -f src/$(DEPDIR)/rbtree_index_array_container.Plo
 	-rm -f src/$(DEPDIR)/real.Plo
 	-rm -f src/$(DEPDIR)/regex.Plo
 	-rm -f src/$(DEPDIR)/socket.Plo
@@ -1857,6 +1883,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/$(DEPDIR)/test_pair.Po
 	-rm -f tests/$(DEPDIR)/test_pointer_bag.Po
 	-rm -f tests/$(DEPDIR)/test_queue.Po
+	-rm -f tests/$(DEPDIR)/test_rbtree_index_array_container.Po
 	-rm -f tests/$(DEPDIR)/test_regex.Po
 	-rm -f tests/$(DEPDIR)/test_set.Po
 	-rm -f tests/$(DEPDIR)/test_socket.Po
