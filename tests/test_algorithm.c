@@ -23,6 +23,17 @@
 #include <time.h>
 #include "test_harness.h"
 
+int cmp_val=0;
+bool find_val(const void* v)
+{
+	return *(const int*)v==cmp_val;
+}
+
+bool find_lt_val(const void* v)
+{
+//	printf("X%dV%dV%dV\n",*(const int*)v,cmp_val,*(const int*)v<cmp_val);
+	return *(const int*)v<cmp_val;
+}
 
 void test_find()
 {
@@ -30,14 +41,37 @@ void test_find()
 	int_t ary[] = { 10, 20, 30 , 40 , 50 };
 	int n=ARRAY_SIZE(ary);
 	int_t val=30;
-	int_t* iptr=yaooc_find(int,ary,ary+n,&val);
+	const int_t* iptr=yaooc_find(int,ary,ary+n,&val);
 	TEST("30 found in '{ 10, 20, 30 , 40 , 50 }'",iptr != (ary+n) && *iptr == 30);
   TEST("iptr not equal to end",iptr != ary+n);
-  printf("%p %p %p\n",ary,iptr,ary+n);
   val=25;
 	iptr=yaooc_find(int,ary,ary+n,&val);
 	TEST("25 not found in '{ 10, 20, 30 , 40 , 50 }'",iptr == (ary+n));
-  printf("%p %p %p\n",ary,iptr,ary+n);
+
+	cmp_val=0;
+	iptr=yaooc_find_if(int,ary,ary+n,find_val);
+	TEST("0 not found in '{ 10, 20, 30 , 40 , 50 }'",iptr == (ary+n));
+	cmp_val=30;
+	iptr=yaooc_find_if(int,ary,ary+n,find_val);
+	TEST("30 not found in '{ 10, 20, 30 , 40 , 50 }'",iptr == (ary+2));
+	cmp_val=100;
+	iptr=yaooc_find_if_not(int,ary,ary+n,find_lt_val);
+	TEST("Values '{ 10, 20, 30 , 40 , 50 }' are less than 100",iptr == (ary+n));
+	cmp_val=35;
+	iptr=yaooc_find_if_not(int,ary,ary+n,find_lt_val);
+	TEST("First value not less than 35 is 40 '{ 10, 20, 30 , 40 , 50 }'",*iptr == 40);
+}
+
+void test_all_any_none()
+{
+	int_t ary[] = { 10, 20, 30 , 40 , 50 };
+	int n=ARRAY_SIZE(ary);
+	cmp_val=100;
+	TEST("All values are less than 100",yaooc_all_of(int,ary,ary+n,find_lt_val));
+	cmp_val=30;
+	TEST("At least one 30",yaooc_any_of(int,ary,ary+n,find_val));
+	cmp_val=0;
+	TEST("None less than 0",yaooc_none_of(int,ary,ary+n,find_lt_val));
 }
 
 void test_copy()
@@ -160,6 +194,7 @@ void test_count_if()
 test_function tests[]=
 {
 	test_find,
+	test_all_any_none,
 	test_copy,
   test_fill,
 	test_for_each,

@@ -31,6 +31,43 @@ iterator __yaooc_find(const type_info_t* ti,const_iterator f,const_iterator l,co
 	return (iterator)first;
 }
 
+const_iterator __yaooc_find_if(const type_info_t* ti,const_iterator f,const_iterator l,bool(*fun)(const void*))
+{
+	yaooc_private_const_iterator first=f;
+	yaooc_private_const_iterator last=l;
+	size_t type_size=yaooc_sizeof(ti);
+	for(;first!=last;first+=type_size)
+		if(fun(first))
+			break;
+	return first;
+}
+
+const_iterator __yaooc_find_if_not(const type_info_t* ti,const_iterator f,const_iterator l,bool(*fun)(const void*))
+{
+	yaooc_private_const_iterator first=f;
+	yaooc_private_const_iterator last=l;
+	size_t type_size=yaooc_sizeof(ti);
+	for(;first!=last;first+=type_size)
+		if(!fun(first))
+			break;
+	return first;
+}
+
+bool __yaooc_all_of(const type_info_t* ti,const_iterator f,const_iterator l,bool(*fun)(const void*))
+{
+	return __yaooc_find_if_not(ti,f,l,fun) == l;
+}
+
+bool __yaooc_any_of(const type_info_t* ti,const_iterator f,const_iterator l,bool(*fun)(const void*))
+{
+	return __yaooc_find_if(ti,f,l,fun) != l;
+}
+
+bool __yaooc_none_of(const type_info_t* ti,const_iterator f,const_iterator l,bool(*fun)(const void*))
+{
+	return __yaooc_find_if(ti,f,l,fun) == l;
+}
+
 iterator __yaooc_copy(const type_info_t* ti,const_iterator f,const_iterator l,iterator d)
 {
 	yaooc_private_const_iterator first=f;
