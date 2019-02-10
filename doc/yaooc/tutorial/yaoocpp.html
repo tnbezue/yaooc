@@ -211,13 +211,16 @@ Unions and structs (standard C declarations, not YAOOC unions and structs) can b
 </ul>
 <h3>Protected</h3>
 <p>
-Protected does not have the same meaning as in C++ -- not even close.  Protected members are variables and methods that are not part of the class
-but are meant to be helpers to class and derived classes. The syntax is the same as table entries.
+Protected does not have the same meaning as in C++ -- not even close.  The closest C++ analogy would be C++ static members.
+</p>
+<p>
+Protected members are variables and methods that are not part of the class
+but are meant to be helpers to this class and derived classes. The syntax is the same as table entries.
 </p>
 <h3>Private</h3>
 <p>
-Private has a similar meaning as in C++.  Private variables and methods that are meant to only be used by the class being created.
-The entries here will be defined as static in the C source file -- thus not available outside of the C source file.
+Private variables and methods are not part of the class.  They are similar to protected members. However, they are meant to be helpers to this class only.
+Private members will be defined as static in the C source file.
 </p>
 <h3>Executing YAOOCPP</h3>
 The syntax for executing yaoocpp is similar to executing the C preprocessor.  In fact, yaoocpp uses the C preprocessor so many preprocessor directives

@@ -110,14 +110,14 @@ Use newp_copy_static (below) to initialize from static object
 Placement new can be used to initialize objects declared on the stack and deletep can be used to destroy these objects. For example:
 </p>
 <pre><code>
-	my_string_t mys1;  /* Note that the &quot;_t&quot; is used */
-	newp(&mys1,my_string);
-	my_string_t mys2;
-	newp_ctor(&mys2,my_string,my_string_ctor_ccs,&quot;This is a test&quot;);
-	assign_static(&mys1,&mys2,my_string);
-	M(&mys2,set,&quot;Changed value for mys2&quot;);
-	deletep(&mys1,my_string);
-	deletep(&mys2,my_string);
+  my_string_t mys1;  /* Note that the &quot;_t&quot; is used */
+  newp(&mys1,my_string);
+  my_string_t mys2;
+  newp_ctor(&mys2,my_string,my_string_ctor_ccs,&quot;This is a test&quot;);
+  assign_static(&mys1,&mys2,my_string);
+  M(&mys2,set,&quot;Changed value for mys2&quot;);
+  deletep(&mys1,my_string);
+  deletep(&mys2,my_string);
 </code></pre>
 <h3>Static object in streams</h3>
 <p>
@@ -185,11 +185,11 @@ For writing POD and static objects to streams, use &quot;O_&quot; rather than &q
 </p>
 
 <pre><code>
-	my_string_t ms;
-	newp(&ms,my_string);
-	STREAM(cout,O_CCS(&quot;Enter a string value&quot),endl);
-	STREAM(cin,I_OBJ(my_string,ms));
-	STREAM(cout,O_CSS(&quot;The value enter was: &quot),O_OBJ(my_string,ms),endl);
+  my_string_t ms;
+  newp(&ms,my_string);
+  STREAM(cout,O_CCS(&quot;Enter a string value&quot),endl);
+  STREAM(cin,I_OBJ(my_string,ms));
+  STREAM(cout,O_CSS(&quot;The value enter was: &quot),O_OBJ(my_string,ms),endl);
 </code></pre>
 <h3>Important Note</h3>
 <p>

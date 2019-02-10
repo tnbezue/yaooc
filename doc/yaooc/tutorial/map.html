@@ -38,16 +38,21 @@
 <div style="overflow-y: scroll; height:900px">
 <h2>Map</h2>
 <p>
-There are three flavors of maps in YAOOC -- mini_map, map, and ordered_map.  The difference between them is the underlying container.
+There are four flavors of maps in YAOOC -- mini_map, medium_map, map, and ordered_map.  The difference between them is the underlying container.
 </p>
 <p>
 mini_map uses the unique_array container.  Since search is sequential, it's best for when the size of the map is relatively small (or infrequent search/insertion).  Items
 are maintained in insertion order and will be iterated in insertion order.
 </p>
 <p>
-map uses the unique index array container.  Because of the index, search and insertion is much faster (for very large size more than 100 x faster).  Should be used for larger map sizes.
+medium_map uses the unique index array container.  Because of the index, search and insertion is much faster (for very large size more than 100 x faster).  Should be used for larger map sizes.
 There is additional memory overhead because of the index (4*capacity bytes). Items are maintained in insertion order and will be iterated in insertion order.
-If in doubt, use map instead of mini_map.
+</p>
+<p>
+map uses the red black tree index array container.  This is the fastest map.
+The memory overhead is greatest for map -- 32*size for 64 bit systems and 20*size for 32 bit systesm.
+This is due to a red black node for each index. Items are maintained in insertion order and will be iterated in insertion order.
+If memory is not a concern, then use map.
 </p>
 <p>
 ordered_map uses unique ordered array_container.  Should be used when a sorted map is desired.  Search speed is better than mini_map and about the same for map.
@@ -68,6 +73,18 @@ In C source file specify:
 <pre><code>
    ...
    MINI_MAP_IMPLEMENTATION(K,V,N)
+</code></pre>
+<pre><code>
+   #include &lt;yaooc/map.h&gt;
+   ..
+   MEDIUM_MAP_DEFINITION(K,V,N)
+</code></pre>
+<p>
+In C source file specify:
+</p>
+<pre><code>
+   ...
+   MEDIUM_MAP_IMPLEMENTATION(K,V,N)
 </code></pre>
 
 <p>

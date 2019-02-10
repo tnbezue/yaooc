@@ -110,7 +110,7 @@ This is required to initialize the class table and when the class is inherited. 
 </p>
 <p>
 A pointer to the class table is the first member of the combined class.  When new creates an instance of the class, it will set this variable to the
-class_table_ value in the type info structure -- therefore, constructors have access to the class methods.  <font color="red">NEVER</font> use memset(this,0,sizeof(T)) to initialize an object.
+class_table_ value in the type info structure -- therefore, constructors have access to the class methods.  <font color="red">Never use memset(this,0,sizeof(T)) to initialize an object.</font>
 Doing so will destroy the value of class_table_;
 </p>
 <p>
