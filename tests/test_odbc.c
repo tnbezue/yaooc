@@ -82,7 +82,7 @@ void test_sqlite_select()
 		}
 	} else
 		puts("Failed connect");
-//	DELETE(id,lname,fname,birthday,salary,con);
+//	DELETE_LIST(id,lname,fname,birthday,salary,con);
 	delete(con);
 }
 

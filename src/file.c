@@ -206,16 +206,24 @@ bool yaooc_file_isfifo(const_pointer p)
 
 bool yaooc_file_islink(const_pointer p)
 {
+#ifdef _WIN32
+  return false;
+#else
   yaooc_file_const_pointer this=p;
 	yaooc_file_stat(this);
 	return this->stat_result_ == 0 ? S_ISLNK(this->stat_->st_mode) : false;
+#endif
 }
 
 bool yaooc_file_issock(const_pointer p)
 {
+#ifdef _WIN32
+  return false;
+#else
   yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-	return this->stat_result_ == 0 ? this->stat_->st_mode & __S_IFSOCK : false;
+  yaooc_file_stat(this);
+  return this->stat_result_ == 0 ? this->stat_->st_mode & __S_IFSOCK : false;
+#endif
 }
 
 

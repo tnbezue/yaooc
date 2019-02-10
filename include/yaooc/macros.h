@@ -26,7 +26,6 @@
 typedef struct name ## _s name ## _t; \
 typedef struct name ## _s * const name ## _pointer; \
 typedef const struct name ## _s * const name ## _const_pointer; \
-extern const type_info_t __ ## name ## _ti; \
 extern const type_info_t* const name ## _ti;
 
 /*
@@ -41,7 +40,6 @@ extern const type_info_t* const name ## _ti;
 typedef union name ## _s name ## _t; \
 typedef union name ## _s * const name ## _pointer; \
 typedef const union name ## _s * const name ## _const_pointer; \
-extern const type_info_t __ ## name ## _ti; \
 extern const type_info_t* const name ## _ti;
 
 /*
@@ -52,6 +50,17 @@ typedef struct name ## _s name ## _t; \
 typedef struct name ## _s * const name ## _pointer; \
 typedef const struct name ## _s * const name ## _const_pointer; \
 extern const type_info_t __ ## name ## _ti; \
+extern const type_info_t* const name ## _ti; \
+struct name ## _s
+
+/*
+  Structure definition for POD.
+*/
+#define yaooc_pod_struct(name) \
+typedef struct name ## _s name ## _t; \
+typedef struct name ## _s * const name ## _pointer; \
+typedef const struct name ## _s * const name ## _const_pointer; \
+extern const pod_type_info_t __ ## name ## _ti; \
 extern const type_info_t* const name ## _ti; \
 struct name ## _s
 

@@ -17,7 +17,11 @@
 #include <yaooc/dir.h>
 #include <dirent.h>
 #include <string.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <glob.h>
+#endif
 
 VECTOR_IMPLEMENTATION(yaooc_file,yaooc_file_vector)
 
@@ -60,7 +64,8 @@ yaooc_file_vector_t* yaooc_dir_glob(const char* pat)
 
 	hFind = FindFirstFile(pat, &data);
 	while (hFind && bContinue) {
-		el->push_back(data.cFileName);
+		temp.name_=data.cFileName;
+		M(files,push_back,&temp);
 		bContinue = FindNextFile(hFind, &data);
 	}
 	FindClose(hFind); // Free the dir structure

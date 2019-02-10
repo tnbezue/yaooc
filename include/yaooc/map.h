@@ -20,6 +20,7 @@
 
 #include <yaooc/unique_array_container.h>
 #include <yaooc/unique_index_array_container.h>
+#include <yaooc/rbtree_index_array_container.h>
 
 #include <yaooc/pair.h>
 
@@ -114,7 +115,10 @@ DEFINE_TYPE_INFO(NAME,Y,N,N,N,N,N,N,Y,yaooc_ ## C ## _container)
 #define MINI_MAP_DEFINITION(K,V,NAME) __MAP_DEFINITION(K,V,array,NAME)
 #define MINI_MAP_IMPLEMENTATION(K,V,NAME) __MAP_IMPLEMENTATION(K,V,array,NAME)
 
-#define MAP_DEFINITION(K,V,NAME) __MAP_DEFINITION(K,V,index_array,NAME)
-#define MAP_IMPLEMENTATION(K,V,NAME) __MAP_IMPLEMENTATION(K,V,index_array,NAME)
+#define MEDIUM_MAP_DEFINITION(K,V,NAME) __MAP_DEFINITION(K,V,index_array,NAME)
+#define MEDIUM_MAP_IMPLEMENTATION(K,V,NAME) __MAP_IMPLEMENTATION(K,V,index_array,NAME)
+
+#define MAP_DEFINITION(K,V,NAME) __MAP_DEFINITION(K,V,rbtree_index_array,NAME)
+#define MAP_IMPLEMENTATION(K,V,NAME) __MAP_IMPLEMENTATION(K,V,rbtree_index_array,NAME)
 
 #endif

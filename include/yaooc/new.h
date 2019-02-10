@@ -166,7 +166,7 @@ void delete_array(pointer);
 void __deletep_array(pointer,const type_info_t*,size_t);
 
 void __delete_list(pointer,...);
-#define DELETE(p,...) __delete_list(p, ## __VA_ARGS__ , NULL)
+#define DELETE_LIST(p,...) __delete_list(p, ## __VA_ARGS__ , NULL)
 #define delete_list(p,...) __delete_list(p, ## __VA_ARGS__ , NULL)
 /*
   Calls a contructor.  Meant to be used in contructors other than default or copy constructor.

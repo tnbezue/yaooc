@@ -382,7 +382,7 @@ void test_derived_dtor()
   d2=new_ctor(derived2,derived2_ctor_int_int_int,30,40,50);
   TEST("output is: D2CTIII50DCTII40BCTI30",strcmp(output,"D2CTIII50DCTII40BCTI30")==0);
 
-  DELETE(b,d,d2);
+  DELETE_LIST(b,d,d2);
 }
 
 

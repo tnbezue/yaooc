@@ -11,6 +11,7 @@
 /* Private variables implementation for yaooc_array_container */
 
 /* Private methods prototypes for yaooc_array_container */
+static void yaooc_array_container_destroy_elements(pointer p);
 
 /* Type Info implemmentation for yaooc_array_container */
 void yaooc_array_container_default_ctor(pointer p)
@@ -21,7 +22,9 @@ void yaooc_array_container_default_ctor(pointer p)
 void yaooc_array_container_dtor(pointer p)
 {
   yaooc_array_container_pointer this=p;
-	yaooc_array_container_clear(this);
+	yaooc_array_container_destroy_elements(this);
+/*	yaooc_array_container_clear(this);
+//	M(this,clear);*/
   if(this->array_)
      FREE(this->array_);
   this->array_ = NULL;
@@ -81,7 +84,14 @@ void yaooc_array_container_ctor_ti(pointer p,va_list args)
 
 
 /* Private methods implementation for yaooc_array_container */
-
+static void yaooc_array_container_destroy_elements(pointer p)
+{
+  yaooc_array_container_pointer this=p;
+	if(!is_pod(this->type_info_) && this->size_ > 0) {
+		__deletep_array(this->array_,this->type_info_,this->size_);
+	}
+	this->size_=0;
+}
 /* Protected implementation for yaooc_array_container */
 iterator yaooc_array_container_insert_space(pointer p,const_iterator pos,size_t n)
 {
@@ -218,11 +228,8 @@ void yaooc_array_container_resize_value(pointer p,size_t n,const_pointer value)
 
 void yaooc_array_container_clear(pointer p)
 {
-  yaooc_array_container_pointer this=p;
-	if(!is_pod(this->type_info_) && this->size_ > 0) {
-		__deletep_array(this->array_,this->type_info_,this->size_);
-	}
-	this->size_=0;
+//  yaooc_array_container_pointer this=p;
+	yaooc_array_container_destroy_elements(p);
 }
 
 

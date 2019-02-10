@@ -68,7 +68,7 @@ void test_dynamic_pointer()
   demo_pointer d=new_ctor(demo,demo_ctor_int_int,12,-8);
   assign_static(dd,&d,dynamic_demo);
   demo_say(*dd);
-  DELETE(dd,d);
+  DELETE_LIST(dd,d);
 }
 
 void test_unique_pointer()

@@ -28,6 +28,7 @@
 #include <unistd.h>
 #ifdef __WIN32__
 # include <winsock2.h>         // for socket(), connect(), send(), and recv()
+# include <ws2tcpip.h>
   typedef int socklen_t;
 #else
 # include <sys/types.h>

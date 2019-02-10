@@ -19,7 +19,6 @@
 #include <yaooc/socket.h>
 
 
-#include <poll.h>
 #ifdef _WIN32
 void yaooc_socket_startup()
 {
@@ -30,6 +29,8 @@ void yaooc_socket_startup()
 }
 
 void yaooc_socket_cleanup() { WSACleanup(); }
+#else
+#include <poll.h>
 #endif
 
 /* Private variables implementation for yaooc_socket_exception */
@@ -132,7 +133,11 @@ int yaooc_socket_poll(pointer p,int timeout_ms)
 		pfd.fd = this->sock_fd_;
 		pfd.events = POLLIN|POLLOUT|POLLHUP|POLLERR|POLLNVAL;
 		pfd.revents = 0;
+#ifdef _WIN32
+		ret = WSAPoll(&pfd,1,timeout_ms);
+#else
 		ret = poll(&pfd,1,timeout_ms);
+#endif
 	}
 	return ret;
 }
