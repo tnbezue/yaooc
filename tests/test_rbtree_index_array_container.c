@@ -62,7 +62,7 @@ size_t int_rbtree_index_array_container_erase_value(pointer p,int_t value)
 
 void print_index(yaooc_rbnode_t* node)
 {
-	if(node != &nil) {
+	if(node != yaooc_rbnode_rbnil) {
 		print_index(node->left_);
 		optr+=sprintf(optr,"%u ",node->index_);
 		print_index(node->right_);
@@ -91,7 +91,7 @@ unsigned int *rbtree_indexes;
 unsigned int irb;
 void get_index(yaooc_rbnode_t* node)
 {
-	if(node != &nil) {
+	if(node != yaooc_rbnode_rbnil) {
 		get_index(node->left_);
 		rbtree_indexes[irb++]=node->index_;
 		get_index(node->right_);
@@ -162,7 +162,7 @@ void test_sizes()
 {
 	printf("%zu %zu\n",sizeof(yaooc_rbnode_t),sizeof(int_rbtree_index_array_container_t));
 	TEST("SIZE yaooc_rbnode_t == 32",sizeof(yaooc_rbnode_t)== 32);
-	TEST("SIZE index_array_container == 80",sizeof(int_rbtree_index_array_container_t)== 80);
+	TEST("SIZE index_array_container == 48",sizeof(int_rbtree_index_array_container_t)== 48);
 }
 
 void test_constructor()
@@ -185,14 +185,15 @@ void test_insert()
   TESTCASE("Insert");
 	int_rbtree_index_array_container_const_iterator pos;
 	for(i=0;i<5;i++) {
-		pos=M(bc,end);
-		M(bc,insert,pos,values+i);
+		M(bc,insert,M(bc,cend),values+i);
 	}
 	TEST("Array is not NULL",bc->array_!=NULL);
-	TEST("Size is 5",bc->size_==4);
+	printf("%zu\n",bc->size_);
+	TEST("Size is 4",bc->size_==4);
 	TEST("Capacity is 16",bc->capacity_==16);
   TEST("Index is ordered",index_ordered(bc));
   print_value(bc);
+
   TEST("Values are '14 8 6 99'",strcmp(output,"14 8 6 99 ")==0);
   print_indexes(bc);
   TEST("Indexes are '2 1 0 3'",strcmp(output,"2 1 0 3 ")==0);
@@ -260,8 +261,23 @@ void test_insert()
   TEST("Indexes are '0'",strcmp(output,"0 ")==0);
   print_in_order(bc);
   TEST("Sorter order is '56'",strcmp(output,"56 ")==0);
-
   delete(bc);
+}
+
+#define MAX_RANDOMS 409600
+void test_insert_big()
+{
+	int_rbtree_index_array_container_pointer bc=new(int_rbtree_index_array_container);
+	srand((unsigned) time(NULL));
+	int i;
+	for(i=0;i<MAX_RANDOMS;i++) {
+		int numb = rand(); // % 100000;
+		M(bc,insert,M(bc,cend),&numb);
+	}
+	TEST("Index ordered and unique",index_ordered(bc));
+	int_rbtree_index_array_container_const_iterator ibc = M(bc,cbegin);
+	M(bc,erase_range,ibc+200,ibc+500);
+	TEST("Index ordered and unique",index_ordered(bc));
 }
 
 void test_erase()
@@ -534,6 +550,7 @@ test_function tests[]=
 	test_sizes,
 	test_constructor,
   test_insert,
+	test_insert_big,
 	test_erase,
 	test_copy,
 	test_assign,

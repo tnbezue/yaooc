@@ -6,15 +6,9 @@
 #include <yaooc/array_container.h>
 
 
-enum rbcolor {
-    red,
-    black
-};
-
-enum rbtraversal {
-    preorder,
-    inorder,
-    postorder
+enum yaooc_rbcolor {
+    yaooc_rbred,
+    yaooc_rbblack
 };
 
 typedef struct yaooc_rbnode_s yaooc_rbnode_t;
@@ -23,20 +17,26 @@ struct yaooc_rbnode_s {
 	yaooc_rbnode_t* right_;
 	yaooc_rbnode_t* parent_;
 	unsigned int index_;
-	enum rbcolor color_;
+	enum yaooc_rbcolor color_;
 };
 
-#define yaooc_rbtree_index_array_container_rbapply(t, f, i, c, o)	\
-			yaooc_rbtree_index_array_container_rbapply_node((t), (t)->root_.left_, (f), (i), (c), (o))
-#define yaooc_rbtree_index_array_container_rbisempty(t)		((t)->root_.left_ == &(t)->nil_ && (t)->root.right_ == &(t)->nil_)
-#define yaooc_rbtree_index_array_container_rbfirst(t)		((t)->root_.left_)
-#define yaooc_rbtree_index_array_container_rbroot(t)		(&(t)->root_)
-#define yaooc_rbtree_index_array_container_rbnil(t)		((t)->nil_)
+extern yaooc_rbnode_t* yaooc_rbnode_rbnil;
+#define yaooc_rbtree_index_array_container_rbapply(t, f, i, n, c )	\
+			yaooc_rbtree_index_array_container_rbapply_node((t)->root_->left_, (f), (i), n, (c))
+#define yaooc_rbtree_index_array_container_rbisempty(t)		((t)->root_->left_ == yaooc_rbnode_rbnil && (t)->root.right_ == yaooc_rbnode_rbnil)
+#define yaooc_rbtree_index_array_container_rbfirst(t)		((t)->root_->left_)
+#define yaooc_rbtree_index_array_container_rbroot(t)		((t)->root_)
+//#define yaooc_rbtree_index_array_container_rbnil(t)		((t)->nil_)
 
-typedef int (*action_func)(yaooc_rbnode_t*, unsigned int,unsigned int*);
-int yaooc_rbnode_increment_index(yaooc_rbnode_t*, unsigned int,unsigned int*);
-int yaooc_rbnode_decrement_index(yaooc_rbnode_t*, unsigned int,unsigned int*);
-extern yaooc_rbnode_t nil;
+typedef int (*action_func)(yaooc_rbnode_t*, unsigned int,unsigned int,unsigned int*);
+int yaooc_rbnode_increment_index(yaooc_rbnode_t*, unsigned int,unsigned int,unsigned int*);
+int yaooc_rbnode_decrement_index(yaooc_rbnode_t*, unsigned int,unsigned int,unsigned int*);
+
+/*
+	If found is true, node is pointer to pointer of node.
+	If found is false, node is pointer to pointer of parent node.
+*/
+typedef struct { yaooc_rbnode_t** node_; bool found_; } yaooc_rbtree_index_array_container_find_result_t;
 /*
   Class Definition for yaooc_rbtree_index_array_container
 */
@@ -47,8 +47,7 @@ yaooc_class_table(yaooc_rbtree_index_array_container) {
 
 yaooc_class_instance(yaooc_rbtree_index_array_container) {
   yaooc_array_container_class_instance_t;
-  yaooc_rbnode_t root_;
-  yaooc_rbnode_t* nil_;
+  yaooc_rbnode_t *root_;
 };
 
 yaooc_class(yaooc_rbtree_index_array_container);
@@ -89,9 +88,9 @@ extern void yaooc_rbtree_index_array_container_resize_value(pointer, size_t, con
 #define yaooc_rbtree_index_array_container_shrink_to_fit yaooc_array_container_shrink_to_fit
 #define yaooc_rbtree_index_array_container_reserve yaooc_array_container_reserve
 extern void yaooc_rbtree_index_array_container_clear(pointer);
-extern int yaooc_rbtree_index_array_container_rbapply_node(pointer, yaooc_rbnode_t*, action_func, unsigned int,unsigned int*, enum rbtraversal);
+extern int yaooc_rbtree_index_array_container_rbapply_node(yaooc_rbnode_t*, action_func, unsigned int,unsigned int,unsigned int*);
 //extern void yaooc_rbtree_index_array_container_delete_node(pointer,yaooc_rbnode_t*);
-extern yaooc_rbnode_t* yaooc_rbtree_index_array_container_rbfind(pointer, const_pointer);
+extern yaooc_rbtree_index_array_container_find_result_t yaooc_rbtree_index_array_container_rbfind(const_pointer, const_pointer);
 extern yaooc_rbnode_t* yaooc_rbtree_index_array_container_rbinsert(pointer, const_pointer);
 extern void yaooc_rbtree_index_array_container_rbdelete(pointer, yaooc_rbnode_t*);
 
