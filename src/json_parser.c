@@ -268,7 +268,7 @@ yaooc_json_parser_class_table_t yaooc_json_parser_class_table =
   .parse_json_value = (yaooc_json_value_pointer (*) (pointer p)) yaooc_json_parser_parse_json_value,
   .parse_string = (yaooc_json_value_pointer (*) (pointer p,const char*)) yaooc_json_parser_parse_string,
   .parse_file = (yaooc_json_value_pointer (*) (pointer p,const char*)) yaooc_json_parser_parse_file,
-  .result = (yaooc_base_parser_result_t (*) (const_pointer)) yaooc_base_parser_result,
+  .result = (int (*) (const_pointer)) yaooc_base_parser_result,
 };
 
 

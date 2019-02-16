@@ -148,7 +148,8 @@ struct pod_type_info_s {
 	to_stream to_stream_;
 	from_stream from_stream_;
 };
-#define POD_FLAG ((size_t)1 << (__WORDSIZE-1))
+
+#define POD_FLAG (__SIZE_TYPE__)1 << (sizeof(__SIZE_TYPE__)*8-1)
 #define is_pod(ti) ((((pod_type_info_t*)ti)->type_size_) & POD_FLAG)
 #define yaooc_sizeof(ti) ((((pod_type_info_t*)ti)->type_size_) & LONG_MAX)
 typedef struct type_info_s type_info_t;

@@ -292,13 +292,13 @@ yaooc_terminal_t yaooc_base_parser_custom_whitespace(pointer p)
   return ret;
 }
 
-void yaooc_base_parser_set_whitespace_types(pointer p,yaooc_base_parser_whitespace_t ws)
+void yaooc_base_parser_set_whitespace_types(pointer p,uint32_t ws)
 {
   yaooc_base_parser_pointer this=p;
   this->whitespace_types_=ws;
 }
 
-yaooc_base_parser_whitespace_t yaooc_base_parser_get_whitespace_types(pointer p)
+uint32_t yaooc_base_parser_get_whitespace_types(pointer p)
 {
   yaooc_base_parser_pointer this=p;
   return this->whitespace_types_;
@@ -583,7 +583,7 @@ yaooc_terminal_t yaooc_base_parser_string_until_matching_chr(pointer p,char lch,
   return ret;
 }
 
-yaooc_base_parser_result_t yaooc_base_parser_result(const_pointer p)
+int yaooc_base_parser_result(const_pointer p)
 {
   return ((yaooc_base_parser_const_pointer)p)->result_;
 }
@@ -625,7 +625,7 @@ yaooc_base_parser_class_table_t yaooc_base_parser_class_table =
   .double_quoted_string = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_double_quoted_string,
   .bare_string = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_bare_string,
   .string_until_matching_chr = (yaooc_terminal_t (*) (pointer p,char,char)) yaooc_base_parser_string_until_matching_chr,
-  .result = (yaooc_base_parser_result_t (*) (const_pointer)) yaooc_base_parser_result,
+  .result = (int (*) (const_pointer)) yaooc_base_parser_result,
 };
 
 

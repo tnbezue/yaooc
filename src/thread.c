@@ -40,7 +40,7 @@ void* yaooc_thread_thread_entry(void* arg)
   this->state_=THREAD_RUNNING;
   this->thread_id_=pthread_self();
   ret=this->method(this,start_arg->data_);
-  free(arg);
+  FREE(arg);
   yaooc_exception_thread_list_remove_exception_thread(pthread_self());
   this->state_=THREAD_READY;
   this->is_detached_=false;
@@ -75,7 +75,7 @@ void yaooc_thread_dtor(pointer p)
 void yaooc_thread_ctor_method(pointer p,va_list args)
 {
   yaooc_thread_default_ctor(p);
-  ((yaooc_thread_pointer)p)->method=va_arg(args,void* (*)(pointer,void*));
+  ((yaooc_thread_pointer)p)->method=va_arg(args,yaooc_thread_method);
 }
 
 /* Class table methods for yaooc_thread */

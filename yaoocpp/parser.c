@@ -918,7 +918,7 @@ yaoocpp_parser_class_table_t yaoocpp_parser_class_table =
   .double_quoted_string = (yaooc_terminal_t(*)(pointer)) yaoocpp_parser_double_quoted_string,
   .bare_string = (yaooc_terminal_t(*)(pointer)) yaoocpp_parser_bare_string,
   .string_until_matching_chr = (yaooc_terminal_t(*)(pointer,char,char)) yaoocpp_parser_string_until_matching_chr,
-  .result = (yaooc_base_parser_result_t(*)(const_pointer)) yaoocpp_parser_result,
+  .result = (int(*)(const_pointer)) yaoocpp_parser_result,
   .parse_file = (void(*)(pointer,const char*)) yaoocpp_parser_parse_file,
 };
 

@@ -45,8 +45,8 @@ char* yaooc_terminal_get_text(const_pointer);
 char* yaooc_terminal_get_raw_text(const_pointer);
 #define default_terminal { .class_table_ = &yaooc_terminal_class_table , .beg_=this->current_pos_, .end_=NULL }
 
-typedef enum { CRLF=1,C_COMMENT=2,CPP_COMMENT=4,SHELL_COMMENT=8,CUSTOM_WHITESPACE=16} yaooc_base_parser_whitespace_t;
-typedef enum { PARSE_SUCCESS = 0, PARSE_FAILED } yaooc_base_parser_result_t;
+enum { CRLF=1,C_COMMENT=2,CPP_COMMENT=4,SHELL_COMMENT=8,CUSTOM_WHITESPACE=16};
+enum { PARSE_SUCCESS = 0, PARSE_FAILED };
 /*  Begin YAOOC PreProcessor generated content */
 
 
@@ -69,8 +69,8 @@ yaooc_class_table(yaooc_base_parser)
   yaooc_terminal_t (*c_comment)(pointer);
   yaooc_terminal_t (*cpp_comment)(pointer);
   yaooc_terminal_t (*custom_whitespace)(pointer);
-  void (*set_whitespace_types)(pointer,yaooc_base_parser_whitespace_t);
-  yaooc_base_parser_whitespace_t (*get_whitespace_types)(pointer);
+  void (*set_whitespace_types)(pointer,uint32_t);
+  uint32_t (*get_whitespace_types)(pointer);
   int (*whitespace)(pointer);
   yaooc_terminal_t (*chr)(pointer,char);
   int (*chr_choices)(pointer,const char*);
@@ -88,7 +88,7 @@ yaooc_class_table(yaooc_base_parser)
   yaooc_terminal_t (*double_quoted_string)(pointer);
   yaooc_terminal_t (*bare_string)(pointer);
   yaooc_terminal_t (*string_until_matching_chr)(pointer,char,char);
-  yaooc_base_parser_result_t (*result)(const_pointer);
+  int (*result)(const_pointer);
 };
 
 yaooc_class_instance(yaooc_base_parser)
@@ -99,7 +99,7 @@ yaooc_class_instance(yaooc_base_parser)
   parser_position_stack_t* stack_;
   unsigned int line_no_;
   unsigned int whitespace_types_;
-  yaooc_base_parser_result_t result_;
+  int result_;
 };
 
 yaooc_class(yaooc_base_parser);
@@ -144,7 +144,7 @@ yaooc_terminal_t yaooc_base_parser_single_quoted_string(pointer);
 yaooc_terminal_t yaooc_base_parser_double_quoted_string(pointer);
 yaooc_terminal_t yaooc_base_parser_bare_string(pointer);
 yaooc_terminal_t yaooc_base_parser_string_until_matching_chr(pointer,char,char);
-yaooc_base_parser_result_t yaooc_base_parser_result(const_pointer);
+int yaooc_base_parser_result(const_pointer);
 
 /* Prototypes for yaooc_base_parser class instance*/
 

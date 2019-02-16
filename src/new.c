@@ -49,6 +49,7 @@ bool has_destructor(const type_info_t* ti)
 }
 
 #endif
+
 /*
 	Allocate memory and setup memory header
 */
