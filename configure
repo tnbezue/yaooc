@@ -651,14 +651,6 @@ DUMPBIN
 LD
 FGREP
 SED
-host_os
-host_vendor
-host_cpu
-host
-build_os
-build_vendor
-build_cpu
-build
 LIBTOOL
 YAOOC_PATCH_LEVEL
 YAOOC_MINOR_VERSION
@@ -685,6 +677,14 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+host_os
+host_vendor
+host_cpu
+host
+build_os
+build_vendor
+build_cpu
+build
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -1402,8 +1402,8 @@ Optional Features:
                           do not reject slow dependency extractors
   --disable-dependency-tracking
                           speeds up one-time build
- --enable-debug   compile for debugging
- --enable-gc   compile using garbage collection
+  --enable-debug          compile for debugging
+  --enable-gc             compile using garbage collection
   --enable-shared[=PKGS]  build shared libraries [default=yes]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --enable-fast-install[=PKGS]
@@ -1413,7 +1413,8 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-   --with-tre        use tre regular expression (yes to use tre, no to use system (gnu) re)
+  --with-tre              use tre regular expression (yes to use tre, no to
+                          use system (gnu) re)
   --with-pic[=PKGS]       try to use only PIC/non-PIC objects [default=use
                           both]
   --with-aix-soname=aix|svr4|both
@@ -3008,6 +3009,79 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
+
+
+
+# Make sure we can run config.sub.
+$SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
+  as_fn_error $? "cannot run $SHELL $ac_aux_dir/config.sub" "$LINENO" 5
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking build system type" >&5
+$as_echo_n "checking build system type... " >&6; }
+if ${ac_cv_build+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_build_alias=$build_alias
+test "x$ac_build_alias" = x &&
+  ac_build_alias=`$SHELL "$ac_aux_dir/config.guess"`
+test "x$ac_build_alias" = x &&
+  as_fn_error $? "cannot guess build type; you must specify one" "$LINENO" 5
+ac_cv_build=`$SHELL "$ac_aux_dir/config.sub" $ac_build_alias` ||
+  as_fn_error $? "$SHELL $ac_aux_dir/config.sub $ac_build_alias failed" "$LINENO" 5
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_build" >&5
+$as_echo "$ac_cv_build" >&6; }
+case $ac_cv_build in
+*-*-*) ;;
+*) as_fn_error $? "invalid value of canonical build" "$LINENO" 5;;
+esac
+build=$ac_cv_build
+ac_save_IFS=$IFS; IFS='-'
+set x $ac_cv_build
+shift
+build_cpu=$1
+build_vendor=$2
+shift; shift
+# Remember, the first character of IFS is used to create $*,
+# except with old shells:
+build_os=$*
+IFS=$ac_save_IFS
+case $build_os in *\ *) build_os=`echo "$build_os" | sed 's/ /-/g'`;; esac
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking host system type" >&5
+$as_echo_n "checking host system type... " >&6; }
+if ${ac_cv_host+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "x$host_alias" = x; then
+  ac_cv_host=$ac_cv_build
+else
+  ac_cv_host=`$SHELL "$ac_aux_dir/config.sub" $host_alias` ||
+    as_fn_error $? "$SHELL $ac_aux_dir/config.sub $host_alias failed" "$LINENO" 5
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_host" >&5
+$as_echo "$ac_cv_host" >&6; }
+case $ac_cv_host in
+*-*-*) ;;
+*) as_fn_error $? "invalid value of canonical host" "$LINENO" 5;;
+esac
+host=$ac_cv_host
+ac_save_IFS=$IFS; IFS='-'
+set x $ac_cv_host
+shift
+host_cpu=$1
+host_vendor=$2
+shift; shift
+# Remember, the first character of IFS is used to create $*,
+# except with old shells:
+host_os=$*
+IFS=$ac_save_IFS
+case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
+
 
 
 ac_ext=c
@@ -4775,9 +4849,10 @@ fi
 
 
 
-CFLAGS="$CFLAGS -fms-extensions -pthread -D_GNU_SOURCE -Wall"
-LIBS="$LIBS -lodbc"
+CFLAGS="$CFLAGS -D_GNU_SOURCE -Wall -fms-extensions "
+
 # Checks for header files.
+#AC_CONFIG_HEADERS([include/yaooc/config.h])
 for ac_header in fcntl.h inttypes.h stddef.h stdint.h stdlib.h string.h unistd.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -4791,7 +4866,7 @@ fi
 
 done
 
-for ac_func in memchr memmove memset strchr getcwd gettimeofday socket strcasecmp strcspn strdup strrchr strspn strstr
+for ac_func in memchr memmove memrchr memset strchr getcwd gettimeofday socket strcasecmp strcspn strdup strrchr strspn strstr
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -5268,18 +5343,15 @@ esac
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for debuggin" >&5
-$as_echo_n "checking for debuggin... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for debugging" >&5
+$as_echo_n "checking for debugging... " >&6; }
 # Check whether --enable-debug was given.
 if test "${enable_debug+set}" = set; then :
-  enableval=$enable_debug;
+  enableval=$enable_debug;  CFLAGS="$CFLAGS -g -D__DEBUG__"
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_debug" >&5
 $as_echo "$enable_debug" >&6; }
-if test "x$enable_debug" = "xyes"; then
-	CFLAGS="$CFLAGS -g -D__DEBUG__"
-fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ODBC support" >&5
 $as_echo_n "checking for ODBC support... " >&6; }
@@ -5289,7 +5361,14 @@ if test "x$ac_cv_header_sql_h" = xyes; then :
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for SQLAllocHandle in -lodbc" >&5
+case $host_os in
+	mingw* | cygwin*)
+		# Assume odbc32 lib is present
+		LIBS="$LIBS -lodbc32"
+	;;
+
+	*)
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for SQLAllocHandle in -lodbc" >&5
 $as_echo_n "checking for SQLAllocHandle in -lodbc... " >&6; }
 if ${ac_cv_lib_odbc_SQLAllocHandle+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -5326,31 +5405,29 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_odbc_SQLAllocHandle" >&5
 $as_echo "$ac_cv_lib_odbc_SQLAllocHandle" >&6; }
 if test "x$ac_cv_lib_odbc_SQLAllocHandle" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBODBC 1
-_ACEOF
 
-  LIBS="-lodbc $LIBS"
+			LIBS="-lodbc"
+
+else
+
+			as_fn_error $? "odbc library not found" "$LINENO" 5
+
 
 fi
 
+esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for garbage collection" >&5
 $as_echo_n "checking for garbage collection... " >&6; }
 # Check whether --enable-gc was given.
 if test "${enable_gc+set}" = set; then :
   enableval=$enable_gc;
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_gc" >&5
-$as_echo "$enable_gc" >&6; }
-if test "x$enable_gc" = "xyes"; then
-  ac_fn_c_check_header_mongrel "$LINENO" "gc/gc.h" "ac_cv_header_gc_gc_h" "$ac_includes_default"
+		ac_fn_c_check_header_mongrel "$LINENO" "gc/gc.h" "ac_cv_header_gc_gc_h" "$ac_includes_default"
 if test "x$ac_cv_header_gc_gc_h" = xyes; then :
 
 fi
 
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GC_malloc in -lgc" >&5
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GC_malloc in -lgc" >&5
 $as_echo_n "checking for GC_malloc in -lgc... " >&6; }
 if ${ac_cv_lib_gc_GC_malloc+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -5387,16 +5464,26 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gc_GC_malloc" >&5
 $as_echo "$ac_cv_lib_gc_GC_malloc" >&6; }
 if test "x$ac_cv_lib_gc_GC_malloc" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBGC 1
-_ACEOF
 
-  LIBS="-lgc $LIBS"
+				CFLAGS="$CFLAGS -D__YAOOC_USE_GC__"
+				LIBS="$LIBS -lgc"
+
+else
+
+				{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Garbage collection library not found
+See \`config.log' for more details" "$LINENO" 5; }
+
 
 fi
 
-	CFLAGS="$CFLAGS -D__YAOOC_USE_GC__"
+
+
 fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_gc" >&5
+$as_echo "$enable_gc" >&6; }
 
 YAOOC_MAJOR_VERSION=1
 
@@ -5411,16 +5498,13 @@ $as_echo_n "checking to use tre... " >&6; }
 # Check whether --with-tre was given.
 if test "${with_tre+set}" = set; then :
   withval=$with_tre;
-fi
-
-if test "x$with_tre" = "xyes"; then
-	ac_fn_c_check_header_mongrel "$LINENO" "tre/tre.h" "ac_cv_header_tre_tre_h" "$ac_includes_default"
+		ac_fn_c_check_header_mongrel "$LINENO" "tre/tre.h" "ac_cv_header_tre_tre_h" "$ac_includes_default"
 if test "x$ac_cv_header_tre_tre_h" = xyes; then :
 
 fi
 
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for tre_regcomp in -ltre" >&5
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for tre_regcomp in -ltre" >&5
 $as_echo_n "checking for tre_regcomp in -ltre... " >&6; }
 if ${ac_cv_lib_tre_tre_regcomp+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -5457,21 +5541,24 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_tre_tre_regcomp" >&5
 $as_echo "$ac_cv_lib_tre_tre_regcomp" >&6; }
 if test "x$ac_cv_lib_tre_tre_regcomp" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBTRE 1
-_ACEOF
 
-  LIBS="-ltre $LIBS"
+				CFLAGS="$CFLAGS -D__YAOOC_USE_TRE__"
+				LIBS="$LIBS -ltre"
+
+else
+
+				{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "tre library not found. Modify CFLAGS and LDFLAGS then rerun configure. Or specify --without-tre
+See \`config.log' for more details" "$LINENO" 5; }
+
 
 fi
 
-	if test "x$ac_cv_lib_tre_tre_regcomp" = "xyes"; then
-		CFLAGS="$CFLAGS -D__YAOOC_USE_TRE__"
-	else
-		as_fn_error $? "tre library not found. Modify CFLAGS and LDFLAGS then rerun configure. Or specify --without-tre" "$LINENO" 5
-	fi
+
 else
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for regcomp in -lc" >&5
+
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for regcomp in -lc" >&5
 $as_echo_n "checking for regcomp in -lc... " >&6; }
 if ${ac_cv_lib_c_regcomp+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -5514,12 +5601,14 @@ _ACEOF
 
   LIBS="-lc $LIBS"
 
+else
+  as_fn_error $? "suitable regular expression library not found" "$LINENO" 5
 fi
 
-	if test "$ac_cv_lib_c_regcomp" = "xyes"; then
-		as_fn_error $? "suitable regular expression library not found" "$LINENO" 5
-	fi
+
+
 fi
+
 
 ac_config_files="$ac_config_files yaooc-config Makefile"
 
@@ -5548,77 +5637,6 @@ macro_revision='2.4.6.42'
 
 
 ltmain=$ac_aux_dir/ltmain.sh
-
-# Make sure we can run config.sub.
-$SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
-  as_fn_error $? "cannot run $SHELL $ac_aux_dir/config.sub" "$LINENO" 5
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking build system type" >&5
-$as_echo_n "checking build system type... " >&6; }
-if ${ac_cv_build+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_build_alias=$build_alias
-test "x$ac_build_alias" = x &&
-  ac_build_alias=`$SHELL "$ac_aux_dir/config.guess"`
-test "x$ac_build_alias" = x &&
-  as_fn_error $? "cannot guess build type; you must specify one" "$LINENO" 5
-ac_cv_build=`$SHELL "$ac_aux_dir/config.sub" $ac_build_alias` ||
-  as_fn_error $? "$SHELL $ac_aux_dir/config.sub $ac_build_alias failed" "$LINENO" 5
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_build" >&5
-$as_echo "$ac_cv_build" >&6; }
-case $ac_cv_build in
-*-*-*) ;;
-*) as_fn_error $? "invalid value of canonical build" "$LINENO" 5;;
-esac
-build=$ac_cv_build
-ac_save_IFS=$IFS; IFS='-'
-set x $ac_cv_build
-shift
-build_cpu=$1
-build_vendor=$2
-shift; shift
-# Remember, the first character of IFS is used to create $*,
-# except with old shells:
-build_os=$*
-IFS=$ac_save_IFS
-case $build_os in *\ *) build_os=`echo "$build_os" | sed 's/ /-/g'`;; esac
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking host system type" >&5
-$as_echo_n "checking host system type... " >&6; }
-if ${ac_cv_host+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test "x$host_alias" = x; then
-  ac_cv_host=$ac_cv_build
-else
-  ac_cv_host=`$SHELL "$ac_aux_dir/config.sub" $host_alias` ||
-    as_fn_error $? "$SHELL $ac_aux_dir/config.sub $host_alias failed" "$LINENO" 5
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_host" >&5
-$as_echo "$ac_cv_host" >&6; }
-case $ac_cv_host in
-*-*-*) ;;
-*) as_fn_error $? "invalid value of canonical host" "$LINENO" 5;;
-esac
-host=$ac_cv_host
-ac_save_IFS=$IFS; IFS='-'
-set x $ac_cv_host
-shift
-host_cpu=$1
-host_vendor=$2
-shift; shift
-# Remember, the first character of IFS is used to create $*,
-# except with old shells:
-host_os=$*
-IFS=$ac_save_IFS
-case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
-
 
 # Backslashify metacharacters that are still active within
 # double-quoted strings.
