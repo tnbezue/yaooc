@@ -126,20 +126,36 @@ defined (NULL), then the parent default constructor is used.  If the parent defa
 a non NULL default constructor is found or the root of the inheritance tree is reached.  If a non NULL default constructor is not found,
 no action is taken.
 </p>
+<p>
+Note that, if needed, ancestor constructors or methods must be called by the default construtor.
+For example, it is common practice for the default constructor to call the parent default construtor before
+initializing variables defined at the current level of inheritance.
+YAOOC does not automatically perform this action.
+</p>
 <h3>Destructor</h3>
 <p>
 When an object is deleted, every destructor in reverse order of inheritance (the child destructor, the parent destructor, the parents' parent destructor, etc) will be called
-until the root class is reached.
+until the root class is reached.  The destrutor should only destory the portion of the object that was
+initialized at the current level of inheritance.  The ancestors will destroy their portions.
 </p>
 <h3>Copy Constructor</h3>
 <p>
 The new_copy method behaves as new does with the default constructor.  It traverses the inheritance tree until a non NULL copy constructor is found and uses
 it to copy the object.  If a non NULL copy constructor is not found, then the object is copied (using memcpy) to the target object.
 </p>
+<p>
+Like the default constructor, if any ancestor methods are needed, then these.  However, it is common practice
+to call the default constructor for the newly created object and then call the assign method.
+</p>
 <h3>Assignment</h3>
 <p>
 The assign method behaves just as the new_copy does.  It traverses the inheritance tree until a non NULL assignment method is found and uses
 it to assign one object to the other.  If a non NULL assignment method is not found, then the object is copied (using memcpy) to the target object.
+</p>
+<p>
+Like the default and copy constructors, ancestor assignment or methods must be called if needed to
+perform assignment.  It is common practice to call the parent assign method before assigning variables
+defined at the current level of inheritance.
 </p>
 <h3>Less than compare</h3>
 <p>

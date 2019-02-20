@@ -129,7 +129,7 @@ The entries can be specified in any order.
 The constructors section identifies the constructors that will be available for this class. The syntax for constructors is:
 </p>
 <pre><code>
-  name_ctor_XXXXX(type1 arg1,type2 arg2, ..., typen argn) [ = implementation_method ]
+  name_ctor_XXXXX(type1 arg1,type2 arg2, ..., typen argn) [ = implementation_method ] ;
 </code></pre>
 <p>
 <ul>
@@ -159,7 +159,7 @@ section must be the first section of the class definition.
 Class table entries are defined in the table section.  The syntax for variable members is:
 </p>
 <pre><code>
-  var_type var_name [ = value ];
+  var_type var_name [ = value ] ;
 </code></pre>
 <p>
 The value is optional but should be specified.  If value is a string, it should be
@@ -167,7 +167,7 @@ enclosed in double quotes. If value is not specified, 0 (zero) is assumed.
 </p>
 <p>The syntax for method definition is:</p>
 <pre><code>
-  ret_type method(arg1_type arg1,arg2_type arg2,...,argn_type argn) [const] [ = implementation_method ];
+  ret_type method(arg1_type arg1,arg2_type arg2,...,argn_type argn) [const] [ = implementation_method ] ;
 </code></pre>
 <ul>
 <li>

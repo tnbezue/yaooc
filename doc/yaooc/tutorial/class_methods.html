@@ -162,11 +162,13 @@ YAOOC provides the M macro (M for method) to make calling methods easier. The sy
   M(msp,set,"This is a test");
   printf("%s\n",M(msp,get));
 </code></pre>
+<h3>Minor Note</h3>
 <p>
-You may have noticed that the my_string_assign method was changed slightly to use the set method.
-This was done only to demonstrate calling a method using the M macro.  The full name of the method (my_string_set)
-could have also been used.
+When you review the example for this lesson, you may notice that the my_string_assign method
+was changed slightly to use the set method. It demonstrates calling a method
+using the M macro.  The full name of the method (my_string_set) could have also been used.
 </p>
+<h3>Forward declaration of class</h3>
 <p>
 Another macro that will have an occasional use is yaooc_class_forward.  As the name implies, yaooc_class_forward provides a forward declaration of a class.
 It defines the same types that the yaooc_class macro does.  The user must use yaooc_struct or the combination of yaooc_class_table, yaooc_class_instance,

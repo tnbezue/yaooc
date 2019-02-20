@@ -111,7 +111,10 @@ and faster searches (because of shadow index).
 <p>
 The unique_index_array_container is the same as index_array_container except values are unique.
 </p>
-
+<p>
+The rbtree_index_array_container behaves the same as the unique_index_array_container.  However, indexes are kept
+in a red black tree.  The rbtree_index_array_container is about 20 times faster than unique_index_array_container.
+</p>
 <h3>Methods</h3>
 <p>The following methods are defined by array.</p>
 
@@ -152,7 +155,6 @@ The unique_index_array_container is the same as index_array_container except val
 
 </div>
 </div>
-
 
 <h3>Iterators</h3>
 An iterator and const_iterator is available for derived classes.  Caution should be used when using methods that return an iterator.

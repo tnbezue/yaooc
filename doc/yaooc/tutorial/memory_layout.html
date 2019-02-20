@@ -125,8 +125,7 @@ Static versions of assign and comparison methods are presented below.
 For example, to compare if two static my_string objects are equal, use:
 </p>
 <pre><code>
-  #define INIT_STATIC_MY_STRING { .parent_class_table_=(const class_table_t*) &amp;yaooc_object_class_table, \
-          .type_name_ = "my_string_t", .swap = my_string_swap,.class_table_=&amp;my_string_class_table, .str=NULL }
+  #define INIT_STATIC_MY_STRING { .class_table_=&amp;my_string_class_table, .str=NULL }
   my_string_t ms1 = INIT_STATIC_MY_STRING;
   my_string_t ms2 = INIT_STATIC_MY_STRING;
   ....
