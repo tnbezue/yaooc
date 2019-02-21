@@ -195,6 +195,30 @@ const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti;
 	FROMS_ ## HAS_FROM_STREAM(T)\
 )
 
+/*
+	Comparison operators
+*/
+#define __op_eq__(lhs,rhs,lt_cmp) (lt_cmp ? !(lt_cmp(lhs,rhs) || lt_cmp(rhs,lhs)) : true )
+#define __op_ne__(lhs,rhs,lt_cmp) (lt_cmp ? (lt_cmp(lhs,rhs) || lt_cmp(rhs,lhs)) : false )
+#define __op_gt__(lhs,rhs,lt_cmp) (lt_cmp ? lt_cmp(rhs,lhs) : false )
+#define __op_ge__(lhs,rhs,lt_cmp) (lt_cmp ? !lt_cmp(lhs,rhs) : true )
+#define __op_lt__(lhs,rhs,lt_cmp) (lt_cmp ? lt_cmp(lhs,rhs) : false )
+#define __op_le__(lhs,rhs,lt_cmp) (lt_cmp ? !lt_cmp(rhs,lhs) : true )
+
+#define op_eq_static(lhs,rhs,T) __op_eq__(lhs,rhs,get_lt_cmp(T ## _ti))
+#define op_ne_static(lhs,rhs,T) __op_ne__(lhs,rhs,get_lt_cmp(T ## _ti))
+#define op_gt_static(lhs,rhs,T) __op_gt__(lhs,rhs,get_lt_cmp(T ## _ti))
+#define op_ge_static(lhs,rhs,T) __op_ge__(lhs,rhs,get_lt_cmp(T ## _ti))
+#define op_lt_static(lhs,rhs,T) __op_lt__(lhs,rhs,get_lt_cmp(T ## _ti))
+#define op_le_static(lhs,rhs,T) __op_le__(lhs,rhs,get_lt_cmp(T ## _ti))
+
+#define op_eq(lhs,rhs) __op_eq__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
+#define op_ne(lhs,rhs) __op_ne__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
+#define op_gt(lhs,rhs) __op_gt__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
+#define op_ge(lhs,rhs) __op_ge__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
+#define op_lt(lhs,rhs) __op_lt__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
+#define op_le(lhs,rhs) __op_le__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
+
 
 #define SWAP(T,x,y) { T __temp__=x; x=y; y=__temp__; }
 
@@ -206,5 +230,11 @@ const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti;
 #define STACK_VAR_ARRAY_CTOR(T,V,N,CTOR,...) T ## _t V[N]; __newp_array_ctor(V,T ## _ti,N,CTOR, ## __VA_ARGS__)
 
 #define DISTANCE(ti,first,last) ((((yaooc_private_const_iterator)last) - ((yaooc_private_const_iterator)first))/yaooc_sizeof(ti))
+
+void init_streams();
+
+#define yaooc_init() \
+GC_INIT(); \
+init_streams(); 
 
 #endif

@@ -24,8 +24,18 @@
 #include <inttypes.h>
 #include <yaooc/types.h>
 #ifdef __YAOOC_USE_GC__
-#define GC_THREADS
+
+/*
+ * If theads are going to be used, thread header files must be included before gc.h
+*/
+#ifdef _WIN32
+#define GC_WIN32_THREADS
+#include <windows.h>
+#else
+#define GC_LINUX_THREADS
 #include <pthread.h>
+#endif
+#define GC_THREADS
 #include <gc.h>
 #define MALLOC(obj) GC_MALLOC(obj)
 #define REALLOC(obj,n) GC_REALLOC(obj,n)
@@ -184,26 +194,6 @@ pointer __assign_static(pointer,const_pointer,const type_info_t*);
 #define assign_static(P,CP,T)  __assign_static(P,CP,T ## _ti)
 #define assign(DST,SRC) __assign_static(DST,SRC,get_type_info(SRC))
 
-bool op_eq(const_pointer,const_pointer);
-bool op_ne(const_pointer,const_pointer);
-bool op_gt(const_pointer,const_pointer);
-bool op_ge(const_pointer,const_pointer);
-bool op_lt(const_pointer,const_pointer);
-bool op_le(const_pointer,const_pointer);
-
-bool __op_eq_static(const_pointer,const_pointer,const type_info_t*);
-bool __op_ne_static(const_pointer,const_pointer,const type_info_t*);
-bool __op_gt_static(const_pointer,const_pointer,const type_info_t*);
-bool __op_ge_static(const_pointer,const_pointer,const type_info_t*);
-bool __op_lt_static(const_pointer,const_pointer,const type_info_t*);
-bool __op_le_static(const_pointer,const_pointer,const type_info_t*);
-
-#define op_eq_static(P,CP,T) __op_eq_static(P,CP,T ## _ti)
-#define op_ne_static(P,CP,T) __op_ne_static(P,CP,T ## _ti)
-#define op_gt_static(P,CP,T) __op_gt_static(P,CP,T ## _ti)
-#define op_ge_static(P,CP,T) __op_ge_static(P,CP,T ## _ti)
-#define op_lt_static(P,CP,T) __op_lt_static(P,CP,T ## _ti)
-#define op_le_static(P,CP,T) __op_le_static(P,CP,T ## _ti)
 
 char* yaooc_strdup(const char*);
 char* yaooc_upcase(const char*);
