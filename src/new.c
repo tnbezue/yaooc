@@ -435,28 +435,25 @@ less_than_compare get_lt_cmp(const type_info_t* ti)
 	return NULL;
 }
 
-bool op_eq(const_pointer v1,const_pointer v2)
+#if 0
+bool op_eq(const_pointer lhs,const_pointer rhs)
 {
-	less_than_compare lt_cmp=get_lt_cmp(get_type_info(v1));
-	return lt_cmp ? !(lt_cmp(v1,v2) || lt_cmp(v2,v1)): true;
+	return __op_eq_static(lhs,rhs,get_type_info(v1));
 }
 
-bool op_ne(const_pointer v1,const_pointer v2)
+bool op_ne(const_pointer lhs,const_pointer rhs)
 {
-	less_than_compare lt_cmp=get_lt_cmp(get_type_info(v1));
-	return lt_cmp ? (lt_cmp(v1,v2) || lt_cmp(v2,v1)): false;
+	return __op_ne_static(lhs,rhs,get_type_info(v1));
 }
 
-bool op_gt(const_pointer v1,const_pointer v2)
+bool op_gt(const_pointer lhs,const_pointer rhs)
 {
-	less_than_compare lt_cmp=get_lt_cmp(get_type_info(v1));
-	return lt_cmp ? lt_cmp(v2,v1): false;
+	return __op_gt_static(lhs,rhs,get_type_info(v1));
 }
 
-bool op_ge(const_pointer v1,const_pointer v2)
+bool op_ge(const_pointer lhs,const_pointer rhs)
 {
-	less_than_compare lt_cmp=get_lt_cmp(get_type_info(v1));
-	return lt_cmp ? !lt_cmp(v1,v2): true;
+	return __op_ge_static(lhs,rhs,get_type_info(v1));
 }
 
 bool op_lt(const_pointer v1,const_pointer v2)
@@ -506,7 +503,7 @@ bool __op_le_static(const_pointer v1,const_pointer v2,const type_info_t* ti)
 	less_than_compare lt_cmp=get_lt_cmp(ti);
 	return lt_cmp ? !lt_cmp(v2,v1) : true;
 }
-
+#endif
 to_stream get_to_stream(const type_info_t* ti)
 {
 	if(is_pod(ti)) {

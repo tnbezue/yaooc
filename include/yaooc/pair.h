@@ -74,7 +74,7 @@ void NAME ## _copy_ctor(pointer d,const_pointer s) \
 } \
 bool NAME ## _less_than_compare(const_pointer v1,const_pointer v2) \
 { \
-	return __op_lt_static(&((const NAME ## _t*)v1)->first,&((const NAME ## _t*)v2)->first,K ## _ti); \
+	return op_lt_static(&((const NAME ## _t*)v1)->first,&((const NAME ## _t*)v2)->first,K); \
 } \
 void NAME ## _to_stream(const_pointer p,pointer s) \
 { \

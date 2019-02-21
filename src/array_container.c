@@ -96,11 +96,11 @@ static void yaooc_array_container_destroy_elements(pointer p)
 iterator yaooc_array_container_insert_space(pointer p,const_iterator pos,size_t n)
 {
   yaooc_array_container_pointer this=p;
+  size_t index=INDEX(this,pos);  /* Save index because increase capacity may move array */
   debug(DEBUG_ARRAY_CONTAINER) {
-    debug_printf("this: %p pos: %" PRIsYAOOC " n: %" PRIsYAOOC "  this_array: %p  this_size: %" PRIsYAOOC " this_cap: %" PRIsYAOOC "\n",
+    debug_printf("this: %p pos: index: %zu n: %zu  this_array: %p  this_size: %zu this_cap: %zu\n",
           p,index,n,BEGIN(p),SIZE(p),CAPACITY(p));
   }
-  size_t index=INDEX(this,pos);  /* Save index because increase capacity may move array */
   M(this,increase_capacity,n);
   yaooc_private_iterator ret = AT(p,index);
   memmove(ret+n*TYPE_SIZE(p),ret,(this->size_-index)*TYPE_SIZE(p));
@@ -174,8 +174,9 @@ size_t yaooc_array_container_erase_value(pointer p,const_pointer value)
   yaooc_array_container_pointer this=p;
   size_t ret=0;
   yaooc_private_iterator pos=END(this)-TYPE_SIZE(this);
+  less_than_compare lt_cmp = get_lt_cmp(this->type_info_);
   while(pos >= BEGIN(this) && SIZE(this)>0) {
-    if(__op_eq_static(pos,value,this->type_info_)) {
+    if(__op_eq__(pos,value,lt_cmp)) {
       __deletep_array(pos,this->type_info_,1);
       yaooc_array_container_erase_space(this,pos,1);
       ret++;
