@@ -354,20 +354,18 @@ void yaooc_ccs_from_stream(pointer p,pointer s)
 	M(strm,scanf,"%s",p);
 }
 
-static yaooc_istream_t __cin;
+static yaooc_istream_t __cin = { .class_table_=&yaooc_istream_class_table,.handle_=NULL };
 yaooc_istream_pointer cin = &__cin;
-static yaooc_ostream_t __cout;
+static yaooc_ostream_t __cout = { .class_table_=&yaooc_ostream_class_table,.handle_=NULL };
 yaooc_ostream_pointer cout = &__cout;
-static yaooc_ostream_t __cerr;
+static yaooc_ostream_t __cerr = { .class_table_=&yaooc_ostream_class_table,.handle_=NULL };
 yaooc_ostream_pointer cerr = &__cerr;
 
 __attribute__((constructor))
-static void initialize_streams() {
-	__cin.class_table_ = &yaooc_istream_class_table;
+void init_streams()
+{
 	__cin.handle_ = stdin;
-	__cout.class_table_ = &yaooc_ostream_class_table;
 	__cout.handle_ = stdout;
-	__cerr.class_table_ = &yaooc_ostream_class_table;
 	__cerr.handle_ = stderr;
 }
 

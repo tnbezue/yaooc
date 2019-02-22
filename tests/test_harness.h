@@ -47,6 +47,7 @@ int main(int argc,char*argv[]) \
 { \
 	setbuf(stdout,NULL); \
 	setbuf(stderr,NULL); \
+	yaooc_init(); \
 	output=(char*)malloc(10240);\
 	optr=NULL; \
 	GC_INIT(); \

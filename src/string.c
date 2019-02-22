@@ -22,7 +22,7 @@
 #include <yaooc/regex.h>
 
 
-const void *memrmem(const void *ptr, size_t size, const void *pat, size_t patsize)
+static const void *yaooc_string_memrmem(const void *ptr, size_t size, const void *pat, size_t patsize)
 {
 	const char *p;
 
@@ -42,8 +42,8 @@ const void *memrmem(const void *ptr, size_t size, const void *pat, size_t patsiz
 	return NULL;
 }
 
-#ifdef _WIN32
-void* memrchr(const void* buf,size_t c,size_t spos)
+#ifndef HAVE_MEMRCHR
+static void* yaooc_string_memrchr(const void* buf,int c,size_t spos)
 {
 	const char* ptr = (const char*)buf+spos-1;
 	while(ptr >= (const char*)buf) {
@@ -53,7 +53,8 @@ void* memrchr(const void* buf,size_t c,size_t spos)
 	}
 	return NULL;
 }
-
+#else
+#define yaooc_string_memrchr memrchr
 #endif
 
 /* Private items for yaooc_string */
@@ -568,7 +569,7 @@ size_t yaooc_string_rfindstr(pointer p,const char* str,size_t pos)
 	if(this->size_ > 0 && str) {
 		if(pos >= this->size_)
 			pos=this->size_;
-		const char* ptr = memrmem(BEGIN(this),pos,str,strlen(str));
+		const char* ptr = yaooc_string_memrmem(BEGIN(this),pos,str,strlen(str));
 		if(ptr)
 			ret=ptr-BEGIN(this);
 	}
@@ -595,7 +596,7 @@ size_t yaooc_string_rfindchr(pointer p,char ch,size_t pos)
 	if(this->size_ > 0) {
 		if(pos >= this->size_)
 			pos=this->size_;
-		const char* ptr = memrchr(BEGIN(this),ch,pos);
+		const char* ptr = yaooc_string_memrchr(BEGIN(this),ch,pos);
 		if(ptr)
 			ret=ptr-BEGIN(this);
 	}

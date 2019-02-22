@@ -90,11 +90,11 @@ void test_str_8()
 		}
 	}
 	clock_t insert_time=clock()-start;
-	printf("Size is %zu Insert time: %zu\n",M(vec,size),insert_time);
+	printf("%lf seconds to insert %zu items\n",((double)insert_time)/CLOCKS_PER_SEC,M(vec,size));
 	start=clock();
 	str_8_vector_iterator fpos=yaooc_find(str_8,M(vec,begin),M(vec,end),"zmzz");
 	duration=clock()-start;
-	printf("Found: %d pos: %zu Time to find: %zu\n",fpos != M(vec,end),fpos-(str_8_vector_iterator)M(vec,begin),duration);
+	printf("Found: %d pos: %zu Time to find: %lf seconds\n",fpos != M(vec,end),fpos-(str_8_vector_iterator)M(vec,begin),((double)duration)/CLOCKS_PER_SEC);
 	if(fpos != M(vec,end))
 		printf("%s\n",fpos->str);
 
@@ -135,7 +135,7 @@ void test_string_vector()
 		}
 	}
 	clock_t insert_time=clock()-start;
-	printf("Size is %zu Insert time: %zu\n",M(vec,size),insert_time);
+	printf("%lf seconds to insert %zu items\n",((double)insert_time)/CLOCKS_PER_SEC,M(vec,size));
 	start=clock();
 /*  string_vector_const_iterator svi;
   for(svi=M(vec,begin);svi!=M(vec,end);svi++)
@@ -144,7 +144,7 @@ void test_string_vector()
 	string_vector_iterator fpos=yaooc_find(yaooc_string,M(vec,begin),M(vec,end),&s);
 	duration=clock()-start;
   printf("%s\n",M(&s,c_str));
-	printf("Found: %d pos: %zu Time to find: %zu\n",fpos != (string_vector_iterator)M(vec,end),fpos-(string_vector_iterator)M(vec,begin),duration);
+	printf("Found: %d pos: %zu Time to find: %lf seconds\n",fpos != (string_vector_iterator)M(vec,end),fpos-(string_vector_iterator)M(vec,begin),((double)duration)/CLOCKS_PER_SEC);
 	if(fpos != M(vec,end))
 		printf("%s\n",M(fpos,c_str));
   deletep(&s,yaooc_string);

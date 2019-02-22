@@ -38,7 +38,7 @@ void yaooc_exception_dtor(pointer p)
 {
 	yaooc_exception_pointer this=p;
 	if(this->what_)
-		free(this->what_);  // Don't use FREE since vasprintf may have allocated the memory
+		FREE(this->what_);
 }
 
 void yaooc_exception_copy_ctor(pointer p,const_pointer s)
@@ -59,7 +59,11 @@ void yaooc_exception_ctor_v(pointer p,va_list args)
 {
 	yaooc_exception_pointer this=p;
 	const char* fmt=va_arg(args,const char*);
-	vasprintf(&this->what_,fmt,args);
+	int size_needed=vsnprintf(NULL,0,fmt,args);
+	if(size_needed > 0) {
+		this->what_=MALLOC(++size_needed);
+		vsnprintf(this->what_,size_needed,fmt,args);
+	}
 }
 
 /* Class table members for yaooc_exception */
