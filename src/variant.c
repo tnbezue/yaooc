@@ -49,7 +49,7 @@ void yaooc_variant_dtor(pointer p)
 
   	case VAR_CHAR_PTR:
 		case VAR_VOID_PTR:
-			free(this->chr_ptr_);
+			FREE(this->chr_ptr_);
   		break;
 
   	case VAR_OBJECT:
@@ -118,7 +118,7 @@ void yaooc_variant_set(pointer p,yaooc_variant_type_t t,const void* value)
 			break;
 
 		case VAR_CHAR_PTR:
-			this->chr_ptr_=strdup(value);
+			this->chr_ptr_=STRDUP(value);
 			break;
 
 		case VAR_VOID_PTR:
