@@ -18,8 +18,12 @@ AC_CONFIG_MACRO_DIRS([m4])
 AC_CHECK_HEADER_STDBOOL
 AC_FUNC_MALLOC
 
+CFLAGS="$CFLAGS -D_GNU_SOURCE -Wall -fms-extensions"
+
 # -Wno-microsoft so clang doesn't produce warnings
-CFLAGS="$CFLAGS -D_GNU_SOURCE -Wall -fms-extensions -Wno-microsoft"
+if test "x$ac_ct_CC" = xclang; then
+	CFLAGS="$CFLAGS -Wno-microsoft"
+fi
 
 # Checks for header files.
 #AC_CONFIG_HEADERS([include/yaooc/config.h])

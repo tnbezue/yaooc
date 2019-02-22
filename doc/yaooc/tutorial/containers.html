@@ -156,6 +156,22 @@ in a red black tree.  The rbtree_index_array_container is about 20 times faster 
 </div>
 </div>
 
+<p>
+Values are inserted into containers using pointers to values (not the value).
+For example, if int_vec is an integer vector, the following is most likely not what was intended.
+</p>
+<pre><code>
+  M(int_vec,insert,M(int_vec,cend),20);  // Invalid insertion of 20 at end of vector
+</code></pre>
+<p>
+To insert a value into a container, assign the values to a instance of the correct type,
+and pass the address of the variable as the value to be inserted.
+</p>
+<pre><code>
+  int value=20;
+  M(int_vec,insert,M(int_vec,cend),&amp;value);  // Correctly inserts 20 at end of vector
+</code></pre>
+
 <h3>Iterators</h3>
 An iterator and const_iterator is available for derived classes.  Caution should be used when using methods that return an iterator.
 In the example below, if array is an integer array, the iterators i and j are not equal.
