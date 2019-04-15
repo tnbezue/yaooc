@@ -329,7 +329,7 @@ void test_iterator()
 	yaooc_string_t* s1=new(yaooc_string);
 
 	TEST("Begin of empty sting is same as end",M(s1,begin)==M(s1,end));
-	TEST("Const Begin of empty sting is same as const end",M(s1,begin)==M(s1,end));
+	TEST("Const Begin of empty sting is same as const end",M(s1,cbegin)==M(s1,cend));
 
 	M(s1,append,"The rain in spain falls mainly in Spain");
 	yaooc_string_const_iterator i = M(s1,begin);

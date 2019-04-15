@@ -37,7 +37,7 @@ int nTotalPass=0;
 #define FINAL_SUMMARY  if(nFail || nPass) SUMMARY; \
 	nTotalFail+=nFail;nTotalPass+=nPass; \
 	printf("%d Passed\n%d Failed\n",nTotalPass,nTotalFail)
-#define TEST_ALL(test_funcs) for(unsigned i=0;i<sizeof(test_funcs)/sizeof(test_funcs[1]);i++) \
+#define TEST_ALL(test_funcs) unsigned i; for( i=0;i<sizeof(test_funcs)/sizeof(test_funcs[1]);i++) \
       { optr=NULL; test_funcs[i](); }
 
 char* output;
@@ -56,7 +56,8 @@ int main(int argc,char*argv[]) \
 	if(argc == 1) \
 		{ TEST_ALL(test_array); }\
 	else { \
-		for(int i=1;i<argc;i++) { \
+    int i; \
+		for(i=1;i<argc;i++) { \
       optr=NULL; \
 			int itest=atoi(argv[i]); \
 			if(itest >=0 && itest < ntest) \

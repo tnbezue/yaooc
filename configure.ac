@@ -18,7 +18,9 @@ AC_CONFIG_MACRO_DIRS([m4])
 AC_CHECK_HEADER_STDBOOL
 AC_FUNC_MALLOC
 
-CFLAGS="$CFLAGS -D_GNU_SOURCE -Wall -fms-extensions"
+# need -D_POSIX_C_SOURCE so that printf's work same in Windows as in Linux/Unix
+# need -fms_extensions for anonymous struct members
+CFLAGS="$CFLAGS -D_POSIX_C_SOURCE -Wall -fms-extensions"
 
 # -Wno-microsoft so clang doesn't produce warnings
 if test "x$ac_ct_CC" = xclang; then
@@ -64,6 +66,15 @@ case $host_os in
 		]
 	)
 esac
+
+# For Windows, add -lws2_32
+case $host_os in
+	mingw* | cygwin*)
+		# Assume odbc32 lib is present
+		LIBS="$LIBS -lws2_32"
+	;;
+esac
+
 AC_MSG_CHECKING(for garbage collection)
 AC_ARG_ENABLE([gc],[AC_HELP_STRING([--enable-gc],[compile using garbage collection])],
 	[

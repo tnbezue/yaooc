@@ -22,6 +22,10 @@
 #include <yaooc/object.h>
 #include <yaooc/stream.h>
 
+#ifdef _WIN32
+typedef short nlink_t;
+#endif
+
 /*
   Class Definition for yaooc_file
 */

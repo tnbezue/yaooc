@@ -4,6 +4,9 @@
 #include <yaooc/object.yaooc>
 #include <yaooc/exception.yaooc>
 
+#if 0 // HEADER
+#undef putc // In some implementations, putc is a macro.
+#endif // HEADER
 class yaooc_stream_exception : yaooc_exception
 {
 		yaooc_stream_exception();

@@ -83,6 +83,10 @@ void test_basic()
   delete(d2);
 }
 
+/*
+	The following classes (base, derived1, and derived2) will show 4 methods of calling a parent method.
+	Each class will define the do_something method.
+*/
 yaooc_class_table(base)
 {
   yaooc_object_class_table_t;

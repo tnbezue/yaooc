@@ -4849,9 +4849,11 @@ fi
 
 
 
-# -Wno-microsoft so clang doesn't produce warnings
-CFLAGS="$CFLAGS -D_GNU_SOURCE -Wall -fms-extensions"
+# need -D_POSIX_C_SOURCE so that printf's work same in Windows as in Linux/Unix
+# need -fms_extensions for anonymous struct members
+CFLAGS="$CFLAGS -D_POSIX_C_SOURCE -Wall -fms-extensions"
 
+# -Wno-microsoft so clang doesn't produce warnings
 if test "x$ac_ct_CC" = xclang; then
 	CFLAGS="$CFLAGS -Wno-microsoft"
 fi
@@ -5421,6 +5423,15 @@ else
 fi
 
 esac
+
+# For Windows, add -lws2_32
+case $host_os in
+	mingw* | cygwin*)
+		# Assume odbc32 lib is present
+		LIBS="$LIBS -lws2_32"
+	;;
+esac
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for garbage collection" >&5
 $as_echo_n "checking for garbage collection... " >&6; }
 # Check whether --enable-gc was given.

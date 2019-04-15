@@ -149,19 +149,22 @@ struct pod_type_info_s {
 	from_stream from_stream_;
 };
 
-#define POD_FLAG (__SIZE_TYPE__)1 << (sizeof(__SIZE_TYPE__)*8-1)
+/*
+	Pod types will have the MSB set in the size entry.
+*/
+#define POD_FLAG (((__SIZE_TYPE__)1) << ((sizeof(__SIZE_TYPE__)*8)-1))
 #define is_pod(ti) ((((pod_type_info_t*)ti)->type_size_) & POD_FLAG)
-#define yaooc_sizeof(ti) ((((pod_type_info_t*)ti)->type_size_) & LONG_MAX)
+/*
+	never directly use type info size entry, use yaooc_sizeof to get correct size
+*/
+#define yaooc_sizeof(ti) ((((pod_type_info_t*)ti)->type_size_) & ~POD_FLAG)
 typedef struct type_info_s type_info_t;
 struct type_info_s {
-	size_t type_size_;											// object size
+	pod_type_info_t;
 	default_constructor  default_ctor_;
 	destructor dtor_;
 	copy_constructor copy_ctor_;
 	assignment assign_;
-	less_than_compare less_than_compare_;
-	to_stream to_stream_;
-	from_stream from_stream_;
 	const class_table_t* class_table_;  // pointer to class table
 	const type_info_t *parent_;   // pointer to parent type info
 };

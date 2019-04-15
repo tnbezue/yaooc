@@ -154,13 +154,13 @@ union name ## _s
 #define __DEFINE_TYPE_INFO__(T,DEF_CTOR,DTOR,COPY_CTOR,ASSIGN,LT_COMPARE,TO_STREAM,FROM_STREAM,CLASS_TABLE,PARENT) \
 const type_info_t __ ## T ## _ti ={ \
 	.type_size_ = sizeof(T ## _t),\
+	.less_than_compare_ = (less_than_compare) LT_COMPARE, \
+	.to_stream_ = (to_stream) TO_STREAM, \
+	.from_stream_ = (from_stream) FROM_STREAM, \
 	.default_ctor_ = (default_constructor) DEF_CTOR, \
 	.dtor_ = (destructor) DTOR, \
 	.copy_ctor_ = (copy_constructor)COPY_CTOR, \
   .assign_ = (assignment) ASSIGN, \
-	.less_than_compare_ = (less_than_compare) LT_COMPARE, \
-	.to_stream_ = (to_stream) TO_STREAM, \
-	.from_stream_ = (from_stream) FROM_STREAM, \
 	.class_table_ = (const class_table_t*) CLASS_TABLE, \
 	.parent_ = (const type_info_t*) PARENT \
 }; \
@@ -235,6 +235,6 @@ void init_streams();
 
 #define yaooc_init() \
 GC_INIT(); \
-init_streams(); 
+init_streams();
 
 #endif

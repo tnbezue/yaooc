@@ -59,8 +59,10 @@ void test_other()
 {
 	yaooc_file_t * f=new_ctor(yaooc_file,yaooc_file_ctor_name,"tests");
 	TEST("'tests' is a directory",M(f,isdir));
+#ifndef _WIN32
 	TEST("UID is same as process id",M(f,uid)==getuid());
 	TEST("GID is same as process id",M(f,gid)==getgid());
+#endif
 	delete(f);
 
 }
