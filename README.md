@@ -4,8 +4,7 @@ As the name suggests, YAOOC is another framework to make C a bit more like C++ -
 delete, string class, vector, map, iterators, etc.
 
 It also adds features that are found in scripting languages.  For example, the string class has
-methods such as split and chomp.  It also allows == and != to match (or not match) a
-regular expession.
+methods such as split and chomp.
 
 To get an idea of the features, review the tutorial (doc/yaooc/tutorial).  Each lesson is
 only one or two pages.  The entire tutorial should take 30-45 minutes to complete.
