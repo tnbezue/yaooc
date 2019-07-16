@@ -21,7 +21,7 @@
 
 #include <yaooc/object.h>
 #include <yaooc/stream.h>
-
+#include <fcntl.h>
 #ifdef _WIN32
 typedef short nlink_t;
 #endif

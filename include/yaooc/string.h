@@ -15,8 +15,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef __STRING_INCLUDED__
-#define __STRING_INCLUDED__
+#ifndef __YAOOC_STRING_INCLUDED__
+#define __YAOOC_STRING_INCLUDED__
+
+/*  Begin YAOOC PreProcessor generated content */
 
 #include <yaooc/vector.h>
 
@@ -24,8 +26,6 @@ typedef char* yaooc_string_iterator;
 typedef const char* yaooc_string_const_iterator;
 yaooc_class_forward(yaooc_regex);
 yaooc_class_forward(yaooc_string_vector);
-
-/*  Begin YAOOC PreProcessor generated content */
 
 /*
   Class definition for yaooc_string

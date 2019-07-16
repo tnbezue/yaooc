@@ -21,7 +21,9 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <limits.h>
+#include <sys/types.h>
 
 /* bool type */
 #ifndef __bool_true_false_are_defined
