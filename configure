@@ -4849,9 +4849,8 @@ fi
 
 
 
-# need -D_POSIX_C_SOURCE so that printf's work same in Windows as in Linux/Unix
 # need -fms_extensions for anonymous struct members
-CFLAGS="$CFLAGS -D_POSIX_C_SOURCE -Wall -fms-extensions"
+CFLAGS="$CFLAGS -Wall -fms-extensions"
 
 # -Wno-microsoft so clang doesn't produce warnings
 if test "x$ac_ct_CC" = xclang; then
@@ -5357,8 +5356,6 @@ if test "${enable_debug+set}" = set; then :
   enableval=$enable_debug;  CFLAGS="$CFLAGS -g -D__DEBUG__"
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_debug" >&5
-$as_echo "$enable_debug" >&6; }
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ODBC support" >&5
 $as_echo_n "checking for ODBC support... " >&6; }
@@ -5424,7 +5421,7 @@ fi
 
 esac
 
-# For Windows, add -lws2_32
+# For Windows, add -lws2_32 for networking support
 case $host_os in
 	mingw* | cygwin*)
 		# Assume odbc32 lib is present
@@ -5439,11 +5436,7 @@ if test "${enable_gc+set}" = set; then :
   enableval=$enable_gc;
 		ac_fn_c_check_header_mongrel "$LINENO" "gc/gc.h" "ac_cv_header_gc_gc_h" "$ac_includes_default"
 if test "x$ac_cv_header_gc_gc_h" = xyes; then :
-
-fi
-
-
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GC_malloc in -lgc" >&5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GC_malloc in -lgc" >&5
 $as_echo_n "checking for GC_malloc in -lgc... " >&6; }
 if ${ac_cv_lib_gc_GC_malloc+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -5481,12 +5474,12 @@ fi
 $as_echo "$ac_cv_lib_gc_GC_malloc" >&6; }
 if test "x$ac_cv_lib_gc_GC_malloc" = xyes; then :
 
-				CFLAGS="$CFLAGS -D__YAOOC_USE_GC__"
-				LIBS="$LIBS -lgc"
+          CFLAGS="$CFLAGS -D__YAOOC_USE_GC__"
+          LIBS="$LIBS -lgc"
 
 else
 
-				{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+          { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "Garbage collection library not found
 See \`config.log' for more details" "$LINENO" 5; }
@@ -5495,11 +5488,13 @@ See \`config.log' for more details" "$LINENO" 5; }
 fi
 
 
+fi
+
+
+
 
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_gc" >&5
-$as_echo "$enable_gc" >&6; }
 
 YAOOC_MAJOR_VERSION=1
 

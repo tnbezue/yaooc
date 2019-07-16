@@ -18,9 +18,8 @@ AC_CONFIG_MACRO_DIRS([m4])
 AC_CHECK_HEADER_STDBOOL
 AC_FUNC_MALLOC
 
-# need -D_POSIX_C_SOURCE so that printf's work same in Windows as in Linux/Unix
 # need -fms_extensions for anonymous struct members
-CFLAGS="$CFLAGS -D_POSIX_C_SOURCE -Wall -fms-extensions"
+CFLAGS="$CFLAGS -Wall -fms-extensions"
 
 # -Wno-microsoft so clang doesn't produce warnings
 if test "x$ac_ct_CC" = xclang; then
@@ -46,7 +45,6 @@ AC_ARG_ENABLE(debug,[AS_HELP_STRING([--enable-debug],[compile for debugging])],
 	[ CFLAGS="$CFLAGS -g -D__DEBUG__" ],
 	[ ]
 )
-AC_MSG_RESULT([$enable_debug])
 
 AC_MSG_CHECKING(for ODBC support)
 AC_CHECK_HEADER(sql.h)
@@ -67,7 +65,7 @@ case $host_os in
 	)
 esac
 
-# For Windows, add -lws2_32
+# For Windows, add -lws2_32 for networking support
 case $host_os in
 	mingw* | cygwin*)
 		# Assume odbc32 lib is present
@@ -78,19 +76,19 @@ esac
 AC_MSG_CHECKING(for garbage collection)
 AC_ARG_ENABLE([gc],[AC_HELP_STRING([--enable-gc],[compile using garbage collection])],
 	[
-		AC_CHECK_HEADER(gc/gc.h)
-		AC_CHECK_LIB(gc,GC_malloc,
-			[
-				CFLAGS="$CFLAGS -D__YAOOC_USE_GC__"
-				LIBS="$LIBS -lgc"
-			],
-			[
-				AC_MSG_FAILURE([Garbage collection library not found])
-			]
-		)
-	]
+		AC_CHECK_HEADER(gc/gc.h,
+      AC_CHECK_LIB(gc,GC_malloc,
+        [
+          CFLAGS="$CFLAGS -D__YAOOC_USE_GC__"
+          LIBS="$LIBS -lgc"
+        ],
+        [
+          AC_MSG_FAILURE([Garbage collection library not found])
+        ]
+      )
+    )
+  ]
 )
-AC_MSG_RESULT([$enable_gc])
 
 AC_SUBST(YAOOC_MAJOR_VERSION,yaooc_major)
 AC_SUBST(YAOOC_MINOR_VERSION,yaooc_minor)
