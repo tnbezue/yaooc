@@ -2,7 +2,7 @@
 #define __ARRAY_CONTAINER_YAOOC_INCLUDED__
 
 #include <yaooc/object.yaooc>
-#if 0 // HEADER
+/*H
 #include <yaooc/stream.h>
 
 /*
@@ -21,12 +21,12 @@
 #define AT(p,i) (BEGIN(p)+((i)*TYPE_SIZE(p)))
 #define END(p)  AT(p,SIZE(p))
 #define INDEX(p,pos) (((yaooc_private_const_iterator)(pos)-BEGIN(p))/TYPE_SIZE(p))
-#endif // HEADER
-#if 0 // SOURCE
+H*/
+/*S
 #include <yaooc/algorithm.h>
 #include <yaooc/stream.h>
 #include <string.h>
-#endif // SOURCE
+S*/
 
 class yaooc_array_container : yaooc_object
 {

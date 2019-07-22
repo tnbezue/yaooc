@@ -2,9 +2,14 @@
 #define __STRING_YAOOC_INCLUDED__
 
 #include <yaooc/array_container.yaooc>
-#if 0 // HEADER
+/*H
 #include <yaooc/vector.h>
-#endif // HEADER
+
+typedef char* yaooc_string_iterator;
+typedef const char* yaooc_string_const_iterator;
+yaooc_class_forward(yaooc_regex);
+yaooc_class_forward(yaooc_string_vector);
+H*/
 
 class yaooc_string : yaooc_array_container
 {

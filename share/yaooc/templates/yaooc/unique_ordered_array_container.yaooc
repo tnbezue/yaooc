@@ -3,6 +3,11 @@
 
 #include <yaooc/ordered_array_container.yaooc>
 
+/*S
+#include <stdio.h>
+#include <stdlib.h>
+S*/
+
 class yaooc_unique_ordered_array_container : yaooc_ordered_array_container
 {
 

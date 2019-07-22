@@ -4,6 +4,25 @@
 #include <yaooc/object.yaooc>
 #include <yaooc/exception.yaooc>
 
+/*H
+#include <yaooc/map.h>
+#include <yaooc/string.h>
+#include <yaooc/exception.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include <sql.h>
+#include <sqlext.h>
+
+MINI_MAP_DEFINITION(yaooc_string,yaooc_string,map_odbc_string_string)
+H*/
+
+/*S
+#include <stdio.h>
+
+MINI_MAP_IMPLEMENTATION(yaooc_string,yaooc_string,map_odbc_string_string)
+S*/
+
 class yaooc_odbc_exception : yaooc_exception
 {
 	yaooc_odbc_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;

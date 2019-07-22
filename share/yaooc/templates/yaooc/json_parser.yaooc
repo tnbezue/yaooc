@@ -3,6 +3,18 @@
 
 #include <yaooc/base_parser.yaooc>
 
+/*H
+#include <yaooc/json.h>
+H*/
+
+/*S
+#include <string.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <ctype.h>
+S*/
 
 class yaooc_json_parser : yaooc_base_parser
 {

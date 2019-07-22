@@ -3,6 +3,12 @@
 
 #include <yaooc/array_container.yaooc>
 
+/*S
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+S*/
+
 class yaooc_unique_array_container : yaooc_array_container
 {
 

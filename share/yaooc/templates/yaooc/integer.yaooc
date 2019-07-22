@@ -3,6 +3,13 @@
 
 #include <yaooc/object.yaooc>
 
+/*H
+#include <yaooc/stream.h>
+H*/
+/*S
+#include <stdio.h>
+S*/
+
 class yaooc_integer : yaooc_object
 {
 	yaooc_integer();

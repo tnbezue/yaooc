@@ -3,6 +3,10 @@
 
 #include <yaooc/stream.yaooc>
 
+/*S
+#include <string.h>
+S*/
+
 class yaooc_istringstream : yaooc_istream
 {
 		yaooc_istringstream();

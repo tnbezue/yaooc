@@ -3,6 +3,16 @@
 
 #include <yaooc/object.yaooc>
 
+/*H
+#include <yaooc/string.h>
+#include <yaooc/stream.h>
+H*/
+
+/*S
+#include <time.h>
+#include <yaooc/sstream.h>
+S*/
+
 class yaooc_date_time : yaooc_object {
 		yaooc_date_time();
 		yaooc_date_time(yaooc_date_time);

@@ -3,6 +3,18 @@
 
 #include <yaooc/object.yaooc>
 
+/*H
+#include <setjmp.h>
+#include <pthread.h>
+H*/
+
+/*S
+#include <yaooc/pointer_bag.h>
+#include <stdio.h>
+#include <string.h>
+#include <pthread.h>
+S*/
+
 class yaooc_exception : yaooc_object
 {
 		yaooc_exception();

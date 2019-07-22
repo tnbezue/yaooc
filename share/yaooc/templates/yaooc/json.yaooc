@@ -1,8 +1,40 @@
 #ifndef __JSON_YAOOC_INCLUDED__
 #define __JSON_YAOOC_INCLUDED__
 
-#include <yaooc/object.yaooc>
 #include <yaooc/exception.yaooc>
+
+/*H
+
+#include <yaooc/stream.h>
+#include <yaooc/vector.h>
+#include <yaooc/map.h>
+typedef enum { JSON_UNDEFINED=0, JSON_NULL, JSON_BOOL, JSON_INTEGER, JSON_REAL, JSON_STRING,
+        JSON_ARRAY, JSON_OBJECT } yaooc_json_type_t;
+
+yaooc_class_forward(yaooc_json_value_array)
+yaooc_class_forward(yaooc_json_string_value_map)
+
+typedef union {
+  bool    bool_;
+  int64_t int_;
+  double  real_;
+  char*   string_;
+  yaooc_json_value_array_t* array_;
+  yaooc_json_string_value_map_t* object_;
+} json_data_t;
+
+H*/
+
+/*S
+#include <string.h>
+#include <stdio.h>
+#include <inttypes.h>
+static const char* yaooc_json_type_strings[] =
+  {
+    "JSON_UNDEFINED" , "JSON_NULL", "JSON_BOOL" , "JSON_INTEGER" , "JSON_REAL" ,
+    "JSON_STRING", "JSON_ARRAY", "JSON_OBJECT"
+  };
+S*/
 
 class yaooc_json_exception : yaooc_exception
 {

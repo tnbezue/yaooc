@@ -163,10 +163,10 @@ static void yaoocpp_parser_preprocess(pointer p)
 		yaooc_string_t* extra=NULL;
 		yaooc_regex_t* re_yaooc_include=PB_SAVE(new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"^\\s*#\\s*include\\s*(\"|<)(.+)\\.yaooc(\"|>)\\s*$",REG_EXTENDED));
 		regex_t re_start_header,re_end_header,re_start_source,re_end_source;
-		regcomp(&re_start_header,"^\\s*#\\s*if.*HEADER",REG_EXTENDED);
-		regcomp(&re_end_header,"^\\s*#\\s*endif.*HEADER",REG_EXTENDED);
-		regcomp(&re_start_source,"^\\s*#\\s*if.*SOURCE",REG_EXTENDED);
-		regcomp(&re_end_source,"^\\s*#\\s*endif.*SOURCE",REG_EXTENDED);
+		regcomp(&re_start_header,"/\\*H",REG_EXTENDED);
+		regcomp(&re_end_header,"H\\*/",REG_EXTENDED);
+		regcomp(&re_start_source,"/\\*S",REG_EXTENDED);
+		regcomp(&re_end_source,"S\\*/",REG_EXTENDED);
 		while(!M(input,eof)) {
 			if(M(input,gets,line,1024)) {
 				if(re_match(re_start_header) && extra == NULL) {

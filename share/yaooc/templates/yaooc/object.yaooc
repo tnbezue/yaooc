@@ -17,13 +17,13 @@
 
 #ifndef __OBJECT_YAOOC_INCLUDED__
 #define __OBJECT_YAOOC_INCLUDED__
-#if 0 // HEADER
+/*H
 #include <yaooc/new.h>
 class_forward(yaooc_string)
-#endif // HEADER
-#if 0 // SOURCE
+H*/
+/*S
 #include <string.h>
-#endif // SOURCE
+S*/
 
 class yaooc_object {
   table:

@@ -3,6 +3,16 @@
 
 #include <yaooc/object.yaooc>
 
+/*H
+#include <yaooc/stream.h>
+typedef enum { VAR_NONE, VAR_CHAR, VAR_UCHAR, VAR_SHORT, VAR_USHORT, VAR_INT, VAR_UINT, VAR_LONG, VAR_ULONG,
+			VAR_DOUBLE,VAR_CHAR_PTR,VAR_VOID_PTR,VAR_OBJECT} yaooc_variant_type_t;
+H*/
+
+/*S
+#include <string.h>
+S*/
+
 class yaooc_variant : yaooc_object {
 		yaooc_variant();
 		~yaooc_variant();

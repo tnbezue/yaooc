@@ -3,6 +3,11 @@
 
 #include <yaooc/index_array_container.yaooc>
 
+/*S
+#include <string.h>
+#include <stdio.h>
+S*/
+
 class yaooc_unique_index_array_container : yaooc_index_array_container
 {
   private:

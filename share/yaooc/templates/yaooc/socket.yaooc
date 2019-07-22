@@ -4,7 +4,7 @@
 #include <yaooc/object.yaooc>
 #include <yaooc/ipaddress.yaooc>
 #include <yaooc/exception.yaooc>
-#if 0 // HEADER
+/*H
 #include <string.h>
 #include <unistd.h>
 #ifdef __WIN32__
@@ -25,9 +25,9 @@ void yaooc_socket_cleanup();
 #define yaooc_socket_startup()
 #define yaooc_socket_cleanup()
 #endif
-#endif // HEADER
+H*/
 
-#if 0 // SOURCE
+/*S
 #include <poll.h>
 #ifdef _WIN32
 void yaooc_socket_startup()
@@ -40,7 +40,7 @@ void yaooc_socket_startup()
 
 void yaooc_socket_cleanup() { WSACleanup(); }
 #endif
-#endif // SOURCE
+S*/
 
 class yaooc_socket_exception : yaooc_exception
 {

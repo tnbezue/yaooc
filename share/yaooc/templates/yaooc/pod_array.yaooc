@@ -3,12 +3,12 @@
 
 #include <yaooc/object.yaooc>
 
-#if 0 // SOURCE
+/*S
 #include <yaooc/algorithm.h>
 #include <yaooc/string.h>
 #include <yaooc/stream.h>
 #include <string.h>
-#endif // SOURCE
+S*/
 
 class yaooc_pod_array : yaooc_object
 {

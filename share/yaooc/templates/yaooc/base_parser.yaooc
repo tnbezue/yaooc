@@ -1,7 +1,71 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #ifndef __BASE_PARSER_YAOOC_INCLUDED__
 #define __BASE_PARSER_YAOOC_INCLUDED__
 
 #include <yaooc/object.yaooc>
+
+/*H
+#include <yaooc/stack.h>
+
+#include <yaooc/stack.h>
+
+typedef struct {
+  const char* pos_;
+  size_t line_no_;
+} parser_position_t;
+
+STACK_DEFINITION(parser_position,parser_position_stack)
+
+#define default_terminal { .class_table_ = &yaooc_terminal_class_table , .beg_=this->current_pos_, .end_=NULL }
+
+enum { CRLF=1,C_COMMENT=2,CPP_COMMENT=4,SHELL_COMMENT=8,CUSTOM_WHITESPACE=16};
+enum { PARSE_SUCCESS = 0, PARSE_FAILED };
+H*/
+
+/*S
+#include <string.h>
+#include <ctype.h>
+
+#ifdef __YAOOC_USE_TRE__
+#include <tre/regex.h>
+#else
+#include <regex.h>
+#endif
+#include <yaooc/base_parser.h>
+
+DEFINE_POD_TYPE_INFO(parser_position,N,N,N)
+STACK_IMPLEMENTATION(parser_position,parser_position_stack)
+
+S*/
+
+class yaooc_terminal : yaooc_object {
+    yaooc_terminal();
+
+  table:
+    char* get_text() const;
+    char* get_raw_text() const;
+
+  instance:
+    const char* beg_;
+    const char* end_;
+
+};
 
 class yaooc_base_parser : yaooc_object {
     yaooc_base_parser();

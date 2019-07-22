@@ -2,6 +2,34 @@
 #define __THREAD_YAOOC_INCLUDED__
 
 #include <yaooc/object.yaooc>
+#include <yaooc/exception.yaooc>
+
+/*H
+#include <pthread.h>
+
+typedef enum { THREAD_READY=0,THREAD_RUNNING,THREAD_TERMINATED } yaooc_thread_state_t;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef void* (*yaooc_thread_method) (pointer,void*);
+H*/
+
+/*S
+#include <sys/time.h>
+#include <stdio.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct {
+  void* object_;
+  void* data_;
+} thread_start_info_t;
+void yaooc_exception_thread_list_remove_exception_thread(pthread_t tid);
+S*/
 
 class yaooc_thread: yaooc_object
 {

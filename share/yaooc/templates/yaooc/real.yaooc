@@ -3,6 +3,11 @@
 
 #include <yaooc/object.yaooc>
 
+/*S
+#include <yaooc/stream.h>
+#include <stdio.h>
+S*/
+
 class yaooc_real : yaooc_object
 {
     yaooc_real();
