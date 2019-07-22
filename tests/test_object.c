@@ -236,6 +236,7 @@ void test_calling_parent_bad()
   TEST("Base method called 1 times (intentionally made to fail)",base_do_something_count==1);
   TEST("Derived 1 method called 1 times (intentionally made to fail)",derived1_do_something_count==1);
   TEST("Derived 2 method called 1 times",derived2_do_something_count==1);
+  delete(d2);
 }
 
 void test_calling_parent_good()
@@ -250,6 +251,7 @@ void test_calling_parent_good()
   TEST("Base method called 1 times",base_do_something_count==1);
   TEST("Derived 1 method called 1 times",derived1_do_something_count==1);
   TEST("Derived 2 method called 1 times",derived2_do_something_count==1);
+  delete(d2);
 }
 
 void test_calling_parent_better()
@@ -264,6 +266,7 @@ void test_calling_parent_better()
   TEST("Base method called 1 times",base_do_something_count==1);
   TEST("Derived 1 method called 1 times",derived1_do_something_count==1);
   TEST("Derived 2 method called 1 times",derived2_do_something_count==1);
+  delete(d2);
 }
 
 void test_calling_parent_best()
@@ -272,12 +275,13 @@ void test_calling_parent_best()
   derived1_do_something_count=0;
   derived2_do_something_count=0;
   derived1_class_table.do_something=derived1_do_something_best;
-  TESTCASE("Good way to call parent methods");
+  TESTCASE("Best way to call parent methods");
   derived2_pointer d2=new(derived2);
   M(d2,do_something);
   TEST("Base method called 1 times",base_do_something_count==1);
   TEST("Derived 1 method called 1 times",derived1_do_something_count==1);
   TEST("Derived 2 method called 1 times",derived2_do_something_count==1);
+  delete(d2);
 }
 
 

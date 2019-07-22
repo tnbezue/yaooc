@@ -709,16 +709,26 @@ static void yaoocpp_container_print_define_type_info(const_pointer p,ostream_poi
   yaoocpp_container_const_pointer this=p;
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"/* Type info structure for %s */\n",M(&this->name_,c_str));
-  M(ostrm,printf,"DEFINE_TYPE_INFO(%s",M(&this->name_,c_str));
-  M(ostrm,printf,",%c",this->has_default_ctor_ ? 'Y' : 'N');
-  M(ostrm,printf,",%c",this->has_dtor_ ? 'Y' : 'N');
-  M(ostrm,printf,",%c",this->has_copy_ctor_ ? 'Y' : 'N');
-  M(ostrm,printf,",%c",this->has_assign_ ? 'Y' : 'N');
-  M(ostrm,printf,",%c",this->has_lt_cmp_ ? 'Y' : 'N');
-  M(ostrm,printf,",%c",this->has_to_stream_ ? 'Y' : 'N');
-  M(ostrm,printf,",%c",this->has_from_stream_ ? 'Y' : 'N');
-  M(ostrm,printf,",%c",has_class_table ? 'Y' : 'N' );
-  M(ostrm,printf,",%s);\n\n",this->parent_ ? M(&this->parent_->name_,c_str) : "NULL" );
+  if(this->parent_!=NULL || this->has_default_ctor_ || this->has_dtor_ || this->has_copy_ctor_
+        ||  this->has_assign_ || has_class_table) {
+    M(ostrm,printf,"DEFINE_TYPE_INFO(%s",M(&this->name_,c_str));
+    M(ostrm,printf,",%c",this->has_default_ctor_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",this->has_dtor_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",this->has_copy_ctor_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",this->has_assign_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",this->has_lt_cmp_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",this->has_to_stream_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",this->has_from_stream_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",has_class_table ? 'Y' : 'N' );
+    M(ostrm,printf,",%s);\n\n",this->parent_ ? M(&this->parent_->name_,c_str) : "NULL" );
+  } else if (this->has_lt_cmp_ || this->has_to_stream_ || this->has_from_stream_) {
+    M(ostrm,printf,"DEFINE_POD_TYPE_INFO(%s",M(&this->name_,c_str));
+    M(ostrm,printf,",%c",this->has_lt_cmp_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",this->has_to_stream_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c)\n\n",this->has_from_stream_ ? 'Y' : 'N');
+  } else {
+    M(ostrm,printf,"DEFINE_MIN_TYPE_INFO(%s)\n\n",M(&this->name_,c_str));
+  }
 }
 
 static void yaoocpp_container_print_default_ctor_implementation(const_pointer p,ostream_pointer o)

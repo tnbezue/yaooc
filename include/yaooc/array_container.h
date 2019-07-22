@@ -6,6 +6,9 @@
 #include <yaooc/object.h>
 #include <yaooc/stream.h>
 
+/*
+	Helper macros for arrays
+*/
 #define YAOOC_ARRAY_CONTAINER_INITIAL_CAPACITY 16
 
 #define FOR_EACH(ITER,ARRAY) for(ITER=M(ARRAY,begin);ITER!=M(ARRAY,end);ITER++)

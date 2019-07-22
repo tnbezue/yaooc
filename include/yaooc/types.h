@@ -133,19 +133,32 @@ typedef struct {
 
 /*
 	Objects allocated by new must define a type_info_t structure.
-  type_size must be defined and not zero, others may be NULL
+  The minimum requirement is the type size (min_type_info)
 
-	The first structure (pod_type_info_s) is for Plain Old Data (POD).
-		-- Does not have a default constructor nor destructor
-		-- copy and assign is done by coping (memcpy)
-		-- No class table
-		-- No parent
+	The pod_type_info_s structure  is for Plain Old Data (POD).
+    -- Has less than compare
+    -- Has to/from stream
+    -- No parent
+    -- Used for POD types (int, double, etc) and structures made of POD types
 
-	The second structure is for non POD types.
+	The type_info_s structure is used for full class definitions.
+    -- Includes POD definition
+    -- Can have constructor
+    -- Can have destructor
+    -- Can have copy constructor
+    -- Can have assignment
+    -- Can have parent
 */
+typedef struct min_type_info_s min_type_info_t;
+struct min_type_info_s {
+  unsigned int min_flag_ : 1 ; // Indicates type info structure contains only size
+  unsigned int pod_flag_ : 1 ; // Indicates type info structure contains POD
+	size_t type_size_ : __WORDSIZE-2; // object size
+};
+
 typedef struct pod_type_info_s pod_type_info_t;
 struct pod_type_info_s {
-	size_t type_size_; // object size
+  min_type_info_t;
 	less_than_compare less_than_compare_;
 	to_stream to_stream_;
 	from_stream from_stream_;
@@ -154,12 +167,16 @@ struct pod_type_info_s {
 /*
 	Pod types will have the MSB set in the size entry.
 */
-#define POD_FLAG (((__SIZE_TYPE__)1) << ((sizeof(__SIZE_TYPE__)*8)-1))
-#define is_pod(ti) ((((pod_type_info_t*)ti)->type_size_) & POD_FLAG)
+//#define POD_TYPE_FLAG (((__SIZE_TYPE__)1) << ((sizeof(__SIZE_TYPE__)*8)-1))
+//#define MIN_TYPE_FLAG (((__SIZE_TYPE__)1) << ((sizeof(__SIZE_TYPE__)*8)-2))
+//#define YAOOC_SIZE_MASK ((POD_TYPE_FLAG) | (MIN_TYPE_FLAG))
+#define is_min_type(ti) (((min_type_info_t*)ti)->min_flag_ == 1)
+#define is_pod_type(ti) (((min_type_info_t*)ti)->pod_flag_ == 1)
+#define is_min_pod_type(ti) (is_min_type(ti) | is_pod_type(ti))
 /*
 	never directly use type info size entry, use yaooc_sizeof to get correct size
 */
-#define yaooc_sizeof(ti) ((((pod_type_info_t*)ti)->type_size_) & ~POD_FLAG)
+#define yaooc_sizeof(ti) ((size_t)(((min_type_info_t*)ti)->type_size_))
 typedef struct type_info_s type_info_t;
 struct type_info_s {
 	pod_type_info_t;

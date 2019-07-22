@@ -153,6 +153,8 @@ union name ## _s
 
 #define __DEFINE_TYPE_INFO__(T,DEF_CTOR,DTOR,COPY_CTOR,ASSIGN,LT_COMPARE,TO_STREAM,FROM_STREAM,CLASS_TABLE,PARENT) \
 const type_info_t __ ## T ## _ti ={ \
+  .min_flag_=0, \
+  .pod_flag_=0, \
 	.type_size_ = sizeof(T ## _t),\
 	.less_than_compare_ = (less_than_compare) LT_COMPARE, \
 	.to_stream_ = (to_stream) TO_STREAM, \
@@ -181,7 +183,9 @@ const type_info_t* const T ## _ti = &__ ## T ## _ti;
 
 #define __DEFINE_POD_TYPE_INFO__(T,LT_COMPARE,TO_STREAM,FROM_STREAM) \
 const pod_type_info_t __ ## T ## _ti ={ \
-	.type_size_ = sizeof(T ## _t) | POD_FLAG,\
+  .min_flag_=0, \
+  .pod_flag_=1, \
+	.type_size_ = sizeof(T ## _t),\
 	.less_than_compare_ = (less_than_compare) LT_COMPARE, \
 	.to_stream_ = (to_stream) TO_STREAM, \
 	.from_stream_ = (from_stream) FROM_STREAM \
@@ -194,6 +198,14 @@ const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti;
 	TOS_ ## HAS_TO_STREAM(T),\
 	FROMS_ ## HAS_FROM_STREAM(T)\
 )
+
+#define DEFINE_MIN_TYPE_INFO(T) \
+const min_type_info_t __ ## T ## _ti ={ \
+  .min_flag_=1, \
+  .pod_flag_=0, \
+	.type_size_ = sizeof(T ## _t),\
+}; \
+const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti;
 
 /*
 	Comparison operators

@@ -25,7 +25,8 @@
 #endif
 #include <yaooc/base_parser.h>
 
-DEFINE_TYPE_INFO(parser_position,N,N,N,N,N,N,N,N,NULL)
+DEFINE_POD_TYPE_INFO(parser_position,N,N,N)
+//DEFINE_TYPE_INFO(parser_position,N,N,N,N,N,N,N,N,NULL)
 STACK_IMPLEMENTATION(parser_position,parser_position_stack)
 
 void yaooc_terminal_default_ctor(pointer p)

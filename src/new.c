@@ -34,11 +34,11 @@ static void __yaooc_gc_finalizer__(GC_PTR obj, GC_PTR x)
 }
 /*
   If garbase collection is enabled, before assigning the finalizer, check if finalizer will be needed.
-  If a detructor will not be executed when object is destroyed, there is no need to assign the finalizer.
+  If a destructor will not be executed when object is destroyed, there is no need to assign the finalizer.
 */
 bool has_destructor(const type_info_t* ti)
 {
-	if(!is_pod(ti)) {
+	if(!is_min_pod_type(ti)) {
 		while(ti) {
 			if(ti->dtor_)
 				return true;
@@ -74,7 +74,7 @@ memory_header_t* allocate_memory(const type_info_t* ti,size_t n_elements)
 */
 default_constructor get_default_ctor(const type_info_t* ti)
 {
-	if(!is_pod(ti)) {
+	if(!is_min_pod_type(ti)) {
 		while(ti != NULL) {
 			if(ti->default_ctor_ != NULL) {
 				return ti->default_ctor_;
@@ -89,7 +89,7 @@ pointer __newp_array(pointer ptr,const type_info_t* ti,size_t n_elements)
 {
 	size_t i;
 	yaooc_private_iterator iptr;
-	if(!is_pod(ti)) {
+	if(!is_min_pod_type(ti)) {
 		default_constructor default_ctor=get_default_ctor(ti);
 		const class_table_t* ct=ti->class_table_;
 		size_t element_size=yaooc_sizeof(ti);
@@ -124,7 +124,7 @@ pointer __new_array(const type_info_t* ti,size_t n)
 */
 copy_constructor get_copy_ctor(const type_info_t* ti)
 {
-	if(!is_pod(ti)) {
+	if(!is_min_pod_type(ti)) {
 		while(ti != NULL) {
 			if(ti->copy_ctor_ != NULL) {
 				return ti->copy_ctor_;
@@ -223,7 +223,7 @@ static void new_ctor_private(yaooc_private_iterator ptr,const type_info_t* ti,si
 {
 	size_t i;
 	size_t element_size=yaooc_sizeof(ti);
-	if(!is_pod(ti)) {
+	if(!is_min_pod_type(ti)) {
 		const class_table_t* ct=ti->class_table_;
 		if(ct) {
 			yaooc_private_iterator iptr=ptr;
@@ -273,7 +273,7 @@ void call_constructor(pointer ptr,constructor ctor,...)
 const class_table_t* super_class_table(const_pointer p)
 {
   memory_header_t* mh=get_memory_header(p);
-	if(!is_pod(mh->type_info_)) {
+	if(!is_min_pod_type(mh->type_info_)) {
 		return mh->type_info_->parent_==NULL ? NULL : mh->type_info_->parent_->class_table_;
 	}
 	return NULL;
@@ -283,7 +283,7 @@ void __deletep_array(void* ptr,const type_info_t* ti,size_t n)
 {
 	size_t i;
   // Execute dtors for each item (if not null)
-	if(!is_pod(ti)) {
+	if(!is_min_pod_type(ti)) {
 		size_t type_size=yaooc_sizeof(ti);
 		while(ti != NULL) {
 			if(ti->dtor_ != NULL) {
@@ -302,7 +302,7 @@ void delete_array(void* ptr)
 {
 	if(ptr) {
 		memory_header_t* mh=get_memory_header(ptr);
-		if(!is_pod(mh->type_info_)) {
+		if(!is_min_pod_type(mh->type_info_)) {
 #ifdef __YAOOC_USE_GC__
 			GC_register_finalizer(mh, 0, 0, 0, 0);  // Remove finalizer
 #endif
@@ -395,7 +395,7 @@ pointer renew_array_ctor(pointer ptr,size_t n,constructor ctor,...)
 */
 assignment get_assignment(const type_info_t* ti)
 {
-	if(!is_pod(ti)) {
+	if(!is_min_pod_type(ti)) {
 		while(ti) {
 			if(ti->assign_)
 				return ti->assign_;
@@ -424,89 +424,22 @@ pointer __assign_static(pointer dst,const_pointer src,const type_info_t* ti)
 */
 less_than_compare get_lt_cmp(const type_info_t* ti)
 {
-	if(is_pod(ti)) {
-		return ((pod_type_info_t*)ti)->less_than_compare_;
-	}
-	while(ti) {
-		if(ti->less_than_compare_)
-			return ti->less_than_compare_;
-		ti=ti->parent_;
-	}
+  if(!is_min_type(ti))
+    return NULL;
+  if(is_pod_type(ti)) {
+    return ((pod_type_info_t*)ti)->less_than_compare_;
+  }
+  while(ti) {
+    if(ti->less_than_compare_)
+      return ti->less_than_compare_;
+    ti=ti->parent_;
+  }
 	return NULL;
 }
 
-#if 0
-bool op_eq(const_pointer lhs,const_pointer rhs)
-{
-	return __op_eq_static(lhs,rhs,get_type_info(v1));
-}
-
-bool op_ne(const_pointer lhs,const_pointer rhs)
-{
-	return __op_ne_static(lhs,rhs,get_type_info(v1));
-}
-
-bool op_gt(const_pointer lhs,const_pointer rhs)
-{
-	return __op_gt_static(lhs,rhs,get_type_info(v1));
-}
-
-bool op_ge(const_pointer lhs,const_pointer rhs)
-{
-	return __op_ge_static(lhs,rhs,get_type_info(v1));
-}
-
-bool op_lt(const_pointer v1,const_pointer v2)
-{
-	less_than_compare lt_cmp=get_lt_cmp(get_type_info(v1));
-	return lt_cmp ? lt_cmp(v1,v2): false;
-}
-
-bool op_le(const_pointer v1,const_pointer v2)
-{
-	less_than_compare lt_cmp=get_lt_cmp(get_type_info(v1));
-	return lt_cmp ? !lt_cmp(v2,v1): true;
-}
-
-bool __op_eq_static(const_pointer v1,const_pointer v2,const type_info_t* ti)
-{
-	less_than_compare lt_cmp=get_lt_cmp(ti);
-	return lt_cmp ? !(lt_cmp(v1,v2) || lt_cmp(v2,v1)) : true;
-}
-
-bool __op_ne_static(const_pointer v1,const_pointer v2,const type_info_t* ti)
-{
-	less_than_compare lt_cmp=get_lt_cmp(ti);
-	return lt_cmp ? (lt_cmp(v1,v2) || lt_cmp(v2,v1)) : false;
-}
-
-bool __op_gt_static(const_pointer v1,const_pointer v2,const type_info_t* ti)
-{
-	less_than_compare lt_cmp=get_lt_cmp(ti);
-	return lt_cmp ? lt_cmp(v2,v1) : false;
-}
-
-bool __op_ge_static(const_pointer v1,const_pointer v2,const type_info_t* ti)
-{
-	less_than_compare lt_cmp=get_lt_cmp(ti);
-	return lt_cmp ? !lt_cmp(v1,v2) : true;
-}
-
-bool __op_lt_static(const_pointer v1,const_pointer v2,const type_info_t* ti)
-{
-	less_than_compare lt_cmp=get_lt_cmp(ti);
-	return lt_cmp ? lt_cmp(v1,v2) : false;
-}
-
-bool __op_le_static(const_pointer v1,const_pointer v2,const type_info_t* ti)
-{
-	less_than_compare lt_cmp=get_lt_cmp(ti);
-	return lt_cmp ? !lt_cmp(v2,v1) : true;
-}
-#endif
 to_stream get_to_stream(const type_info_t* ti)
 {
-	if(is_pod(ti)) {
+	if(is_pod_type(ti)) {
 		return ((pod_type_info_t*)ti)->to_stream_;
 	}
 	while(ti != NULL) {
@@ -519,7 +452,7 @@ to_stream get_to_stream(const type_info_t* ti)
 
 from_stream get_from_stream(const type_info_t* ti)
 {
-	if(is_pod(ti)) {
+	if(is_pod_type(ti)) {
 		return ((pod_type_info_t*)ti)->from_stream_;
 	}
 	while(ti != NULL) {

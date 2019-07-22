@@ -20,8 +20,6 @@
 
 #include <yaooc/array_container.h>
 
-/* YAOOC_POD_ARRAY_DEFINITION(pointer,pointer_bag_array) */
-
 /*
   Class definition for yaooc_pointer_bag
 */
