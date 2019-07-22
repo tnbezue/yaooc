@@ -19,7 +19,7 @@ AC_CHECK_HEADER_STDBOOL
 AC_FUNC_MALLOC
 
 # need -fms_extensions for anonymous struct members
-CFLAGS="$CFLAGS -Wall -fms-extensions"
+CFLAGS="$CFLAGS -D_GNU_SOURCE -Wall -fms-extensions"
 
 # -Wno-microsoft so clang doesn't produce warnings
 if test "x$ac_ct_CC" = xclang; then
