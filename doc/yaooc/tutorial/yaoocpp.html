@@ -90,14 +90,14 @@ would be converted to the following in the C header file.
 <h3>Header/Source Block</h3>
 <p>
 The header_block contains code that will be copied to the header template file.
-The header starts with &quot;#if 0 // HEADER&quot; and ends with &quot;#endif // HEADER&quot;.
-FYI, the &quot;#if&quot; and &quot;#endif&quot; are needed because YAOOCPP uses the C preproccesor
-in the background. The &quot;#if&quot; and &quot;#endif&quot; will cause the C preprocessor
-to ignore that portion of the file. The header and source block are optional.
+The header starts with &quot;/*H&quot; and ends with &quot;H*/&quot;.
 </p>
 <p>
 The source_block contains code that will be copied to the source template file.
-The source block starts with &quot;#if 0 // SOURCE&quot; and ends with &quot;#endif // SOURCE&quot;.
+The source block starts with &quot;/*S&quot; and ends with &quot;S*/&quot;.
+</p>
+<p>
+The header and source blocks are optional.
 </p>
 <h3>Class Definition and inheritance</h3>
 <p>
@@ -346,15 +346,15 @@ Since YAOOCPP does the tedious work, a more robust string class can be created. 
 // The following will be converted to &quot;#include &lt;yaooc/object.h&gt;&quot; in header file
 #include &lt;yaooc/object.yaooc&gt;
 /* The following will be copied as is to header file */
-#if 0 // HEADER
+/*H
 #include &lt;string.h&gt;
 #include &lt;yaooc/stream.h&gt;
-#endif // HEADER
+H*/
 /* The following will be copied as is to source file */
-#if 0 // SOURCE
+/*S
 #include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
-#endif // SOURCE
+S*/
 
 class my_string : yaooc_object   /* my_string inherits from yaooc_object */
 {
