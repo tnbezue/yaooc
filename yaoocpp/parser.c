@@ -168,7 +168,7 @@ static void yaoocpp_parser_preprocess(pointer p)
 		regcomp(&re_start_source,"/\\*S",REG_EXTENDED);
 		regcomp(&re_end_source,"S\\*/",REG_EXTENDED);
 		while(!M(input,eof)) {
-			if(M(input,gets,line,1024)) {
+			if(M(input,getstr,line,1024)) {
 				if(re_match(re_start_header) && extra == NULL) {
 					extra=&header_extra;
 					continue;

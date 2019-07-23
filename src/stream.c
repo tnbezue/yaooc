@@ -170,7 +170,7 @@ size_t yaooc_istream_read(pointer p,void* buffer,size_t size,size_t count)
 	return fread(buffer,size,count,this->handle_);
 }
 
-char* yaooc_istream_gets(pointer p,char* buffer,size_t n)
+char* yaooc_istream_getstr(pointer p,char* buffer,size_t n)
 {
   yaooc_istream_pointer this=p;
 	return fgets(buffer,n,this->handle_);
@@ -189,7 +189,7 @@ yaooc_istream_class_table_t yaooc_istream_class_table =
   .scanf = (int (*) (pointer,const char*,...)) yaooc_istream_scanf,
   .vscanf = (int (*) (pointer,const char*,va_list)) yaooc_istream_vscanf,
   .read = (size_t (*) (pointer,void*,size_t,size_t)) yaooc_istream_read,
-  .gets = (char* (*) (pointer,char*,size_t)) yaooc_istream_gets,
+  .getstr = (char* (*) (pointer,char*,size_t)) yaooc_istream_getstr,
 };
 
 DEFINE_TYPE_INFO(yaooc_istream,Y,N,N,N,N,N,N,Y,yaooc_base_stream)
@@ -278,13 +278,13 @@ size_t yaooc_ostream_write(pointer p,const void* buffer,size_t size,size_t count
   return fwrite(buffer,size,count,this->handle_);
 }
 
-int yaooc_ostream_puts(pointer p,const char* str)
+int yaooc_ostream_putstr(pointer p,const char* str)
 {
 	yaooc_ostream_pointer this=p;
 	return fputs(str,this->handle_);
 }
 
-int yaooc_ostream_putc(pointer p,int c)
+int yaooc_ostream_putchr(pointer p,int c)
 {
 	yaooc_ostream_pointer this=p;
 	return fputc(c,this->handle_);
@@ -302,8 +302,8 @@ yaooc_ostream_class_table_t yaooc_ostream_class_table =
   .printf = (int (*) (pointer,const char*,...)) yaooc_ostream_printf,
   .vprintf = (int (*) (pointer,const char*,va_list)) yaooc_ostream_vprintf,
   .write = (size_t (*) (pointer,const void*,size_t,size_t)) yaooc_ostream_write,
-	.puts = (int (*) (pointer,const char*)) yaooc_ostream_puts,
-	.putc = (int (*) (pointer,int)) yaooc_ostream_putc,
+	.putstr = (int (*) (pointer,const char*)) yaooc_ostream_putstr,
+	.putchr = (int (*) (pointer,int)) yaooc_ostream_putchr,
 };
 
 	DEFINE_TYPE_INFO(yaooc_ostream,Y,N,N,N,N,N,N,Y,yaooc_base_stream)

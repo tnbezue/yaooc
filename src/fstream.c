@@ -80,7 +80,7 @@ yaooc_ifstream_class_table_t yaooc_ifstream_class_table =
   .scanf = (int (*) (pointer,const char*,...)) yaooc_istream_scanf,
   .vscanf = (int (*) (pointer,const char*,va_list)) yaooc_istream_vscanf,
   .read = (size_t (*) (pointer,void*,size_t,size_t)) yaooc_istream_read,
-  .gets = (char* (*) (pointer,char*,size_t)) yaooc_istream_gets,
+  .getstr = (char* (*) (pointer,char*,size_t)) yaooc_istream_getstr,
   .open = (void (*) (pointer,const char*,const char*)) yaooc_ifstream_open,
   .close = (void (*) (pointer)) yaooc_ifstream_close,
 };
@@ -149,8 +149,8 @@ yaooc_ofstream_class_table_t yaooc_ofstream_class_table =
   .printf = (int (*) (pointer,const char*,...)) yaooc_ostream_printf,
   .vprintf = (int (*) (pointer,const char*,va_list)) yaooc_ostream_vprintf,
   .write = (size_t (*) (pointer,const void*,size_t,size_t)) yaooc_ostream_write,
-	.puts = (int (*) (pointer,const char*)) yaooc_ostream_puts,
-	.putc = (int (*) (pointer,int)) yaooc_ostream_putc,
+	.putstr = (int (*) (pointer,const char*)) yaooc_ostream_putstr,
+	.putchr = (int (*) (pointer,int)) yaooc_ostream_putchr,
 	.open = (void (*) (pointer,const char*,const char*)) yaooc_ofstream_open,
   .close = (void (*) (pointer)) yaooc_ofstream_close,
 };

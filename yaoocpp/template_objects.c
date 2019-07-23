@@ -365,7 +365,7 @@ void yaoocpp_raw_struct_union_print_class_instance_definition(const_pointer p,os
 						break;
 					}
 			} else
-				M(ostrm,putc,*ptr);
+				M(ostrm,putchr,*ptr);
 		}
 	}
 	M(ostrm,printf,";\n");

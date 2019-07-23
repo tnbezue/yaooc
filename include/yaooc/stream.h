@@ -111,7 +111,7 @@ yaooc_class_table(yaooc_istream)
 	int (*scanf)(pointer,const char*,...);
   int (*vscanf)(pointer,const char*,va_list);
   size_t (*read)(pointer,void*,size_t,size_t);
-  char* (*gets)(pointer,char*,size_t);
+  char* (*getstr)(pointer,char*,size_t);
 };
 #define yaooc_istream_parent_class_table ((yaooc_base_stream_class_table_t*)(yaooc_istream_class_table.parent_class_table_))
 
@@ -139,7 +139,7 @@ int yaooc_istream_peek(pointer);
 int yaooc_istream_scanf(pointer,const char*,...);
 int yaooc_istream_vscanf(pointer,const char*,va_list);
 size_t yaooc_istream_read(pointer,void*,size_t,size_t);
-char* yaooc_istream_gets(pointer,char*,size_t);
+char* yaooc_istream_getstr(pointer,char*,size_t);
 
 /* Prototypes for yaooc_istream protected members */
 
@@ -153,8 +153,8 @@ yaooc_class_table(yaooc_ostream)
 	int (*printf)(pointer,const char*,...);
   int (*vprintf)(pointer,const char*,va_list);
   size_t (*write)(pointer,const void*,size_t,size_t);
-	int (*puts)(pointer,const char*);
-	int (*putc)(pointer,int);
+	int (*putstr)(pointer,const char*);
+	int (*putchr)(pointer,int);
 };
 #define yaooc_ostream_parent_class_table ((yaooc_base_stream_class_table_t*)(yaooc_ostream_class_table.parent_class_table_))
 
@@ -181,8 +181,8 @@ void yaooc_ostream_stream(pointer,...);
 int yaooc_ostream_printf(pointer,const char*,...);
 int yaooc_ostream_vprintf(pointer,const char*,va_list);
 size_t yaooc_ostream_write(pointer,const void*,size_t,size_t);
-int yaooc_ostream_puts(pointer,const char*);
-int yaooc_ostream_putc(pointer,int);
+int yaooc_ostream_putstr(pointer,const char*);
+int yaooc_ostream_putchr(pointer,int);
 
 /* Prototypes for yaooc_ostream protected members */
 
