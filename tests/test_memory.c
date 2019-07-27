@@ -20,6 +20,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <yaooc/memory.h>
+#include <yaooc/algorithm.h>
+#include <yaooc/string.h>
 #include "test_harness.h"
 
 yaooc_struct(demo) {
@@ -45,6 +47,22 @@ void demo_dtor(pointer p)
 	fflush(stderr);
 }
 
+void demo_assign(pointer d,const_pointer s)
+{
+	((demo_t*)d)->x=((const demo_t*)s)->x;
+	((demo_t*)d)->y=((const demo_t*)s)->y;
+}
+
+void demo_copy_ctor(pointer d,const_pointer s)
+{
+  demo_assign(d,s);
+}
+
+int demo_less_than_compare(const_pointer p1,const_pointer p2)
+{
+  return ((const demo_t*)p1)->x < ((const demo_t*)p2)->x;
+}
+
 void demo_ctor_int_int(pointer p,va_list args)
 {
   ((demo_t*)p)->x=va_arg(args,int);
@@ -56,7 +74,7 @@ void demo_say(demo_const_pointer this)
   printf("X = %d  Y = %d\n",this->x,this->y);
 }
 
-DEFINE_TYPE_INFO(demo,Y,Y,N,N,N,N,N,N,NULL)
+DEFINE_TYPE_INFO(demo,Y,Y,Y,Y,Y,N,N,N,NULL)
 
 DYNAMIC_POINTER_DEFINITION(demo,dynamic_demo)
 DYNAMIC_POINTER_IMPLEMENTATION(demo,dynamic_demo)
@@ -69,6 +87,32 @@ void test_dynamic_pointer()
   assign_static(dd,&d,dynamic_demo);
   demo_say(*dd);
   DELETE_LIST(dd,d);
+}
+
+VECTOR_DEFINITION(dynamic_demo,dynamic_demo_pointer_vector)
+VECTOR_IMPLEMENTATION(dynamic_demo,dynamic_demo_pointer_vector)
+
+void test_dynamic_pointer_vector()
+{
+  dynamic_demo_pointer_vector_t* dpv=new(dynamic_demo_pointer_vector);
+  demo_t* d=new_ctor(demo,demo_ctor_int_int,12,-8);
+  M(dpv,push_back,&d);
+  delete(d);
+  d=new_ctor(demo,demo_ctor_int_int,8,20);
+  M(dpv,push_back,&d);
+  delete(d);
+  d=new_ctor(demo,demo_ctor_int_int,21,0);
+  M(dpv,push_back,&d);
+  delete(d);
+  d=new_ctor(demo,demo_ctor_int_int,88,0);
+  demo_t** dp=yaooc_find(dynamic_demo,M(dpv,cbegin),M(dpv,cend),&d);
+  TEST("Should not be found",dp==M(dpv,cend));
+  d->x=8;
+  dp=yaooc_find(dynamic_demo,M(dpv,cbegin),M(dpv,cend),&d);
+  TEST("Should be found",dp!=M(dpv,cend));
+  TEST("X = X of found item",(*dp)->x == d->x);
+  delete(d);
+  delete(dpv);
 }
 
 void test_unique_pointer()
@@ -279,6 +323,7 @@ void test_polymorphism()
 test_function tests[]=
 {
   test_dynamic_pointer,
+  test_dynamic_pointer_vector,
  	test_unique_pointer,
   test_unique_pointer_tmpl,
   test_shared_pointer,

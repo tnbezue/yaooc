@@ -424,7 +424,7 @@ pointer __assign_static(pointer dst,const_pointer src,const type_info_t* ti)
 */
 less_than_compare get_lt_cmp(const type_info_t* ti)
 {
-  if(!is_min_type(ti))
+  if(is_min_type(ti))
     return NULL;
   if(is_pod_type(ti)) {
     return ((pod_type_info_t*)ti)->less_than_compare_;
