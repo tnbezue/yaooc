@@ -46,7 +46,7 @@ void dynamic_pointer_assign(pointer d,const_pointer s)
 
 bool dynamic_pointer_less_than_compare(const_pointer p1,const_pointer p2)
 {
-  return op_lt(*(pointer_t*)p1,*(pointer_t*)p2);
+  return op_lt(*(pointer_t**)p1,*(pointer_t**)p2);
 }
 
 
