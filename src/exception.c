@@ -59,7 +59,10 @@ void yaooc_exception_ctor_v(pointer p,va_list args)
 {
 	yaooc_exception_pointer this=p;
 	const char* fmt=va_arg(args,const char*);
-	int size_needed=vsnprintf(NULL,0,fmt,args);
+  va_list args2;
+  va_copy(args2,args);
+	int size_needed=vsnprintf(NULL,0,fmt,args2);
+  va_end(args2);
 	if(size_needed > 0) {
 		this->what_=MALLOC(++size_needed);
 		vsnprintf(this->what_,size_needed,fmt,args);
