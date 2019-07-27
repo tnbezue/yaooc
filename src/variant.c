@@ -52,8 +52,8 @@ void yaooc_variant_dtor(pointer p)
 			FREE(this->chr_ptr_);
   		break;
 
-  	case VAR_OBJECT:
-  		delete(this->obj_);
+  	case VAR_OBJECT_PTR:
+  		delete(this->obj_ptr_);
   		break;
   }
 	yaooc_variant_default_ctor(this);
@@ -73,6 +73,12 @@ void yaooc_variant_assign(pointer p,const_pointer s)
 }
 
 /* Constructors implementation for yaooc_variant */
+void yaooc_variant_ctor_type_value(pointer p,va_list args)
+{
+  int type = va_arg(args,int);
+	void *ptr = va_arg(args,void*);
+  yaooc_variant_set(p,type,ptr);
+}
 
 /* Private methods implementation for yaooc_variant */
 
@@ -125,8 +131,8 @@ void yaooc_variant_set(pointer p,yaooc_variant_type_t t,const void* value)
 			this->void_ptr_=(void*)value;
 			break;
 
-		case VAR_OBJECT:
-			this->obj_=new_copy(value);
+		case VAR_OBJECT_PTR:
+			this->obj_ptr_=new_copy(value);
 			break;
 	}
 	this->type_=t;
@@ -172,8 +178,8 @@ const void* yaooc_variant_value(const_pointer p)
   		ret = this->void_ptr_;
   		break;
 
-  	case VAR_OBJECT:
-  		ret = this->obj_;
+  	case VAR_OBJECT_PTR:
+  		ret = this->obj_ptr_;
   		break;
   }
 	return ret;

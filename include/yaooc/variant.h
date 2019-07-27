@@ -23,7 +23,15 @@
 #include <yaooc/stream.h>
 
 typedef enum { VAR_NONE, VAR_CHAR, VAR_UCHAR, VAR_SHORT, VAR_USHORT, VAR_INT, VAR_UINT, VAR_LONG, VAR_ULONG,
-			VAR_DOUBLE,VAR_CHAR_PTR,VAR_VOID_PTR,VAR_OBJECT} yaooc_variant_type_t;
+			VAR_DOUBLE,VAR_CHAR_PTR,VAR_VOID_PTR,VAR_OBJECT_PTR} yaooc_variant_type_t;
+//#define STATIC_VARIANT_CTOR(N,T,V) newp_ctor(&N,yaooc_variant,yaooc_variant_ctor_type_value,T,V)
+#define STATIC_VARIANT_CTOR(N) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_NONE})
+#define STATIC_VARIANT_CTOR_I(N,I) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_INT,.int_=I})
+#define STATIC_VARIANT_CTOR_D(N,D) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_DOUBLE,.dbl_=D})
+#define STATIC_VARIANT_CTOR_S(N,S) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_CHAR_PTR,.chr_ptr_=S})
+#define STATIC_VARIANT_CTOR_V(N,V) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_VOID_PTR,.void_ptr_=V})
+#define STATIC_VARIANT_CTOR_O(N,O) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_OBJECT_PTR,.obj_ptr_=O})
+#define STATIC_VARIANT_DTOR(V) deletep(&V,yaooc_variant)
 /*
   Class Definition for yaooc_variant
 */
@@ -39,18 +47,18 @@ yaooc_class_instance(yaooc_variant) {
   yaooc_object_class_instance_t;
   yaooc_variant_type_t type_;
   union {
-  char ch_;
-  unsigned char uch_;
-  short sh_;
-  unsigned short ush_;
-  int int_;
-  unsigned int uint_;
-  long long long_;
-  unsigned long long ulong_;
-  double dbl_;
-  char* chr_ptr_;
-	void* void_ptr_;
-  yaooc_object_t* obj_;
+    char ch_;
+    unsigned char uch_;
+    short sh_;
+    unsigned short ush_;
+    int int_;
+    unsigned int uint_;
+    long long long_;
+    unsigned long long ulong_;
+    double dbl_;
+    char* chr_ptr_;
+    void* void_ptr_;
+    yaooc_object_t* obj_ptr_;
   };
 };
 
@@ -63,6 +71,7 @@ void yaooc_variant_copy_ctor(pointer,const_pointer);
 void yaooc_variant_assign(pointer,const_pointer);
 
 /* Constructors prototypes for yaooc_variant */
+void yaooc_variant_ctor_type_value(pointer,va_list);
 
 /* Table prototypes for yaooc_variant */
 #define yaooc_variant_isa yaooc_object_isa

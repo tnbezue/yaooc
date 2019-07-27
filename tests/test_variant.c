@@ -120,8 +120,8 @@ void test_object()
 	TESTCASE("Variant ccs");
 	yaooc_variant_t* var=new(yaooc_variant);
 	yaooc_string_t* s=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"this is a test");
-	M(var,set,VAR_OBJECT,s);
-	TEST("Type is VAR_OBJECT",M(var,type)==VAR_OBJECT);
+	M(var,set,VAR_OBJECT_PTR,s);
+	TEST("Type is VAR_OBJECT_PTR",M(var,type)==VAR_OBJECT_PTR);
 	TEST("Value is \"this is a test\"",strcmp(M(s,c_str),M((yaooc_string_t*)M(var,value),c_str))==0);
 	delete(s);
 	delete(var);
