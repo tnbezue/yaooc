@@ -193,18 +193,17 @@ For writing POD and static objects to streams, use &quot;O_&quot; rather than &q
 </code></pre>
 <h3>Important Note</h3>
 <p>
-You may have noticed that in the my_string_set method, the my_string_dtor method was called directly.
+Upon reviewing the example for this lession, you may have noticed that in the my_string_set method, the my_string_dtor method was called directly.
 While calling the destructor in this case has no adverse affects, in other situations it may have unexpected results.
 For example, if a class has 5 levels of inheritance (that is, child, parent, grand parent, great grand parent, great great grand parent),
 then calling the destructor method directly only destroys the portion created by child.  It does not destory the parts created
 by ancestors. It may be desirable to use deletep followed by newp.  The my_string_set method could be written as:
 </p>
-
 <pre><code>
   void my_string_set(pointer p,const char* s)
   {
     my_string_pointer this=p;
-    deletep(this,my_string);  // Calls this destructor and ancestor destructors -- memory pointer to by this is not freed
+    deletep(this,my_string);  // Calls this destructor and ancestor destructors -- memory pointed to by this is not freed
     newp(this,my_string);     // Initializes object (however, it is ok to just call the default constructor directly)
     if(s)
       this->str = strdup(s);

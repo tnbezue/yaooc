@@ -47,7 +47,7 @@ how struct derived inherits from base.
     double d;
   };
   yaooc_struct(derived) {
-    base_t;
+    <font color="red">base_t;</font>
     const char* str;
   };
 </code></pre>
@@ -59,13 +59,13 @@ of yaooc_object.  The following shows how to have my_string class inherit from y
 <pre>
 <code>
   yaooc_class_table(my_string) {
-    yaooc_object_class_table_t;
+    <font color="red">yaooc_object_class_table_t;</font>
     const char* (*get)(const_pointer);
     void (*set)(pointer,const char*);
   };
 
   yaooc_class_instance(my_string) {
-    yaooc_object_class_instance_t;
+    <font color="red">yaooc_object_class_instance_t;</font>
     char* str;
   };
 
@@ -74,7 +74,7 @@ of yaooc_object.  The following shows how to have my_string class inherit from y
 </pre>
 
 <p>
-A struct should not have a class as a parent and a class should not have a struct as a parent.
+Although possible, generally, a struct should not have a class as a parent and a class should not have a struct as a parent.
 </p>
 <p>
 yaooc_object has no instance members.  It has three table entries -- two variables and one method. They are:
@@ -127,10 +127,10 @@ a non NULL default constructor is found or the root of the inheritance tree is r
 no action is taken.
 </p>
 <p>
-Note that, if needed, ancestor constructors or methods must be called by the default construtor.
-For example, it is common practice for the default constructor to call the parent default construtor before
-initializing variables defined at the current level of inheritance.
-YAOOC does not automatically perform this action.
+<font color="red">
+In C++, unless otherwise specified, the default constructor of the parent class is automatically called. YAOOC does not do this.
+If needed, any child class constructor must explicitly call the parent default constructor (or any other parent class constructor using call_constructor method).
+</font>
 </p>
 <h3>Destructor</h3>
 <p>
@@ -144,12 +144,12 @@ The new_copy method behaves as new does with the default constructor.  It traver
 it to copy the object.  If a non NULL copy constructor is not found, then the object is copied (using memcpy) to the target object.
 </p>
 <p>
-Like the default constructor, if any ancestor methods are needed, then these.  However, it is common practice
+As mentioned above, if any ancestor constructors/methods are needed, then they must be explicitly called.  It is common practice for the copy constructor
 to call the default constructor for the newly created object and then call the assign method.
 </p>
 <h3>Assignment</h3>
 <p>
-The assign method behaves just as the new_copy does.  It traverses the inheritance tree until a non NULL assignment method is found and uses
+The assign method behaves just as the copy constructor does.  It traverses the inheritance tree until a non NULL assignment method is found and uses
 it to assign one object to the other.  If a non NULL assignment method is not found, then the object is copied (using memcpy) to the target object.
 </p>
 <p>

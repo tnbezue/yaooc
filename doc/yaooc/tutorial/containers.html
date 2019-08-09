@@ -164,7 +164,7 @@ For example, if int_vec is an integer vector, the following is most likely not w
   M(int_vec,insert,M(int_vec,cend),20);  // Invalid insertion of 20 at end of vector
 </code></pre>
 <p>
-To insert a value into a container, assign the values to a instance of the correct type,
+To insert a value into a container, assign the values to a variable of the correct type,
 and pass the address of the variable as the value to be inserted.
 </p>
 <pre><code>
@@ -188,7 +188,7 @@ The at method will return 5*sizeof(int) bytes beyond beginning of array -- which
 However, the following could be used:
 </p>
 <pre><code>
-   typedef int * integer_array_iterator;
+   typedef int * integer_array_iterator;     // BTW, the YAOOC container declarations (vector, map, etc) defines interator and const_iterator types.
    integer_array_iterator i = M(array,begin);
    i += 5;
 </code></pre>

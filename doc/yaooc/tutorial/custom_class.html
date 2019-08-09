@@ -85,7 +85,7 @@ Before continuing with the my_string class, one important requirement for custom
 </code></pre>
 <p>
 In the above example, if beg and end are pointers to locations within buffer, then the pointers would be invalidated if the object is
-moved to a different memory location -- thus it is an immovable object.
+moved to a different memory location. Thus it is an immovable object and can not be used in YAOOC.
 </p>
 <p>
 If the class was defined as:
@@ -98,7 +98,8 @@ If the class was defined as:
   };
 </code></pre>
 <p>
-If beg and end are pointers to memory within memory pointed to by buffer, then moving the object will not invalidate the pointers -- thus it is a movable object.
+If beg and end are pointers to memory within memory pointed to by buffer, then moving the object will not invalidate the pointers.
+This it a movable object and can be used in YAOOC.
 </p>
 </div>
 </div>

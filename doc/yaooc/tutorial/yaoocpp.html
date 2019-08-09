@@ -46,10 +46,13 @@ increasingly tedious.  The YAOOC PreProcessor (YAOOCPP) alleviates this tedious 
 in previous lessons is done by YAOOCPP.
 </p>
 <p>
-Input to the YAOOC PreProcessor is a YAOOC class definition.
+Input to the YAOOC PreProcessor is a YAOOC class definition. The similarity between the YAOOC class definition and a C++ class definition is intentional.
 The syntax of the YAOOC class definition is shown below.
 </p>
 <pre><code>
+  #ifndef INCLUDE_GUARD
+  #define INCLUDE_GUARD
+
   #include &lt;parent.yaooc&gt;
   [header_block | source_block]
   [ class | struct | union ] name : parent
@@ -65,6 +68,8 @@ The syntax of the YAOOC class definition is shown below.
     private:
       &lt;Private methods and variables&gt;
   };
+
+  #endif
 </code></pre>
 <p>
 Multiple class definitions can appear in a file.  Table, instance, protected, and private section can
@@ -90,11 +95,35 @@ would be converted to the following in the C header file.
 <h3>Header/Source Block</h3>
 <p>
 The header_block contains code that will be copied to the header template file.
-The header starts with &quot;/*H&quot; and ends with &quot;H*/&quot;.
+The header starts with &quot;#if 0 // HEADER&quot; (or any preprocessor &quot;#if&quot;
+that expression results in false) and ends with &quot;#endif //HEADER&quot;.
+For example.
 </p>
+<pre><code>
+  #if 0 // HEADER
+  This will be considered a valid header definition
+  #endif // HEADER
+
+  #ifdef MYSYMBOL // HEADER
+  This will be considered a valid header definition -- although may cause other problems if MYSYMBOL is defined
+  #endif // HEADER
+  
+  #if 0 // HEADER
+  This will not be considered valid since &quot;// HEADER&quot; not included on &quot;#endif&quot;
+  #ndif
+
+  #ifdef __SOME__HEADER
+  This will not be considered valid since &quot;//&quot; do not proceed HEADER in &quot;#ifdef&quot;
+  This is most likely what was desired
+  #endif // HEADER
+
+  #if 0  // HEADER so that this is considered a header in YAOOC
+  This will not be considered valid since non whitespace characters follow &quot;// HEADER&quot;
+  #endif // HEADER
+</code></pre>
 <p>
 The source_block contains code that will be copied to the source template file.
-The source block starts with &quot;/*S&quot; and ends with &quot;S*/&quot;.
+The source block starts with &quot;#if 0 //SOURCE&quot; and ends with &quot;#endif //SOURCE&quot;.
 </p>
 <p>
 The header and source blocks are optional.
@@ -102,7 +131,8 @@ The header and source blocks are optional.
 <h3>Class Definition and inheritance</h3>
 <p>
 name is the type name of the class, struct, or union (the &quot;_t&quot; should not be included).  parent is the parent type name.
-Struts do not require a parent.  A class or union must have a parent.  If a parent is not specified for a class or union, yaooc_object is assumed.
+Structs do not require a parent.  A class or union must have a parent.
+If a parent is not specified for a class or union, yaooc_object is assumed.
 </p>
 <h3>Type Info</h3>
 <p>
@@ -144,8 +174,8 @@ The constructor specifies a parenthesized list of arguments for the constructor.
 A pointer to the instance to initialize is automatically added as first argument thus should not be specified in argument list.
 </li>
 <li>
-Implementation_method is the name of an existing constructor.  If specified, a template for the method is not generated.
-A &quot;#define&quot; statement is generated so that implementation_method is used as constructor.
+Implementation_method is the name of an existing constructor (maybe a parent class constructor).  If specified, a template for the method is not generated.
+A &quot;#define&quot; statement is created so that can be used as if the constructor was defined.
 </li>
 </ul>
 </p>
@@ -189,6 +219,9 @@ Specifying const will cause const_pointer to be used as first argument rather th
 Implementation_method is the name of an existing method.  If specified, a template for the method is not generated and
 the implementation method will be specified in the class table.
 </li>
+<li>
+  Structs do not have a table section.
+</li>
 </ul>
 
 <h3>Instance</h3>
@@ -197,16 +230,10 @@ Items in instance section follow the same rules as the table section -- with a f
 </p>
 <ul>
 <li>
-Only new items can be added to instance -- methods can not be overridden.
+Only new items can be added to instance -- variables and methods can not be overridden.
 </li>
 <li>
-Values and implementation methods are ignored for instance members. These must be specified during runtime -- normally in the constructor.
-</li>
-<li>
-Can have an entry that indicates type only -- normally a struct type (i.e., custom_t).
-</li>
-<li>
-Unions and structs (standard C declarations, not YAOOC unions and structs) can be declared.
+Default values and implementation methods can not be specified for instance members. These are normally initilized in the constructor.
 </li>
 </ul>
 <h3>Protected</h3>
@@ -220,8 +247,37 @@ but are meant to be helpers to this class and derived classes. The syntax is the
 <h3>Private</h3>
 <p>
 Private variables and methods are not part of the class.  They are similar to protected members. However, they are meant to be helpers to this class only.
-Private members will be defined as static in the C source file.
+Private members will not be defined in the header -- they will be defined as static in the C source file.
 </p>
+<h3>Limitations</h3>
+<p>
+Nested structs, classes, or unions are not supported.
+</p>
+<p>
+Complex data types (for arguments, variables, or return types of methods) may fail to parse. If this is the case, use typedef in header section to declare a new type composed of the complex type.
+</p>
+<p>
+Standard C structs and unions can not be declared within a YAOOC struct, class, or union.  Declare the standard C struct or union in the header section then use only the type in the YAOOC declaration.  For example:
+</p>
+<pre><code>
+  /*H
+  typedef union {
+    int x;
+    long l;
+    double d;
+    char* s;
+  } variant_t;
+  H*/
+  ...
+  class yaooc_variant : yaooc_object {
+    ...
+    instance:
+      int type;
+      variant_t;
+    ...
+  };
+</code></pre>
+
 <h3>Executing YAOOCPP</h3>
 The syntax for executing yaoocpp is similar to executing the C preprocessor.  In fact, yaoocpp uses the C preprocessor so many preprocessor directives
 (#ifdef, etc) can be used in the class definition file.
@@ -335,7 +391,7 @@ Otherwise, the instance is equated to the source value.
 </p>
 <h3>Improved my_string class</h3>
 <p>
-Since YAOOCPP does the tedious work, a more robust string class can be created.  The class definition for the my_string class is shown below.
+Since YAOOCPP does the tedious work, a more robust string class can be created.  The class definition for the new and improved my_string class is shown below.
 </p>
 <pre><code>
 #ifndef __MY_STRING_YAOOC_INCLUDED__
@@ -346,15 +402,15 @@ Since YAOOCPP does the tedious work, a more robust string class can be created. 
 // The following will be converted to &quot;#include &lt;yaooc/object.h&gt;&quot; in header file
 #include &lt;yaooc/object.yaooc&gt;
 /* The following will be copied as is to header file */
-/*H
+#if 0 // HEADER
 #include &lt;string.h&gt;
 #include &lt;yaooc/stream.h&gt;
-H*/
+#endif // HEADER
 /* The following will be copied as is to source file */
-/*S
+#if 0 // SOURCE
 #include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
-S*/
+#endif // SOURCE
 
 class my_string : yaooc_object   /* my_string inherits from yaooc_object */
 {

@@ -162,6 +162,45 @@ YAOOC provides the M macro (M for method) to make calling methods easier. The sy
   M(msp,set,"This is a test");
   printf("%s\n",M(msp,get));
 </code></pre>
+<h3>Unions</h3>
+<p>
+YAOOC unions are declared in the same fashion as classes using yaooc_union_table, yaooc_union_instance,
+and yaooc_union macros.  Unions should also have yaooc_object as an ancestor.
+Items specified in the yaooc_union_instance are declared in a union.  For example:
+</p>
+<pre><code>
+  yaooc_union_table(variant) {
+    yaooc_object_class_table_t;
+  };
+  yaooc_union_instance(variant) {
+    int i;
+    long l;
+    char* s;
+  };
+  yaooc_union(variant);
+</code></pre>
+<p>
+Results in the following code.
+</p>
+<pre><code>
+  typedef struct variant_s variant_t;
+  typedef variant_t* variant_pointer;
+  typedef const variant_t* variant_const_pointer;
+  typedef struct variant_union_table_s variant_class_table_t;
+  typedef union variant_union_instance_s variant_union_instance_t;
+  struct variant_class_table_s {
+    yaooc_object_class_table_t;
+  };
+  union variant_union_instance_s {
+    int i;
+    long l;
+    char* s;
+  };
+  struct variant_s {
+    const variant_class_table_t* class_table_;
+    variant_union_instance_t;
+  };
+</code></pre>
 <h3>Minor Note</h3>
 <p>
 When you review the example for this lesson, you may notice that the my_string_assign method
