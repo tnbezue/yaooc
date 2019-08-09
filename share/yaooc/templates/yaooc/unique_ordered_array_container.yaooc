@@ -3,10 +3,10 @@
 
 #include <yaooc/ordered_array_container.yaooc>
 
-/*S
+#if 0 //SOURCE
 #include <stdio.h>
 #include <stdlib.h>
-S*/
+#endif //SOURCE
 
 class yaooc_unique_ordered_array_container : yaooc_ordered_array_container
 {

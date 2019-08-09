@@ -3,7 +3,7 @@
 
 #include <yaooc/array_container.yaooc>
 
-/*H
+#if 0 //HEADER
 typedef unsigned int yaooc_index_array_container_index_t;
 
 typedef struct {
@@ -13,12 +13,12 @@ typedef struct {
   yaooc_index_array_container_index_t upper_index_;
 	bool found_;		// indicates whether found
 } yaooc_index_array_container_find_result_t;
-H*/
+#endif //HEADER
 
-/*S
+#if 0 //SOURCE
 #include <string.h>
 #include <stdio.h>
-S*/
+#endif //SOURCE
 
 class yaooc_index_array_container : yaooc_array_container
 {

@@ -3,34 +3,34 @@
 
 #include <yaooc/base_parser.yaooc>
 
-/*H
+#if 0 //HEADER
 #include <yaooc/json.h>
-H*/
+#endif //HEADER
 
-/*S
+#if 0 //SOURCE
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <ctype.h>
-S*/
+#endif //SOURCE
 
 class yaooc_json_parser : yaooc_base_parser
 {
 
   table:
-    yaooc_json_value_pointer parse_json_null();
-    yaooc_json_value_pointer parse_json_bool();
-    yaooc_json_value_pointer parse_json_integer();
-    yaooc_json_value_pointer parse_json_real();
-    yaooc_json_value_pointer parse_json_string();
-    yaooc_json_value_pointer parse_json_array();
-    yaooc_json_value_pointer parse_json_pair();
-    yaooc_json_value_pointer parse_json_object();
-    yaooc_json_value_pointer parse_json_value();
-    yaooc_json_value_pointer parse_string(const char* str);
-    yaooc_json_value_pointer parse_file(const char* file);
+    bool whitespace(yaooc_terminal_t* r);
+    bool parse_json_value(yaooc_json_value_t** jvalue);
+    bool parse_json_null(yaooc_json_value_t** jnull);
+    bool parse_json_bool(yaooc_json_value_t** jbool);
+    bool parse_json_integer(yaooc_json_value_t** jinteger);
+    bool parse_json_real(yaooc_json_value_t** jreal);
+    bool parse_json_string(yaooc_json_value_t** jstring);
+    bool parse_json_array(yaooc_json_value_t** jarray);
+    bool parse_json_object(yaooc_json_value_t** jobject);
+    bool parse_string(const char* str,yaooc_json_value_t**);
+    bool parse_file(const char* file,yaooc_json_value_t**);
 };
 
 #endif

@@ -4,15 +4,15 @@
 #include <yaooc/object.yaooc>
 #include <yaooc/exception.yaooc>
 
-/*H
+#if 0 //HEADER
 #include <stdio.h>
 typedef pointer ostream_pointer;
 typedef pointer istream_pointer;
-H*/
+#endif //HEADER
 
-/*S
+#if 0 //SOURCE
 #include <string.h>
-S*/
+#endif //SOURCE
 
 class yaooc_stream_exception : yaooc_exception
 {

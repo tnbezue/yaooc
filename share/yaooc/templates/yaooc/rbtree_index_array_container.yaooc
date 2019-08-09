@@ -3,7 +3,7 @@
 
 #include <yaooc/array_container.yaooc>
 
-/*H
+#if 0 //HEADER
 enum rbcolor {
     red,
     black
@@ -42,16 +42,16 @@ struct yaooc_rbnode_s {
 typedef int (*action_func)(yaooc_rbnode_t*, unsigned int,unsigned int*);
 int yaooc_rbnode_increment_index(yaooc_rbnode_t*, unsigned int,unsigned int*);
 int yaooc_rbnode_decrement_index(yaooc_rbnode_t*, unsigned int,unsigned int*);
-H*/
+#endif //HEADER
 
-/*S
+#if 0 //SOURCE
 #include <sys/types.h>
 #include <sys/param.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
-S*/
+#endif //SOURCE
 
 class yaooc_rbtree_index_array_container : yaooc_array_container
 {

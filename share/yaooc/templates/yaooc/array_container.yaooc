@@ -2,12 +2,12 @@
 #define __ARRAY_CONTAINER_YAOOC_INCLUDED__
 
 #include <yaooc/object.yaooc>
-/*H
+#if 0 //HEADER
 #include <yaooc/stream.h>
 
-/*
-	Helper macros for arrays
-*/
+
+//	Helper macros for arrays
+
 #define YAOOC_ARRAY_CONTAINER_INITIAL_CAPACITY 16
 
 #define FOR_EACH(ITER,ARRAY) for(ITER=M(ARRAY,begin);ITER!=M(ARRAY,end);ITER++)
@@ -21,12 +21,12 @@
 #define AT(p,i) (BEGIN(p)+((i)*TYPE_SIZE(p)))
 #define END(p)  AT(p,SIZE(p))
 #define INDEX(p,pos) (((yaooc_private_const_iterator)(pos)-BEGIN(p))/TYPE_SIZE(p))
-H*/
-/*S
+#endif //HEADER
+#if 0 //SOURCE
 #include <yaooc/algorithm.h>
 #include <yaooc/stream.h>
 #include <string.h>
-S*/
+#endif //SOURCE
 
 class yaooc_array_container : yaooc_object
 {

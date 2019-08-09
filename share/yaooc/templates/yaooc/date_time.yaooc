@@ -3,15 +3,15 @@
 
 #include <yaooc/object.yaooc>
 
-/*H
+#if 0 //HEADER
 #include <yaooc/string.h>
 #include <yaooc/stream.h>
-H*/
+#endif //HEADER
 
-/*S
+#if 0 //SOURCE
 #include <time.h>
 #include <yaooc/sstream.h>
-S*/
+#endif //SOURCE
 
 class yaooc_date_time : yaooc_object {
 		yaooc_date_time();

@@ -3,7 +3,7 @@
 
 #include <yaooc/exception.yaooc>
 
-/*H
+#if 0 //HEADER
 
 #include <yaooc/stream.h>
 #include <yaooc/vector.h>
@@ -23,9 +23,9 @@ typedef union {
   yaooc_json_string_value_map_t* object_;
 } json_data_t;
 
-H*/
+#endif //HEADER
 
-/*S
+#if 0 //SOURCE
 #include <string.h>
 #include <stdio.h>
 #include <inttypes.h>
@@ -34,7 +34,7 @@ static const char* yaooc_json_type_strings[] =
     "JSON_UNDEFINED" , "JSON_NULL", "JSON_BOOL" , "JSON_INTEGER" , "JSON_REAL" ,
     "JSON_STRING", "JSON_ARRAY", "JSON_OBJECT"
   };
-S*/
+#endif //SOURCE
 
 class yaooc_json_exception : yaooc_exception
 {

@@ -14,12 +14,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
-#include "template_objects.h"
 #include <string.h>
-#include <ctype.h>
+#include "template_objects.h"
 #include <yaooc/regex.h>
 #include <yaooc/pointer_bag.h>
+
+
+VECTOR_IMPLEMENTATION(yaoocpp_argument,yaoocpp_argument_vector);
 
 /* Private variables implementation for yaoocpp_argument */
 
@@ -58,9 +59,6 @@ void yaoocpp_argument_assign(pointer p,const_pointer s)
   assign_static(&this->array_size_,&src->array_size_,yaooc_string);
   this->is_array_=src->is_array_;
 }
-
-VECTOR_IMPLEMENTATION(yaoocpp_argument,yaoocpp_argument_vector);
-
 
 /* Constructors implementation for yaoocpp_argument */
 
@@ -305,6 +303,7 @@ yaoocpp_variable_class_table_t yaoocpp_variable_class_table =
 /* Type info structure for yaoocpp_variable */
 DEFINE_TYPE_INFO(yaoocpp_variable,Y,Y,Y,Y,N,N,N,Y,yaoocpp_element);
 
+#if 0
 /* Private variables implementation for yaoocpp_raw_struct_union */
 
 /* Private methods prototypes for yaoocpp_raw_struct_union */
@@ -402,7 +401,7 @@ yaoocpp_raw_struct_union_class_table_t yaoocpp_raw_struct_union_class_table =
 
 /* Type info structure for yaoocpp_raw_struct_union */
 DEFINE_TYPE_INFO(yaoocpp_raw_struct_union,Y,Y,Y,Y,N,N,N,Y,yaoocpp_element);
-
+#endif
 /* Private variables implementation for yaoocpp_constructor */
 
 /* Private methods prototypes for yaoocpp_constructor */
@@ -709,8 +708,14 @@ static void yaoocpp_container_print_define_type_info(const_pointer p,ostream_poi
   yaoocpp_container_const_pointer this=p;
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"/* Type info structure for %s */\n",M(&this->name_,c_str));
-  if(this->parent_!=NULL || this->has_default_ctor_ || this->has_dtor_ || this->has_copy_ctor_
-        ||  this->has_assign_ || has_class_table) {
+  if(M(this,is_min_pod)) {
+    M(ostrm,printf,"DEFINE_MIN_POD_TYPE_INFO(%s)\n",M(&this->name_,c_str));
+  } else if (M(this,is_pod)) {
+    M(ostrm,printf,"DEFINE_POD_TYPE_INFO(%s",M(&this->name_,c_str));
+    M(ostrm,printf,",%c",this->has_lt_cmp_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",this->has_to_stream_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c)\n\n",this->has_from_stream_ ? 'Y' : 'N');
+  } else {
     M(ostrm,printf,"DEFINE_TYPE_INFO(%s",M(&this->name_,c_str));
     M(ostrm,printf,",%c",this->has_default_ctor_ ? 'Y' : 'N');
     M(ostrm,printf,",%c",this->has_dtor_ ? 'Y' : 'N');
@@ -721,13 +726,6 @@ static void yaoocpp_container_print_define_type_info(const_pointer p,ostream_poi
     M(ostrm,printf,",%c",this->has_from_stream_ ? 'Y' : 'N');
     M(ostrm,printf,",%c",has_class_table ? 'Y' : 'N' );
     M(ostrm,printf,",%s);\n\n",this->parent_ ? M(&this->parent_->name_,c_str) : "NULL" );
-  } else if (this->has_lt_cmp_ || this->has_to_stream_ || this->has_from_stream_) {
-    M(ostrm,printf,"DEFINE_POD_TYPE_INFO(%s",M(&this->name_,c_str));
-    M(ostrm,printf,",%c",this->has_lt_cmp_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c",this->has_to_stream_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c)\n\n",this->has_from_stream_ ? 'Y' : 'N');
-  } else {
-    M(ostrm,printf,"DEFINE_MIN_TYPE_INFO(%s)\n\n",M(&this->name_,c_str));
   }
 }
 
@@ -958,6 +956,8 @@ static void yaoocpp_container_print_type_info_prototype(const_pointer p,ostream_
 
 
 /* Protected implementation for yaoocpp_container */
+
+/* Table implementation for yaoocpp_container */
 void yaoocpp_container_inherit(pointer p)
 {
   yaoocpp_container_pointer this=p;
@@ -969,8 +969,10 @@ void yaoocpp_container_inherit(pointer p)
   }
 }
 
-
-/* Table implementation for yaoocpp_container */
+bool yaoocpp_container_is_min_pod(const_pointer p)
+{
+  return false;
+}
 
 /* Class table definition for yaoocpp_container */
 yaoocpp_container_class_table_t yaoocpp_container_class_table =
@@ -978,6 +980,9 @@ yaoocpp_container_class_table_t yaoocpp_container_class_table =
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
   .type_name_ = (const char*) "yaoocpp_container_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_container_swap,
+  .inherit = (void(*)(pointer)) yaoocpp_container_inherit,
+  .is_min_pod = (bool(*)(const_pointer)) yaoocpp_container_is_min_pod,
+  .is_pod = (bool(*)(const_pointer)) yaoocpp_container_is_pod,
   .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_container_print_to_header,
   .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_container_print_to_source,
 };
@@ -1000,12 +1005,33 @@ VECTOR_IMPLEMENTATION(yaoocpp_container_pointer,yaoocpp_container_pointer_vector
 /* Protected implementation for yaoocpp_struct */
 
 /* Table implementation for yaoocpp_struct */
+
+bool yaoocpp_struct_is_min_pod(const_pointer p)
+{
+  yaoocpp_struct_const_pointer this=p;
+  bool ret = this->parent_ ? yaoocpp_struct_is_min_pod(this->parent_) : true;
+  return ret && !this->has_default_ctor_ && !this->has_dtor_ && !this->has_copy_ctor_ && !this->has_assign_ && !this->has_lt_cmp_ && !this->has_to_stream_ && !this->has_from_stream_;
+}
+
+bool yaoocpp_struct_is_pod(const_pointer p)
+{
+  yaoocpp_struct_const_pointer this=p;
+  bool ret = this->parent_ ? yaoocpp_struct_is_pod(this->parent_) : true;
+  return ret && !this->has_default_ctor_ && !this->has_dtor_ && !this->has_copy_ctor_ && !this->has_assign_;
+}
+
 void yaoocpp_struct_print_to_header(const_pointer p,ostream_pointer o)
 {
   yaoocpp_struct_const_pointer this=p;
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"/*\n  Struct Definition for %s\n*/\n",M(&this->name_,c_str));
-  M(ostrm,printf,"yaooc_struct(%s) {\n",M(&this->name_,c_str));
+  if(M(this,is_min_pod)) {
+    M(ostrm,printf,"yaooc_min_struct(%s) {\n",M(&this->name_,c_str));
+  } else if(M(this,is_pod)) {
+    M(ostrm,printf,"yaooc_pod_struct(%s) {\n",M(&this->name_,c_str));
+  } else {
+    M(ostrm,printf,"yaooc_struct(%s) {\n",M(&this->name_,c_str));
+  }
   if(this->parent_)
     M(ostrm,printf,"  %s_t;\n",M(&this->parent_->name_,c_str));
   yaoocpp_element_pointer_vector_const_iterator iter;
@@ -1041,6 +1067,9 @@ yaoocpp_struct_class_table_t yaoocpp_struct_class_table =
   .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
   .type_name_ = (const char*) "yaoocpp_struct_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_struct_swap,
+  .inherit = (void(*)(pointer)) yaoocpp_struct_inherit,
+  .is_min_pod = (bool(*)(const_pointer)) yaoocpp_struct_is_min_pod,
+  .is_pod = (bool(*)(const_pointer)) yaoocpp_struct_is_pod,
   .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_struct_print_to_header,
   .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_struct_print_to_source,
 };
@@ -1083,6 +1112,8 @@ void yaoocpp_container_with_class_table_assign(pointer p,const_pointer s)
 
 
 /* Protected implementation for yaoocpp_container_with_class_table */
+
+/* Table implementation for yaoocpp_container_with_class_table */
 void yaoocpp_container_with_class_table_inherit(pointer p)
 {
   yaoocpp_container_with_class_table_pointer this=p;
@@ -1115,8 +1146,6 @@ void yaoocpp_container_with_class_table_inherit(pointer p)
   }
 }
 
-
-/* Table implementation for yaoocpp_container_with_class_table */
 void yaoocpp_container_with_class_table_print_to_header(const_pointer p,ostream_pointer o)
 {
 //  yaoocpp_container_with_class_table_const_pointer this=p;
@@ -1134,6 +1163,9 @@ yaoocpp_container_with_class_table_class_table_t yaoocpp_container_with_class_ta
   .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
   .type_name_ = (const char*) "yaoocpp_container_with_class_table_t",
   .swap = (void(*)(pointer, pointer)) yaoocpp_container_with_class_table_swap,
+  .inherit = (void(*)(pointer)) yaoocpp_container_with_class_table_inherit,
+  .is_min_pod = (bool(*)(const_pointer)) yaoocpp_container_with_class_table_is_min_pod,
+  .is_pod = (bool(*)(const_pointer)) yaoocpp_container_with_class_table_is_pod,
   .print_to_header = (void(*)(const_pointer, ostream_pointer)) yaoocpp_container_with_class_table_print_to_header,
   .print_to_source = (void(*)(const_pointer, ostream_pointer)) yaoocpp_container_with_class_table_print_to_source,
 };
@@ -1210,6 +1242,9 @@ yaoocpp_union_class_table_t yaoocpp_union_class_table =
   .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
   .type_name_ = (const char*) "yaoocpp_union_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_union_swap,
+  .inherit = (void(*)(pointer)) yaoocpp_union_inherit,
+  .is_min_pod = (bool(*)(const_pointer)) yaoocpp_union_is_min_pod,
+  .is_pod = (bool(*)(const_pointer)) yaoocpp_union_is_pod,
   .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_union_print_to_header,
   .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_union_print_to_source,
 };
@@ -1298,10 +1333,12 @@ yaoocpp_class_class_table_t yaoocpp_class_class_table =
   .parent_class_table_ = (const class_table_t*) &yaoocpp_container_class_table,
   .type_name_ = (const char*) "yaoocpp_class_t",
   .swap = (void(*)(pointer,pointer)) yaoocpp_class_swap,
+  .inherit = (void(*)(pointer)) yaoocpp_class_inherit,
+  .is_min_pod = (bool(*)(const_pointer)) yaoocpp_class_is_min_pod,
+  .is_pod = (bool(*)(const_pointer)) yaoocpp_class_is_pod,
   .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_class_print_to_header,
   .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_class_print_to_source,
 };
 
 /* Type info structure for yaoocpp_class */
 DEFINE_TYPE_INFO(yaoocpp_class,N,N,N,N,N,N,N,Y,yaoocpp_container_with_class_table);
-

@@ -3,17 +3,17 @@
 
 #include <yaooc/array_container.yaooc>
 
-/*H
+#if 0 //HEADER
 typedef struct {
 	yaooc_private_iterator position_;	// position at which it was found.  If found_ is false, indicates position to insert item
 	bool found_;			// indicates if item found
 } yaooc_ordered_array_container_find_result_t;
-H*/
+#endif //HEADER
 
-/*S
+#if 0 //SOURCE
 #include <string.h>
 #include <stdio.h>
-S*/
+#endif //SOURCE
 
 class yaooc_ordered_array_container : yaooc_array_container
 {

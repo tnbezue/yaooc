@@ -21,7 +21,7 @@
 #include <yaooc/object.yaooc>
 #include <yaooc/exception.yaooc>
 #include <yaooc/string.yaooc>
-/*H
+#if 0 //HEADER
 #ifdef __YAOOC_USE_TRE
 #include <tre/regex.h>
 #else
@@ -33,7 +33,7 @@ typedef struct {
 } yaooc_regex_regexp_match_info_t;
 yaooc_regex_regexp_match_info_t yaooc_regex_is_re_string(const char*);
 
-H*/
+#endif //HEADER
 
 class yaooc_regex_exception : yaooc_exception {
 		yaooc_regex_exception();

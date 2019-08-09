@@ -3,6 +3,23 @@
 
 #include <object.yaooc>
 
+%header
+#include <yaooc/string.h>
+#include <yaooc/vector.h>
+#include <yaooc/stream.h>
+#include <yaooc/memory.h>
+
+yaooc_struct_forward(yaoocpp_argument);
+VECTOR_IMPLEMENTATION(yaoocpp_argument,yaoocpp_argument_vector);
+%%
+
+%source
+#include <yaooc/regex.h>
+#include <yaooc/pointer_bag.h>
+
+VECTOR_IMPLEMENTATION(yaoocpp_argument,yaoocpp_argument_vector);
+%%
+
 struct yaoocpp_argument {
     yaoocpp_argument();
     ~yaoocpp_argument();
@@ -126,6 +143,9 @@ class yaoocpp_container : yaooc_object
 	operator=();
 	operator<();
 	table:
+    void inherit();
+    bool is_min_pod() const;
+    bool is_pod() const = yaoocpp_container_is_min_pod;
 		void print_to_header(ostream_pointer o) const = NULL;
 		void print_to_source(ostream_pointer o) const = NULL;
 	instance:
@@ -165,6 +185,8 @@ class yaoocpp_container : yaooc_object
 class yaoocpp_struct : yaoocpp_container
 {
 	table:
+    bool is_min_pod() const;
+    bool is_pod() const;
 		void print_to_header(ostream_pointer o) const;
 		void print_to_source(ostream_pointer o) const;
   protected:
@@ -178,6 +200,7 @@ class yaoocpp_container_with_class_table : yaoocpp_container
 		yaoocpp_container_with_class_table(yaoocpp_container_with_class_table);
 		operator=();
 	table:
+    void inherit();
 		void print_to_header(ostream_pointer o) const;
 		void print_to_source(ostream_pointer o) const;
 	instance:

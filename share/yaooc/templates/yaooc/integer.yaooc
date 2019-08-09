@@ -3,12 +3,12 @@
 
 #include <yaooc/object.yaooc>
 
-/*H
+#if 0 //HEADER
 #include <yaooc/stream.h>
-H*/
-/*S
+#endif //HEADER
+#if 0 //SOURCE
 #include <stdio.h>
-S*/
+#endif //SOURCE
 
 class yaooc_integer : yaooc_object
 {

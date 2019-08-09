@@ -6,6 +6,9 @@
 #include <yaooc/stream.h>
 #include <yaooc/memory.h>
 
+yaooc_struct_forward(yaoocpp_argument);
+VECTOR_DEFINITION(yaoocpp_argument,yaoocpp_argument_vector);
+
 /*
   Struct Definition for yaoocpp_argument
 */
@@ -28,8 +31,6 @@ void yaoocpp_argument_assign(pointer,const_pointer);
 bool yaoocpp_argument_less_than_compare(const_pointer,const_pointer);
 
 /* Constructor prototypes for yaoocpp_argument */
-
-VECTOR_DEFINITION(yaoocpp_argument,yaoocpp_argument_vector);
 
 /*
   Class Definition for yaoocpp_element
@@ -139,6 +140,7 @@ void yaoocpp_variable_print_class_table_implementation(const_pointer,ostream_poi
 
 /* Protected prototypes for yaoocpp_variable */
 
+#if 0
 /*
   Class Definition for yaoocpp_raw_struct_union
 */
@@ -172,7 +174,7 @@ void yaoocpp_raw_struct_union_print_implementation(const_pointer, ostream_pointe
 void yaoocpp_raw_struct_union_print_class_table_implementation(const_pointer, ostream_pointer, const char*);
 
 /* Protected prototypes for yaoocpp_raw_struct_union */
-
+#endif
 /*
   Class Definition for yaoocpp_constructor
 */
@@ -246,6 +248,9 @@ void yaoocpp_method_print_class_table_implementation(const_pointer,ostream_point
 */
 yaooc_class_table(yaoocpp_container) {
   yaooc_object_class_table_t;
+  void (*inherit) (pointer);
+  bool (*is_min_pod) (const_pointer);
+  bool (*is_pod) (const_pointer);
   void (*print_to_header)(const_pointer,ostream_pointer);
   void (*print_to_source)(const_pointer,ostream_pointer);
 };
@@ -282,11 +287,13 @@ bool yaoocpp_container_less_than_compare(const_pointer,const_pointer);
 /* Table prototypes for yaoocpp_container */
 const char* yaoocpp_container_isa(const_pointer);
 #define yaoocpp_container_swap yaooc_object_swap
+void yaoocpp_container_inherit(pointer);
+bool yaoocpp_container_is_min_pod(const_pointer);
+#define yaoocpp_container_is_pod yaoocpp_container_is_min_pod
 #define yaoocpp_container_print_to_header NULL
 #define yaoocpp_container_print_to_source NULL
 
 /* Protected prototypes for yaoocpp_container */
-extern void yaoocpp_container_inherit(pointer);
 
 DYNAMIC_POINTER_DEFINITION(yaoocpp_container,yaoocpp_container_pointer);
 VECTOR_DEFINITION(yaoocpp_container_pointer,yaoocpp_container_pointer_vector);
@@ -311,11 +318,13 @@ yaooc_class(yaoocpp_struct);
 /* Table prototypes for yaoocpp_struct */
 const char* yaoocpp_struct_isa(const_pointer);
 #define yaoocpp_struct_swap yaoocpp_container_swap
+#define yaoocpp_struct_inherit yaoocpp_container_inherit
+bool yaoocpp_struct_is_min_pod(const_pointer);
+bool yaoocpp_struct_is_pod(const_pointer);
 void yaoocpp_struct_print_to_header(const_pointer,ostream_pointer);
 void yaoocpp_struct_print_to_source(const_pointer,ostream_pointer);
 
 /* Protected prototypes for yaoocpp_struct */
-#define yaoocpp_struct_inherit yaoocpp_container_inherit
 
 /*
   Class Definition for yaoocpp_container_with_class_table
@@ -342,11 +351,13 @@ void yaoocpp_container_with_class_table_assign(pointer,const_pointer);
 /* Table prototypes for yaoocpp_container_with_class_table */
 const char* yaoocpp_container_with_class_table_isa(const_pointer);
 #define yaoocpp_container_with_class_table_swap yaoocpp_container_swap
+void yaoocpp_container_with_class_table_inherit(pointer);
+#define yaoocpp_container_with_class_table_is_min_pod yaoocpp_container_is_min_pod
+#define yaoocpp_container_with_class_table_is_pod yaoocpp_container_is_pod
 void yaoocpp_container_with_class_table_print_to_header(const_pointer, ostream_pointer);
 void yaoocpp_container_with_class_table_print_to_source(const_pointer, ostream_pointer);
 
 /* Protected prototypes for yaoocpp_container_with_class_table */
-extern void yaoocpp_container_with_class_table_inherit(pointer);
  #if 0
 /*
   Class Definition for yaoocpp_union
@@ -430,11 +441,13 @@ yaooc_class(yaoocpp_class);
 /* Table prototypes for yaoocpp_class */
 const char* yaoocpp_class_isa(const_pointer);
 #define yaoocpp_class_swap yaoocpp_container_with_class_table_swap
+#define yaoocpp_class_inherit yaoocpp_container_with_class_table_inherit
+#define yaoocpp_class_is_min_pod yaoocpp_container_with_class_table_is_min_pod
+#define yaoocpp_class_is_pod yaoocpp_container_with_class_table_is_pod
 void yaoocpp_class_print_to_header(const_pointer, ostream_pointer);
 void yaoocpp_class_print_to_source(const_pointer, ostream_pointer);
 
 /* Protected prototypes for yaoocpp_class */
-#define yaoocpp_class_inherit yaoocpp_container_with_class_table_inherit
 
 /*
   Class Definition for yaoocpp_union
@@ -460,11 +473,13 @@ yaooc_class(yaoocpp_union);
 /* Table prototypes for yaoocpp_union */
 const char* yaoocpp_union_isa(const_pointer);
 #define yaoocpp_union_swap yaoocpp_container_with_class_table_swap
+#define yaoocpp_union_inherit yaoocpp_container_with_class_table_inherit
+#define yaoocpp_union_is_min_pod yaoocpp_container_with_class_table_is_min_pod
+#define yaoocpp_union_is_pod yaoocpp_container_with_class_table_is_pod
 void yaoocpp_union_print_to_header(const_pointer, ostream_pointer);
 void yaoocpp_union_print_to_source(const_pointer, ostream_pointer);
 
 /* Protected prototypes for yaoocpp_union */
-#define yaoocpp_union_inherit yaoocpp_container_with_class_table_inherit
 
 /* End YAOOCPP output */
 

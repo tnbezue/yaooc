@@ -2,18 +2,18 @@
 #define __YAOOC_FILE_INCLUDED__
 
 #include <yaooc/object.yaooc>
-/*H
+#if 0 //HEADER
 #include <yaooc/stream.h>
 #include <fcntl.h>
 #ifdef _WIN32
 typedef short nlink_t;
 #endif
-H*/
+#endif //HEADER
 
-/*S
+#if 0 //SOURCE
 #include <string.h>
 #include <sys/stat.h>
-S*/
+#endif //SOURCE
 
 class yaooc_file : yaooc_object {
 		yaooc_file();

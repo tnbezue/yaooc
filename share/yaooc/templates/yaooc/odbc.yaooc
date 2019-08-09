@@ -4,7 +4,7 @@
 #include <yaooc/object.yaooc>
 #include <yaooc/exception.yaooc>
 
-/*H
+#if 0 //HEADER
 #include <yaooc/map.h>
 #include <yaooc/string.h>
 #include <yaooc/exception.h>
@@ -15,13 +15,13 @@
 #include <sqlext.h>
 
 MINI_MAP_DEFINITION(yaooc_string,yaooc_string,map_odbc_string_string)
-H*/
+#endif //HEADER
 
-/*S
+#if 0 //SOURCE
 #include <stdio.h>
 
 MINI_MAP_IMPLEMENTATION(yaooc_string,yaooc_string,map_odbc_string_string)
-S*/
+#endif //SOURCE
 
 class yaooc_odbc_exception : yaooc_exception
 {

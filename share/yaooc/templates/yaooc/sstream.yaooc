@@ -3,9 +3,9 @@
 
 #include <yaooc/stream.yaooc>
 
-/*S
+#if 0 //SOURCE
 #include <string.h>
-S*/
+#endif //SOURCE
 
 class yaooc_istringstream : yaooc_istream
 {

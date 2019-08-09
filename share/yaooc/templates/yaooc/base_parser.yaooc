@@ -20,25 +20,34 @@
 
 #include <yaooc/object.yaooc>
 
-/*H
+#if 0 //HEADER
+#include <yaooc/stack.h>
 #include <yaooc/stack.h>
 
-#include <yaooc/stack.h>
-
-typedef struct {
-  const char* pos_;
-  size_t line_no_;
-} parser_position_t;
+yaooc_struct_forward(parser_position);
 
 STACK_DEFINITION(parser_position,parser_position_stack)
 
-#define default_terminal { .class_table_ = &yaooc_terminal_class_table , .beg_=this->current_pos_, .end_=NULL }
+# define yaooc_base_parser_current_pos(p) ((yaooc_base_parser_pointer)p)->current_pos_
+# define yaooc_base_parser_peek(p) *(((yaooc_base_parser_pointer)p)->current_pos_)
+# define yaooc_base_parser_skip(p,n) { int __nn__=n; for(;__nn__>0;__nn__--) yaooc_base_parser_next_chr(p); }
 
-enum { CRLF=1,C_COMMENT=2,CPP_COMMENT=4,SHELL_COMMENT=8,CUSTOM_WHITESPACE=16};
+
+//enum { CRLF=1,C_COMMENT=2,CPP_COMMENT=4,SHELL_COMMENT=8,CUSTOM_WHITESPACE=16};
+
 enum { PARSE_SUCCESS = 0, PARSE_FAILED };
-H*/
 
-/*S
+#define RULE_START(p) M((yaooc_base_parser_pointer)p,rule_start)
+#define RULE_FAIL(p) M((yaooc_base_parser_pointer)p,rule_fail)
+#define RULE_SUCCESS(p) M((yaooc_base_parser_pointer)p,rule_success)
+
+#define OPTIONAL(rule) ((rule),true)
+#define TRY_RULE(p,rule) (RULE_START(p), (rule) ? RULE_SUCCESS(p) : RULE_FAIL(p))
+
+#define default_terminal(p) (yaooc_terminal_t){ .beg_=this->current_pos_, .end_=NULL }
+#endif //HEADER
+
+#if 0 //SOURCE
 #include <string.h>
 #include <ctype.h>
 
@@ -49,22 +58,23 @@ H*/
 #endif
 #include <yaooc/base_parser.h>
 
-DEFINE_POD_TYPE_INFO(parser_position,N,N,N)
 STACK_IMPLEMENTATION(parser_position,parser_position_stack)
 
-S*/
+#endif //SOURCE
 
-class yaooc_terminal : yaooc_object {
-    yaooc_terminal();
+struct parser_position {
+  instance:
+    const char* pos_;
+    size_t line_no_;
+};
 
-  table:
-    char* get_text() const;
-    char* get_raw_text() const;
-
+struct yaooc_terminal {
   instance:
     const char* beg_;
     const char* end_;
-
+  protected:
+    char* text() const;
+    char* raw_text() const;
 };
 
 class yaooc_base_parser : yaooc_object {
@@ -76,43 +86,42 @@ class yaooc_base_parser : yaooc_object {
     void swap(pointer o);
     void set_parse_string(const char* str);
     void rule_start();
-    void rule_success();
-    void rule_fail();
-    yaooc_terminal_t eos();
-    yaooc_terminal_t string_until_chrs(const char* chrs);
-    yaooc_terminal_t string_while_chrs(const char* chrs);
-    yaooc_terminal_t string_until_eol();
-    yaooc_terminal_t shell_comment();
-    yaooc_terminal_t c_comment();
-    yaooc_terminal_t cpp_comment();
-    yaooc_terminal_t custom_whitespace();
-    void set_whitespace_types(uint32_t ws);
-    uint32_t get_whitespace_types();
-    int whitespace();
-    yaooc_terminal_t chr(char ch);
+    bool rule_success();
+    bool rule_fail();
+    bool eos();
+    bool string_until_chrs(const char* chrs,yaooc_terminal_t* r);
+    bool string_while_chrs(const char* chrs,yaooc_terminal_t* r);
+    bool string_until_eol(yaooc_terminal_t* r);
+    bool whitespace(yaooc_terminal_t* r);
+    bool chr(char ch,yaooc_terminal_t* r);
     int chr_choices(const char* ch_choices);
-    yaooc_terminal_t str(const char* str);
+    bool str(const char* str,yaooc_terminal_t* r);
     int str_choices(...);
-    yaooc_terminal_t digits();
-    yaooc_terminal_t hexdigits();
-    yaooc_terminal_t integer();
-    yaooc_terminal_t hexinteger();
-    yaooc_terminal_t real();
-    yaooc_terminal_t ident();
-    yaooc_terminal_t regex(const char* re_str,uint32_t compile_opts,uint32_t match_opts);
-    yaooc_terminal_t quoted_string(char quote_type);
-    yaooc_terminal_t single_quoted_string();
-    yaooc_terminal_t double_quoted_string();
-    yaooc_terminal_t bare_string();
-    yaooc_terminal_t string_until_matching_chr(char lch,char rch);
-    yaooc_base_parser_result_t result() const;
+    bool digits(yaooc_terminal_t* r);
+    bool hexdigits(yaooc_terminal_t* r);
+    bool integer(yaooc_terminal_t* r);
+    bool hexinteger(yaooc_terminal_t* r);
+    bool real(yaooc_terminal_t* r);
+    bool ident(yaooc_terminal_t* r);
+    bool regex(const char* re_str,uint32_t compile_opts,uint32_t match_opts,yaooc_terminal_t* r);
+    bool quoted_string(char quote_type,yaooc_terminal_t* r);
+    bool single_quoted_string(yaooc_terminal_t* r);
+    bool double_quoted_string(yaooc_terminal_t* r);
+    bool bare_string(yaooc_terminal_t* r);
+    bool string_until_matching_chr(char lch,char rch,yaooc_terminal_t* r);
+    bool result() const;
   instance:
-    const char* subject_;
-    parser_position_stack_pointer stack_;
+    parser_position_stack_t* stack_;
     const char* current_pos_;
     unsigned int line_no_;
     unsigned int whitespace_types_;
-    yaooc_base_parser_result_t result_;
+
+  protected:
+    bool space(yaooc_terminal_t* r);
+    bool crlf(yaooc_terminal_t* r);
+    bool shell_comment(yaooc_terminal_t* r);
+    bool c_comment(yaooc_terminal_t* r);
+    bool cpp_comment(yaooc_terminal_t* r);
 };
 
 #endif

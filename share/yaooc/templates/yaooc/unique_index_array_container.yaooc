@@ -3,10 +3,10 @@
 
 #include <yaooc/index_array_container.yaooc>
 
-/*S
+#if 0 //SOURCE
 #include <string.h>
 #include <stdio.h>
-S*/
+#endif //SOURCE
 
 class yaooc_unique_index_array_container : yaooc_index_array_container
 {

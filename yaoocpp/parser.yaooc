@@ -1,21 +1,24 @@
 #ifndef __YAOOCPP_PARSER_INCLUDED__
 #define __YAOOCPP_PARSER_INCLUDED__
 
-#include <exception.yaooc>
-#include <base_parser.yaooc>
+#include <yaooc/base_parser.yaooc>
+#include <yaooc/exception.yaooc>
+#if 0 // HEADER
+#include "template_objects.h"
+#endif
+
+#if 0 // SOURCE
+extern yaooc_string_t include_directories;
+extern yaooc_string_t defines;
+extern yaooc_string_t header_extra;
+extern yaooc_string_t source_extra;
+extern yaooc_string_vector_t include_files;
+
+#endif
 
 class yaoocpp_parser_exception : yaooc_exception
 {
 	yaoocpp_parser_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
-};
-
-struct name_parent
-{
-    name_parent();
-    ~name_parent();
-  instance:
-    char* name_;
-    const yaoocpp_container_t* parent_;
 };
 
 class yaoocpp_parser : yaooc_base_parser
@@ -23,41 +26,54 @@ class yaoocpp_parser : yaooc_base_parser
 		yaoocpp_parser();
 		~yaoocpp_parser();
 	table:
-		yaooc_terminal_t custom_whitespace();
+		bool whitespace(yaooc_terminal_t* r);
 		void parse_file(const char* file);
 
 	instance:
     yaoocpp_container_pointer_vector_t* classes_;
-    char* buffer_;
-    const char* file_;
-		const char* header_text_;
-		const char* source_text_;
-    bool is_top_level_file_;
+		yaooc_string_t header_text_;
+		yaooc_string_t source_text_;
+    yaoocpp_container_t* current_class_;
+    yaooc_string_t include_files_;
 
   private:
+    const char* current_file=NULL;
+    int line_no=1;
+    bool is_top_level=false;
+    yaooc_string_t buffer = YAOOC_STRING_STATIC_DEFAULT_CTOR;
     void preprocess();
     yaoocpp_container_const_pointer find_class(const char* name);
-    name_parent_t parse_name_parent();
-    bool parse_default_ctor(pointer cc);
-    bool parse_dtor(pointer cc);
-    bool parse_copy_ctor(pointer cc);
-    bool parse_assign(pointer cc);
-    bool parse_less_than_compare(pointer cc);
-    bool parse_to_stream(pointer cc);
-    bool parse_from_stream(pointer cc);
-    yaoocpp_argument_pointer parse_argument();
-    void parse_type_info(pointer cc);
-    void parse_arguments(yaoocpp_argument_vector_t* args);
-    bool parse_constructor(pointer cc);
-    yaoocpp_element_pointer parse_method();
-		yaoocpp_element_pointer parse_variable();
-		yaoocpp_element_pointer parse_raw_struct_union();
-		yaoocpp_element_pointer parse_type();
-    bool parse_sub_section(const char *section,yaoocpp_element_pointer_vector_t* element_vector);
-    yaoocpp_container_pointer parse_class();
-    yaoocpp_container_pointer parse_struct();
-    yaoocpp_container_pointer parse_union();
-    yaoocpp_container_pointer parse_section();
+    void extract_section(const char* str,const char* beg,const char* end,yaooc_string_t* content_extracted);
+    void yaoocpp_parser_find_yaooc_includes(const char* str,yaooc_string_vector_t*includes);
+    void find_yaooc_includes();
+    bool line_directive(yaooc_terminal_t* r);
+    bool containers();
+    bool contents();
+    bool struct_contents();
+    bool type_info(yaoocpp_container_pointer cont);
+    bool default_constructor(const char* class_name);
+    bool destructor(const char* class_name);
+    bool copy_constructor(const char* class_name);
+    bool assignment();
+    bool less_than_compare();
+    bool to_stream();
+    bool from_stream();
+    bool table();
+    bool instance(s);
+    bool protected();
+    bool private();
+    bool arguments(yaoocpp_argument_vector_t** args);
+    bool argument(yaoocpp_argument_t** arg);
+    bool va_argument(yaoocpp_argument_t** arg);
+    bool constructor(yaoocpp_constructor_t** cont);
+    bool method(yaoocpp_method_t** meth);
+    bool method_with_implementation_method(yaoocpp_method_t** meth);
+    bool method_base(yaoocpp_method_t** meth);
+		bool variable_with_default_value(yaoocpp_variable_t** var);
+		bool variable(yaoocpp_variable_t** var);
+		bool variable_base(yaoocpp_variable_t** var);
+		bool type_variable(yaoocpp_variable_t** var);
+		bool type_only(yaoocpp_type_t** type);
 };
 
 #endif

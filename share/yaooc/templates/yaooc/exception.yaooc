@@ -3,17 +3,17 @@
 
 #include <yaooc/object.yaooc>
 
-/*H
+#if 0 //HEADER
 #include <setjmp.h>
 #include <pthread.h>
-H*/
+#endif //HEADER
 
-/*S
+#if 0 //SOURCE
 #include <yaooc/pointer_bag.h>
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
-S*/
+#endif //SOURCE
 
 class yaooc_exception : yaooc_object
 {

@@ -3,15 +3,38 @@
 
 #include <yaooc/object.yaooc>
 
-/*H
+#if 0 //HEADER
 #include <yaooc/stream.h>
 typedef enum { VAR_NONE, VAR_CHAR, VAR_UCHAR, VAR_SHORT, VAR_USHORT, VAR_INT, VAR_UINT, VAR_LONG, VAR_ULONG,
 			VAR_DOUBLE,VAR_CHAR_PTR,VAR_VOID_PTR,VAR_OBJECT} yaooc_variant_type_t;
-H*/
+typedef union {
+  char ch_;
+  unsigned char uch_;
+  short sh_;
+  unsigned short ush_;
+  int int_;
+  unsigned int uint_;
+  long long long_;
+  unsigned long long ulong_;
+  double dbl_;
+  char* chr_ptr_;
+  void* void_ptr_;
+  yaooc_object_t* obj_ptr_;
+} __variant_t;
 
-/*S
+// Some useful constructors for static objects
+#define STATIC_VARIANT_CTOR(N) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_NONE})
+#define STATIC_VARIANT_CTOR_I(N,I) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_INT,.int_=I})
+#define STATIC_VARIANT_CTOR_D(N,D) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_DOUBLE,.dbl_=D})
+#define STATIC_VARIANT_CTOR_S(N,S) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_CHAR_PTR,.chr_ptr_=S})
+#define STATIC_VARIANT_CTOR_V(N,V) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_VOID_PTR,.void_ptr_=V})
+#define STATIC_VARIANT_CTOR_O(N,O) N=((yaooc_variant_t) { .class_table_=&yaooc_variant_class_table,.type_=VAR_OBJECT_PTR,.obj_ptr_=O})
+#define STATIC_VARIANT_DTOR(V) deletep(&V,yaooc_variant)
+#endif //HEADER
+
+#if 0 //SOURCE
 #include <string.h>
-S*/
+#endif //SOURCE
 
 class yaooc_variant : yaooc_object {
 		yaooc_variant();
@@ -20,26 +43,14 @@ class yaooc_variant : yaooc_object {
 		operator=();
 
 	table:
+    void swap(pointer o);
 		yaooc_variant_type_t type() const;
 		void set(yaooc_variant_type_t t,void* value);
 		void* value() const;
 
 	instance:
 		yaooc_variant_type_t type_;
-		union {
-			char ch_;
-			unsigned char uch_;
-			short sh_;
-			unsigned short ush_;
-			int int_;
-			unsigned int uint_;
-			long long long_;
-			unsigned long long ulong_;
-			double dbl_;
-			char* chr_ptr_;
-			void* void_ptr_;
-			yaooc_object_t* obj_;
-		};
+		__variant_t;
 };
 
 #endif

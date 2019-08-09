@@ -4,7 +4,7 @@
 #include <yaooc/object.yaooc>
 #include <yaooc/exception.yaooc>
 
-/*H
+#if 0 //HEADER
 #include <pthread.h>
 
 typedef enum { THREAD_READY=0,THREAD_RUNNING,THREAD_TERMINATED } yaooc_thread_state_t;
@@ -14,9 +14,9 @@ extern "C" {
 #endif
 
 typedef void* (*yaooc_thread_method) (pointer,void*);
-H*/
+#endif //HEADER
 
-/*S
+#if 0 //SOURCE
 #include <sys/time.h>
 #include <stdio.h>
 
@@ -29,7 +29,7 @@ typedef struct {
   void* data_;
 } thread_start_info_t;
 void yaooc_exception_thread_list_remove_exception_thread(pthread_t tid);
-S*/
+#endif //SOURCE
 
 class yaooc_thread: yaooc_object
 {
