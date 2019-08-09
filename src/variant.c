@@ -85,6 +85,11 @@ void yaooc_variant_ctor_type_value(pointer p,va_list args)
 /* Protected implementation for yaooc_variant */
 
 /* Table implementation for yaooc_variant */
+void yaooc_variant_swap(pointer p,pointer o)
+{
+  SWAP(yaooc_variant_t,*((yaooc_variant_t*)p),*((yaooc_variant_t*)o));
+}
+
 yaooc_variant_type_t yaooc_variant_type(const_pointer p)
 {
   yaooc_variant_const_pointer this=p;
