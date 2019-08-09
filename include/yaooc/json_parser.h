@@ -31,16 +31,16 @@
 yaooc_class_table(yaooc_json_parser)
 {
   yaooc_base_parser_class_table_t;
-  yaooc_json_value_pointer (*parse_json_null)(pointer);
-  yaooc_json_value_pointer (*parse_json_bool)(pointer);
-  yaooc_json_value_pointer (*parse_json_integer)(pointer);
-  yaooc_json_value_pointer (*parse_json_real)(pointer);
-  yaooc_json_value_pointer (*parse_json_string)(pointer);
-  yaooc_json_value_pointer (*parse_json_array)(pointer);
-  yaooc_json_value_pointer (*parse_json_object)(pointer);
-  yaooc_json_value_pointer (*parse_json_value)(pointer);
-  yaooc_json_value_pointer (*parse_string)(pointer,const char*);
-  yaooc_json_value_pointer (*parse_file)(pointer,const char*);
+  bool (*parse_json_null)(pointer,yaooc_json_value_t**);
+  bool (*parse_json_bool)(pointer,yaooc_json_value_t**);
+  bool (*parse_json_integer)(pointer,yaooc_json_value_t**);
+  bool (*parse_json_real)(pointer,yaooc_json_value_t**);
+  bool (*parse_json_string)(pointer,yaooc_json_value_t**);
+  bool (*parse_json_array)(pointer,yaooc_json_value_t**);
+  bool (*parse_json_object)(pointer,yaooc_json_value_t**);
+  bool (*parse_json_value)(pointer,yaooc_json_value_t**);
+  bool (*parse_string)(pointer,const char*,yaooc_json_value_t**);
+  bool (*parse_file)(pointer,const char*,yaooc_json_value_t**);
 };
 
 yaooc_class_instance(yaooc_json_parser)
@@ -63,13 +63,7 @@ yaooc_class(yaooc_json_parser);
 #define yaooc_json_parser_string_until_chrs yaooc_base_parser_string_until_chrs
 #define yaooc_json_parser_string_while_chrs yaooc_base_parser_string_while_chrs
 #define yaooc_json_parser_string_until_eol yaooc_base_parser_string_until_eol
-#define yaooc_json_parser_shell_comment yaooc_base_parser_shell_comment
-#define yaooc_json_parser_c_comment yaooc_base_parser_c_comment
-#define yaooc_json_parser_cpp_comment yaooc_base_parser_cpp_comment
-#define yaooc_json_parser_custom_whitespace yaooc_base_parser_custom_whitespace
-#define yaooc_json_parser_set_whitespace_types yaooc_base_parser_set_whitespace_types
-#define yaooc_json_parser_get_whitespace_types yaooc_base_parser_get_whitespace_types
-#define yaooc_json_parser_whitespace yaooc_base_parser_whitespace
+bool yaooc_json_parser_whitespace(pointer,yaooc_terminal_t*);
 #define yaooc_json_parser_chr yaooc_base_parser_chr
 #define yaooc_json_parser_chr_choices yaooc_base_parser_chr_choices
 #define yaooc_json_parser_str yaooc_base_parser_str
@@ -86,16 +80,17 @@ yaooc_class(yaooc_json_parser);
 #define yaooc_json_parser_double_quoted_string yaooc_base_parser_double_quoted_string
 #define yaooc_json_parser_bare_string yaooc_base_parser_bare_string
 #define yaooc_json_parser_string_until_matching_chr yaooc_base_parser_string_until_matching_chr
-yaooc_json_value_pointer yaooc_json_parser_parse_json_null(pointer);
-yaooc_json_value_pointer yaooc_json_parser_parse_json_bool(pointer);
-yaooc_json_value_pointer yaooc_json_parser_parse_json_integer(pointer);
-yaooc_json_value_pointer yaooc_json_parser_parse_json_real(pointer);
-yaooc_json_value_pointer yaooc_json_parser_parse_json_string(pointer);
-yaooc_json_value_pointer yaooc_json_parser_parse_json_array(pointer);
-yaooc_json_value_pointer yaooc_json_parser_parse_json_object(pointer);
-yaooc_json_value_pointer yaooc_json_parser_parse_json_value(pointer);
-yaooc_json_value_pointer yaooc_json_parser_parse_string(pointer,const char*);
-yaooc_json_value_pointer yaooc_json_parser_parse_file(pointer,const char*);
+#define yaooc_json_parser_result yaooc_base_parser_result
+bool yaooc_json_parser_parse_json_null(pointer,yaooc_json_value_t**);
+bool yaooc_json_parser_parse_json_bool(pointer,yaooc_json_value_t**);
+bool yaooc_json_parser_parse_json_integer(pointer,yaooc_json_value_t**);
+bool yaooc_json_parser_parse_json_real(pointer,yaooc_json_value_t**);
+bool yaooc_json_parser_parse_json_string(pointer,yaooc_json_value_t**);
+bool yaooc_json_parser_parse_json_array(pointer,yaooc_json_value_t**);
+bool yaooc_json_parser_parse_json_object(pointer,yaooc_json_value_t**);
+bool yaooc_json_parser_parse_json_value(pointer,yaooc_json_value_t**);
+bool yaooc_json_parser_parse_string(pointer,const char*,yaooc_json_value_t**);
+bool yaooc_json_parser_parse_file(pointer,const char*,yaooc_json_value_t**);
 
 /* Prototypes for yaooc_json_parser class instance*/
 

@@ -25,20 +25,14 @@
 #endif
 #include <yaooc/base_parser.h>
 
-DEFINE_POD_TYPE_INFO(parser_position,N,N,N)
+DEFINE_MIN_TYPE_INFO(parser_position)
 //DEFINE_TYPE_INFO(parser_position,N,N,N,N,N,N,N,N,NULL)
 STACK_IMPLEMENTATION(parser_position,parser_position_stack)
+DEFINE_MIN_TYPE_INFO(yaooc_terminal);
 
-void yaooc_terminal_default_ctor(pointer p)
+char* yaooc_terminal_text(const_pointer p)
 {
-  yaooc_terminal_pointer this=p;
-  this->beg_=NULL;
-  this->end_=NULL;
-}
-
-char* yaooc_terminal_get_text(const_pointer p)
-{
-  char* text=yaooc_terminal_get_raw_text(p);
+  char* text=yaooc_terminal_raw_text(p);
   if(text) {
     char *inp=text;
     char *out=inp;
@@ -102,7 +96,7 @@ char* yaooc_terminal_get_text(const_pointer p)
   return text;
 }
 
-char* yaooc_terminal_get_raw_text(const_pointer p)
+char* yaooc_terminal_raw_text(const_pointer p)
 {
   char* text=NULL;
   yaooc_terminal_const_pointer this=p;
@@ -114,13 +108,13 @@ char* yaooc_terminal_get_raw_text(const_pointer p)
   }
   return text;
 }
-
+/*
 yaooc_terminal_class_table_t yaooc_terminal_class_table =
 {
   .get_text = yaooc_terminal_get_text,
   .get_raw_text = yaooc_terminal_get_raw_text
 };
-
+*/
 
 /*  Begin YAOOC PreProcessor generated content */
 
@@ -128,6 +122,102 @@ yaooc_terminal_class_table_t yaooc_terminal_class_table =
 
 /* Protected items for yaooc_base_parser */
 
+int yaooc_base_parser_next_chr(pointer p)
+{
+  yaooc_base_parser_pointer this=p;
+  int c=*this->current_pos_;
+  if(c=='\n') this->line_no_++;
+  if(c!=0) this->current_pos_++;
+  return c;
+}
+
+bool yaooc_base_parser_space(pointer p,yaooc_terminal_t* r)
+{
+  yaooc_base_parser_pointer this=p;
+  *r=default_terminal(p);
+  for(;*this->current_pos_!=0;this->current_pos_++) {
+    if(*this->current_pos_ != ' ' && *this->current_pos_ != '\t')
+      break;
+  }
+  r->end_=this->current_pos_;
+  return r->end_!=r->beg_;
+}
+
+bool yaooc_base_parser_crlf(pointer p,yaooc_terminal_t* r)
+{
+  yaooc_base_parser_pointer this=p;
+  *r=default_terminal(p);
+  for(;*this->current_pos_ != 0;this->current_pos_++) {
+    if(*this->current_pos_ != '\r') {
+      if(*this->current_pos_ == '\n')
+        this->line_no_++;
+      else
+        break;
+    }
+  }
+  r->end_=this->current_pos_;
+  return r->end_!=r->beg_;
+}
+
+bool yaooc_base_parser_shell_comment(pointer p,yaooc_terminal_t* r)
+{
+  yaooc_base_parser_pointer this=p;
+  *r=default_terminal(p);
+  r->beg_=yaooc_base_parser_current_pos(this);
+  if(*this->current_pos_ =='#') {
+    for(;*this->current_pos_ != 0;this->current_pos_++)
+      if(*this->current_pos_=='\r' || *this->current_pos_=='\n') {
+        r->end_=this->current_pos_;
+        break;
+      }
+  }
+  return r->end_!=NULL;
+}
+
+bool yaooc_base_parser_c_comment(pointer p,yaooc_terminal_t* r)
+{
+  yaooc_base_parser_pointer this=p;
+  *r=default_terminal(p);
+  RULE_START(p);
+//  printf("*** C is %d (%c)\n",c,c);
+  if(*this->current_pos_ =='/' && *(this->current_pos_+1) =='*') {
+    this->current_pos_+=2;
+    for(;*this->current_pos_!=0;this->current_pos_++) {
+      if(*this->current_pos_ == '*' && *(this->current_pos_+1) == '/') {
+        this->current_pos_+=2;
+        r->end_=this->current_pos_;
+        break;
+      }
+//            M(this,whitespace,&ws);
+    }
+  }
+  if(r->end_)
+    RULE_SUCCESS(p);
+  else
+    RULE_FAIL(p);
+  return r->end_!=NULL;
+}
+
+bool yaooc_base_parser_cpp_comment(pointer p,yaooc_terminal_t* r)
+{
+  yaooc_base_parser_pointer this=p;
+  *r=default_terminal(p);
+//  r->beg_=this->current_pos_;
+  RULE_START(p);
+  if(*this->current_pos_ =='/' && *(this->current_pos_+1) =='/') {
+    this->current_pos_+=2;
+    for(;*this->current_pos_ != 0;this->current_pos_++)
+      if(*this->current_pos_=='\r' || *this->current_pos_=='\n') {
+        r->end_=this->current_pos_;
+        break;
+      }
+  }
+  if(r->end_)
+    RULE_SUCCESS(p);
+  else
+    RULE_FAIL(p);
+  return r->end_!=NULL;
+}
 
 /* Typeinfo for yaooc_base_parser */
 void yaooc_base_parser_default_ctor(pointer p)
@@ -136,7 +226,7 @@ void yaooc_base_parser_default_ctor(pointer p)
   this->current_pos_=NULL;
   this->stack_=new(parser_position_stack);
   this->line_no_=1;
-  this->whitespace_types_=0;
+//  this->whitespace_types_=0;
 }
 
 void yaooc_base_parser_dtor(pointer p)
@@ -145,19 +235,6 @@ void yaooc_base_parser_dtor(pointer p)
   delete(this->stack_);
 }
 
-/*
-void yaooc_base_parser_copy_ctor(pointer d,const_pointer s)
-{
-  yaooc_base_parser_pointer dst=d;
-  yaooc_base_parser_const_pointer src=s;
-}
-
-void yaooc_base_parser_assign(pointer d,const_pointer s)
-{
-  yaooc_base_parser_pointer dst=d;
-  yaooc_base_parser_const_pointer src=s;
-}
-*/
 /* Constructors for yaooc_base_parser */
 
 /* Class table methods for yaooc_base_parser */
@@ -168,7 +245,7 @@ void yaooc_base_parser_swap(pointer p,pointer o)
 void yaooc_base_parser_set_parse_string(pointer p,const char* pstr)
 {
   yaooc_base_parser_pointer this=p;
-//  this->string_to_parse_=pstr;
+  this->line_no_=1;
   this->current_pos_=pstr;
 }
 
@@ -179,118 +256,88 @@ void yaooc_base_parser_rule_start(pointer p)
   M(this->stack_,push,&temp);
 }
 
-void yaooc_base_parser_rule_success(pointer p)
+bool yaooc_base_parser_rule_success(pointer p)
 {
   yaooc_base_parser_pointer this=p;
   M(this->stack_,pop);
+  return true;
 }
 
-void yaooc_base_parser_rule_fail(pointer p)
+bool yaooc_base_parser_rule_fail(pointer p)
 {
   yaooc_base_parser_pointer this=p;
   parser_position_t* temp=M(this->stack_,top);
   this->current_pos_=temp->pos_;
   this->line_no_=temp->line_no_;
   M(this->stack_,pop);
+  return false;
 }
 
-yaooc_terminal_t yaooc_base_parser_eos(pointer p)
+bool yaooc_base_parser_eos(pointer p)
 {
   yaooc_base_parser_const_pointer this=p;
-  yaooc_terminal_t ret = default_terminal;
-  if(*this->current_pos_ == 0) ret.end_=this->current_pos_;
-  return ret;
+  return *this->current_pos_ == 0;
 }
 
-yaooc_terminal_t yaooc_base_parser_string_until_chrs(pointer p,const char* chrs)
+bool yaooc_base_parser_string_until_chrs(pointer p,const char* chrs,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  ret.beg_=this->current_pos_;
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
+//  r->beg_=this->current_pos_;
   size_t n=strcspn(this->current_pos_,chrs);
   if(n>0) {
-    this->current_pos_+=n;
-    ret.end_=this->current_pos_;
+    yaooc_base_parser_skip(this,n); //this->current_pos_+=n;
+    r->end_=yaooc_base_parser_current_pos(this);
+    M(this,whitespace,&ws);
   }
-  return ret;
+  return r->end_!=NULL;
 }
 
-yaooc_terminal_t yaooc_base_parser_string_while_chrs(pointer p,const char* chrs)
+bool yaooc_base_parser_string_while_chrs(pointer p,const char* chrs,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
+  yaooc_terminal_t ws;
   size_t n=strspn(this->current_pos_,chrs);
-  yaooc_terminal_t ret=default_terminal;
-  ret.beg_=this->current_pos_;
+  *r=default_terminal(p);
+//  r->beg_=this->current_pos_;
   if(n>0) {
-    this->current_pos_+=n;
-    ret.end_=this->current_pos_;
+    yaooc_base_parser_skip(this,n); //this->current_pos_+=n;
+    r->end_=yaooc_base_parser_current_pos(this);
+    M(this,whitespace,&ws);
   }
-  return ret;
+  return r->end_!=NULL;
 }
 
-yaooc_terminal_t yaooc_base_parser_string_until_eol(pointer p)
+bool yaooc_base_parser_string_until_eol(pointer p,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  ret.end_=yaooc_base_parser_string_until_chrs(p,"\r\n").end_;
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
+  yaooc_base_parser_string_until_chrs(p,"\r\n",r);
   /* remove CR from terminal capture
   while(ret.end_>ret.beg_) {
     if(*ret.end_ != '\r')
       break;
     ret.end_--;
   }*/
-  yaooc_base_parser_whitespace(p);
-  return ret;
-}
-
-yaooc_terminal_t yaooc_base_parser_shell_comment(pointer p)
-{
-  yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  ret.beg_=this->current_pos_;
-  if(*this->current_pos_=='#') {
-    ret.end_=yaooc_base_parser_string_until_eol(p).end_;
-    //yaooc_base_parser_whitespace(p);
+  if(r->end_!=NULL) {
+      M(this,whitespace,&ws);
+    return true;
   }
-  return ret;
+  return false;
 }
 
-yaooc_terminal_t yaooc_base_parser_c_comment(pointer p)
-{
-  yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  if(*this->current_pos_=='/' && *(this->current_pos_+1)=='*') {
-    this->current_pos_+=2;
-    for(;*this->current_pos_!=0;this->current_pos_++) {
-      if(*this->current_pos_=='*' && *(this->current_pos_+1)=='/' ) {
-        ret.end_=this->current_pos_;
-        this->current_pos_+=2;
-//        yaooc_base_parser_whitespace(p);
-        break;
-      }
-    }
-  }
-  return ret;
-}
 
-yaooc_terminal_t yaooc_base_parser_cpp_comment(pointer p)
-{
-  yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  ret.beg_=this->current_pos_;
-  if(*this->current_pos_=='/' && *(this->current_pos_+1)=='/') {
-    this->current_pos_+=2;
-    ret.end_=yaooc_base_parser_string_until_eol(p).end_;
-  }
-  return ret;
-}
+/*
+  Derived classes should override this
 
-yaooc_terminal_t yaooc_base_parser_custom_whitespace(pointer p)
+bool yaooc_base_parser_custom_whitespace(pointer p,yaooc_terminal_t* r)
 {
-  yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
+//  yaooc_base_parser_pointer this=p;
+//  yaooc_terminal_t ret=default_terminal(p);
 
-  return ret;
+  return false;
 }
 
 void yaooc_base_parser_set_whitespace_types(pointer p,uint32_t ws)
@@ -304,69 +351,84 @@ uint32_t yaooc_base_parser_get_whitespace_types(pointer p)
   yaooc_base_parser_pointer this=p;
   return this->whitespace_types_;
 }
-
-int yaooc_base_parser_whitespace(pointer p)
+*/
+/*
+  Derived classes that want to use a different whitespace routine should use the following
+  as a template
+ */
+bool yaooc_base_parser_whitespace(pointer p,yaooc_terminal_t* r)
 {
-  yaooc_base_parser_pointer this=p;
-  const char* pos=this->current_pos_;
+//  yaooc_base_parser_pointer this=p;
+  *r=default_terminal(p);
+  yaooc_terminal_t temp;
+  while(true) {
+    if(!yaooc_base_parser_space(p,&temp))
+      if(!yaooc_base_parser_crlf(p,&temp))
+      break;
+  }
+  r->end_=yaooc_base_parser_current_pos(p);
+  return r->beg_ != r->end_;
+#if 0
   while(*this->current_pos_!=0) {
-    char cc=*this->current_pos_;
+    char cc=yaooc_base_parser_peek(p);
     if(cc==' ' || cc=='\t') {
-      this->current_pos_++;
+      yaooc_base_parser_next_chr(p);
     } else if((this->whitespace_types_ & CRLF) && (cc=='\r' || cc=='\n') ) {
-      if(cc=='\n')
-        this->line_no_++;
-      this->current_pos_++;
-    } else if((this->whitespace_types_ & C_COMMENT) && yaooc_base_parser_c_comment(p).end_) {
+      yaooc_base_parser_next_chr(p);
+    } else if((this->whitespace_types_ & C_COMMENT) && yaooc_base_parser_c_comment(p,&r)) {
       continue;
-    } else if((this->whitespace_types_ & CPP_COMMENT) && yaooc_base_parser_cpp_comment(p).end_) {
+    } else if((this->whitespace_types_ & CPP_COMMENT) && yaooc_base_parser_cpp_comment(p,&r)) {
       continue;
-    } else if((this->whitespace_types_ & SHELL_COMMENT) && yaooc_base_parser_shell_comment(p).end_) {
+    } else if((this->whitespace_types_ & SHELL_COMMENT) && yaooc_base_parser_shell_comment(p,&r)) {
       continue;
-    } else if((this->whitespace_types_ & CUSTOM_WHITESPACE) && M(this,custom_whitespace).end_) {
+    } else if((this->whitespace_types_ & CUSTOM_WHITESPACE) && M(this,custom_whitespace,&r)) {
       continue;
     } else
       break;
   }
   return this->current_pos_-pos;
+#endif
 }
 
-yaooc_terminal_t yaooc_base_parser_chr(pointer p,char ch)
+bool yaooc_base_parser_chr(pointer p,char ch,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  if(*this->current_pos_ == ch) {
-    this->current_pos_++;
-    ret.end_=this->current_pos_;
-    yaooc_base_parser_whitespace(p);
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
+  if(yaooc_base_parser_peek(p) == ch) {
+    yaooc_base_parser_next_chr(p);
+    r->end_=yaooc_base_parser_current_pos(p);
+      M(this,whitespace,&ws);
   }
-  return ret;
+  return r->end_!=NULL;
 }
 
 int yaooc_base_parser_chr_choices(pointer p,const char* ch_choices)
 {
   yaooc_base_parser_pointer this=p;
+  yaooc_terminal_t ws;
   int ret=-1;
-  const char* ptr=strchr(ch_choices,*this->current_pos_);
+  const char* ptr=strchr(ch_choices,yaooc_base_parser_peek(p));
   if(ptr) {
     ret=ptr-ch_choices;
-    this->current_pos_++;
-    yaooc_base_parser_whitespace(p);
+    yaooc_base_parser_next_chr(p);
+    M(this,whitespace,&ws);
   }
   return ret;
 }
 
-yaooc_terminal_t yaooc_base_parser_str(pointer p,const char* str)
+bool yaooc_base_parser_str(pointer p,const char* str,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
   int l=strlen(str);
   if(l>0 && strncmp(this->current_pos_,str,l)==0) {
-    this->current_pos_+=l;
-    ret.end_=this->current_pos_;
-    yaooc_base_parser_whitespace(p);
+    yaooc_base_parser_skip(p,l);
+    r->end_=this->current_pos_;
+    M(this,whitespace,&ws);
   }
-  return ret;
+  return r->end_!=NULL;
 }
 
 int yaooc_base_parser_str_choices(pointer p,...)
@@ -377,10 +439,11 @@ int yaooc_base_parser_str_choices(pointer p,...)
   va_list args;
   va_start (args,p);
   const char* ptr;
+  yaooc_terminal_t r;
   while((ptr=va_arg(args,const char*)) != NULL) {
-    if(yaooc_base_parser_str(p,ptr).end_) {
+    if(yaooc_base_parser_str(p,ptr,&r)) {
       ret=cp;
-      yaooc_base_parser_whitespace(p);
+//      yaooc_base_parser_whitespace(p);
       break;
     }
     cp++;
@@ -389,204 +452,233 @@ int yaooc_base_parser_str_choices(pointer p,...)
   return ret;
 }
 
-yaooc_terminal_t yaooc_base_parser_digits(pointer p)
+bool yaooc_base_parser_digits(pointer p,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  while(*this->current_pos_!=0 && isdigit(*this->current_pos_)) this->current_pos_++;
-  ret.end_=this->current_pos_==ret.beg_ ? NULL : this->current_pos_;
-  return ret;
+  *r=default_terminal(p);
+  int c=yaooc_base_parser_peek(p);
+  for(;c!=0 && isdigit(c);c=yaooc_base_parser_peek(p))
+    yaooc_base_parser_next_chr(p);
+//  while(*this->current_pos_!=0 && isdigit(yaooc_base_parser_peek(p)))
+//    yaooc_base_parser_next_chr(p);
+  r->end_=this->current_pos_==r->beg_ ? NULL : this->current_pos_;
+  return r->end_!=NULL;
 }
 
-yaooc_terminal_t yaooc_base_parser_hexdigits(pointer p)
+bool yaooc_base_parser_hexdigits(pointer p,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  while(*this->current_pos_!=0 && isxdigit(*this->current_pos_)) this->current_pos_++;
-  ret.end_=this->current_pos_==ret.beg_ ? NULL : this->current_pos_;
-  return ret;
+  *r=default_terminal(p);
+  while(*this->current_pos_!=0 && isxdigit(yaooc_base_parser_peek(p)))
+    yaooc_base_parser_next_chr(p);
+  r->end_=this->current_pos_==r->beg_ ? NULL : this->current_pos_;
+  return r->end_!=NULL;
 }
 
-yaooc_terminal_t yaooc_base_parser_integer(pointer p)
+bool yaooc_base_parser_integer(pointer p,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  M(this,rule_start);
-  if(*this->current_pos_=='+' || *this->current_pos_=='-') this->current_pos_++;
-  yaooc_terminal_t dr=yaooc_base_parser_digits(p);
-  if(dr.end_ && (*this->current_pos_==0 || (*this->current_pos_ !='.' && !isalpha(*this->current_pos_)))) {
-    ret.end_=dr.end_;
-    M(this,rule_success);
-    yaooc_base_parser_whitespace(p);
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
+  RULE_START(p);
+  if(yaooc_base_parser_peek(p)=='+' || yaooc_base_parser_peek(p)=='-')
+    yaooc_base_parser_next_chr(p);
+  yaooc_terminal_t dr;
+  if(yaooc_base_parser_digits(p,&dr) && (yaooc_base_parser_peek(p)==0
+        || (yaooc_base_parser_peek(p) !='.' && !isalpha(yaooc_base_parser_peek(p))))) {
+    r->end_=dr.end_;
+    RULE_SUCCESS(p);
+    M(this,whitespace,&ws);
+    return true;
   } else
-    M(this,rule_fail);
-  return ret;
+    RULE_FAIL(p);
+  return false;
 }
 
-yaooc_terminal_t yaooc_base_parser_hexinteger(pointer p)
+bool yaooc_base_parser_hexinteger(pointer p,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  if(*this->current_pos_=='0' && toupper(*(this->current_pos_+1))=='X') {
-    M(this,rule_start);
-    this->current_pos_+=2;
-    yaooc_terminal_t dr=yaooc_base_parser_hexdigits(p);
-    if(dr.end_ && (*this->current_pos_==0 || (*this->current_pos_ !='.' && !isalpha(*this->current_pos_)))) {
-      ret.end_=dr.end_;
-      M(this,rule_success);
-      yaooc_base_parser_whitespace(p);
-    } else
-      M(this,rule_fail);
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
+  RULE_START(p);
+  if(yaooc_base_parser_next_chr(p)=='0' && toupper(yaooc_base_parser_next_chr(p))=='X') {
+    yaooc_terminal_t dr;
+    if(yaooc_base_parser_hexdigits(p,&dr)) {
+      r->end_=dr.end_;
+      M(this,whitespace,&ws);
+    }
   }
-  return ret;
+  if(r->end_)
+    RULE_SUCCESS(p);
+  else
+    RULE_FAIL(p);
+  return r->end_!=NULL;
 }
 
-yaooc_terminal_t yaooc_base_parser_real(pointer p)
+bool yaooc_base_parser_real(pointer p,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-   bool has_decimal=false;
-  yaooc_base_parser_rule_start(p);
-  if(*this->current_pos_=='+' || *this->current_pos_=='-') this->current_pos_++;
-  yaooc_terminal_t whole=M(this,digits);
-  yaooc_terminal_t fraction=default_terminal;
-  if(*this->current_pos_=='.') {
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
+  bool has_decimal=false;
+  RULE_START(p);
+  if(yaooc_base_parser_peek(p)=='+' || yaooc_base_parser_peek(p)=='-')
+    yaooc_base_parser_next_chr(p);
+  yaooc_terminal_t whole;
+  M(this,digits,&whole);
+  yaooc_terminal_t fraction=default_terminal(p);
+  if(yaooc_base_parser_peek(p)=='.') {
     has_decimal=true;
-    fraction.beg_=this->current_pos_;
-    this->current_pos_++;
-    fraction.end_=M(this,digits).end_;
+//    fraction.beg_=this->current_pos_;
+    yaooc_base_parser_next_chr(p);
+    M(this,digits,&fraction);
   }
   if(whole.end_ || fraction.end_) {
-    if(toupper(*this->current_pos_)=='E') {
-      this->current_pos_++;
-      yaooc_terminal_t exp=M(this,integer);
+    if(toupper(yaooc_base_parser_peek(p))=='E') {
+      yaooc_base_parser_next_chr(p);
+      yaooc_terminal_t exp;
+      M(this,integer,&exp);
       if(exp.end_) {
-        ret.end_=exp.end_; // integer already consumed whitespace
+        r->end_=exp.end_; // integer already consumed whitespace
       }
     } else {
       /*
         No exponent.  Must have whole and decimal or franction
       */
-      if(((whole.end_ && has_decimal) || fraction.end_) && (*this->current_pos_ !='.' && !isalpha(*this->current_pos_))) {
-        ret.end_=this->current_pos_;
-        M(this,whitespace);
+      if(((whole.end_ && has_decimal) || fraction.end_) &&
+              (yaooc_base_parser_peek(p) != '.' && !isalpha(yaooc_base_parser_peek(p)))) {
+        r->end_=this->current_pos_;
+        M(this,whitespace,&ws);
       }
     }
   }
-  if(ret.end_)
-    M(this,rule_success);
+  if(r->end_)
+    RULE_SUCCESS(p);
   else
-    M(this,rule_fail);
-  return ret;
+    RULE_FAIL(p);
+  return r->end_!=NULL;
 }
 
-yaooc_terminal_t yaooc_base_parser_ident(pointer p)
+bool yaooc_base_parser_ident(pointer p,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  if(isalpha(*this->current_pos_) || *this->current_pos_=='_') {
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
+  int c=yaooc_base_parser_peek(p);
+  if(isalpha(c) || c =='_') {
     do {
-      this->current_pos_++;
-    } while (isalnum(*this->current_pos_) || *this->current_pos_=='_');
-    ret.end_=this->current_pos_;
-    M(this,whitespace);
+      yaooc_base_parser_next_chr(p);
+      c=yaooc_base_parser_peek(p);
+    } while (c !=0 && (isalnum(c) || c == '_'));
+    r->end_=yaooc_base_parser_current_pos(p);
+    M(this,whitespace,&ws);
   }
-  return ret;
+  return r->end_!=NULL;
 }
 
-yaooc_terminal_t yaooc_base_parser_regex(pointer p,const char* re_str,uint32_t compile_opts,uint32_t match_opts)
+bool yaooc_base_parser_regex(pointer p,const char* re_str,uint32_t compile_opts,
+        uint32_t match_opts,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
   regex_t re;
   if(regcomp(&re,re_str,compile_opts) == 0) {
     regmatch_t ov;
     int rc = regexec(&re,this->current_pos_,1,&ov,match_opts);
     if(rc == 0 && ov.rm_so == 0) {
-      this->current_pos_+=ov.rm_eo;
-      ret.end_=this->current_pos_;
-      M(this,whitespace);
+      yaooc_base_parser_skip(p,ov.rm_eo);
+      r->end_=yaooc_base_parser_current_pos(p);
+      M(this,whitespace,&ws);
     }
     regfree(&re);
   }
-  return ret;
+  return r->end_!=NULL;
 }
 
-yaooc_terminal_t yaooc_base_parser_quoted_string(pointer p,char quote_char)
+bool yaooc_base_parser_quoted_string(pointer p,char quote_char,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
   bool escape=false;
-  M(this,rule_start);
-  if(*this->current_pos_==quote_char) {
-    this->current_pos_++;
-    ret.beg_=this->current_pos_;
-    for(;*this->current_pos_!=0;this->current_pos_++) {
+  RULE_START(p);
+  int c=yaooc_base_parser_next_chr(p);
+  if(c==quote_char) {
+    r->beg_=yaooc_base_parser_current_pos(p);
+  do {
+      c=yaooc_base_parser_next_chr(p);
       if(escape) {
         escape=false;
-      } else if(*this->current_pos_=='\\') {
+      } else if(c=='\\') {
         escape=true;
-      } else if(*this->current_pos_==quote_char) {
-        ret.end_=this->current_pos_;
-        this->current_pos_++;
-        M(this,whitespace);
+      } else if(c==quote_char) {
+        r->end_=yaooc_base_parser_current_pos(p)-1;
+        M(this,whitespace,&ws);
         break;
       }
-    }
+    } while(c != 0);
   }
-  if(ret.end_)
-    M(this,rule_success);
+  if(r->end_)
+    RULE_SUCCESS(p);
   else
-    M(this,rule_fail);
-  return ret;
+    RULE_FAIL(p);
+  return r->end_!=NULL;
 }
 
-yaooc_terminal_t yaooc_base_parser_single_quoted_string(pointer p)
+bool yaooc_base_parser_single_quoted_string(pointer p,yaooc_terminal_t* r)
 {
-  return yaooc_base_parser_quoted_string(p,'\'');
+  return yaooc_base_parser_quoted_string(p,'\'',r);
 }
 
-yaooc_terminal_t yaooc_base_parser_double_quoted_string(pointer p)
+bool yaooc_base_parser_double_quoted_string(pointer p,yaooc_terminal_t* r)
 {
-  return yaooc_base_parser_quoted_string(p,'"');
+  return yaooc_base_parser_quoted_string(p,'"',r);
 }
 
-yaooc_terminal_t yaooc_base_parser_bare_string(pointer p)
+bool yaooc_base_parser_bare_string(pointer p,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
-  if(!isspace(*this->current_pos_)) {
-    this->current_pos_++;
-    while(*this->current_pos_!=0 && !isspace(*this->current_pos_)) this->current_pos_++;
-    ret.end_=this->current_pos_;
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
+  int c=yaooc_base_parser_peek(p);
+  if(!isspace(c)) {
+    for(;c!=0;c=yaooc_base_parser_peek(p)) {
+      if(isspace(c))
+        break;
+      yaooc_base_parser_next_chr(p);
+    }
+//    while(*this->current_pos_!=0 && !isspace(*this->current_pos_)) this->current_pos_++;
+    r->end_=this->current_pos_;
+    M(this,whitespace,&ws);
   }
-  return ret;
+  return r->end_!=NULL;
 }
 
-yaooc_terminal_t yaooc_base_parser_string_until_matching_chr(pointer p,char lch,char rch)
+bool yaooc_base_parser_string_until_matching_chr(pointer p,char lch,char rch,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
-  yaooc_terminal_t ret=default_terminal;
+  yaooc_terminal_t ws;
+  *r=default_terminal(p);
   int level=1;
-  const char* pos=this->current_pos_;
-  for(;*pos!= 0;pos++) {
-    if(*pos==lch) {
+  char c=yaooc_base_parser_next_chr(p);
+  for(;c!= 0;c=yaooc_base_parser_next_chr(p)) {
+    if(c==lch) {
       level++;
-    } else if(*pos==rch) {
+    } else if(c==rch) {
       if(--level==0) {
-        ret.end_=pos;
-        this->current_pos_=pos+1;
-        M(this,whitespace);
+        r->end_=yaooc_base_parser_current_pos(p)-1;
+        M(this,whitespace,&ws);
         break;
       }
     }
   }
-  return ret;
+  return r->end_!=NULL;
 }
 
-int yaooc_base_parser_result(const_pointer p)
+bool yaooc_base_parser_result(const_pointer p)
 {
-  return ((yaooc_base_parser_const_pointer)p)->result_;
+  return *(((yaooc_base_parser_const_pointer)p)->current_pos_)==0;
 }
 
 /* Class table for yaooc_base_parser */
@@ -594,39 +686,41 @@ yaooc_base_parser_class_table_t yaooc_base_parser_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
   .type_name_ = (const char*) "yaooc_base_parser_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_base_parser_swap,
-  .set_parse_string = (void (*) (pointer p,const char*)) yaooc_base_parser_set_parse_string,
-  .rule_start = (void (*) (pointer p)) yaooc_base_parser_rule_start,
-  .rule_success = (void (*) (pointer p)) yaooc_base_parser_rule_success,
-  .rule_fail = (void (*) (pointer p)) yaooc_base_parser_rule_fail,
-  .eos = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_eos,
-  .string_until_chrs = (yaooc_terminal_t (*) (pointer p,const char*)) yaooc_base_parser_string_until_chrs,
-  .string_while_chrs = (yaooc_terminal_t (*) (pointer p,const char*)) yaooc_base_parser_string_while_chrs,
-  .string_until_eol = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_string_until_eol,
-  .shell_comment = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_shell_comment,
-  .c_comment = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_c_comment,
-  .cpp_comment = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_cpp_comment,
-  .custom_whitespace = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_custom_whitespace,
-  .set_whitespace_types = (void (*) (pointer p,uint32_t)) yaooc_base_parser_set_whitespace_types,
-  .get_whitespace_types = (uint32_t (*) (pointer p)) yaooc_base_parser_get_whitespace_types,
-  .whitespace = (int (*) (pointer p)) yaooc_base_parser_whitespace,
-  .chr = (yaooc_terminal_t (*) (pointer p,char)) yaooc_base_parser_chr,
-  .chr_choices = (int (*) (pointer p,const char*)) yaooc_base_parser_chr_choices,
-  .str = (yaooc_terminal_t (*) (pointer p,const char*)) yaooc_base_parser_str,
-  .str_choices = (int (*) (pointer p,...)) yaooc_base_parser_str_choices,
-  .digits = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_digits,
-  .hexdigits = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_hexdigits,
-  .integer = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_integer,
-  .hexinteger = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_hexinteger,
-  .real = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_real,
-  .ident = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_ident,
-  .regex = (yaooc_terminal_t (*) (pointer p,const char*,uint32_t,uint32_t)) yaooc_base_parser_regex,
-  .quoted_string = (yaooc_terminal_t (*) (pointer p,char)) yaooc_base_parser_quoted_string,
-  .single_quoted_string = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_single_quoted_string,
-  .double_quoted_string = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_double_quoted_string,
-  .bare_string = (yaooc_terminal_t (*) (pointer p)) yaooc_base_parser_bare_string,
-  .string_until_matching_chr = (yaooc_terminal_t (*) (pointer p,char,char)) yaooc_base_parser_string_until_matching_chr,
-  .result = (int (*) (const_pointer)) yaooc_base_parser_result,
+  .swap = (void(*)(pointer, pointer)) yaooc_base_parser_swap,
+  .set_parse_string = (void(*)(pointer, const char*)) yaooc_base_parser_set_parse_string,
+  .rule_start = (void(*)(pointer)) yaooc_base_parser_rule_start,
+  .rule_success = (bool(*)(pointer)) yaooc_base_parser_rule_success,
+  .rule_fail = (bool(*)(pointer)) yaooc_base_parser_rule_fail,
+  .eos = (bool(*)(pointer)) yaooc_base_parser_eos,
+  .string_until_chrs = (bool(*)(pointer, const char*, yaooc_terminal_t*)) yaooc_base_parser_string_until_chrs,
+  .string_while_chrs = (bool(*)(pointer, const char*, yaooc_terminal_t*)) yaooc_base_parser_string_while_chrs,
+  .string_until_eol = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_string_until_eol,
+#if 0
+  .shell_comment = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_shell_comment,
+  .c_comment = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_c_comment,
+  .cpp_comment = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_cpp_comment,
+  .custom_whitespace = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_custom_whitespace,
+  .set_whitespace_types = (void(*)(pointer, uint32_t)) yaooc_base_parser_set_whitespace_types,
+  .get_whitespace_types = (uint32_t(*)(pointer)) yaooc_base_parser_get_whitespace_types,
+#endif
+  .whitespace = (bool(*)(pointer,yaooc_terminal_t*)) yaooc_base_parser_whitespace,
+  .chr = (bool(*)(pointer, char, yaooc_terminal_t*)) yaooc_base_parser_chr,
+  .chr_choices = (int(*)(pointer, const char*)) yaooc_base_parser_chr_choices,
+  .str = (bool(*)(pointer, const char*, yaooc_terminal_t*)) yaooc_base_parser_str,
+  .str_choices = (int(*)(pointer, ...)) yaooc_base_parser_str_choices,
+  .digits = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_digits,
+  .hexdigits = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_hexdigits,
+  .integer = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_integer,
+  .hexinteger = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_hexinteger,
+  .real = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_real,
+  .ident = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_ident,
+  .regex = (bool(*)(pointer, const char*, uint32_t, uint32_t, yaooc_terminal_t*)) yaooc_base_parser_regex,
+  .quoted_string = (bool(*)(pointer, char, yaooc_terminal_t*)) yaooc_base_parser_quoted_string,
+  .single_quoted_string = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_single_quoted_string,
+  .double_quoted_string = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_double_quoted_string,
+  .bare_string = (bool(*)(pointer, yaooc_terminal_t*)) yaooc_base_parser_bare_string,
+  .string_until_matching_chr = (bool(*)(pointer, char, char, yaooc_terminal_t*)) yaooc_base_parser_string_until_matching_chr,
+  .result = (bool(*)(const_pointer)) yaooc_base_parser_result,
 };
 
 

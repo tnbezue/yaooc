@@ -30,9 +30,10 @@ void test_simple()
 				"   id: 12  \n\n"
 						"}       \n\n";
   TESTCASE("Simple");
-  yaooc_ostringstream_pointer os=new(yaooc_ostringstream);
-  yaooc_json_parser_pointer jparser=new(yaooc_json_parser);
-  yaooc_json_value_pointer jv=M(jparser,parse_string,simple_jsn);
+  yaooc_ostringstream_t* os=new(yaooc_ostringstream);
+  yaooc_json_parser_t* jparser=new(yaooc_json_parser);
+  yaooc_json_value_t* jv;
+  M(jparser,parse_string,simple_jsn,&jv);
   TEST("Parsing successful",jv!=NULL);
   TEST("Json object returned",M(jv,type)==JSON_OBJECT);
   M(jv,print,os);
@@ -82,7 +83,8 @@ void test_color()
 
   const char* result_str="[{\"color\":\"red\",\"value\":\"#f00\"},{\"color\":\"green\",\"value\":\"#0f0\"},{\"color\":\"blue\",\"value\":\"#00f\"},{\"color\":\"cyan\",\"value\":\"#0ff\"},{\"color\":\"magenta\",\"value\":\"#f0f\"},{\"color\":\"yellow\",\"value\":\"#ff0\"},{\"color\":\"black\",\"value\":\"#000\"}]";
   yaooc_json_parser_pointer jparser=new(yaooc_json_parser);
-  yaooc_json_value_pointer jv=M(jparser,parse_string,color_jsn);
+  yaooc_json_value_t *jv;
+  M(jparser,parse_string,color_jsn,&jv);
   TEST("Parsing successful",jv!=NULL);
   TEST("Json array returned",M(jv,type)==JSON_ARRAY);
   M(jv,print,os);
@@ -134,7 +136,7 @@ void test_donuts()
   TESTCASE("Donuts");
   yaooc_json_parser_pointer jparser=new(yaooc_json_parser);
   yaooc_json_value_t* jv=NULL;
-  jv=M(jparser,parse_string,donuts_jsn);
+  M(jparser,parse_string,donuts_jsn,&jv);
 
   TEST("Parsing successful",jv!=NULL);
   if(jv) {
@@ -167,8 +169,9 @@ void test_properties()
         "\"object\",\"properties\":{\"/\":{}},\"patternProperties\":{\"^(/[^/]+)+$\":{}},"
         "\"additionalProperties\":false,\"required\":[\"/\"]}";
   TESTCASE("Properties");
-  yaooc_json_parser_pointer jparser=new(yaooc_json_parser);
-  yaooc_json_value_pointer jv=M(jparser,parse_string,properties_jsn);
+  yaooc_json_parser_t* jparser=new(yaooc_json_parser);
+  yaooc_json_value_t* jv;
+  M(jparser,parse_string,properties_jsn,&jv);
   TEST("Parsing successful",jv!=NULL);
   TEST("Json object returned",M(jv,type)==JSON_OBJECT);
   M(jv,print,os);
