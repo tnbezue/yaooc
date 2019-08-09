@@ -491,6 +491,22 @@ void test_start_end()
 	delete(str);
 }
 
+void test_vector()
+{
+  yaooc_string_t temp;
+  newp(&temp,yaooc_string);
+  yaooc_string_vector_t* sv=new(yaooc_string_vector);
+  M(&temp,set,"testing");
+  M(&temp,append,"and more testing to make length long");
+  int i;
+  for(i=0;i<255;i++)
+    M(sv,push_back,&temp);
+  TEST("String vector size is 256",M(sv,size)==255);
+  STREAM(cout,O_OBJ(yaooc_string,*M(sv,at,254)));
+  delete(sv);
+  deletep(&temp,yaooc_string);
+}
+
 test_function tests[]=
 {
 	test_construtor,
@@ -510,6 +526,7 @@ test_function tests[]=
 	test_sub,
 	test_gsub,
   test_start_end,
+  test_vector,
 };
 
 STD_MAIN(tests)

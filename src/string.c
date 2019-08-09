@@ -159,7 +159,7 @@ void yaooc_string_insertn(pointer p,size_t ipos,const char* str,size_t n)
   yaooc_string_pointer this=p;
   if(str) {
     ipos = ipos > SIZE(p) ? SIZE(p) : ipos;
-    size_t l = strlen(str);
+    size_t l = strnlen(str,n);
     n=n>l ? l : n;
 
     yaooc_array_container_insert_space(this,AT(p,ipos),n);
@@ -182,8 +182,12 @@ void yaooc_string_insertn_chr(pointer p,size_t pos,size_t count,char ch)
 
 void yaooc_string_set(pointer p,const char* str)
 {
+  yaooc_string_pointer this=p;
   if(str) {
-    yaooc_string_setn(p,str,str ? strlen(str) : 0);
+    yaooc_string_setn(this,str,strlen(str));
+  } else {
+    this->size_=0;
+    *END(this)=0;
   }
 }
 
@@ -226,7 +230,7 @@ void yaooc_string_replacen(pointer p,size_t pos,size_t n,const char* str,size_t 
   yaooc_string_pointer this=p;
   if(str) {
     size_t l;
-    if(count > (l=strlen(str))) count=l;
+    if(count > (l=strnlen(str,count))) count=l;
   } else {
     count = 0;
   }
