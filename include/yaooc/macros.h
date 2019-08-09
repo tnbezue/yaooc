@@ -36,11 +36,7 @@ extern const type_info_t* const name ## _ti;
 /*
 	Forward declaration of a union
 */
-#define yaooc_union_forward(name) \
-typedef union name ## _s name ## _t; \
-typedef union name ## _s * const name ## _pointer; \
-typedef const union name ## _s * const name ## _const_pointer; \
-extern const type_info_t* const name ## _ti;
+#define yaooc_union_forward(name) yaooc_class_forward(name)
 
 /*
   Structure definition.
@@ -50,6 +46,17 @@ typedef struct name ## _s name ## _t; \
 typedef struct name ## _s * const name ## _pointer; \
 typedef const struct name ## _s * const name ## _const_pointer; \
 extern const type_info_t __ ## name ## _ti; \
+extern const type_info_t* const name ## _ti; \
+struct name ## _s
+
+/*
+  Minimum data structure definition.
+*/
+#define yaooc_min_struct(name) \
+typedef struct name ## _s name ## _t; \
+typedef struct name ## _s * const name ## _pointer; \
+typedef const struct name ## _s * const name ## _const_pointer; \
+extern const min_type_info_t __ ## name ## _ti; \
 extern const type_info_t* const name ## _ti; \
 struct name ## _s
 
@@ -101,7 +108,7 @@ struct name ## _s \
 };
 
 /*
-  Defines class table for a union.  Same as class table
+  Defines class table for a union.  Same as class table for a class
 */
 #define yaooc_union_table(name) yaooc_class_table(name)
 
@@ -112,25 +119,29 @@ struct name ## _s \
 typedef struct name ## _s name ## _t; \
 typedef struct name ## _s * const name ## _pointer; \
 typedef const struct name ## _s * const name ## _const_pointer; \
-typedef union name ## _class_instance_s name ## _class_instance_t; \
-union name ## _class_instance_s
+typedef union name ## _union_instance_s name ## _union_instance_t; \
+union name ## _union_instance_s
 
 /*
-  Combines class table and instance members to make the class object;
+  Combines class table and instance members to make the union object;
 */
-#define yaooc_union(name) yaooc_class(name)
 
 /*
 	Union definition
-
+*/
 #define yaooc_union(name) \
-typedef union name ## _s name ## _t; \
-typedef union name ## _s * const name ## _pointer; \
-typedef const union name ## _s * const name ## _const_pointer; \
+typedef struct name ## _s name ## _t; \
+typedef struct name ## _s * const name ## _pointer; \
+typedef const struct name ## _s * const name ## _const_pointer; \
+extern name ## _class_table_t name ## _class_table; \
 extern const type_info_t __ ## name ## _ti; \
 extern const type_info_t* const name ## _ti; \
-union name ## _s
-*/
+struct name ## _s \
+{\
+	const name ## _class_table_t* class_table_; \
+	name ## _union_instance_t; \
+};
+
 
 #define DEF_CTOR_Y(T) T ## _default_ctor
 #define DEF_CTOR_N(T) NULL

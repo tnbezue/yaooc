@@ -138,11 +138,12 @@ typedef struct {
 	The pod_type_info_s structure  is for Plain Old Data (POD).
     -- Has less than compare
     -- Has to/from stream
-    -- No parent
+    -- Does not have a parent
     -- Used for POD types (int, double, etc) and structures made of POD types
 
 	The type_info_s structure is used for full class definitions.
-    -- Includes POD definition
+    -- Has less than compare
+    -- Has to/from stream
     -- Can have constructor
     -- Can have destructor
     -- Can have copy constructor
@@ -167,12 +168,9 @@ struct pod_type_info_s {
 /*
 	Pod types will have the MSB set in the size entry.
 */
-//#define POD_TYPE_FLAG (((__SIZE_TYPE__)1) << ((sizeof(__SIZE_TYPE__)*8)-1))
-//#define MIN_TYPE_FLAG (((__SIZE_TYPE__)1) << ((sizeof(__SIZE_TYPE__)*8)-2))
-//#define YAOOC_SIZE_MASK ((POD_TYPE_FLAG) | (MIN_TYPE_FLAG))
 #define is_min_type(ti) (((min_type_info_t*)ti)->min_flag_ == 1)
 #define is_pod_type(ti) (((min_type_info_t*)ti)->pod_flag_ == 1)
-#define is_min_pod_type(ti) (is_min_type(ti) | is_pod_type(ti))
+#define is_min_pod_type(ti) (is_min_type(ti) || is_pod_type(ti))
 /*
 	never directly use type info size entry, use yaooc_sizeof to get correct size
 */

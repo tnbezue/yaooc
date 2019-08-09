@@ -24,6 +24,19 @@
 #include <yaooc/new.h>
 #include "test_harness.h"
 
+void test_type_sizes()
+{
+#if __WORDSIZE == 64
+  TEST("Size of min_type_info is 8",sizeof(min_type_info_t)==8);
+  TEST("Size of pod_type_info is 32",sizeof(pod_type_info_t)==32);
+  TEST("Size of type_info is 80",sizeof(type_info_t)==80);
+#else
+  TEST("Size of min_type_info is 4",sizeof(min_type_info_t)==4);
+  TEST("Size of pod_type_info is 16",sizeof(pod_type_info_t)==16);
+  TEST("Size of type_info is 40",sizeof(type_info_t)==40);
+#endif
+}
+
 int base_x=0;
 yaooc_struct(demo) {
 	int x;
@@ -435,6 +448,7 @@ void test_renew()
 
 test_function tests[]=
 {
+  test_type_sizes,
  	test_new_delete,
 	test_new_delete_array,
 	test_pod,

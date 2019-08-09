@@ -54,7 +54,7 @@ void test_sstream()
 	yaooc_ostringstream_pointer out=new(yaooc_ostringstream);
 	M(out,printf,"%s %d\n","Testing",27);
 	STREAM(out,O_CCS("Testing "),O_INT(27),endl);
-	M(cout,puts,M(out,c_str));
+	M(cout,putstr,M(out,c_str));
 	delete(out);
 }
 
