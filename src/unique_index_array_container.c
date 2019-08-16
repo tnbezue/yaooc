@@ -41,7 +41,7 @@ iterator yaooc_unique_index_array_container_insert_range(pointer p,const_iterato
 {
 //  yaooc_unique_index_array_container_pointer this=p;
   size_t n = DISTANCE(TYPE_INFO(p),f,l);
-  yaooc_index_array_container_index_t idx=INDEX(p,pos);
+  size_t idx=INDEX(p,pos);
   yaooc_index_array_container_increase_capacity(p,n);
   yaooc_private_const_iterator first=f;
   yaooc_private_const_iterator last=l;

@@ -86,9 +86,7 @@ void yaooc_array_container_ctor_ti(pointer p,va_list args)
 static void yaooc_array_container_destroy_elements(pointer p)
 {
   yaooc_array_container_pointer this=p;
-	if(!is_pod_type(this->type_info_) && this->size_ > 0) {
-		__deletep_array(this->array_,this->type_info_,this->size_);
-	}
+	__deletep_array(this->array_,this->type_info_,this->size_);
 	this->size_=0;
 }
 /* Protected implementation for yaooc_array_container */

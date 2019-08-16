@@ -65,7 +65,7 @@ void print_indexes(int_index_array_container_const_pointer this)
   *optr=0;
   size_t i;
   for(i=0;i<M(this,size);i++)
-    optr+=sprintf(optr,"%u ",this->indexes_[i]);
+    optr+=sprintf(optr,"%u ",yaooc_uint24_to_uint32(this->indexes_+i));
 }
 
 void print_value(int_index_array_container_const_pointer this)
@@ -85,7 +85,7 @@ void print_in_order(int_index_array_container_const_pointer this)
   size_t i;
   int_index_array_container_const_iterator array=M(this,cbegin);
   for(i=0;i<M(this,size);i++)
-    optr+=sprintf(optr,"%d ",array[this->indexes_[i]]);
+    optr+=sprintf(optr,"%d ",array[yaooc_uint24_to_uint32(this->indexes_+i)]);
 }
 
 bool index_ordered(int_index_array_container_const_pointer this)
@@ -93,7 +93,7 @@ bool index_ordered(int_index_array_container_const_pointer this)
   size_t i;
   int_index_array_container_const_iterator array=M(this,cbegin);
   for(i=1;i<M(this,size);i++)
-    if(array[this->indexes_[i-1]] > array[this->indexes_[i]])
+    if(array[yaooc_uint24_to_uint32(this->indexes_+i-1)] > array[yaooc_uint24_to_uint32(this->indexes_+i)])
       return false;
   return true;
 }
