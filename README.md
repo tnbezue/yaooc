@@ -24,7 +24,7 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
     for(i=0;i<100;i++)
       M(lv,push_back,&i)
     long_vector_const_iterator ilv; /* const iterator for long vector */
-    for(ilv=M(lv,begin);ilv!=M(lv,end);ilv++)
+    for(ilv=M(lv,cbegin);ilv!=M(lv,cend);ilv++)
       printf("%ld ",*ilv);
     delete(lv);
 
@@ -42,16 +42,16 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
     M(mymap,insert,str,cp);
     ...
     yaooc_string_custom_map_const_iterator i;
-    FOR_EACH(i,mymap) { /* same as for (i=M(mymap,begin);i!=M(mymap,end);i++) */
+    CFOR_EACH(i,mymap) { /* same as for (i=M(mymap,cbegin);i!=M(mymap,cend);i++) */
       printf("%s %d %lf %s\n",M(i->first,c_str),i->second.x,i->second.y,i->second.string);
     }
     delete(mymap);
 
 ## Goals
 
-* Custom classes
+* Custom classes with default constructor, destructor, copy constructor, and assignment
 * new/delete for POD and custom classes
-* Multiple constructors
+* Capable of using alternative constructors to initialize class
 * Inheritance
 * Polymorphism
 * String class
