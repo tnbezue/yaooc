@@ -194,6 +194,19 @@ Each method takes two arguments -- pointers to the objects to compare.
 </div>
 </div>
 
+<p>
+The following compares if two my_string objects are equal.
+</p>
+<pre><code>
+  my_string_pointer p1=new(my_string);
+  my_string_pointer p2=new(my_string);
+  ....
+  if(p1==p2) /* Again, valid C but most likely not what was intended */
+    { puts(&quot;Equal&quot;); }
+  if(op_eq(p1,p2)) /* Will perform comparisons as specified by less than compare method */
+    { puts(&quot;Equal&quot;); }
+</code></pre>
+
 <h3>Type Info Structure</h3>
 The to/from stream, class table, and parent type info entries will be covered in later lessons.  The type info structure for my_string is now:
 <pre><code>

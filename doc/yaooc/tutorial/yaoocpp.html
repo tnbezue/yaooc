@@ -110,12 +110,12 @@ For example.
 
   #if 0 // HEADER
   This will not be considered valid since &quot;// HEADER&quot; not included on &quot;#endif&quot;
-  #ndif
+  #endif
 
   #ifdef __SOME__HEADER
   This will not be considered valid since &quot;//&quot; do not proceed HEADER in &quot;#ifdef&quot;
   This is most likely what was desired
-  #endif // HEADER
+  #endif // __SOME__HEADER
 
   #if 0  // HEADER so that this is considered a header in YAOOC
   This will not be considered valid since non whitespace characters follow &quot;// HEADER&quot;
@@ -128,10 +128,11 @@ The source block starts with &quot;#if 0 //SOURCE&quot; and ends with &quot;#end
 <p>
 The header and source blocks are optional.  There can be multiple header and source blocks.  They may
 appear anywhere in the definition file.  However, all text within the header and source blocks appear
-at the top of the respective file.
+at the top of the respective output file.
 </p>
 <h3>Class Definition and inheritance</h3>
 <p>
+A class, struct, or union can be using the definition file.
 name is the type name of the class, struct, or union (the &quot;_t&quot; should not be included).  parent is the parent type name.
 Structs do not require a parent.  A class or union must have a parent.
 If a parent is not specified for a class or union, yaooc_object is assumed.
@@ -193,26 +194,34 @@ Class table entries are defined in the table section.  The syntax for variable m
 <pre><code>
   var_type var_name [ = value ] ;
 </code></pre>
-<p>
-The value is optional but should be specified.  If value is a string, it should be
-enclosed in double quotes. If value is not specified, 0 (zero) is assumed.
-</p>
+<ul>
+<li>
+var_type is the variable type. Can be single word or combination of multiple words and &quot;*&quot; -- &quot;const unsigned int * const **&quot;
+</li>
+<li>
+var_name is the variable name -- a valid C variable name.
+</li>
+<li>
+value is the default value.  Value is optional -- however, it is normally specified and should be a valid value for the type.  If not specified, 0 (zero) is assummed.
+</li>
+<li>
+Table variables are inherited from parent.  Only new or overridden (changing default value) should be specified.  Overridden variables should have the same type as defined in parent.
+</li>
+</ul>
 <p>The syntax for method definition is:</p>
 <pre><code>
   ret_type method(arg1_type arg1,arg2_type arg2,...,argn_type argn) [const] [ = implementation_method ] ;
 </code></pre>
 <ul>
 <li>
-Table methods from parent are inherited.  Only new or overridden methods need to be specified.
+ret_type is the return type for the method and follows the same rules as var_type.
 </li>
 <li>
-If a method is overridden, it should have the same signature (return type, name, and arguments) as the parent method.
+method is the name of the method.  Must be a valid C method name.
 </li>
 <li>
-It is implied that the first argument of the method is a pointer to object.  Thus it should not be specified.
-</li>
-<li>
-Arguments must specify type and name. Variadic argument (...) can be specified as last argument.
+arg_type arg are argument type and name.  Follows same rules as var_type and var_name.  Zero or more can be specified.  Note that
+it is implied that the first argument of the method is a pointer to object -- thus it should not be specified as one of the arguments.
 </li>
 <li>
 Specifying const will cause const_pointer to be used as first argument rather than pointer.
@@ -222,13 +231,19 @@ Implementation_method is the name of an existing method.  If specified, a templa
 the implementation method will be specified in the class table.
 </li>
 <li>
+Table methods from parent are inherited.  Only new or overridden methods need to be specified.
+</li>
+<li>
+If a method is overridden, it should have the same signature (return type, name, and arguments) as the parent method.
+</li>
+<li>
   Structs do not have a table section.
 </li>
 </ul>
 
 <h3>Instance</h3>
 <p>
-Items in instance section follow the same rules as the table section -- with a few exceptions.
+Items in instance section follow the same rules as the table section with the following exceptions.
 </p>
 <ul>
 <li>

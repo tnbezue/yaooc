@@ -75,8 +75,8 @@ can access the type info to apply the appropriate assignment method.  Likewise, 
 of elements to delete. User methods should not try to access the type info or element count.
 </p>
 <p>
-For variables declared on the stack or for elements beyond the first element of an array (henceforth, will be referred to as static objects),
-the type info structure is not available.
+For objects that have not been allocated with new (i.e., declared on the stack) or for elements beyond the first element of an array,
+the type info structure is not available (these objects will henceforth be referred to as static objects).
 Therefore, some of the methods that have been presented so far will not work on static objects.  Static versions of these methods (appended with "_static") will have to be used.
 Since the type info pointer is not available, the class type is included as an argument to the static versions.
 </p>
