@@ -15,7 +15,7 @@
 
 class yaooc_date_time : yaooc_object {
 		yaooc_date_time();
-		yaooc_date_time(yaooc_date_time);
+		yaooc_date_time(yaooc_date_time*);
 		operator=();
 		operator<();
 		operator<<();

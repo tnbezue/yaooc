@@ -20,7 +20,7 @@ class yaooc_exception : yaooc_object
 		yaooc_exception();
     yaooc_exception_ctor_v(onst char*fmt,...);
 		~yaooc_exception();
-		yaooc_exception(yaooc_exception);
+		yaooc_exception(yaooc_exception*);
 		operator=();
 
   table:

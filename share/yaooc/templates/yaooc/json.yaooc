@@ -40,7 +40,7 @@ class yaooc_json_exception : yaooc_exception
 {
   yaooc_json_exception();
   ~yaooc_json_exception();
-  yaooc_json_exception(yaooc_json_exception);
+  yaooc_json_exception(yaooc_json_exception*);
   operator=();
   yaooc_json_exception_ctor_ccs(const char * str);
   table:
@@ -52,7 +52,7 @@ class yaooc_json_exception : yaooc_exception
 class yaooc_json_value : yaooc_object
 {
     yaooc_json_value();
-    yaooc_json_value(yaooc_json_value);
+    yaooc_json_value(yaooc_json_value*);
     ~yaooc_json_value();
     operator=();
     operator<();
@@ -70,7 +70,7 @@ class yaooc_json_value : yaooc_object
 class yaooc_json_null : yaooc_json_value
 {
     yaooc_json_null();
-    yaooc_json_null(yaooc_json_null);
+    yaooc_json_null(yaooc_json_null*);
   table:
     void virtual_dtor();
     void virtual_copy_ctor();
@@ -82,7 +82,7 @@ class yaooc_json_null : yaooc_json_value
 class yaooc_json_bool : yaooc_json_value
 {
     yaooc_json_bool();
-    yaooc_json_bool(yaooc_json_bool);
+    yaooc_json_bool(yaooc_json_bool*);
     yaooc_json_bool_ctor_bool(bool value);
   table:
     void virtual_dtor();
@@ -97,7 +97,7 @@ class yaooc_json_bool : yaooc_json_value
 class yaooc_json_integer : yaooc_json_value
 {
     yaooc_json_integer();
-    yaooc_json_integer(yaooc_json_integer);
+    yaooc_json_integer(yaooc_json_integer*);
     yaooc_json_integer_ctor_int(int value);
   table:
     void virtual_dtor();
@@ -112,7 +112,7 @@ class yaooc_json_integer : yaooc_json_value
 class yaooc_json_real : yaooc_json_value
 {
     yaooc_json_real();
-    yaooc_json_real(yaooc_json_real);
+    yaooc_json_real(yaooc_json_real*);
     yaooc_json_real_ctor_real(double value);
 
   table:
@@ -128,7 +128,7 @@ class yaooc_json_real : yaooc_json_value
 class yaooc_json_string : yaooc_json_value
 {
     yaooc_json_string();
-    yaooc_json_string(yaooc_json_string);
+    yaooc_json_string(yaooc_json_string*);
     yaooc_json_string_ctor_ccs(const char* str);
     yaooc_json_string_ctor_ccs_size(const char* str,size_t n);
 
@@ -147,7 +147,7 @@ class yaooc_json_string : yaooc_json_value
 class yaooc_json_array : yaooc_json_value
 {
     yaooc_json_array();
-    yaooc_json_array(yaooc_json_array);
+    yaooc_json_array(yaooc_json_array*);
 
   table:
     void virtual_dtor();
@@ -167,7 +167,7 @@ class yaooc_json_array : yaooc_json_value
 class yaooc_json_object : yaooc_json_value
 {
     yaooc_json_object();
-    yaooc_json_object(yaooc_json_object);
+    yaooc_json_object(yaooc_json_object*);
 
   table:
     void virtual_dtor();

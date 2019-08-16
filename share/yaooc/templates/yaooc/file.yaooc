@@ -17,7 +17,7 @@ typedef short nlink_t;
 
 class yaooc_file : yaooc_object {
 		yaooc_file();
-		yaooc_file(yaooc_file);
+		yaooc_file(yaooc_file*);
 		yaooc_file_ctor_name(const char* n);
 		operator=();
 		~yaooc_file();

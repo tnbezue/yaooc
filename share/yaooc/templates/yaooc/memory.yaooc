@@ -7,7 +7,7 @@ class yaooc_unique_ptr : yaooc_object
 {
     yaooc_unique_ptr();
     ~yaooc_unique_ptr();
-    yaooc_unique_ptr(yaooc_unique_ptr);
+    yaooc_unique_ptr(yaooc_unique_ptr*);
     yaooc_unique_ptr_ctor_ptr(pointer ptr);
     operator=();
     operator<();
@@ -25,7 +25,7 @@ class yaooc_shared_ptr : yaooc_object
 {
     yaooc_shared_ptr();
     ~yaooc_shared_ptr();
-    yaooc_shared_ptr(yaooc_shared_ptr);
+    yaooc_shared_ptr(yaooc_shared_ptr*);
     yaooc_shared_ptr_ctor_ptr(pointer ptr);
     operator=();
     operator<();

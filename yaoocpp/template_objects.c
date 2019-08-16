@@ -466,9 +466,9 @@ void yaoocpp_constructor_print_implementation(const_pointer p,ostream_pointer o,
     yaoocpp_argument_vector_const_iterator iarg;
     CFOR_EACH(iarg,&this->arguments_) {
       if(strcmp(M(&iarg->type_,c_str),"...") != 0) {
-				M(ostrm,printf," ");
+				M(ostrm,printf,"  ");
 				yaoocpp_argument_print_type_name(iarg,o);
-				M(ostrm,printf,"= va_arg(args,");
+				M(ostrm,printf," = va_arg(args,");
 				yaoocpp_argument_print_type(iarg,o);
 				M(ostrm,printf,");\n");
 			}
@@ -871,13 +871,13 @@ static void yaoocpp_container_print_type_info_implementation(const_pointer p,ost
                   "  return ret;\n"
                   "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));
   if(this->has_to_stream_)
-    M(ostrm,printf,"void %s_to_stream(const_pointer p,ostream_pointer o)"
+    M(ostrm,printf,"void %s_to_stream(const_pointer p,ostream_pointer o)\n"
                   "{\n"
                   "  %s_const_pointer this=p;\n"
                   "  yaooc_ostream_pointer ostrm=o;\n"
                   "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str));
   if(this->has_from_stream_)
-    M(ostrm,printf,"void %s_from_stream(pointer p,istream_pointer i)"
+    M(ostrm,printf,"void %s_from_stream(pointer p,istream_pointer i)\n"
                   "{\n"
                   "  %s_pointer this=p;\n"
                   "  yaooc_istream_pointer istrm=i;\n"

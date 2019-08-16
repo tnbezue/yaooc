@@ -17,7 +17,7 @@ typedef pointer istream_pointer;
 class yaooc_stream_exception : yaooc_exception
 {
 		yaooc_stream_exception();
-    yaooc_stream_exception(yaooc_stream_exception);
+    yaooc_stream_exception(yaooc_stream_exception*);
 		operator=();
     ~yaooc_stream_exception();
     yaooc_stream_exception_ctor_ccs(const char* str);

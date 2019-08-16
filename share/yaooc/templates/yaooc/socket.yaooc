@@ -50,7 +50,7 @@ class yaooc_socket_exception : yaooc_exception
 class yaooc_socket : yaooc_object {
 		yaooc_socket();  // throws exception, do not allow to create an socket
 		~yaooc_socket();
-		yaooc_socket(yaooc_socket);
+		yaooc_socket(yaooc_socket*);
 		operator=();
 	instance:
 		int sock_fd_;

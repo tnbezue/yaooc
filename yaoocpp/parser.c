@@ -432,7 +432,7 @@ static bool yaoocpp_parser_copy_constructor(pointer p)
   yaooc_terminal_t r;
   M(this,rule_start);
   if(M(this,str,M(&this->current_class_->name_,c_str),&r) && LPAREN(r)
-        && M(this,str,M(&this->current_class_->name_,c_str),&r) && RPAREN(r) && SEMICOLON(r)) {
+        && M(this,str,M(&this->current_class_->name_,c_str),&r) && STAR(r) && RPAREN(r) && SEMICOLON(r)) {
     RULE_SUCCESS(p);
     return true;
   }

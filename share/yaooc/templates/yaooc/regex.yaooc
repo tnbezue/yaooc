@@ -42,7 +42,7 @@ class yaooc_regex_exception : yaooc_exception {
 
 class yaooc_matchdata : yaooc_object {
     yaooc_matchdata();
-    yaooc_matchdata(yaooc_matchdata);
+    yaooc_matchdata(yaooc_matchdata*);
     ~yaooc_matchdata();
     operator=();
   table:
@@ -61,7 +61,7 @@ class yaooc_matchdata : yaooc_object {
 
 class yaooc_regex : yaooc_object {
     yaooc_regex();
-    yaooc_regex(yaooc_regex);
+    yaooc_regex(yaooc_regex*);
     ~yaooc_regex();
     operator=();
     yaooc_regex_ctor_ccs_int(const char* pattern,int flags);
