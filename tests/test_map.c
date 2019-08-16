@@ -164,10 +164,41 @@ void test_basic()
 
 }
 
+MINI_MAP_DEFINITION(yaooc_string,int,yaooc_string_int_map);
+MINI_MAP_IMPLEMENTATION(yaooc_string,int,yaooc_string_int_map);
 
-MAP_DEFINITION(yaooc_string,int,yaooc_string_int_map);
-MAP_IMPLEMENTATION(yaooc_string,int,yaooc_string_int_map);
-
+unsigned int *rbtree_indexes;
+unsigned int irb;
+void get_index(yaooc_rbnode_t* node)
+{
+	if(node != yaooc_rbnode_rbnil) {
+		get_index(node->left_);
+		rbtree_indexes[irb++]=node->index_;
+		get_index(node->right_);
+	};
+}
+/*
+const yaooc_string_t* prev_str=NULL;
+bool is_ordered(yaooc_string_int_map_pointer this)
+{
+  bool ret=true;
+  rbtree_indexes = (unsigned int*)MALLOC(M(this,size)*sizeof(unsigned int));
+  irb=0;
+  get_index(yaooc_rbtree_index_array_container_rbfirst(this));
+  unsigned int i;
+  printf("Size: %u\n",irb);
+  yaooc_string_int_map_const_iterator array=M(this,cbegin);
+  less_than_compare lt_cmp=get_lt_cmp(TYPE_INFO(this));
+  for(i=1;i<irb;i++) {
+    if(!lt_cmp(array+rbtree_indexes[i-1],array+rbtree_indexes[i])) {
+//      printf("Failed at index %u %s %s\n",i,M(array+rbtree_indexes[i-1],c_str),M(array+rbtree_indexes[i],c_str));
+      ret=false;
+      break;
+    }
+  }
+  return ret;
+}
+*/
 const char* str1="rpkjeiuhvlocynwtqdagzmfbxs";
 const char* str2="fzhcvtdkjpoxgyenluqrmawsib";
 const char* str3="vgztaiqfsphnjkydbxruewmocl";
@@ -183,9 +214,9 @@ void test_big()
 	clock_t start=clock();
 //  M(mfls,reserve,456976);
 	const char *i,*j,*k,*l;
-	for(i=str1;*i!=0;i++) {
+	for(i=str1+25;*i!=0;i++) {
 		is[0]=*i;
-		for(j=str2;*j!=0;j++) {
+		for(j=str2+22;*j!=0;j++) {
 			is[1]=*j;
 			for(k=str3;*k!=0;k++) {
 				is[2]=*k;
@@ -204,6 +235,7 @@ void test_big()
 	for(isi=M(mfls,begin);isi!=M(mfls,end);isi++) {
 		printf("%5s %6d\n",M(&isi->first,c_str),isi->second);
 	}*/
+//  TEST("Ordered",is_ordered(mfls));
 	delete(mfls);
 	deletep(&str,yaooc_string);
 }
@@ -214,8 +246,8 @@ void test_big()
 */
 UNIQUE_PTR_DEFINITION(yaooc_string,yaooc_string_unique_ptr)
 UNIQUE_PTR_IMPLEMENTATION(yaooc_string,yaooc_string_unique_ptr)
-MAP_DEFINITION(yaooc_string_unique_ptr,int,yaooc_string_unique_ptr_int_map)
-MAP_IMPLEMENTATION(yaooc_string_unique_ptr,int,yaooc_string_unique_ptr_int_map)
+MINI_MAP_DEFINITION(yaooc_string_unique_ptr,int,yaooc_string_unique_ptr_int_map)
+MINI_MAP_IMPLEMENTATION(yaooc_string_unique_ptr,int,yaooc_string_unique_ptr_int_map)
 
 void test_big_unique_ptr()
 {
@@ -226,9 +258,9 @@ void test_big_unique_ptr()
 	clock_t start=clock();
   STACK_VAR(yaooc_string_unique_ptr,s);
 	const char *i,*j,*k,*l;
-	for(i=str1;*i!=0;i++) {
+	for(i=str1+25;*i!=0;i++) {
 		str[0]=*i;
-		for(j=str2;*j!=0;j++) {
+		for(j=str2+22;*j!=0;j++) {
 			str[1]=*j;
 			for(k=str3;*k!=0;k++) {
 				str[2]=*k;
