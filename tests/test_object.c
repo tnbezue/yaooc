@@ -47,7 +47,7 @@ void test_basic()
   TEST("and D2 is 32",d2->x==32);
 
   /*
-    Ways of calling parent method
+    Ways of calling parent method.  See next test case for more details.
   */
   /*
     Using method similar to M macro
@@ -127,6 +127,11 @@ yaooc_class_instance(derived1)
 yaooc_class(derived1);
 
 int derived1_do_something_count=0;
+/*
+  Access parent method through parent class table entry in class table.
+  This is similar to M macro. If parent class also calls it's parent, you'll end up in an infinte loop
+  Rating: Bad
+ */
 void derived1_do_something_bad(pointer p)
 {
   derived1_pointer this=p;
@@ -135,6 +140,13 @@ void derived1_do_something_bad(pointer p)
   printf("Derived 1 (bad) do something has been called %d times\n",derived1_do_something_count);
   ((base_class_table_t*)(this->class_table_->parent_class_table_))->do_something(p);
 }
+
+/*
+  Access the parent method using the parent method name.
+  Will never have an infinite loop.  However, if the name of the parent method is changed,
+  this method would have to be changed. Changing the name of a method is rare.
+  Rating: good
+ */
 void derived1_do_something_good(pointer p)
 {
   if(++derived1_do_something_count > 5)
@@ -142,6 +154,13 @@ void derived1_do_something_good(pointer p)
   printf("Derived 1 (good) do something has been called %d times\n",derived1_do_something_count);
   base_do_something(p);
 }
+
+/*
+  Access the parent method using the parent class table.
+  Better than above. No infinite loop and works even if parent method name changes.
+  If inheritance changes (which is rare), then this method would have to be changed.
+  Rating: better
+ */
 void derived1_do_something_better(pointer p)
 {
   if(++derived1_do_something_count > 5)
@@ -149,6 +168,13 @@ void derived1_do_something_better(pointer p)
   printf("Derived 1 (better) do something has been called %d times\n",derived1_do_something_count);
   base_class_table.do_something(p);
 }
+
+/*
+  Access the parent method using parent class table entry from class table of this class.
+  Slightly better than previous. Avoids the other short commings. Even if inheritance is changed,
+  don't have to change this method.
+  Rating: best
+ */
 void derived1_do_something_best(pointer p)
 {
   if(++derived1_do_something_count > 5)
@@ -156,6 +182,7 @@ void derived1_do_something_best(pointer p)
   printf("Derived 1 (best) do something has been called %d times\n",derived1_do_something_count);
   ((const base_class_table_t*)(derived1_class_table.parent_class_table_))->do_something(p);
 }
+
 derived1_class_table_t derived1_class_table =
 {
   .parent_class_table_ = (const class_table_t*)&base_class_table,
