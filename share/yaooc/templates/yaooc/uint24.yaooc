@@ -11,6 +11,19 @@
 #endif // HEADER
 #if 0 // SOURCE
 #include <string.h>
+
+typedef union {
+  struct {
+#   if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+      uint8_t not_used;
+      uint8_t tbi[3];
+#   else
+      uint8_t tbi[3];
+      uint8_t not_used;
+#   endif
+  };
+  uint32_t ui32;
+} uint32_uint24_conversion_t;
 #endif  // SOURCE
 
 struct yaooc_uint24 {
