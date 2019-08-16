@@ -4,6 +4,19 @@
 
 #include <string.h>
 
+typedef union {
+  struct {
+#   if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+      uint8_t not_used;
+      uint8_t tbi[3];
+#   else
+      uint8_t tbi[3];
+      uint8_t not_used;
+#   endif
+  };
+  uint32_t ui32;
+} uint32_uint24_conversion_t;
+
 /* Private variables implementation for yaooc_uint24 */
 
 /* Private methods prototypes for yaooc_uint24 */
@@ -38,15 +51,16 @@ void yaooc_uint24_from_stream(pointer p,istream_pointer i)
 uint32_t yaooc_uint24_to_uint32(const_pointer p)
 {
   yaooc_uint24_const_pointer this=p;
-  uint32_t ui=0;
-  memcpy(&ui,this->bytes_,3);
-  return ui;
+  uint32_uint24_conversion_t temp;
+  temp.ui32=0;
+  memcpy(temp.tbi,this->bytes_,3);
+  return temp.ui32;
 }
 
 void yaooc_uint24_from_uint32(pointer p,uint32_t ui)
 {
   yaooc_uint24_pointer this=p;
-  memcpy(this->bytes_,&ui,3);
+  memcpy(this->bytes_,((const uint32_uint24_conversion_t*)&ui)->tbi,3);
 }
 
 

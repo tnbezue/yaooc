@@ -19,14 +19,14 @@
 #define __INDEX_ARRAY_CONTAINER_INCLUDED__
 
 #include <yaooc/array_container.h>
-
-typedef unsigned int yaooc_index_array_container_index_t;
+#include <yaooc/uint24.h>
+typedef yaooc_uint24_t yaooc_index_array_container_index_t;
 
 typedef struct {
   // If found, lower_index to upper_index of index array of found item.
   // If not found, index in ordered index array of where insertion should occur
-	yaooc_index_array_container_index_t lower_index_;
-  yaooc_index_array_container_index_t upper_index_;
+	size_t lower_index_;
+  size_t upper_index_;
 	bool found_;		// indicates whether found
 } yaooc_index_array_container_find_result_t;
 
@@ -40,6 +40,7 @@ yaooc_class_table(yaooc_index_array_container)
 {
   yaooc_array_container_class_table_t;
 };
+#define yaooc_index_array_container_parent_class_table ((yaooc_array_container_class_table_t*)(yaooc_index_array_container_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_index_array_container)
 {
@@ -87,6 +88,7 @@ void yaooc_index_array_container_reserve(pointer,size_t);
 //iterator yaooc_index_array_container_at_i(const_pointer,size_t);
 /*  End YAOOC PreProcessor generated content */
 
-#define AT_I(p,i) AT(p,((yaooc_index_array_container_const_pointer)(p))->indexes_[i])
+//#define AT_I(p,i) AT(p,((yaooc_index_array_container_const_pointer)(p))->indexes_[i])
+#define AT_I(p,i) AT(p,yaooc_uint24_to_uint32(((yaooc_index_array_container_const_pointer)(p))->indexes_+i))
 
 #endif

@@ -27,7 +27,8 @@
 bool yaooc_index_array_container_increase_capacity(pointer p,size_t n)
 {
   yaooc_index_array_container_pointer this=p;
-  bool ret=yaooc_array_container_increase_capacity(p,n);
+//  bool ret=yaooc_array_container_increase_capacity(p,n);
+  bool ret = yaooc_index_array_container_parent_class_table->increase_capacity(p,n);
   if(ret) {
     this->indexes_=REALLOC(this->indexes_,CAPACITY(p)*sizeof(yaooc_index_array_container_index_t));
   }
@@ -37,7 +38,7 @@ bool yaooc_index_array_container_increase_capacity(pointer p,size_t n)
 yaooc_index_array_container_find_result_t yaooc_index_array_container_find_protected(const_pointer p,const_pointer value)
 {
   yaooc_index_array_container_const_pointer this=p;
-  yaooc_index_array_container_find_result_t ret = { 0, false };
+  yaooc_index_array_container_find_result_t ret = { 0, 0, false };
   size_t lower=0,upper=this->size_-1,middle;
   less_than_compare lt_cmp=get_lt_cmp(this->type_info_);
   while(lower <= upper && upper != (size_t)-1) {
@@ -79,14 +80,15 @@ void yaooc_index_array_container_insert_index(pointer p,size_t pos,size_t n,size
   size_t i;
   size_t n_ge_value=size-value;
   for(i=0;i<size && n_ge_value>0;i++) {
-    if(this->indexes_[i] >= value) {
-      this->indexes_[i]+=n;
+    uint32_t temp=yaooc_uint24_to_uint32(this->indexes_+i);
+    if(temp >= value) {
+      yaooc_uint24_from_uint32(this->indexes_+i,temp+n);
       n_ge_value--;
     }
   }
   memmove(this->indexes_+pos+n,this->indexes_+pos,(size -pos)*sizeof(yaooc_index_array_container_index_t));
-  for(i=0;i<n;i++)
-    this->indexes_[pos++]=value++;
+  for(i=0;i<n;i++,pos++)
+    yaooc_uint24_from_uint32(this->indexes_+pos,value++);
 }
 
 void yaooc_index_array_container_remove_index(pointer p,size_t pos,size_t n)
@@ -97,16 +99,18 @@ void yaooc_index_array_container_remove_index(pointer p,size_t pos,size_t n)
   size_t upper=pos+n;
   size_t new_size=SIZE(p)-1;
   for(j=lower;j<upper;j++) {
-    size_t n_gt_index=new_size-this->indexes_[j];
+    size_t n_gt_index=new_size-yaooc_uint24_to_uint32(this->indexes_+j);
     for(i=0; i<lower && n_gt_index > 0;i++) {
-      if(this->indexes_[i] > this->indexes_[j]) {
-        this->indexes_[i]--;
+      uint32_t temp=yaooc_uint24_to_uint32(this->indexes_+i);
+      if(temp > yaooc_uint24_to_uint32(this->indexes_+j)) {
+        yaooc_uint24_from_uint32(this->indexes_+i,--temp);
         n_gt_index--;
       }
     }
     for(i=j+1; i<SIZE(p) && n_gt_index > 0;i++) {
-      if(this->indexes_[i] > this->indexes_[j]) {
-        this->indexes_[i]--;
+      uint32_t temp=yaooc_uint24_to_uint32(this->indexes_+i);
+      if(temp > yaooc_uint24_to_uint32(this->indexes_+j)) {
+        yaooc_uint24_from_uint32(this->indexes_+i,--temp);
         n_gt_index--;
       }
     }
@@ -115,6 +119,10 @@ void yaooc_index_array_container_remove_index(pointer p,size_t pos,size_t n)
   memmove(this->indexes_+pos,this->indexes_+pos+n,(SIZE(p)-pos-n)*sizeof(yaooc_index_array_container_index_t));
 }
 
+/*
+  When removing a range, after first removal, indexes are renumber so that next removal is for the
+  same index. ** FIX ME ** develop a better algorithm
+ */
 void yaooc_index_array_container_remove_fixed_index(pointer p,size_t value,size_t n)
 {
   yaooc_index_array_container_pointer this=p;
@@ -122,7 +130,7 @@ void yaooc_index_array_container_remove_fixed_index(pointer p,size_t value,size_
   size_t save_size=SIZE(p);
   for(j=0;j<n;j++) {
     for(i=0;i<SIZE(p);i++) {
-      if(value == this->indexes_[i])
+      if(value == yaooc_uint24_to_uint32(this->indexes_+i))
         break;
     }
     yaooc_index_array_container_remove_index(p,i,1);
@@ -199,7 +207,7 @@ size_t yaooc_index_array_container_erase_value(pointer p,const_pointer value)
     n_del = fr.upper_index_-fr.lower_index_+1;
     size_t * indexes=__new_array(size_ti,n_del);
     for(j=0,i=fr.lower_index_;i<=fr.upper_index_;j++,i++) {
-      indexes[j]=this->indexes_[i];
+      indexes[j]=yaooc_uint24_to_uint32(this->indexes_+i);
     }
     qsort(indexes,n_del,sizeof(size_t),cmp_size_t);
     yaooc_index_array_container_remove_index(p,fr.lower_index_,n_del);

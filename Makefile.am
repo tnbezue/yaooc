@@ -85,6 +85,7 @@ src/stream.c \
 src/string.c \
 src/thread.c \
 src/types.c \
+src/uint24.c \
 src/unique_array_container.c \
 src/unique_index_array_container.c \
 src/unique_ordered_array_container.c \
@@ -130,6 +131,7 @@ include/yaooc/stream.h \
 include/yaooc/string.h \
 include/yaooc/thread.h \
 include/yaooc/types.h \
+include/yaooc/uint24.h \
 include/yaooc/unique_array_container.h \
 include/yaooc/unique_index_array_container.h \
 include/yaooc/unique_ordered_array_container.h \
@@ -170,6 +172,7 @@ tests/test_stream \
 tests/test_socket \
 tests/test_string \
 tests/test_thread \
+tests/test_uint24 \
 tests/test_union \
 tests/test_unique_array_container \
 tests/test_unique_index_array_container \
@@ -191,4 +194,3 @@ yaoocpp_yaoocpp_SOURCES=yaoocpp/yaoocpp.c yaoocpp/parser.c \
         yaoocpp/template_objects.h
 
 yaoocpp_yaoocpp_LDFLAGS=-L$(top_srcdir)/lib -lyaooc -pthread
-
