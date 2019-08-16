@@ -82,15 +82,15 @@ exiting method.
 
 <pre><code>
   int some_method() {
-    PB_INIT;
+    <font color="red">PB_INIT</font>;
     int rc=0;
-    my_string_pointer sp=PB_SAVE(new(my_string));
+    my_string_pointer sp=<font color="red">PB_SAVE</font>(new(my_string));
     ...
-    char *temp = PB_SAVE(new_array(char,128));
+    char *temp = <font color="red">PB_SAVE</font>(new_array(char,128));
     ...
-    sp=PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This will be deleted when pointer bag is deleted"));
+    sp=<font color="red">PB_SAVE(</font>new_ctor(my_string,my_string_ctor_ccs,"This will be deleted when pointer bag is deleted"));
     ...
-    PB_EXIT;
+    <font color="red">PB_EXIT;</font>
     return rc;
   }
 </code></pre>

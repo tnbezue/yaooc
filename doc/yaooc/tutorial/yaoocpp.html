@@ -107,7 +107,7 @@ For example.
   #ifdef MYSYMBOL // HEADER
   This will be considered a valid header definition -- although may cause other problems if MYSYMBOL is defined
   #endif // HEADER
-  
+
   #if 0 // HEADER
   This will not be considered valid since &quot;// HEADER&quot; not included on &quot;#endif&quot;
   #ndif
@@ -126,7 +126,9 @@ The source_block contains code that will be copied to the source template file.
 The source block starts with &quot;#if 0 //SOURCE&quot; and ends with &quot;#endif //SOURCE&quot;.
 </p>
 <p>
-The header and source blocks are optional.
+The header and source blocks are optional.  There can be multiple header and source blocks.  They may
+appear anywhere in the definition file.  However, all text within the header and source blocks appear
+at the top of the respective file.
 </p>
 <h3>Class Definition and inheritance</h3>
 <p>
@@ -144,7 +146,7 @@ Those entries are shown below.
 <code>
   name();             /* Generate template for default constructor */
   ~name();            /* Generate template for destructor */
-  name(name);         /* Generate template for copy constructor */
+  name(name*);        /* Generate template for copy constructor */
   operator=();        /* Generate template for assignment method */
   operator&lt;();        /* Generate template for less than compare method */
   operator&lt;&lt;();       /* Generate template for to_stream method */
@@ -260,20 +262,20 @@ Complex data types (for arguments, variables, or return types of methods) may fa
 Standard C structs and unions can not be declared within a YAOOC struct, class, or union.  Declare the standard C struct or union in the header section then use only the type in the YAOOC declaration.  For example:
 </p>
 <pre><code>
-  /*H
-  typedef union {
+  #if 0 // HEADER
+  <font color="red">typedef union {
     int x;
     long l;
     double d;
     char* s;
-  } variant_t;
-  H*/
+  } variant_t;</font>
+  #endif // HEADER
   ...
   class yaooc_variant : yaooc_object {
     ...
     instance:
       int type;
-      variant_t;
+      <font color="red">variant_t;</font>
     ...
   };
 </code></pre>
@@ -421,7 +423,7 @@ class my_string : yaooc_object   /* my_string inherits from yaooc_object */
     */
     my_string();              /* default constructor. */
     ~my_string();             /* destructor */
-    my_string(my_string);     /* copy constructor */
+    my_string(my_string*);    /* copy constructor */
     operator=();              /* assignment */
     operator&lt;();              /* less than compare */
     operator&lt;&lt;();             /* to stream */

@@ -132,6 +132,31 @@ In C++, unless otherwise specified, the default constructor of the parent class 
 If needed, any child class constructor must explicitly call the parent default constructor (or any other parent class constructor using call_constructor method).
 </font>
 </p>
+<p>
+For example, consider the case of base_t being the parent of derived_t.  In C++, with the following default constructors,
+<pre><code>
+  base_t::base_t() { puts("Base");}
+  derived_t::derived_t() { puts("Derived");
+  ...
+  derived_t* d = new derived_t;
+</code></pre>
+<p>
+The output would be
+</p>
+<pre><code>
+  Base
+  Derived
+</code></pre>
+<p>
+In YAOOC, the default constructors would be:
+</p>
+<pre><code>
+  base_default_ctor(pointer p) { puts("Base"); }
+  derived_default_ctor(pointer p) { <font color="red">base_default_ctor(p);</font> puts("Derived"); }
+  ...
+  derived_t* d=new(derived);
+</code></pre>
+</p>
 <h3>Destructor</h3>
 <p>
 When an object is deleted, every destructor in reverse order of inheritance (the child destructor, the parent destructor, the parents' parent destructor, etc) will be called
