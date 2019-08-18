@@ -29,6 +29,7 @@ void yaooc_fraction_from_stream(pointer p,istream_pointer i)
   if(n == 1) {
     if(M(istrm,peek) == '/') {
       M(istrm,scanf,"/%ld",&this->denominator_);
+      yaooc_fraction_from_double(this,yaooc_fraction_to_double(this)); // reduce to lowest terms
     } else
       this->denominator_=1;
   }

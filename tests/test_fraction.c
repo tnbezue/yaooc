@@ -37,21 +37,28 @@ void test_basic()
 void test_to_double()
 {
   yaooc_fraction_t f;
+
   f.numerator_=0;
   f.denominator_=1;
   TEST("Fraction 0/1 as double == 0",fabs(yaooc_fraction_to_double(&f) - 0.0) < yaooc_fraction_epsilon);
+
   f.numerator_=1;
   TEST("Fraction 1/1 as double == 1",fabs(yaooc_fraction_to_double(&f) - 1.0) < yaooc_fraction_epsilon);
+
   f.denominator_=2;
   TEST("Fraction 1/2 as double == 0.5",fabs(yaooc_fraction_to_double(&f) - 0.5) < yaooc_fraction_epsilon);
+
   f.denominator_=3;
   TEST("Fraction 1/3 as double == 0.33333333",fabs(yaooc_fraction_to_double(&f) - 1.0/3.0) < yaooc_fraction_epsilon);
+
   f.numerator_=3;
   f.denominator_=5;
   TEST("Fraction 3/5 as double == 0.6",fabs(yaooc_fraction_to_double(&f) - 3.0/5.0) < yaooc_fraction_epsilon);
+
   f.numerator_=20;
   f.denominator_=3;
   TEST("Fraction 20/3 as double == 6.66666667",fabs(yaooc_fraction_to_double(&f) - 20.0/3.0) < yaooc_fraction_epsilon);
+
   f.numerator_=-20;
   f.denominator_=3;
   TEST("Fraction -20/3 as double == -6.66666667",fabs(yaooc_fraction_to_double(&f) - (-20.0/3.0)) < yaooc_fraction_epsilon);
@@ -60,16 +67,73 @@ void test_to_double()
 void test_from_double()
 {
   yaooc_fraction_t f;
+
   yaooc_fraction_from_double(&f,0.0);
   TEST("Fraction from 0.0 is 0/1",f.numerator_==0 && f.denominator_==1);
+
   yaooc_fraction_from_double(&f,1.0);
   TEST("Fraction from 0.0 is 1/1",f.numerator_==1 && f.denominator_==1);
+
   yaooc_fraction_from_double(&f,10.0);
   TEST("Fraction from 0.0 is 10/1",f.numerator_==10 && f.denominator_==1);
+
   yaooc_fraction_from_double(&f,0.3333333333);
   TEST("Fraction from 0.33333333 is 1/3",f.numerator_==1 && f.denominator_==3);
+
   yaooc_fraction_from_double(&f,-1.0625);
   TEST("Fraction from -1.0625 is -17/16",f.numerator_==-17 && f.denominator_==16);
+}
+
+void test_to_stream()
+{
+  yaooc_fraction_t f;
+  yaooc_ostringstream_t* os=new(yaooc_ostringstream);
+
+  f.numerator_=0;
+  f.denominator_=1;
+  STREAM(os,O_OBJ(yaooc_fraction,f));
+  TEST("Fraction 0/1 to stream is \"0\"",strcmp(M(os,c_str),"0")==0);
+  M(os,seek,0,SEEK_SET);
+
+  f.numerator_=1;
+  f.denominator_=1;
+  STREAM(os,O_OBJ(yaooc_fraction,f));
+  TEST("Fraction 1/1 to stream is \"1\"",strcmp(M(os,c_str),"1")==0);
+  M(os,seek,0,SEEK_SET);
+
+  f.numerator_=1;
+  f.denominator_=3;
+  STREAM(os,O_OBJ(yaooc_fraction,f));
+  TEST("Fraction 1/3 to stream is \"1/3\"",strcmp(M(os,c_str),"1/3")==0);
+  M(os,seek,0,SEEK_SET);
+
+  delete(os);
+}
+
+void test_from_stream()
+{
+  yaooc_istringstream_t* is=new_ctor(yaooc_istringstream,yaooc_istringstream_ctor_ccs,"0 1 10/3 -3/4 -8 5/10");
+  yaooc_fraction_t f;
+
+  STREAM(is,I_OBJ(yaooc_fraction,f));
+  TEST("Fraction 0 from stream",f.numerator_==0 && f.denominator_==1);
+
+  STREAM(is,I_OBJ(yaooc_fraction,f));
+  TEST("Fraction 1 from stream",f.numerator_==1 && f.denominator_==1);
+
+  STREAM(is,I_OBJ(yaooc_fraction,f));
+  TEST("Fraction 10/3 from stream",f.numerator_==10 && f.denominator_==3);
+
+  STREAM(is,I_OBJ(yaooc_fraction,f));
+  TEST("Fraction -3/4 from stream",f.numerator_==-3 && f.denominator_==4);
+
+  STREAM(is,I_OBJ(yaooc_fraction,f));
+  TEST("Fraction -8 from stream",f.numerator_==-8 && f.denominator_==1);
+
+  STREAM(is,I_OBJ(yaooc_fraction,f));
+  TEST("Fraction 5/10 from stream reduced to 1/2",f.numerator_==1 && f.denominator_==2);
+
+  delete(is);
 }
 
 test_function tests[]=
@@ -77,6 +141,8 @@ test_function tests[]=
 	test_basic,
   test_to_double,
   test_from_double,
+  test_to_stream,
+  test_from_stream,
 };
 
 STD_MAIN(tests)
