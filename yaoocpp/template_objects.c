@@ -865,8 +865,8 @@ static void yaoocpp_container_print_type_info_implementation(const_pointer p,ost
   if(this->has_lt_cmp_)
     M(ostrm,printf,"bool %s_less_than_compare(const_pointer p1,const_pointer p2)\n"
                   "{\n"
-                  "  %s_const_pointer rhs=p1;\n"
-                  "  %s_const_pointer lhs=p2;\n"
+                  "  %s_const_pointer lhs=p1;\n"
+                  "  %s_const_pointer rhs=p2;\n"
                   "  bool ret=false;\n"
                   "  return ret;\n"
                   "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));
