@@ -97,7 +97,7 @@ check_PROGRAMS = tests/test_algorithm$(EXEEXT) \
 	tests/test_array_container$(EXEEXT) \
 	tests/test_base_parser$(EXEEXT) tests/test_date_time$(EXEEXT) \
 	tests/test_dir$(EXEEXT) tests/test_exception$(EXEEXT) \
-	tests/test_file$(EXEEXT) \
+	tests/test_file$(EXEEXT) tests/test_fraction$(EXEEXT) \
 	tests/test_index_array_container$(EXEEXT) \
 	tests/test_ipaddress$(EXEEXT) tests/test_json$(EXEEXT) \
 	tests/test_json_parser$(EXEEXT) tests/test_map$(EXEEXT) \
@@ -170,7 +170,7 @@ lib_libyaooc_la_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_lib_libyaooc_la_OBJECTS = src/algorithm.lo src/array_container.lo \
 	src/base_parser.lo src/date_time.lo src/dir.lo \
-	src/exception.lo src/file.lo src/fstream.lo \
+	src/exception.lo src/file.lo src/fraction.lo src/fstream.lo \
 	src/index_array_container.lo src/integer.lo src/ipaddress.lo \
 	src/json.lo src/json_parser.lo src/memory.lo src/new.lo \
 	src/object.lo src/odbc.lo src/ordered_array_container.lo \
@@ -220,6 +220,10 @@ tests_test_file_SOURCES = tests/test_file.c
 tests_test_file_OBJECTS = tests/test_file.$(OBJEXT)
 tests_test_file_LDADD = $(LDADD)
 tests_test_file_DEPENDENCIES =
+tests_test_fraction_SOURCES = tests/test_fraction.c
+tests_test_fraction_OBJECTS = tests/test_fraction.$(OBJEXT)
+tests_test_fraction_LDADD = $(LDADD)
+tests_test_fraction_DEPENDENCIES =
 tests_test_index_array_container_SOURCES =  \
 	tests/test_index_array_container.c
 tests_test_index_array_container_OBJECTS =  \
@@ -388,7 +392,8 @@ am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	src/$(DEPDIR)/array_container.Plo \
 	src/$(DEPDIR)/base_parser.Plo src/$(DEPDIR)/date_time.Plo \
 	src/$(DEPDIR)/dir.Plo src/$(DEPDIR)/exception.Plo \
-	src/$(DEPDIR)/file.Plo src/$(DEPDIR)/fstream.Plo \
+	src/$(DEPDIR)/file.Plo src/$(DEPDIR)/fraction.Plo \
+	src/$(DEPDIR)/fstream.Plo \
 	src/$(DEPDIR)/index_array_container.Plo \
 	src/$(DEPDIR)/integer.Plo src/$(DEPDIR)/ipaddress.Plo \
 	src/$(DEPDIR)/json.Plo src/$(DEPDIR)/json_parser.Plo \
@@ -412,6 +417,7 @@ am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	tests/$(DEPDIR)/test_base_parser.Po \
 	tests/$(DEPDIR)/test_date_time.Po tests/$(DEPDIR)/test_dir.Po \
 	tests/$(DEPDIR)/test_exception.Po tests/$(DEPDIR)/test_file.Po \
+	tests/$(DEPDIR)/test_fraction.Po \
 	tests/$(DEPDIR)/test_index_array_container.Po \
 	tests/$(DEPDIR)/test_ipaddress.Po tests/$(DEPDIR)/test_json.Po \
 	tests/$(DEPDIR)/test_json_parser.Po \
@@ -459,13 +465,14 @@ am__v_CCLD_1 =
 SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_array_container.c tests/test_base_parser.c \
 	tests/test_date_time.c tests/test_dir.c tests/test_exception.c \
-	tests/test_file.c tests/test_index_array_container.c \
-	tests/test_ipaddress.c tests/test_json.c \
-	tests/test_json_parser.c tests/test_map.c tests/test_memory.c \
-	tests/test_new.c tests/test_number.c tests/test_object.c \
-	tests/test_odbc.c tests/test_ordered_array_container.c \
-	tests/test_ordered_map.c tests/test_ordered_set.c \
-	tests/test_pair.c tests/test_pointer_bag.c tests/test_queue.c \
+	tests/test_file.c tests/test_fraction.c \
+	tests/test_index_array_container.c tests/test_ipaddress.c \
+	tests/test_json.c tests/test_json_parser.c tests/test_map.c \
+	tests/test_memory.c tests/test_new.c tests/test_number.c \
+	tests/test_object.c tests/test_odbc.c \
+	tests/test_ordered_array_container.c tests/test_ordered_map.c \
+	tests/test_ordered_set.c tests/test_pair.c \
+	tests/test_pointer_bag.c tests/test_queue.c \
 	tests/test_rbtree_index_array_container.c tests/test_regex.c \
 	tests/test_set.c tests/test_socket.c tests/test_stack.c \
 	tests/test_stream.c tests/test_string.c tests/test_thread.c \
@@ -478,13 +485,14 @@ SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 DIST_SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_array_container.c tests/test_base_parser.c \
 	tests/test_date_time.c tests/test_dir.c tests/test_exception.c \
-	tests/test_file.c tests/test_index_array_container.c \
-	tests/test_ipaddress.c tests/test_json.c \
-	tests/test_json_parser.c tests/test_map.c tests/test_memory.c \
-	tests/test_new.c tests/test_number.c tests/test_object.c \
-	tests/test_odbc.c tests/test_ordered_array_container.c \
-	tests/test_ordered_map.c tests/test_ordered_set.c \
-	tests/test_pair.c tests/test_pointer_bag.c tests/test_queue.c \
+	tests/test_file.c tests/test_fraction.c \
+	tests/test_index_array_container.c tests/test_ipaddress.c \
+	tests/test_json.c tests/test_json_parser.c tests/test_map.c \
+	tests/test_memory.c tests/test_new.c tests/test_number.c \
+	tests/test_object.c tests/test_odbc.c \
+	tests/test_ordered_array_container.c tests/test_ordered_map.c \
+	tests/test_ordered_set.c tests/test_pair.c \
+	tests/test_pointer_bag.c tests/test_queue.c \
 	tests/test_rbtree_index_array_container.c tests/test_regex.c \
 	tests/test_set.c tests/test_socket.c tests/test_stack.c \
 	tests/test_stream.c tests/test_string.c tests/test_thread.c \
@@ -715,6 +723,7 @@ src/date_time.c \
 src/dir.c \
 src/exception.c \
 src/file.c \
+src/fraction.c \
 src/fstream.c \
 src/index_array_container.c \
 src/integer.c \
@@ -755,6 +764,7 @@ include/yaooc/date_time.h \
 include/yaooc/dir.h \
 include/yaooc/exception.h \
 include/yaooc/file.h \
+include/yaooc/fraction.h \
 include/yaooc/fstream.h \
 include/yaooc/index_array_container.h \
 include/yaooc/integer.h \
@@ -947,6 +957,7 @@ src/date_time.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/dir.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/exception.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/file.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/fraction.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/fstream.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/index_array_container.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
@@ -1038,6 +1049,12 @@ tests/test_file.$(OBJEXT): tests/$(am__dirstamp) \
 tests/test_file$(EXEEXT): $(tests_test_file_OBJECTS) $(tests_test_file_DEPENDENCIES) $(EXTRA_tests_test_file_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test_file$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_file_OBJECTS) $(tests_test_file_LDADD) $(LIBS)
+tests/test_fraction.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test_fraction$(EXEEXT): $(tests_test_fraction_OBJECTS) $(tests_test_fraction_DEPENDENCIES) $(EXTRA_tests_test_fraction_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test_fraction$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_fraction_OBJECTS) $(tests_test_fraction_LDADD) $(LIBS)
 tests/test_index_array_container.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1299,6 +1316,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/dir.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exception.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/file.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/fraction.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/fstream.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/index_array_container.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/integer.Plo@am__quote@ # am--include-marker
@@ -1337,6 +1355,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_dir.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_exception.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_file.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_fraction.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_index_array_container.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_ipaddress.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_json.Po@am__quote@ # am--include-marker
@@ -1723,6 +1742,7 @@ distclean: distclean-am
 	-rm -f src/$(DEPDIR)/dir.Plo
 	-rm -f src/$(DEPDIR)/exception.Plo
 	-rm -f src/$(DEPDIR)/file.Plo
+	-rm -f src/$(DEPDIR)/fraction.Plo
 	-rm -f src/$(DEPDIR)/fstream.Plo
 	-rm -f src/$(DEPDIR)/index_array_container.Plo
 	-rm -f src/$(DEPDIR)/integer.Plo
@@ -1761,6 +1781,7 @@ distclean: distclean-am
 	-rm -f tests/$(DEPDIR)/test_dir.Po
 	-rm -f tests/$(DEPDIR)/test_exception.Po
 	-rm -f tests/$(DEPDIR)/test_file.Po
+	-rm -f tests/$(DEPDIR)/test_fraction.Po
 	-rm -f tests/$(DEPDIR)/test_index_array_container.Po
 	-rm -f tests/$(DEPDIR)/test_ipaddress.Po
 	-rm -f tests/$(DEPDIR)/test_json.Po
@@ -1851,6 +1872,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f src/$(DEPDIR)/dir.Plo
 	-rm -f src/$(DEPDIR)/exception.Plo
 	-rm -f src/$(DEPDIR)/file.Plo
+	-rm -f src/$(DEPDIR)/fraction.Plo
 	-rm -f src/$(DEPDIR)/fstream.Plo
 	-rm -f src/$(DEPDIR)/index_array_container.Plo
 	-rm -f src/$(DEPDIR)/integer.Plo
@@ -1889,6 +1911,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/$(DEPDIR)/test_dir.Po
 	-rm -f tests/$(DEPDIR)/test_exception.Po
 	-rm -f tests/$(DEPDIR)/test_file.Po
+	-rm -f tests/$(DEPDIR)/test_fraction.Po
 	-rm -f tests/$(DEPDIR)/test_index_array_container.Po
 	-rm -f tests/$(DEPDIR)/test_ipaddress.Po
 	-rm -f tests/$(DEPDIR)/test_json.Po

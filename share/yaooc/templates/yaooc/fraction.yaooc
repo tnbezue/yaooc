@@ -1,0 +1,28 @@
+#ifndef __FRACTION_YAOOC_INCLUDED__
+#define __FRACTION_YAOOC_INCLUDED__
+
+#if 0 // HEADER
+#include <yaooc/macros.h>
+#include <yaooc/stream.h>
+#endif // HEADER
+
+#if 0 // SOURCE
+#include <math.h>
+#endif
+
+struct yaooc_fraction {
+  operator<();
+  operator<<();
+  operator>>();
+
+  instance:
+    long numerator_;
+    long denominator_;
+
+  protected:
+    void from_double(double d);
+    double to_double() const;
+    double epsilon=0.00005;
+};
+
+#endif

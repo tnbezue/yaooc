@@ -61,6 +61,7 @@ src/date_time.c \
 src/dir.c \
 src/exception.c \
 src/file.c \
+src/fraction.c \
 src/fstream.c \
 src/index_array_container.c \
 src/integer.c \
@@ -102,6 +103,7 @@ include/yaooc/date_time.h \
 include/yaooc/dir.h \
 include/yaooc/exception.h \
 include/yaooc/file.h \
+include/yaooc/fraction.h \
 include/yaooc/fstream.h \
 include/yaooc/index_array_container.h \
 include/yaooc/integer.h \
@@ -148,6 +150,7 @@ tests/test_date_time \
 tests/test_dir \
 tests/test_exception \
 tests/test_file \
+tests/test_fraction \
 tests/test_index_array_container \
 tests/test_ipaddress \
 tests/test_json \
