@@ -259,20 +259,20 @@ void yaoocpp_variable_print_prototype(const_pointer p,ostream_pointer o,const ch
 {
   yaoocpp_variable_const_pointer this=p;
   yaooc_ostream_pointer ostrm=o;
-  M(ostrm,printf,"%s%s %s",storage_class,M(&this->type_,c_str),M(&this->name_,c_str));
+  M(ostrm,printf,"%s%s %s_%s",storage_class,M(&this->type_,c_str),class_name,M(&this->name_,c_str));
   if(this->is_array_)
 		M(ostrm,printf,"[%s]",M(&this->array_size_,c_str));
-  M(ostrm,printf,";\n",M(&this->type_,c_str),M(&this->name_,c_str));
+  M(ostrm,printf,";\n"); //,M(&this->type_,c_str),M(&this->name_,c_str));
 }
 
 void yaoocpp_variable_print_implementation(const_pointer p,ostream_pointer o,const char* class_name,const char* storage_class)
 {
   yaoocpp_variable_const_pointer this=p;
   yaooc_ostream_pointer ostrm=o;
-  M(ostrm,printf,"%s%s %s",storage_class,M(&this->type_,c_str),M(&this->name_,c_str));
+  M(ostrm,printf,"%s%s %s_%s",storage_class,M(&this->type_,c_str),class_name,M(&this->name_,c_str));
   if(this->is_array_)
 		M(ostrm,printf,"[%s]",M(&this->array_size_,c_str));
-  M(ostrm,printf,";\n",M(&this->type_,c_str),M(&this->name_,c_str));
+  M(ostrm,printf,";\n"); //,M(&this->type_,c_str),M(&this->name_,c_str));
 }
 
 void yaoocpp_variable_print_class_table_implementation(const_pointer p,ostream_pointer o,const char* class_name)
@@ -910,8 +910,9 @@ static void yaoocpp_container_print_element_implementation(const_pointer p,ostre
   yaoocpp_element_pointer_vector_const_iterator iter;
   CFOR_EACH(iter,elements) {
     if((pvt == PRINT_ANY) || ((pvt & PRINT_VAR) && ISA(*iter,yaoocpp_variable))
-       || ((pvt & PRINT_METHOD) && ISA(*iter,yaoocpp_method)))
+       || ((pvt & PRINT_METHOD) && ISA(*iter,yaoocpp_method))) {
       M(*iter,print_implementation,ostrm,M(&this->name_,c_str),storage_class);
+    }
   }
   M(ostrm,printf,"\n");
 }
@@ -1056,7 +1057,7 @@ void yaoocpp_struct_print_to_source(const_pointer p,ostream_pointer o)
   yaoocpp_container_print_type_info_implementation(this,ostrm);
   yaoocpp_container_print_element_implementation(this,ostrm,"Constructors",&this->constructors_,PRINT_ANY,"");
   yaoocpp_container_print_element_implementation(this,ostrm,"Private methods",&this->private_,PRINT_METHOD,"static ");
-  yaoocpp_container_print_element_implementation(this,ostrm,"Protected",&this->protected_,PRINT_METHOD,"");
+  yaoocpp_container_print_element_implementation(this,ostrm,"Protected",&this->protected_,PRINT_BOTH,"");
   yaoocpp_container_print_define_type_info(this,ostrm,false);
 }
 
@@ -1231,7 +1232,7 @@ void yaoocpp_union_print_to_source(const_pointer p,ostream_pointer o)
   yaoocpp_container_print_type_info_implementation(this,ostrm);
   yaoocpp_container_print_element_implementation(this,ostrm,"Constructors",&this->constructors_,PRINT_ANY,"");
   yaoocpp_container_print_element_implementation(this,ostrm,"Private methods",&this->private_,PRINT_METHOD,"static ");
-  yaoocpp_container_print_element_implementation(this,ostrm,"Protected",&this->protected_,PRINT_METHOD,"");
+  yaoocpp_container_print_element_implementation(this,ostrm,"Protected",&this->protected_,PRINT_ANY,"");
   yaoocpp_container_print_define_type_info(this,ostrm,false);
 }
 
@@ -1320,7 +1321,7 @@ void yaoocpp_class_print_to_source(const_pointer p,ostream_pointer o)
   yaoocpp_container_print_type_info_implementation(this,ostrm);
   yaoocpp_container_print_element_implementation(this,ostrm,"Constructors",&this->constructors_,PRINT_ANY,"");
   yaoocpp_container_print_element_implementation(this,ostrm,"Private methods",&this->private_,PRINT_METHOD,"static ");
-  yaoocpp_container_print_element_implementation(this,ostrm,"Protected",&this->protected_,PRINT_METHOD,"");
+  yaoocpp_container_print_element_implementation(this,ostrm,"Protected",&this->protected_,PRINT_BOTH,"");
   yaoocpp_container_print_element_implementation(this,ostrm,"Table",&this->table_,PRINT_METHOD,"");
   yaoocpp_class_print_class_table_implementation(this,ostrm);
   yaoocpp_container_print_define_type_info(this,ostrm,true);
