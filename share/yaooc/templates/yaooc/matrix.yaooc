@@ -1,0 +1,53 @@
+#ifndef __YAOOC_MATRIX_YAOOC_INCLUDED__
+#define __YAOOC_MATRIX_YAOOC_INCLUDED__
+
+#include <yaooc/object.yaooc>
+#include <yaooc/exception.yaooc>
+#if 0 // HEADER
+yaooc_class_forward(yaooc_matrix);
+yaooc_matrix_pointer yaooc_matrix_identity(unsigned int rows);
+#endif // HEADER
+
+#if 0 // SOURCE
+#include <string.h>
+#endif // SOURCE
+class yaooc_matrix_exception : yaooc_exception {
+  yaooc_matrix_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
+};
+
+class yaooc_matrix : yaooc_object
+{
+  yaooc_matrix();
+  ~yaooc_matrix();
+  yaooc_matrix(yaooc_matrix*);
+  operator=();
+  yaooc_matrix_ctor_rows_cols(unsigned int rows,unsigned int cols);
+
+  table:
+    void swap(pointer o);
+    unsigned int rows() const;
+    unsigned int cols() const;
+    double at(unsigned int row,unsigned int col);
+    void set(unsigned int row,unsigned int col,double value);
+    yaooc_matrix_pointer transpose() const;
+    void transpose_();
+    yaooc_matrix_pointer inverse() const;
+    void inverse_();
+    yaooc_matrix_t* times(const_pointer o) const;
+    yaooc_matrix_t* plus(const_pointer o) const;
+    void plus_(const_pointer o);
+    yaooc_matrix_t* minus(const_pointer o) const;
+    void minus_(const_pointer o);
+    double determinant() const;
+    yaooc_matrix_t* sub_matrix(unsigned int row,unsigned int col);
+
+  instance:
+    unsigned int rows_;
+    unsigned int cols_;
+    double** data_;
+
+  protected:
+};
+
+
+#endif

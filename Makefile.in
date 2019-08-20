@@ -101,9 +101,9 @@ check_PROGRAMS = tests/test_algorithm$(EXEEXT) \
 	tests/test_index_array_container$(EXEEXT) \
 	tests/test_ipaddress$(EXEEXT) tests/test_json$(EXEEXT) \
 	tests/test_json_parser$(EXEEXT) tests/test_map$(EXEEXT) \
-	tests/test_memory$(EXEEXT) tests/test_new$(EXEEXT) \
-	tests/test_number$(EXEEXT) tests/test_object$(EXEEXT) \
-	tests/test_odbc$(EXEEXT) \
+	tests/test_memory$(EXEEXT) tests/test_matrix$(EXEEXT) \
+	tests/test_new$(EXEEXT) tests/test_number$(EXEEXT) \
+	tests/test_object$(EXEEXT) tests/test_odbc$(EXEEXT) \
 	tests/test_ordered_array_container$(EXEEXT) \
 	tests/test_ordered_map$(EXEEXT) \
 	tests/test_ordered_set$(EXEEXT) tests/test_pair$(EXEEXT) \
@@ -172,13 +172,13 @@ am_lib_libyaooc_la_OBJECTS = src/algorithm.lo src/array_container.lo \
 	src/base_parser.lo src/date_time.lo src/dir.lo \
 	src/exception.lo src/file.lo src/fraction.lo src/fstream.lo \
 	src/index_array_container.lo src/integer.lo src/ipaddress.lo \
-	src/json.lo src/json_parser.lo src/memory.lo src/new.lo \
-	src/object.lo src/odbc.lo src/ordered_array_container.lo \
-	src/pair.lo src/pointer_bag.lo src/queue.lo \
-	src/rbtree_index_array_container.lo src/real.lo src/regex.lo \
-	src/socket.lo src/sstream.lo src/stack.lo src/stream.lo \
-	src/string.lo src/thread.lo src/types.lo src/uint24.lo \
-	src/unique_array_container.lo \
+	src/json.lo src/json_parser.lo src/matrix.lo src/memory.lo \
+	src/new.lo src/object.lo src/odbc.lo \
+	src/ordered_array_container.lo src/pair.lo src/pointer_bag.lo \
+	src/queue.lo src/rbtree_index_array_container.lo src/real.lo \
+	src/regex.lo src/socket.lo src/sstream.lo src/stack.lo \
+	src/stream.lo src/string.lo src/thread.lo src/types.lo \
+	src/uint24.lo src/unique_array_container.lo \
 	src/unique_index_array_container.lo \
 	src/unique_ordered_array_container.lo src/utils.lo \
 	src/variant.lo src/vector.lo
@@ -246,6 +246,10 @@ tests_test_map_SOURCES = tests/test_map.c
 tests_test_map_OBJECTS = tests/test_map.$(OBJEXT)
 tests_test_map_LDADD = $(LDADD)
 tests_test_map_DEPENDENCIES =
+tests_test_matrix_SOURCES = tests/test_matrix.c
+tests_test_matrix_OBJECTS = tests/test_matrix.$(OBJEXT)
+tests_test_matrix_LDADD = $(LDADD)
+tests_test_matrix_DEPENDENCIES =
 tests_test_memory_SOURCES = tests/test_memory.c
 tests_test_memory_OBJECTS = tests/test_memory.$(OBJEXT)
 tests_test_memory_LDADD = $(LDADD)
@@ -397,8 +401,9 @@ am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	src/$(DEPDIR)/index_array_container.Plo \
 	src/$(DEPDIR)/integer.Plo src/$(DEPDIR)/ipaddress.Plo \
 	src/$(DEPDIR)/json.Plo src/$(DEPDIR)/json_parser.Plo \
-	src/$(DEPDIR)/memory.Plo src/$(DEPDIR)/new.Plo \
-	src/$(DEPDIR)/object.Plo src/$(DEPDIR)/odbc.Plo \
+	src/$(DEPDIR)/matrix.Plo src/$(DEPDIR)/memory.Plo \
+	src/$(DEPDIR)/new.Plo src/$(DEPDIR)/object.Plo \
+	src/$(DEPDIR)/odbc.Plo \
 	src/$(DEPDIR)/ordered_array_container.Plo \
 	src/$(DEPDIR)/pair.Plo src/$(DEPDIR)/pointer_bag.Plo \
 	src/$(DEPDIR)/queue.Plo \
@@ -421,9 +426,10 @@ am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	tests/$(DEPDIR)/test_index_array_container.Po \
 	tests/$(DEPDIR)/test_ipaddress.Po tests/$(DEPDIR)/test_json.Po \
 	tests/$(DEPDIR)/test_json_parser.Po \
-	tests/$(DEPDIR)/test_map.Po tests/$(DEPDIR)/test_memory.Po \
-	tests/$(DEPDIR)/test_new.Po tests/$(DEPDIR)/test_number.Po \
-	tests/$(DEPDIR)/test_object.Po tests/$(DEPDIR)/test_odbc.Po \
+	tests/$(DEPDIR)/test_map.Po tests/$(DEPDIR)/test_matrix.Po \
+	tests/$(DEPDIR)/test_memory.Po tests/$(DEPDIR)/test_new.Po \
+	tests/$(DEPDIR)/test_number.Po tests/$(DEPDIR)/test_object.Po \
+	tests/$(DEPDIR)/test_odbc.Po \
 	tests/$(DEPDIR)/test_ordered_array_container.Po \
 	tests/$(DEPDIR)/test_ordered_map.Po \
 	tests/$(DEPDIR)/test_ordered_set.Po \
@@ -468,8 +474,8 @@ SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_file.c tests/test_fraction.c \
 	tests/test_index_array_container.c tests/test_ipaddress.c \
 	tests/test_json.c tests/test_json_parser.c tests/test_map.c \
-	tests/test_memory.c tests/test_new.c tests/test_number.c \
-	tests/test_object.c tests/test_odbc.c \
+	tests/test_matrix.c tests/test_memory.c tests/test_new.c \
+	tests/test_number.c tests/test_object.c tests/test_odbc.c \
 	tests/test_ordered_array_container.c tests/test_ordered_map.c \
 	tests/test_ordered_set.c tests/test_pair.c \
 	tests/test_pointer_bag.c tests/test_queue.c \
@@ -488,8 +494,8 @@ DIST_SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_file.c tests/test_fraction.c \
 	tests/test_index_array_container.c tests/test_ipaddress.c \
 	tests/test_json.c tests/test_json_parser.c tests/test_map.c \
-	tests/test_memory.c tests/test_new.c tests/test_number.c \
-	tests/test_object.c tests/test_odbc.c \
+	tests/test_matrix.c tests/test_memory.c tests/test_new.c \
+	tests/test_number.c tests/test_object.c tests/test_odbc.c \
 	tests/test_ordered_array_container.c tests/test_ordered_map.c \
 	tests/test_ordered_set.c tests/test_pair.c \
 	tests/test_pointer_bag.c tests/test_queue.c \
@@ -730,6 +736,7 @@ src/integer.c \
 src/ipaddress.c \
 src/json.c \
 src/json_parser.c \
+src/matrix.c \
 src/memory.c \
 src/new.c \
 src/object.c \
@@ -774,6 +781,7 @@ include/yaooc/json_parser.h \
 include/yaooc/macros.h \
 include/yaooc/map.h \
 include/yaooc/memory.h \
+include/yaooc/matrix.h \
 include/yaooc/new.h \
 include/yaooc/object.h \
 include/yaooc/odbc.h \
@@ -965,6 +973,7 @@ src/integer.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/ipaddress.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/json.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/json_parser.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/matrix.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/memory.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/new.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/object.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
@@ -1085,6 +1094,12 @@ tests/test_map.$(OBJEXT): tests/$(am__dirstamp) \
 tests/test_map$(EXEEXT): $(tests_test_map_OBJECTS) $(tests_test_map_DEPENDENCIES) $(EXTRA_tests_test_map_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test_map$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_map_OBJECTS) $(tests_test_map_LDADD) $(LIBS)
+tests/test_matrix.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test_matrix$(EXEEXT): $(tests_test_matrix_OBJECTS) $(tests_test_matrix_DEPENDENCIES) $(EXTRA_tests_test_matrix_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test_matrix$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_matrix_OBJECTS) $(tests_test_matrix_LDADD) $(LIBS)
 tests/test_memory.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1323,6 +1338,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ipaddress.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/json.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/json_parser.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/matrix.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/memory.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/new.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/object.Plo@am__quote@ # am--include-marker
@@ -1361,6 +1377,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_json.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_json_parser.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_map.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_matrix.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_memory.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_new.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_number.Po@am__quote@ # am--include-marker
@@ -1749,6 +1766,7 @@ distclean: distclean-am
 	-rm -f src/$(DEPDIR)/ipaddress.Plo
 	-rm -f src/$(DEPDIR)/json.Plo
 	-rm -f src/$(DEPDIR)/json_parser.Plo
+	-rm -f src/$(DEPDIR)/matrix.Plo
 	-rm -f src/$(DEPDIR)/memory.Plo
 	-rm -f src/$(DEPDIR)/new.Plo
 	-rm -f src/$(DEPDIR)/object.Plo
@@ -1787,6 +1805,7 @@ distclean: distclean-am
 	-rm -f tests/$(DEPDIR)/test_json.Po
 	-rm -f tests/$(DEPDIR)/test_json_parser.Po
 	-rm -f tests/$(DEPDIR)/test_map.Po
+	-rm -f tests/$(DEPDIR)/test_matrix.Po
 	-rm -f tests/$(DEPDIR)/test_memory.Po
 	-rm -f tests/$(DEPDIR)/test_new.Po
 	-rm -f tests/$(DEPDIR)/test_number.Po
@@ -1879,6 +1898,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f src/$(DEPDIR)/ipaddress.Plo
 	-rm -f src/$(DEPDIR)/json.Plo
 	-rm -f src/$(DEPDIR)/json_parser.Plo
+	-rm -f src/$(DEPDIR)/matrix.Plo
 	-rm -f src/$(DEPDIR)/memory.Plo
 	-rm -f src/$(DEPDIR)/new.Plo
 	-rm -f src/$(DEPDIR)/object.Plo
@@ -1917,6 +1937,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/$(DEPDIR)/test_json.Po
 	-rm -f tests/$(DEPDIR)/test_json_parser.Po
 	-rm -f tests/$(DEPDIR)/test_map.Po
+	-rm -f tests/$(DEPDIR)/test_matrix.Po
 	-rm -f tests/$(DEPDIR)/test_memory.Po
 	-rm -f tests/$(DEPDIR)/test_new.Po
 	-rm -f tests/$(DEPDIR)/test_number.Po

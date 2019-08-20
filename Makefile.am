@@ -68,6 +68,7 @@ src/integer.c \
 src/ipaddress.c \
 src/json.c \
 src/json_parser.c \
+src/matrix.c \
 src/memory.c \
 src/new.c \
 src/object.c \
@@ -113,6 +114,7 @@ include/yaooc/json_parser.h \
 include/yaooc/macros.h \
 include/yaooc/map.h \
 include/yaooc/memory.h \
+include/yaooc/matrix.h \
 include/yaooc/new.h \
 include/yaooc/object.h \
 include/yaooc/odbc.h \
@@ -157,6 +159,7 @@ tests/test_json \
 tests/test_json_parser \
 tests/test_map \
 tests/test_memory \
+tests/test_matrix \
 tests/test_new \
 tests/test_number \
 tests/test_object \
