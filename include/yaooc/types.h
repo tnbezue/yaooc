@@ -150,6 +150,13 @@ typedef struct {
     -- Can have assignment
     -- Can have parent
 */
+#ifdef _WIN64
+#define __WORDSIZE 64
+#else
+#ifdef _WIN32
+#define __WORDSIZE 32
+#endif
+#endif
 typedef struct min_type_info_s min_type_info_t;
 struct min_type_info_s {
   unsigned int min_flag_ : 1 ; // Indicates type info structure contains only size
