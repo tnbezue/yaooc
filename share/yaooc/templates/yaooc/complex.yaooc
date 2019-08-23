@@ -1,0 +1,41 @@
+#ifndef __COMPLEX_YAOOC_INCLUDED__
+#define __COMPLEX_YAOOC_INCLUDED__
+
+#include <yaooc/object.yaooc>
+#include <yaooc/exception.yaooc>
+#if 0 // HEADER
+#include <yaooc/stream.h>
+#endif // HEADER
+
+class yaooc_complex : yaooc_object {
+    operator<();
+    operator<<();
+    operator>>();
+    yaooc_complex_ctor_r_i(double r,double i);
+  instance:
+    double real_;
+    double imag_;
+
+  table:
+    yaooc_complex_t* times_real(double d);
+    void times_real_(double d);
+    yaooc_complex_t* divided_by_real(double d);
+    void divided_by_real_(double d);
+    yaooc_complex_t* plus_complex(const_pointer o);
+    void plus_complex_(const_pointer o);
+    yaooc_complex_t* minus_complex(const_pointer o);
+    void minus_complex_(const_pointer o);
+    yaooc_complex_t* times_complex(const_pointer o);
+    void times_complex_(const_pointer o);
+    yaooc_complex_t* divided_by_complex(const_pointer o);
+    void divided_by_complex_(const_pointer o);
+    double magnitude() const;
+    double direction() const;
+};
+
+class yaooc_complex_exception : yaooc_exception
+{
+  yaooc_complex_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
+};
+
+#endif

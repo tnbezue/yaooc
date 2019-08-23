@@ -28,7 +28,8 @@ fi
 
 # Checks for header files.
 #AC_CONFIG_HEADERS([include/yaooc/config.h])
-AC_CHECK_HEADERS([fcntl.h inttypes.h stddef.h stdint.h stdlib.h string.h unistd.h])
+AC_CHECK_LIB(m,sqrt,[LIBS="$LIBS -lm"])
+AC_CHECK_HEADERS([fcntl.h inttypes.h stddef.h stdint.h stdlib.h string.h unistd.h math.h])
 AC_CHECK_FUNCS([memchr memmove memrchr memset strchr getcwd gettimeofday socket strcasecmp strcspn strdup strrchr strspn strstr])
 AC_FUNC_REALLOC
 AC_TYPE_INT64_T
@@ -57,7 +58,7 @@ case $host_os in
 	*)
 	AC_CHECK_LIB(odbc,SQLAllocHandle,
 		[
-			LIBS="-lodbc"
+			LIBS="$LIBS -lodbc"
 		],
 		[
 			AC_MSG_ERROR(odbc library not found)

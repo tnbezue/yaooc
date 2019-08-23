@@ -96,8 +96,9 @@ host_triplet = @host@
 check_PROGRAMS = tests/test_algorithm$(EXEEXT) \
 	tests/test_array_container$(EXEEXT) \
 	tests/test_base_parser$(EXEEXT) tests/test_date_time$(EXEEXT) \
-	tests/test_dir$(EXEEXT) tests/test_exception$(EXEEXT) \
-	tests/test_file$(EXEEXT) tests/test_fraction$(EXEEXT) \
+	tests/test_complex$(EXEEXT) tests/test_dir$(EXEEXT) \
+	tests/test_exception$(EXEEXT) tests/test_file$(EXEEXT) \
+	tests/test_fraction$(EXEEXT) \
 	tests/test_index_array_container$(EXEEXT) \
 	tests/test_ipaddress$(EXEEXT) tests/test_json$(EXEEXT) \
 	tests/test_json_parser$(EXEEXT) tests/test_map$(EXEEXT) \
@@ -169,7 +170,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 lib_libyaooc_la_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_lib_libyaooc_la_OBJECTS = src/algorithm.lo src/array_container.lo \
-	src/base_parser.lo src/date_time.lo src/dir.lo \
+	src/base_parser.lo src/date_time.lo src/complex.lo src/dir.lo \
 	src/exception.lo src/file.lo src/fraction.lo src/fstream.lo \
 	src/index_array_container.lo src/integer.lo src/ipaddress.lo \
 	src/json.lo src/json_parser.lo src/matrix.lo src/memory.lo \
@@ -204,6 +205,10 @@ tests_test_base_parser_SOURCES = tests/test_base_parser.c
 tests_test_base_parser_OBJECTS = tests/test_base_parser.$(OBJEXT)
 tests_test_base_parser_LDADD = $(LDADD)
 tests_test_base_parser_DEPENDENCIES =
+tests_test_complex_SOURCES = tests/test_complex.c
+tests_test_complex_OBJECTS = tests/test_complex.$(OBJEXT)
+tests_test_complex_LDADD = $(LDADD)
+tests_test_complex_DEPENDENCIES =
 tests_test_date_time_SOURCES = tests/test_date_time.c
 tests_test_date_time_OBJECTS = tests/test_date_time.$(OBJEXT)
 tests_test_date_time_LDADD = $(LDADD)
@@ -394,10 +399,10 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	src/$(DEPDIR)/array_container.Plo \
-	src/$(DEPDIR)/base_parser.Plo src/$(DEPDIR)/date_time.Plo \
-	src/$(DEPDIR)/dir.Plo src/$(DEPDIR)/exception.Plo \
-	src/$(DEPDIR)/file.Plo src/$(DEPDIR)/fraction.Plo \
-	src/$(DEPDIR)/fstream.Plo \
+	src/$(DEPDIR)/base_parser.Plo src/$(DEPDIR)/complex.Plo \
+	src/$(DEPDIR)/date_time.Plo src/$(DEPDIR)/dir.Plo \
+	src/$(DEPDIR)/exception.Plo src/$(DEPDIR)/file.Plo \
+	src/$(DEPDIR)/fraction.Plo src/$(DEPDIR)/fstream.Plo \
 	src/$(DEPDIR)/index_array_container.Plo \
 	src/$(DEPDIR)/integer.Plo src/$(DEPDIR)/ipaddress.Plo \
 	src/$(DEPDIR)/json.Plo src/$(DEPDIR)/json_parser.Plo \
@@ -420,6 +425,7 @@ am__depfiles_remade = src/$(DEPDIR)/algorithm.Plo \
 	src/$(DEPDIR)/vector.Plo tests/$(DEPDIR)/test_algorithm.Po \
 	tests/$(DEPDIR)/test_array_container.Po \
 	tests/$(DEPDIR)/test_base_parser.Po \
+	tests/$(DEPDIR)/test_complex.Po \
 	tests/$(DEPDIR)/test_date_time.Po tests/$(DEPDIR)/test_dir.Po \
 	tests/$(DEPDIR)/test_exception.Po tests/$(DEPDIR)/test_file.Po \
 	tests/$(DEPDIR)/test_fraction.Po \
@@ -470,8 +476,8 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_array_container.c tests/test_base_parser.c \
-	tests/test_date_time.c tests/test_dir.c tests/test_exception.c \
-	tests/test_file.c tests/test_fraction.c \
+	tests/test_complex.c tests/test_date_time.c tests/test_dir.c \
+	tests/test_exception.c tests/test_file.c tests/test_fraction.c \
 	tests/test_index_array_container.c tests/test_ipaddress.c \
 	tests/test_json.c tests/test_json_parser.c tests/test_map.c \
 	tests/test_matrix.c tests/test_memory.c tests/test_new.c \
@@ -490,8 +496,8 @@ SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	$(yaoocpp_yaoocpp_SOURCES)
 DIST_SOURCES = $(lib_libyaooc_la_SOURCES) tests/test_algorithm.c \
 	tests/test_array_container.c tests/test_base_parser.c \
-	tests/test_date_time.c tests/test_dir.c tests/test_exception.c \
-	tests/test_file.c tests/test_fraction.c \
+	tests/test_complex.c tests/test_date_time.c tests/test_dir.c \
+	tests/test_exception.c tests/test_file.c tests/test_fraction.c \
 	tests/test_index_array_container.c tests/test_ipaddress.c \
 	tests/test_json.c tests/test_json_parser.c tests/test_map.c \
 	tests/test_matrix.c tests/test_memory.c tests/test_new.c \
@@ -726,6 +732,7 @@ lib_libyaooc_la_SOURCES = src/algorithm.c \
 src/array_container.c \
 src/base_parser.c \
 src/date_time.c \
+src/complex.c \
 src/dir.c \
 src/exception.c \
 src/file.c \
@@ -768,6 +775,7 @@ pkginclude_HEADERS = include/yaooc/algorithm.h \
 include/yaooc/array_container.h \
 include/yaooc/base_parser.h \
 include/yaooc/date_time.h \
+include/yaooc/complex.h \
 include/yaooc/dir.h \
 include/yaooc/exception.h \
 include/yaooc/file.h \
@@ -962,6 +970,7 @@ src/array_container.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/base_parser.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/date_time.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/complex.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/dir.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/exception.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/file.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
@@ -1034,6 +1043,12 @@ tests/test_base_parser.$(OBJEXT): tests/$(am__dirstamp) \
 tests/test_base_parser$(EXEEXT): $(tests_test_base_parser_OBJECTS) $(tests_test_base_parser_DEPENDENCIES) $(EXTRA_tests_test_base_parser_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test_base_parser$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_base_parser_OBJECTS) $(tests_test_base_parser_LDADD) $(LIBS)
+tests/test_complex.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test_complex$(EXEEXT): $(tests_test_complex_OBJECTS) $(tests_test_complex_DEPENDENCIES) $(EXTRA_tests_test_complex_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test_complex$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_complex_OBJECTS) $(tests_test_complex_LDADD) $(LIBS)
 tests/test_date_time.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1327,6 +1342,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/algorithm.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/array_container.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/base_parser.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/complex.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/date_time.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/dir.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exception.Plo@am__quote@ # am--include-marker
@@ -1367,6 +1383,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_algorithm.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_array_container.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_base_parser.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_complex.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_date_time.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_dir.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_exception.Po@am__quote@ # am--include-marker
@@ -1755,6 +1772,7 @@ distclean: distclean-am
 		-rm -f src/$(DEPDIR)/algorithm.Plo
 	-rm -f src/$(DEPDIR)/array_container.Plo
 	-rm -f src/$(DEPDIR)/base_parser.Plo
+	-rm -f src/$(DEPDIR)/complex.Plo
 	-rm -f src/$(DEPDIR)/date_time.Plo
 	-rm -f src/$(DEPDIR)/dir.Plo
 	-rm -f src/$(DEPDIR)/exception.Plo
@@ -1795,6 +1813,7 @@ distclean: distclean-am
 	-rm -f tests/$(DEPDIR)/test_algorithm.Po
 	-rm -f tests/$(DEPDIR)/test_array_container.Po
 	-rm -f tests/$(DEPDIR)/test_base_parser.Po
+	-rm -f tests/$(DEPDIR)/test_complex.Po
 	-rm -f tests/$(DEPDIR)/test_date_time.Po
 	-rm -f tests/$(DEPDIR)/test_dir.Po
 	-rm -f tests/$(DEPDIR)/test_exception.Po
@@ -1887,6 +1906,7 @@ maintainer-clean: maintainer-clean-am
 		-rm -f src/$(DEPDIR)/algorithm.Plo
 	-rm -f src/$(DEPDIR)/array_container.Plo
 	-rm -f src/$(DEPDIR)/base_parser.Plo
+	-rm -f src/$(DEPDIR)/complex.Plo
 	-rm -f src/$(DEPDIR)/date_time.Plo
 	-rm -f src/$(DEPDIR)/dir.Plo
 	-rm -f src/$(DEPDIR)/exception.Plo
@@ -1927,6 +1947,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/$(DEPDIR)/test_algorithm.Po
 	-rm -f tests/$(DEPDIR)/test_array_container.Po
 	-rm -f tests/$(DEPDIR)/test_base_parser.Po
+	-rm -f tests/$(DEPDIR)/test_complex.Po
 	-rm -f tests/$(DEPDIR)/test_date_time.Po
 	-rm -f tests/$(DEPDIR)/test_dir.Po
 	-rm -f tests/$(DEPDIR)/test_exception.Po

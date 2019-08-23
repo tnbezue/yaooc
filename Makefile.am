@@ -58,6 +58,7 @@ lib_libyaooc_la_SOURCES=src/algorithm.c \
 src/array_container.c \
 src/base_parser.c \
 src/date_time.c \
+src/complex.c \
 src/dir.c \
 src/exception.c \
 src/file.c \
@@ -101,6 +102,7 @@ pkginclude_HEADERS=include/yaooc/algorithm.h \
 include/yaooc/array_container.h \
 include/yaooc/base_parser.h \
 include/yaooc/date_time.h \
+include/yaooc/complex.h \
 include/yaooc/dir.h \
 include/yaooc/exception.h \
 include/yaooc/file.h \
@@ -149,6 +151,7 @@ check_PROGRAMS=tests/test_algorithm \
 tests/test_array_container \
 tests/test_base_parser \
 tests/test_date_time \
+tests/test_complex \
 tests/test_dir \
 tests/test_exception \
 tests/test_file \
