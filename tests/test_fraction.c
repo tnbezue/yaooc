@@ -28,6 +28,7 @@
 
 void test_basic()
 {
+  TESTCASE("Constructor")
   TEST("Fraction struct size",sizeof(yaooc_fraction_t)==(sizeof(long)+sizeof(long)));
   yaooc_fraction_t* f= new(yaooc_fraction);
   TEST("Fraction object created",f!=NULL);
@@ -37,6 +38,7 @@ void test_basic()
 void test_to_double()
 {
   yaooc_fraction_t f;
+  TESTCASE("To double")
 
   f.numerator_=0;
   f.denominator_=1;
@@ -67,6 +69,7 @@ void test_to_double()
 void test_from_double()
 {
   yaooc_fraction_t f;
+  TESTCASE("From double")
 
   yaooc_fraction_from_double(&f,0.0);
   TEST("Fraction from 0.0 is 0/1",f.numerator_==0 && f.denominator_==1);
@@ -88,6 +91,7 @@ void test_to_stream()
 {
   yaooc_fraction_t f;
   yaooc_ostringstream_t* os=new(yaooc_ostringstream);
+  TESTCASE("To stream")
 
   f.numerator_=0;
   f.denominator_=1;
@@ -112,8 +116,9 @@ void test_to_stream()
 
 void test_from_stream()
 {
-  yaooc_istringstream_t* is=new_ctor(yaooc_istringstream,yaooc_istringstream_ctor_ccs,"0 1 10/3 -3/4 -8 5/10");
+  yaooc_istringstream_t* is=new_ctor(yaooc_istringstream,yaooc_istringstream_ctor_ccs,"0 1 10/3 -3/4 -8 5/10 8/ 3");
   yaooc_fraction_t f;
+  TESTCASE("From Stream")
 
   STREAM(is,I_OBJ(yaooc_fraction,f));
   TEST("Fraction 0 from stream",f.numerator_==0 && f.denominator_==1);
@@ -133,6 +138,13 @@ void test_from_stream()
   STREAM(is,I_OBJ(yaooc_fraction,f));
   TEST("Fraction 5/10 from stream reduced to 1/2",f.numerator_==1 && f.denominator_==2);
 
+  TRY {
+    STREAM(is,I_OBJ(yaooc_fraction,f));
+  } CATCH(yaooc_fraction_exception,e) {
+    M(e,what); // to avoid warning of unused variable
+    TEST("Fraction 8/ 3 from stream throws exception",true);
+  }
+  ETRY
   delete(is);
 }
 

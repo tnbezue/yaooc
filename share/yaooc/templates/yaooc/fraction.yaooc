@@ -9,6 +9,7 @@
 #if 0 // SOURCE
 #include <math.h>
 #endif
+#include <yaooc/exception.yaooc>
 
 struct yaooc_fraction {
   operator<();
@@ -23,6 +24,11 @@ struct yaooc_fraction {
     void from_double(double d);
     double to_double() const;
     double epsilon=0.00005;
+};
+
+class yaooc_fraction_exception : yaooc_exception
+{
+  yaooc_fraction_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
 };
 
 #endif
