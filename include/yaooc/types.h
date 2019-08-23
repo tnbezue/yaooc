@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <sys/types.h>
+#include <stdint.h>
 
 /* bool type */
 #ifndef __bool_true_false_are_defined
@@ -159,9 +160,15 @@ typedef struct {
 #endif
 typedef struct min_type_info_s min_type_info_t;
 struct min_type_info_s {
-  unsigned int min_flag_ : 1 ; // Indicates type info structure contains only size
-  unsigned int pod_flag_ : 1 ; // Indicates type info structure contains POD
-	size_t type_size_ : __WORDSIZE-2; // object size
+#if __WORDSIZE == 64
+  uint16_t min_flag_; // Indicates type info structure contains only size
+  uint16_t pod_flag_; // Indicates type info structure contains POD
+	uint32_t type_size_; // object size
+#else
+  uint8_t min_flag_; // Indicates type info structure contains only size
+  uint8_t pod_flag_; // Indicates type info structure contains POD
+	uint16_t type_size_; // object size
+#endif
 };
 
 typedef struct pod_type_info_s pod_type_info_t;
