@@ -38,15 +38,7 @@ static const char* yaooc_json_type_strings[] =
 
 class yaooc_json_exception : yaooc_exception
 {
-  yaooc_json_exception();
-  ~yaooc_json_exception();
-  yaooc_json_exception(yaooc_json_exception*);
-  operator=();
-  yaooc_json_exception_ctor_ccs(const char * str);
-  table:
-    const char* what() const;
-  instance:
-    char* exception_str_;
+  yaooc_json_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
 };
 
 class yaooc_json_value : yaooc_object
