@@ -46,7 +46,6 @@ yaooc_class_table(yaoocpp_element) {
 };
 
 yaooc_class_instance(yaoocpp_element) {
-  yaooc_object_class_instance_t;
   yaooc_string_t name_;
   element_state_t state_;
 };
@@ -256,7 +255,6 @@ yaooc_class_table(yaoocpp_container) {
 };
 
 yaooc_class_instance(yaoocpp_container) {
-  yaooc_object_class_instance_t;
   yaooc_string_t name_;
   const yaoocpp_container_t* parent_;
   yaoocpp_element_pointer_vector_t constructors_;

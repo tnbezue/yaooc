@@ -1297,15 +1297,19 @@ void yaoocpp_class_print_to_header(const_pointer p,ostream_pointer o)
   if(this->parent_)
     M(ostrm,printf,"#define %s_parent_class_table ((%s_class_table_t*)(%s_class_table.parent_class_table_))\n",
           M(&this->name_,c_str),M(&this->parent_->name_,c_str),M(&this->name_,c_str));
-  M(ostrm,printf,"\nyaooc_class_instance(%s) {\n",M(&this->name_,c_str));
-  if(this->parent_)
-    M(ostrm,printf,"  %s_class_instance_t;\n",M(&this->parent_->name_,c_str));
-  CFOR_EACH(iter,&this->instance_) {
-    if((*iter)->state_==INITIAL)
-      M(*iter,print_class_instance_definition,ostrm);
+  if(M(&this->instance_,size) > 0) {
+    M(ostrm,printf,"\nyaooc_class_instance(%s) {\n",M(&this->name_,c_str));
+    if(this->parent_ && M(&this->parent_->instance_,size) > 0)
+      M(ostrm,printf,"  %s_class_instance_t;\n",M(&this->parent_->name_,c_str));
+    CFOR_EACH(iter,&this->instance_) {
+      if((*iter)->state_==INITIAL)
+        M(*iter,print_class_instance_definition,ostrm);
+    }
+    M(ostrm,printf,"};\n\n");
+    M(ostrm,printf,"yaooc_class(%s);\n\n",M(&this->name_,c_str));
+  } else {
+    M(ostrm,printf,"yaooc_class_without_instance(%s);\n\n",M(&this->name_,c_str));
   }
-  M(ostrm,printf,"};\n\n");
-  M(ostrm,printf,"yaooc_class(%s);\n\n",M(&this->name_,c_str));
   yaoocpp_container_print_type_info_prototype(this,ostrm);
   yaoocpp_container_print_element_prototype(this,ostrm,"Constructors",&this->constructors_,PRINT_ANY,"");
   yaoocpp_container_print_element_prototype(this,ostrm,"Table",&this->table_,PRINT_METHOD,"");
