@@ -133,14 +133,16 @@ void test_from_stream()
 
   STREAM(is,I_OBJ(yaooc_complex,c));
   TEST("read (-12.5 - 0.8i) from stream",c.real_==-12.5 && c.imag_==-0.8);
+  printf("%lg %lg\n",c.real_,c.imag_);
   TRY {
     STREAM(is,I_OBJ(yaooc_complex,c));
     TEST("read (19 + ) from stream did not throw exception",false);
   } CATCH(yaooc_complex_exception,e) {
-    M(e,what); // to avoid warning of unused variable
+    (void)e;  // avoid not used warning
     TEST("read (19 + ) from stream fails",true);
   }
   ETRY
+  delete(is);
 }
 
 test_function tests[]=

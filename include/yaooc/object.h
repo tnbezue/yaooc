@@ -31,12 +31,23 @@ yaooc_class_table(yaooc_object)
   const char* type_name_;
   void (*swap)(pointer,pointer);
 };
-
+/*
 yaooc_class_instance(yaooc_object)
 {
 };
 
 yaooc_class(yaooc_object);
+*/
+typedef struct yaooc_object_s yaooc_object_t;
+typedef struct yaooc_object_s * const yaooc_object_pointer;
+typedef const struct yaooc_object_s * const yaooc_object_const_pointer;
+extern yaooc_object_class_table_t yaooc_object_class_table;
+extern const type_info_t __yaooc_object_ti;
+extern const type_info_t* const yaooc_object_ti;
+struct yaooc_object_s
+{
+	const yaooc_object_class_table_t* class_table_;
+};
 
 /* Prototypes for yaooc_object type info */
 #define yaooc_object_default_ctor yaooc_object_do_nothing_default_ctor

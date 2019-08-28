@@ -123,12 +123,14 @@ typedef void (*from_stream)(pointer,pointer);
 /*
 	For objects with class tables, it must be first in list.
 */
-typedef struct {
-} class_table_t;
+typedef struct class_table_s class_table_t;
+struct class_table_s {
+  const class_table_t* class_table;
+};
 typedef class_table_t* class_table_pointer;
 typedef const class_table_t* class_table_const_pointer;
 typedef struct {
-	const class_table_t* class_table;
+	class_table_t;
 } base_object_t;
 #define copy_class_table(p,ct) ((base_object_t*)(p))->class_table=ct
 
@@ -204,7 +206,7 @@ typedef struct memory_header_s memory_header_t;
 struct memory_header_s {
 	const type_info_t* type_info_;
 	size_t	n_elem_;			// number of elements allocated
-	char ptr_[0];
+	char ptr_[1];
 };
 
 /*
@@ -241,13 +243,13 @@ extern const pod_type_info_t __ ## N ## _ti; \
 extern const type_info_t* const N ## _ti;
 
 POD_DEFINITION(char,char)
-POD_DEFINITION(unsigned char,uchar);
-POD_DEFINITION(short,short);
-POD_DEFINITION(unsigned short,ushort);
+POD_DEFINITION(unsigned char,uchar)
+POD_DEFINITION(short,short)
+POD_DEFINITION(unsigned short,ushort)
 POD_DEFINITION(int,int)
 POD_DEFINITION(unsigned int,uint)
-POD_DEFINITION(long long,long);
-POD_DEFINITION(unsigned long long,ulong);
+POD_DEFINITION(long long,long)
+POD_DEFINITION(unsigned long long,ulong)
 POD_DEFINITION(double,double)
 POD_DEFINITION(pointer,pointer)
 POD_DEFINITION(const_pointer,const_pointer)

@@ -2,6 +2,7 @@
 
 #include <yaooc/complex.h>
 #include <math.h>
+#include <ctype.h>
 
 /* Private variables implementation for yaooc_complex */
 
@@ -27,20 +28,123 @@ void yaooc_complex_to_stream(const_pointer p,ostream_pointer o)
   M(ostrm,printf,"(%lg %c %lgi)",this->real_,(this->imag_ < 0 ? '-' : '+'),fabs(this->imag_));
 }
 
+static int parse_real(const char* str)
+{
+  int whole=0,fraction=0;
+  const char* ptr=str;
+  const char *temp=ptr;
+  while(isdigit(*ptr)) ptr++;
+  if(ptr > temp) {
+    whole=1;
+  }
+  if(*ptr=='.') {
+    ptr++;
+    temp=ptr;
+    while(isdigit(*ptr)) ptr++;
+    if(whole || ptr>temp)
+      fraction=1;
+  }
+  if(whole || fraction) {
+    if(*ptr=='e' || *ptr=='E') {
+      ptr++;
+      if(*ptr=='-' || *ptr=='+') ptr++;
+      temp=ptr;
+      while(isdigit(*ptr)) ptr++;
+      if(ptr == temp)
+        return 0;
+    }
+    return ptr-str;
+  }
+  return 0;
+}
+
+// form 1 [+|-]?digit+ws[+|]ws*digit+iws*EOS
+static int imaginary_form1(const char* str)
+{
+  if(*str == '+' || *str == '-') str++;
+//  const char* temp=str;
+  int n=parse_real(str);
+  if(n > 0) {
+    str+=n;
+    while(*str==' ') str++;
+    if(*str == '+' || *str == '-') {
+      str++;
+      while(*str==' ') str++;
+      n=parse_real(str);
+      if(n>0) {
+        str+=n;
+        if(*str == 'i') {
+          str++;
+          while(*str==' ') str++;
+          if(*str == 0)
+            return 1;
+        }
+      }
+    }
+  }
+  return 0;
+}
+
+// form2(real part only): [+-]?
+static int imaginary_form2(const char* str)
+{
+  if(*str == '+' || *str == '-') str++;
+//  const char* temp=str;
+  int n=parse_real(str);
+  if(n > 0) {
+    str+=n;
+    if(*str == 'i') {
+      str++;
+      while(*str==' ') str++;
+      if(*str == 0)
+        return 1;
+    }
+  }
+  return 0;
+}
+
+static int imaginary_form3(const char* str)
+{
+  if(*str == '+' || *str == '-') str++;
+//  const char* temp=str;
+  int n=parse_real(str);
+  if(n > 0) {
+    str+=n;
+    while(*str==' ') str++;
+    if(*str == 0)
+      return 1;
+  }
+  return 0;
+}
+
 void yaooc_complex_from_stream(pointer p,istream_pointer i)
 {
   yaooc_complex_pointer this=p;
   yaooc_istream_pointer istrm=i;
-  double r,img;
+  double r=0,img=0;
+  char temp[256],sign;
   int n=-1;
-  char sign=' ';
-  printf("TTTT%d\n",n);
-  M(istrm,scanf,"%*[ \t\r\n]( %lg %1[+-] %lg %*1[i]%*[ ])%n",&r,&sign,&img,&n);
-  printf("n is %d and sign is \"%c\"\n",n,sign);
-  if(n<0 || (sign != '+' && sign != '-'))
+  M(istrm,scanf," (%255[^)])%n",temp,&n);
+  if(n>0) {
+    temp[n]=0;
+    char* ptr=temp;
+    while(*ptr==' ') ptr++; // skip spaces
+    if(*ptr) {
+      if(imaginary_form1(ptr)) {
+        sscanf(ptr,"%lg %c %lg",&r,&sign,&img);
+        if(sign=='-')
+          img=-img;
+      } else if(imaginary_form2(ptr)) {
+        sscanf(ptr,"%lg",&img);
+      } else if(imaginary_form3(ptr)) {
+        sscanf(ptr,"%lg",&r);
+      } else
+        THROW(new_ctor(yaooc_complex_exception,yaooc_complex_exception_ctor_v,"Invalid complex number encountered while reading stream"));
+    }
+  } else
     THROW(new_ctor(yaooc_complex_exception,yaooc_complex_exception_ctor_v,"Invalid complex number encountered while reading stream"));
   this->real_=r;
-  this->imag_=(sign=='+' ? 1 : -1)*img;
+  this->imag_=img;
 }
 
 /* Constructors implementation for yaooc_complex */
@@ -163,6 +267,12 @@ double yaooc_complex_direction(const_pointer p)
   return ret;
 }
 
+void yaooc_complex_from_polar(pointer p,double magnitude,double angle)
+{
+  yaooc_complex_pointer this=p;
+  this->real_=magnitude*cos(angle);
+  this->imag_=magnitude*sin(angle);
+}
 
 /* Class table definition for yaooc_complex */
 yaooc_complex_class_table_t yaooc_complex_class_table =
@@ -184,6 +294,7 @@ yaooc_complex_class_table_t yaooc_complex_class_table =
   .divided_by_complex_ = (void(*)(pointer, const_pointer)) yaooc_complex_divided_by_complex_,
   .magnitude = (double(*)(const_pointer)) yaooc_complex_magnitude,
   .direction = (double(*)(const_pointer)) yaooc_complex_direction,
+  .from_polar = (void(*)(pointer,double,double)) yaooc_complex_from_polar,
 };
 
 /* Type info structure for yaooc_complex */

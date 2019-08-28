@@ -141,7 +141,7 @@ void test_from_stream()
   TRY {
     STREAM(is,I_OBJ(yaooc_fraction,f));
   } CATCH(yaooc_fraction_exception,e) {
-    M(e,what); // to avoid warning of unused variable
+    (void)e; // to avoid warning of unused variable
     TEST("Fraction 8/ 3 from stream throws exception",true);
   }
   ETRY

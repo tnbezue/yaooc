@@ -24,6 +24,7 @@ yaooc_class_table(yaooc_complex) {
   void (*divided_by_complex_)(pointer, const_pointer);
   double (*magnitude)(const_pointer);
   double (*direction)(const_pointer);
+  void (*from_polar)(pointer,double,double);
 };
 #define yaooc_complex_parent_class_table ((yaooc_object_class_table_t*)(yaooc_complex_class_table.parent_class_table_))
 
@@ -63,6 +64,7 @@ yaooc_complex_t* yaooc_complex_divided_by_complex(pointer, const_pointer);
 void yaooc_complex_divided_by_complex_(pointer, const_pointer);
 double yaooc_complex_magnitude(const_pointer);
 double yaooc_complex_direction(const_pointer);
+void yaooc_complex_from_polar(pointer,double,double);
 
 /* Protected prototypes for yaooc_complex */
 
