@@ -54,7 +54,7 @@ bool simple_object_less_than_compare(const_pointer v1,const_pointer v2)
 	return so1->x<so2->x;
 }
 
-DEFINE_TYPE_INFO(simple_object,Y,Y,Y,Y,Y,N,N,N,NULL)
+DEFINE_TYPE_INFO(simple_object,Y,Y,Y,Y,Y,N,N,N,NULL);
 
 
 void simple_object_ctor(pointer p,va_list args)

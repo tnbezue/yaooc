@@ -34,7 +34,6 @@ yaooc_class_table(demo) {
 
 yaooc_class_instance(demo)
 {
-  yaooc_object_class_instance_t;
 	char* str;
 	int x;
 };
@@ -119,5 +118,5 @@ demo_class_table_t demo_class_table=
   .setx = demo_setx
 };
 
-DEFINE_TYPE_INFO(demo,Y,Y,Y,Y,Y,N,N,Y,yaooc_object)
+DEFINE_TYPE_INFO(demo,Y,Y,Y,Y,Y,N,N,Y,yaooc_object);
 
