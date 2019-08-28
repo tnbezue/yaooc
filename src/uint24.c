@@ -65,6 +65,6 @@ void yaooc_uint24_from_uint32(pointer p,uint32_t ui)
 
 
 /* Type info structure for yaooc_uint24 */
-DEFINE_POD_TYPE_INFO(yaooc_uint24,Y,Y,Y)
+DEFINE_POD_TYPE_INFO(yaooc_uint24,Y,Y,Y);
 
 /* End YAOOCPP output */

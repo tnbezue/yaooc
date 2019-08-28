@@ -35,7 +35,7 @@ bool dynamic_pointer_less_than_compare(const_pointer,const_pointer);
 typedef T ## _t* N ## _t; \
 typedef N ## _t* N ## _pointer; \
 typedef const N ## _t* N ## _const_pointer; \
-extern const type_info_t* const N ## _ti;
+extern const type_info_t* const N ## _ti
 
 #define DYNAMIC_POINTER_IMPLEMENTATION(T,N) \
 __DEFINE_TYPE_INFO__(N,dynamic_pointer_default_ctor,dynamic_pointer_dtor,dynamic_pointer_copy_ctor,dynamic_pointer_assign,dynamic_pointer_less_than_compare,NULL,NULL,NULL,NULL)
@@ -130,7 +130,7 @@ yaooc_class_instance(NAME) \
   T ## _t* ptr_; \
 }; \
 yaooc_class(NAME); \
-void NAME ## _ctor_ptr(pointer,va_list);
+void NAME ## _ctor_ptr(pointer,va_list)
 
 #define UNIQUE_PTR_IMPLEMENTATION(T,NAME) \
 void NAME ## _ctor_ptr(pointer p,va_list args) \
@@ -206,7 +206,7 @@ yaooc_class_instance(NAME) { \
 	yaooc_counter_t* counter_; \
 }; \
 yaooc_class(NAME); \
-void NAME ## _ctor_ptr(pointer this,va_list args);
+void NAME ## _ctor_ptr(pointer this,va_list args)
 
 #define SHARED_PTR_IMPLEMENTATION(T,NAME) \
 void NAME ## _ctor_ptr(pointer this,va_list args) \

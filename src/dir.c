@@ -23,7 +23,7 @@
 #include <glob.h>
 #endif
 
-VECTOR_IMPLEMENTATION(yaooc_file,yaooc_file_vector)
+VECTOR_IMPLEMENTATION(yaooc_file,yaooc_file_vector);
 
 yaooc_file_vector_t* yaooc_dir_entries(const char* dir)
 {

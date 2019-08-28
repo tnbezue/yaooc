@@ -32,7 +32,7 @@ yaooc_struct_forward(parser_position);
 # define yaooc_base_parser_peek(p) *(((yaooc_base_parser_pointer)p)->current_pos_)
 # define yaooc_base_parser_skip(p,n) { int __nn__=n; for(;__nn__>0;__nn__--) yaooc_base_parser_next_chr(p); }
 
-STACK_DEFINITION(parser_position,parser_position_stack)
+STACK_DEFINITION(parser_position,parser_position_stack);
 
 #define default_terminal(p) \
      (yaooc_terminal_t){ .beg_=((yaooc_base_parser_pointer)p)->current_pos_, .end_=NULL }
@@ -129,7 +129,6 @@ yaooc_class_table(yaooc_base_parser) {
 #define yaooc_base_parser_parent_class_table ((yaooc_object_class_table_t*)(yaooc_base_parser_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_base_parser) {
-  yaooc_object_class_instance_t;
   parser_position_stack_t* stack_;
   const char* current_pos_;
   unsigned int line_no_;

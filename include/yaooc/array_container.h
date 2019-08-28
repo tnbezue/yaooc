@@ -41,7 +41,6 @@ yaooc_class_table(yaooc_array_container) {
 #define yaooc_array_container_parent_class_table ((yaooc_object_class_table_t*)(yaooc_array_container_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_array_container) {
-  yaooc_object_class_instance_t;
   char* array_;
   const type_info_t* type_info_;
   size_t size_;

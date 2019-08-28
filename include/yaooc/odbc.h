@@ -28,7 +28,7 @@
 #include <sql.h>
 #include <sqlext.h>
 
-MINI_MAP_DEFINITION(yaooc_string,yaooc_string,map_odbc_string_string)
+MINI_MAP_DEFINITION(yaooc_string,yaooc_string,map_odbc_string_string);
 
 /*
   Class Definition for yaooc_odbc_exception
@@ -69,11 +69,23 @@ yaooc_class_table(yaooc_odbc_environment) {
 };
 #define yaooc_odbc_environment_parent_class_table ((yaooc_object_class_table_t*)(yaooc_odbc_environment_class_table.parent_class_table_))
 
+/*
 yaooc_class_instance(yaooc_odbc_environment) {
   yaooc_object_class_instance_t;
 };
 
 yaooc_class(yaooc_odbc_environment);
+*/
+typedef struct yaooc_odbc_environment_s yaooc_odbc_environment_t;
+typedef struct yaooc_odbc_environment_s * const yaooc_odbc_environment_pointer;
+typedef const struct yaooc_odbc_environment_s * const yaooc_odbc_environment_const_pointer;
+extern yaooc_odbc_environment_class_table_t yaooc_odbc_environment_class_table;
+extern const type_info_t __yaooc_odbc_environment_ti;
+extern const type_info_t* const yaooc_odbc_environment_ti;
+struct yaooc_odbc_environment_s
+{
+	const yaooc_odbc_environment_class_table_t* class_table_;
+};
 
 /* Type Info Prototypes for yaooc_odbc_environment */
 void yaooc_odbc_environment_default_ctor(pointer);
@@ -132,7 +144,6 @@ yaooc_class_table(yaooc_odbc_statement) {
 
 
 yaooc_class_instance(yaooc_odbc_statement) {
-  yaooc_object_class_instance_t;
   SQLHSTMT statement_handle_;
 	unsigned int icol_;
 };
@@ -200,7 +211,6 @@ yaooc_class_table(yaooc_odbc_connection) {
 #define yaooc_odbc_connection_parent_class_table ((yaooc_object_class_table_t*)(yaooc_odbc_connection_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_odbc_connection) {
-  yaooc_object_class_instance_t;
   SQLHDBC connection_handle_;
 };
 

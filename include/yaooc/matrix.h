@@ -62,7 +62,6 @@ yaooc_class_table(yaooc_matrix) {
 #define yaooc_matrix_parent_class_table ((yaooc_object_class_table_t*)(yaooc_matrix_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_matrix) {
-  yaooc_object_class_instance_t;
   unsigned int rows_;
   unsigned int cols_;
   double** data_;

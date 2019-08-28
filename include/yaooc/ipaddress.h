@@ -38,7 +38,6 @@ yaooc_class_table(yaooc_ipaddress) {
 #define yaooc_ipaddress_parent_class_table ((yaooc_object_class_table_t*)(yaooc_ipaddress_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_ipaddress) {
-  yaooc_object_class_instance_t;
   int type_;
   char buf_[16];
 };

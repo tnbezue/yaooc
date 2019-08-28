@@ -82,7 +82,7 @@ int_unique_container_class_table_t int_unique_container_class_table=
 	.at = (iterator (*)(const_pointer,size_t))yaooc_array_container_at
 };
 
-DEFINE_TYPE_INFO(int_unique_container,Y,N,N,N,N,N,N,Y,yaooc_array_container)
+DEFINE_TYPE_INFO(int_unique_container,Y,N,N,N,N,N,N,Y,yaooc_array_container);
 
 void test_sizes()
 {
@@ -271,7 +271,7 @@ simple_object_unique_container_class_table_t simple_object_unique_container_clas
 	.shrink_to_fit = (void (*)(pointer))yaooc_array_container_shrink_to_fit,
 };
 
-DEFINE_TYPE_INFO(simple_object_unique_container,Y,N,N,N,N,N,N,Y,yaooc_unique_array_container)
+DEFINE_TYPE_INFO(simple_object_unique_container,Y,N,N,N,N,N,N,Y,yaooc_unique_array_container);
 
 void test_resize_shrink()
 {

@@ -46,7 +46,6 @@ yaooc_class_table(yaooc_date_time)
 
 yaooc_class_instance(yaooc_date_time)
 {
-  yaooc_object_class_instance_t;
   time_t time_;
 };
 

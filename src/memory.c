@@ -46,7 +46,7 @@ void dynamic_pointer_assign(pointer d,const_pointer s)
 
 bool dynamic_pointer_less_than_compare(const_pointer p1,const_pointer p2)
 {
-  return op_lt(*(pointer_t**)p1,*(pointer_t**)p2);
+  return op_lt(*(pointer**)p1,*(pointer**)p2);
 }
 
 
@@ -155,7 +155,7 @@ yaooc_unique_ptr_class_table_t yaooc_unique_ptr_class_table = {
   .reset = (void (*) (pointer p,pointer)) yaooc_unique_ptr_reset,
 };
 
-DEFINE_TYPE_INFO(yaooc_unique_ptr,Y,Y,Y,Y,Y,N,N,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_unique_ptr,Y,Y,Y,Y,Y,N,N,Y,yaooc_object);
 /* Private members for yaooc_shared_ptr */
 
 /* Protected members for yaooc_shared_ptr */
@@ -180,7 +180,7 @@ static void yaooc_counter_ctor_ptr(pointer p,va_list args)
 	this->count_=1;
 }
 
-DEFINE_TYPE_INFO(yaooc_counter,Y,N,N,N,N,N,N,N,NULL)
+DEFINE_TYPE_INFO(yaooc_counter,Y,N,N,N,N,N,N,N,NULL);
 
 void yaooc_shared_ptr_acquire(pointer p,yaooc_counter_t* c)
 {
@@ -299,5 +299,5 @@ yaooc_shared_ptr_class_table_t yaooc_shared_ptr_class_table = {
   .count = (size_t (*) (const_pointer p)) yaooc_shared_ptr_count,
 };
 
-DEFINE_TYPE_INFO(yaooc_shared_ptr,Y,Y,Y,Y,Y,N,N,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_shared_ptr,Y,Y,Y,Y,Y,N,N,Y,yaooc_object);
 

@@ -106,7 +106,7 @@ yaooc_integer_class_table_t yaooc_integer_class_table =
   .get = (long long(*) (const_pointer)) yaooc_integer_get,
 };
 
-DEFINE_TYPE_INFO(yaooc_integer,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_integer,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object);
 
 /* yaooc_unsigned_integer private members */
 
@@ -191,6 +191,6 @@ yaooc_unsigned_integer_class_table_t yaooc_unsigned_integer_class_table =
 	.get = (unsigned long long(*) (const_pointer)) yaooc_unsigned_integer_get,
 };
 
-DEFINE_TYPE_INFO(yaooc_unsigned_integer,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_unsigned_integer,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object);
 
 /*  End YAOOC PreProcessor generated content */

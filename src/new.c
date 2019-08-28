@@ -287,7 +287,7 @@ void __deletep_array(void* ptr,const type_info_t* ti,size_t n)
 		size_t type_size=yaooc_sizeof(ti);
 		while(ti != NULL) {
 			if(ti->dtor_ != NULL) {
-				void* obj=ptr;
+				yaooc_private_iterator obj=ptr;
 				for(i=0;i<n;i++) {
 					ti->dtor_(obj);
 					obj+=type_size;

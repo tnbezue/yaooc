@@ -65,7 +65,7 @@ demo_exception_class_table_t demo_exception_class_table =
 
 };
 
-DEFINE_TYPE_INFO(demo_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception)
+DEFINE_TYPE_INFO(demo_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception);
 
 void demo_exception_ctor_ccs(pointer p,va_list args)
 {
@@ -113,7 +113,7 @@ demo2_exception_class_table_t demo2_exception_class_table =
   .what = (const char*(*) (const_pointer)) demo2_exception_what,
 };
 
-DEFINE_TYPE_INFO(demo2_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception)
+DEFINE_TYPE_INFO(demo2_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception);
 
 void demo2_exception_ctor_ccs(pointer p,va_list args)
 {
@@ -161,7 +161,7 @@ uncaught_exception_class_table_t uncaught_exception_class_table =
   .what = (const char*(*) (const_pointer)) uncaught_exception_what,
 };
 
-DEFINE_TYPE_INFO(uncaught_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception)
+DEFINE_TYPE_INFO(uncaught_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception);
 
 void uncaught_exception_ctor_ccs(pointer p,va_list args)
 {

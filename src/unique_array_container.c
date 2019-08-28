@@ -25,7 +25,7 @@
 /* Protected items for yaooc_unique_array_container */
 iterator yaooc_unique_array_container_insert(pointer p,const_iterator pos,const_pointer value)
 {
-  return yaooc_unique_array_container_insert_range(p,pos,value,value+TYPE_SIZE(p));
+  return yaooc_unique_array_container_insert_range(p,pos,value,((yaooc_private_const_pointer)value)+TYPE_SIZE(p));
 }
 
 /*
@@ -33,7 +33,7 @@ iterator yaooc_unique_array_container_insert(pointer p,const_iterator pos,const_
 */
 iterator yaooc_unique_array_container_insertn(pointer p,const_iterator pos,size_t n,const_pointer value)
 {
-  return yaooc_unique_array_container_insert_range(p,pos,value,value+TYPE_SIZE(p));
+  return yaooc_unique_array_container_insert_range(p,pos,value,((yaooc_private_const_pointer)value)+TYPE_SIZE(p));
 }
 
 iterator yaooc_unique_array_container_insert_range(pointer p,const_iterator pos,const_iterator f,const_iterator l)
@@ -101,4 +101,4 @@ yaooc_unique_array_container_class_table_t yaooc_unique_array_container_class_ta
 };
 
 
-DEFINE_TYPE_INFO(yaooc_unique_array_container,N,N,N,N,N,N,N,Y,yaooc_array_container)
+DEFINE_TYPE_INFO(yaooc_unique_array_container,N,N,N,N,N,N,N,Y,yaooc_array_container);

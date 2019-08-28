@@ -73,7 +73,7 @@ bool demo_less_than_compare(const_pointer v1,const_pointer v2)
 	return ((demo_const_pointer)v1)->x < ((demo_const_pointer)v2)->x;
 }
 
-DEFINE_TYPE_INFO(demo,Y,Y,Y,Y,Y,N,N,N,NULL)
+DEFINE_TYPE_INFO(demo,Y,Y,Y,Y,Y,N,N,N,NULL);
 
 /*
   Demo constructor that takes a integer as an argument
@@ -296,7 +296,7 @@ void derived_copy_ctor(pointer dst,const_pointer src)
   derived_assign(dst,src);
 }
 
-DEFINE_TYPE_INFO(derived,Y,Y,Y,Y,N,N,N,N,base)
+DEFINE_TYPE_INFO(derived,Y,Y,Y,Y,N,N,N,N,base);
 
 void derived_ctor_int_int(pointer p,va_list args)
 {
@@ -342,7 +342,7 @@ void derived2_copy_ctor(pointer dst,const_pointer src)
   derived2_assign(dst,src);
 }
 
-DEFINE_TYPE_INFO(derived2,Y,Y,Y,Y,N,N,N,N,derived)
+DEFINE_TYPE_INFO(derived2,Y,Y,Y,Y,N,N,N,N,derived);
 
 void derived2_ctor_int_int_int(pointer p,va_list args)
 {

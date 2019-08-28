@@ -22,7 +22,7 @@
 #include <yaooc/pair.h>
 
 #define ORDERED_MAP_DEFINITION(K,V,NAME) \
-PAIR_DEFINITION(K,V, NAME ## _ordered_map_pair) \
+PAIR_DEFINITION(K,V, NAME ## _ordered_map_pair); \
 typedef NAME ## _ordered_map_pair_t* NAME ## _iterator; \
 typedef const NAME ## _ordered_map_pair_t* NAME ## _const_iterator; \
 yaooc_class_table(NAME) {\
@@ -44,10 +44,10 @@ yaooc_class(NAME); \
 NAME ## _iterator NAME ## _insert(pointer,const K ## _t*,const V ## _t*); \
 size_t NAME ## _erase_key(pointer,const K ## _t*); \
 V ## _t* NAME ## _at(const_pointer,const K ## _t*); \
-NAME ## _iterator NAME ## _find(const_pointer,const K ## _t*);
+NAME ## _iterator NAME ## _find(const_pointer,const K ## _t*)
 
 #define ORDERED_MAP_IMPLEMENTATION(K,V,NAME) \
-PAIR_IMPLEMENTATION(K,V,NAME ## _ordered_map_pair) \
+PAIR_IMPLEMENTATION(K,V,NAME ## _ordered_map_pair); \
 NAME ## _iterator NAME ## _insert(pointer p,const K ## _t* k,const V ## _t* v) \
 { \
   NAME ## _ordered_map_pair_t pair; \

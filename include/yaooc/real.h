@@ -36,7 +36,6 @@ yaooc_class_table(yaooc_real)
 
 yaooc_class_instance(yaooc_real)
 {
-  yaooc_object_class_instance_t;
   double value_;
 };
 

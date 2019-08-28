@@ -250,9 +250,18 @@ POD_DEFINITION(int,int)
 POD_DEFINITION(unsigned int,uint)
 POD_DEFINITION(long long,long)
 POD_DEFINITION(unsigned long long,ulong)
-POD_DEFINITION(double,double)
-POD_DEFINITION(pointer,pointer)
-POD_DEFINITION(const_pointer,const_pointer)
+typedef double * double_pointer;
+typedef const double* double_const_pointer;
+void double_to_stream(const_pointer,pointer);
+void double_from_stream(pointer,pointer);
+extern const pod_type_info_t __double_ti;
+extern const type_info_t* const double_ti;
+//POD_DEFINITION(double,double)
+//POD_DEFINITION(pointer,pointer)
+//POD_DEFINITION(const_pointer,const_pointer)
+extern const pod_type_info_t __pointer_ti;
+extern const type_info_t* const pointer_ti;
+
 POD_DEFINITION(char*,yaooc_ccs)
 
 /*

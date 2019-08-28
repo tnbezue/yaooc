@@ -40,7 +40,7 @@ yaooc_stream_exception_class_table_t yaooc_stream_exception_class_table =
   .what = (const char* (*) (const_pointer)) yaooc_stream_exception_what,
 };
 
-DEFINE_TYPE_INFO(yaooc_stream_exception,N,N,N,N,N,N,N,Y,yaooc_exception)
+DEFINE_TYPE_INFO(yaooc_stream_exception,N,N,N,N,N,N,N,Y,yaooc_exception);
 
 /* yaooc_base_stream private members */
 
@@ -61,7 +61,7 @@ void yaooc_base_stream_set_handle(pointer p,FILE* h)
 }
 
 /* Class table methods for yaooc_base_stream */
-const char* yaooc_base_stream_isa(const_pointer p) { return "yaooc_base_stream_t"; }
+//const char* yaooc_base_stream_isa(const_pointer p) { return "yaooc_base_stream_t"; }
 
 bool yaooc_base_stream_eof(const_pointer p)
 {
@@ -97,7 +97,7 @@ yaooc_base_stream_class_table_t yaooc_base_stream_class_table =
   .bool = (bool (*) (const_pointer)) yaooc_base_stream_bool,
 };
 
-DEFINE_TYPE_INFO(yaooc_base_stream,Y,N,N,N,N,N,N,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_base_stream,Y,N,N,N,N,N,N,Y,yaooc_object);
 
 
 /* yaooc_istream private members */
@@ -114,7 +114,7 @@ void yaooc_istream_default_ctor(pointer p)
 /* yaooc_istream protected members */
 
 /* Class table methods for yaooc_istream */
-const char* yaooc_istream_isa(const_pointer p) { return "yaooc_istream_t"; }
+//const char* yaooc_istream_isa(const_pointer p) { return "yaooc_istream_t"; }
 
 void yaooc_istream_stream(pointer p,...)
 {
@@ -192,7 +192,7 @@ yaooc_istream_class_table_t yaooc_istream_class_table =
   .getstr = (char* (*) (pointer,char*,size_t)) yaooc_istream_getstr,
 };
 
-DEFINE_TYPE_INFO(yaooc_istream,Y,N,N,N,N,N,N,Y,yaooc_base_stream)
+DEFINE_TYPE_INFO(yaooc_istream,Y,N,N,N,N,N,N,Y,yaooc_base_stream);
 
 
 /* yaooc_ostream private members */
@@ -209,7 +209,7 @@ void yaooc_ostream_default_ctor(pointer p)
 /* yaooc_ostream protected members */
 
 /* Class table methods for yaooc_ostream */
-const char* yaooc_ostream_isa(const_pointer p) { return "yaooc_ostream_t"; }
+//const char* yaooc_ostream_isa(const_pointer p) { return "yaooc_ostream_t"; }
 
 void yaooc_ostream_stream(pointer p,...)
 {
@@ -231,7 +231,7 @@ void yaooc_ostream_stream(pointer p,...)
 					uint_t v=va_arg(args,uint_t);
 					to_s(&v,&v);
 				} else if(smh->type_info_==double_ti) {
-					double_t v=va_arg(args,double_t);
+					double v=va_arg(args,double);
 					to_s(&v,p);
 				} else if(smh->type_info_==long_ti) {
 					long_t v=va_arg(args,long_t);
@@ -306,7 +306,7 @@ yaooc_ostream_class_table_t yaooc_ostream_class_table =
 	.putchr = (int (*) (pointer,int)) yaooc_ostream_putchr,
 };
 
-	DEFINE_TYPE_INFO(yaooc_ostream,Y,N,N,N,N,N,N,Y,yaooc_base_stream)
+	DEFINE_TYPE_INFO(yaooc_ostream,Y,N,N,N,N,N,N,Y,yaooc_base_stream);
 
 /*  End YAOOC PreProcessor generated content */
 
@@ -337,8 +337,19 @@ POD_TO_FROM_STREAM(ulong,"%lu")
 POD_TO_FROM_STREAM(long,"%lld")
 POD_TO_FROM_STREAM(ulong,"%llu")
 #endif
-POD_TO_FROM_STREAM(double,"%lf")
-POD_TO_FROM_STREAM(pointer,"%p")
+//POD_TO_FROM_STREAM(double,"%lf")
+void double_to_stream(const_pointer p,pointer s)
+{
+	yaooc_ostream_pointer strm=s;
+	M(strm,printf,"%lg",*(double*) p);
+}
+
+void double_from_stream(pointer p,pointer s)
+{
+	yaooc_istream_pointer strm=s;
+	M(strm,scanf,"%lg",p);
+}
+//POD_TO_FROM_STREAM(pointer,"%p")
 //POD_TO_FROM_STREAM(yaooc_ccs,"%s")
 POD_TO_FROM_STREAM(size,"%zu")
 

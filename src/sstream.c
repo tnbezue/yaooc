@@ -131,7 +131,7 @@ yaooc_istringstream_class_table_t yaooc_istringstream_class_table =
   .setn = (void (*) (pointer,const char*,size_t)) yaooc_istringstream_setn,
 };
 
-DEFINE_TYPE_INFO(yaooc_istringstream,Y,Y,N,N,N,N,N,Y,yaooc_istream)
+DEFINE_TYPE_INFO(yaooc_istringstream,Y,Y,N,N,N,N,N,Y,yaooc_istream);
 
 
 /* yaooc_ostringstream private members */
@@ -201,6 +201,6 @@ yaooc_ostringstream_class_table_t yaooc_ostringstream_class_table =
   .reset = (void (*) (pointer)) yaooc_ostringstream_reset,
 };
 
-DEFINE_TYPE_INFO(yaooc_ostringstream,Y,Y,N,N,N,N,N,Y,yaooc_ostream)
+DEFINE_TYPE_INFO(yaooc_ostringstream,Y,Y,N,N,N,N,N,Y,yaooc_ostream);
 
 /*  End YAOOC PreProcessor generated content */

@@ -85,7 +85,7 @@ yaooc_ifstream_class_table_t yaooc_ifstream_class_table =
   .close = (void (*) (pointer)) yaooc_ifstream_close,
 };
 
-DEFINE_TYPE_INFO(yaooc_ifstream,Y,Y,N,N,N,N,N,Y,yaooc_istream)
+DEFINE_TYPE_INFO(yaooc_ifstream,Y,Y,N,N,N,N,N,Y,yaooc_istream);
 
 
 /* yaooc_ofstream private members */
@@ -155,6 +155,6 @@ yaooc_ofstream_class_table_t yaooc_ofstream_class_table =
   .close = (void (*) (pointer)) yaooc_ofstream_close,
 };
 
-DEFINE_TYPE_INFO(yaooc_ofstream,Y,Y,N,N,N,N,N,Y,yaooc_ostream)
+DEFINE_TYPE_INFO(yaooc_ofstream,Y,Y,N,N,N,N,N,Y,yaooc_ostream);
 
 /*  End YAOOC PreProcessor generated content */

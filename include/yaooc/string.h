@@ -166,9 +166,9 @@ extern const size_t yaooc_string_npos;
 
 /*  End YAOOC PreProcessor generated content */
 
-#define YAOOC_STRING_STATIC_DEFAULT_CTOR (yaooc_string_t) { .class_table_ = &yaooc_string_class_table, \
+#define YAOOC_STRING_STATIC_DEFAULT_CTOR { .class_table_ = &yaooc_string_class_table, \
     .array_=NULL,.type_info_=(const type_info_t*)&__char_ti,.size_=0,.capacity_=0 }
 
-VECTOR_DEFINITION(yaooc_string,yaooc_string_vector)
+VECTOR_DEFINITION(yaooc_string,yaooc_string_vector);
 
 #endif

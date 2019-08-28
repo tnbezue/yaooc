@@ -22,8 +22,8 @@
 
 #include "test_harness.h"
 
-PAIR_DEFINITION(int,yaooc_string,int_string_pair)
-PAIR_IMPLEMENTATION(int,yaooc_string,int_string_pair)
+PAIR_DEFINITION(int,yaooc_string,int_string_pair);
+PAIR_IMPLEMENTATION(int,yaooc_string,int_string_pair);
 
 void test_ctor_dtor()
 {

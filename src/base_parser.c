@@ -25,9 +25,9 @@
 #endif
 #include <yaooc/base_parser.h>
 
-DEFINE_MIN_TYPE_INFO(parser_position)
+DEFINE_MIN_TYPE_INFO(parser_position);
 //DEFINE_TYPE_INFO(parser_position,N,N,N,N,N,N,N,N,NULL)
-STACK_IMPLEMENTATION(parser_position,parser_position_stack)
+STACK_IMPLEMENTATION(parser_position,parser_position_stack);
 DEFINE_MIN_TYPE_INFO(yaooc_terminal);
 
 char* yaooc_terminal_text(const_pointer p)
@@ -724,5 +724,5 @@ yaooc_base_parser_class_table_t yaooc_base_parser_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_base_parser,Y,Y,N,N,N,N,N,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_base_parser,Y,Y,N,N,N,N,N,Y,yaooc_object);
 /*  End YAOOC PreProcessor generated content */

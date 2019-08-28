@@ -45,7 +45,7 @@ void  NAME ## _copy_ctor(pointer,const_pointer); \
 void  NAME ## _assign(pointer,const_pointer); \
 bool  K ## _ ## V ## _less_than_compare(const_pointer,const_pointer);\
 void make_ ## NAME (NAME ## _t*,const K ## _t*,const V ## _t*);\
-extern const type_info_t* const NAME ## _ti;
+extern const type_info_t* const NAME ## _ti
 
 #define PAIR_IMPLEMENTATION(K,V,NAME) \
 void  NAME ## _default_ctor(pointer p) \
@@ -86,11 +86,11 @@ void NAME ## _from_stream(pointer p,pointer s) \
 	NAME ## _t * this=p; \
 	__pair_from_stream(K ## _ti,(pointer)&this->first,V ## _ti,(pointer)&this->second,s); \
 } \
-DEFINE_TYPE_INFO(NAME,Y,Y,Y,Y,Y,Y,Y,N,NULL) \
 void make_ ## NAME (NAME ## _t*this,const K ## _t* k,const V ## _t* v) \
 { \
   memcpy((pointer)&this->first,k,sizeof(K ## _t)); \
   if(v != NULL) memcpy((pointer)&this->second,v,sizeof(V ## _t)); \
-}
+}\
+DEFINE_TYPE_INFO(NAME,Y,Y,Y,Y,Y,Y,Y,N,NULL)
 
 #endif

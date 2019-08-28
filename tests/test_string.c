@@ -338,7 +338,7 @@ void test_iterator()
 		*optr=*i;
 	*optr=0;
 	TEST("String iteration",strcmp(output,"The rain in spain falls mainly in Spain")==0);
-	yaooc_string_iterator j = M(s1,begin)+12;
+	yaooc_string_iterator j = M(s1,at,12);
 	*j = 'S';
 	TEST("Character at postion 12 changed",strcmp(M(s1,c_str),"The rain in Spain falls mainly in Spain")==0);
 	puts(M(s1,c_str));

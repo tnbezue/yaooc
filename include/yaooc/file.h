@@ -53,7 +53,6 @@ yaooc_class_table(yaooc_file) {
 #define yaooc_file_parent_class_table ((yaooc_object_class_table_t*)(yaooc_file_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_file) {
-  yaooc_object_class_instance_t;
   struct stat* stat_;
   char* name_;
 	int stat_result_;

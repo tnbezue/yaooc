@@ -23,6 +23,7 @@
 /*
   Class definition for yaooc_pointer_bag
 */
+typedef struct yaooc_pointer_bag_s yaooc_pointer_bag_t;
 yaooc_class_table(yaooc_pointer_bag)
 {
   yaooc_array_container_class_table_t;

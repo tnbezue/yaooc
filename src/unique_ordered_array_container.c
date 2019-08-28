@@ -93,5 +93,5 @@ yaooc_unique_ordered_array_container_class_table_t yaooc_unique_ordered_array_co
 };
 
 
-DEFINE_TYPE_INFO(yaooc_unique_ordered_array_container,N,N,N,N,N,N,N,Y,yaooc_ordered_array_container)
+DEFINE_TYPE_INFO(yaooc_unique_ordered_array_container,N,N,N,N,N,N,N,Y,yaooc_ordered_array_container);
 /*  End YAOOC PreProcessor generated content */

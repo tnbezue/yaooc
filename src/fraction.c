@@ -84,7 +84,7 @@ double yaooc_fraction_to_double(const_pointer p)
 double yaooc_fraction_epsilon=0.00005;
 
 /* Type info structure for yaooc_fraction */
-DEFINE_POD_TYPE_INFO(yaooc_fraction,Y,Y,Y)
+DEFINE_POD_TYPE_INFO(yaooc_fraction,Y,Y,Y);
 
 /* Private variables implementation for yaooc_fraction_exception */
 

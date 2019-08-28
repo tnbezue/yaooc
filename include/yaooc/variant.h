@@ -58,7 +58,6 @@ yaooc_class_table(yaooc_variant) {
 #define yaooc_variant_parent_class_table ((yaooc_object_class_table_t*)(yaooc_variant_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_variant) {
-  yaooc_object_class_instance_t;
   yaooc_variant_type_t type_;
   __variant_t;
 };

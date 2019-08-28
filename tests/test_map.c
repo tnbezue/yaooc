@@ -92,7 +92,7 @@ student_info_class_table_t student_info_class_table = {
   .score = student_info_score
 };
 
-DEFINE_TYPE_INFO(student_info,Y,Y,Y,Y,N,N,N,Y,yaooc_object)
+DEFINE_TYPE_INFO(student_info,Y,Y,Y,Y,N,N,N,Y,yaooc_object);
 
 void student_info_ctor(pointer p,va_list args)
 {
@@ -129,8 +129,8 @@ student_data_t student_updates []=
 	{ 0, 0, 0, 0 }
 };
 
-MINI_MAP_DEFINITION(student_id,student_info,student_id_student_info_map)
-MINI_MAP_IMPLEMENTATION(student_id,student_info,student_id_student_info_map)
+MINI_MAP_DEFINITION(student_id,student_info,student_id_student_info_map);
+MINI_MAP_IMPLEMENTATION(student_id,student_info,student_id_student_info_map);
 
 void test_basic()
 {
@@ -244,10 +244,10 @@ void test_big()
   The following is the same as above but uses unique pointers for the key.
   There should not be any performance difference.  Compare this to ordered map.
 */
-UNIQUE_PTR_DEFINITION(yaooc_string,yaooc_string_unique_ptr)
-UNIQUE_PTR_IMPLEMENTATION(yaooc_string,yaooc_string_unique_ptr)
-MINI_MAP_DEFINITION(yaooc_string_unique_ptr,int,yaooc_string_unique_ptr_int_map)
-MINI_MAP_IMPLEMENTATION(yaooc_string_unique_ptr,int,yaooc_string_unique_ptr_int_map)
+UNIQUE_PTR_DEFINITION(yaooc_string,yaooc_string_unique_ptr);
+UNIQUE_PTR_IMPLEMENTATION(yaooc_string,yaooc_string_unique_ptr);
+MINI_MAP_DEFINITION(yaooc_string_unique_ptr,int,yaooc_string_unique_ptr_int_map);
+MINI_MAP_IMPLEMENTATION(yaooc_string_unique_ptr,int,yaooc_string_unique_ptr_int_map);
 
 void test_big_unique_ptr()
 {
@@ -292,7 +292,7 @@ bool temp_data_less_than_compare(const_pointer p1,const_pointer p2)
 	const temp_data_t* lhs=p1;
 	const temp_data_t* rhs=p2;
 	return strcmp(lhs->temp,rhs->temp) < 0;
-};
+}
 
 DEFINE_POD_TYPE_INFO(temp_data,Y,N,N);
 

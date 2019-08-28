@@ -65,7 +65,7 @@ void test_parser_position()
 void test_whitespace()
 {
   // Never do this in production application
-  void* old_ws=yaooc_base_parser_class_table.whitespace;
+  bool (*old_ws)(pointer, yaooc_terminal_t*)=yaooc_base_parser_class_table.whitespace;
   yaooc_base_parser_class_table.whitespace=test_yaooc_base_parser_whitespace;
 
   yaooc_terminal_t ws;

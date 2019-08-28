@@ -25,8 +25,8 @@
 #include "demo_def.inc"
 #include "test_harness.h"
 
-SET_DEFINITION(int,int_set)
-SET_IMPLEMENTATION(int,int_set)
+SET_DEFINITION(int,int_set);
+SET_IMPLEMENTATION(int,int_set);
 
 void test_basic()
 {
@@ -46,8 +46,8 @@ void test_basic()
   delete(s32);
 }
 
-SET_DEFINITION(demo,demo_set)
-SET_IMPLEMENTATION(demo,demo_set)
+SET_DEFINITION(demo,demo_set);
+SET_IMPLEMENTATION(demo,demo_set);
 extern int demo_counter;
 void test_object()
 {

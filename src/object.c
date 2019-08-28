@@ -53,7 +53,7 @@ yaooc_object_class_table_t yaooc_object_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_object,N,N,N,N,N,N,N,Y,NULL)
+DEFINE_TYPE_INFO(yaooc_object,N,N,N,N,N,N,N,Y,NULL);
 
 void yaooc_do_nothing_default_ctor(pointer p) { }
 void yaooc_do_nothing_copy_ctor(pointer p,const_pointer s) { }

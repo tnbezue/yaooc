@@ -24,8 +24,8 @@
 #include <time.h>
 #include "test_harness.h"
 
-STACK_DEFINITION(long,long_stack)  /* Normally in header file */
-STACK_IMPLEMENTATION(long,long_stack) /* Normally in c source file (.c) */
+STACK_DEFINITION(long,long_stack);  /* Normally in header file */
+STACK_IMPLEMENTATION(long,long_stack); /* Normally in c source file (.c) */
 
 void test_long()
 {
@@ -42,8 +42,8 @@ void test_long()
 	delete(si64);
 }
 
-STACK_DEFINITION(yaooc_string,yaooc_string_stack)
-STACK_IMPLEMENTATION(yaooc_string,yaooc_string_stack)
+STACK_DEFINITION(yaooc_string,yaooc_string_stack);
+STACK_IMPLEMENTATION(yaooc_string,yaooc_string_stack);
 
 const char* words[] = { "This", "is","a","stack","test"};
 void test_string_stack()

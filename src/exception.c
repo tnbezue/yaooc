@@ -92,7 +92,7 @@ yaooc_exception_class_table_t yaooc_exception_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_exception,Y,Y,Y,Y,N,N,N,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_exception,Y,Y,Y,Y,N,N,N,Y,yaooc_object);
 /*  End YAOOC PreProcessor generated content */
 
 typedef struct yaooc_jmpbuf_s yaooc_jmpbuf_t;

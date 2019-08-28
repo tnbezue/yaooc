@@ -40,7 +40,7 @@ yaooc_class_instance(NAME) \
 yaooc_class(NAME);\
 NAME ## _iterator NAME ## _insert(pointer,T ## _t*); \
 NAME ## _iterator NAME ## _insert_range(pointer,const_iterator,const_iterator); \
-void NAME ## _default_ctor(pointer);
+void NAME ## _default_ctor(pointer)
 
 #define __SET_IMPLEMENTATION(T,NAME,C) \
 void NAME ## _default_ctor(pointer p) { call_constructor(p,yaooc_ ## C ## _container_ctor_ti,T ## _ti); } \

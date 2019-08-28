@@ -262,7 +262,7 @@ custom_exception_class_table_t custom_exception_class_table=
   .what = (const char* (*) (const_pointer p)) yaooc_exception_what,
 };
 
-DEFINE_TYPE_INFO(custom_exception,Y,N,N,N,N,N,N,Y,yaooc_exception)
+DEFINE_TYPE_INFO(custom_exception,Y,N,N,N,N,N,N,Y,yaooc_exception);
 
 
 void* test_thread_exception(pointer p,void* data)

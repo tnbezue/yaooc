@@ -163,7 +163,7 @@ yaooc_thread_class_table_t yaooc_thread_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_thread,Y,Y,N,N,N,N,N,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_thread,Y,Y,N,N,N,N,N,Y,yaooc_object);
 /* Private items for yaooc_mutex */
 
 /* Protected items for yaooc_mutex */
@@ -217,7 +217,7 @@ yaooc_mutex_class_table_t yaooc_mutex_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_mutex,Y,Y,N,N,N,N,N,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_mutex,Y,Y,N,N,N,N,N,Y,yaooc_object);
 /*  End YAOOC PreProcessor generated content */
 
 /* Private items for yaooc_condition_variable */
@@ -295,7 +295,7 @@ yaooc_condition_variable_class_table_t yaooc_condition_variable_class_table =
   .timedwait = (int (*) (pointer p,double)) yaooc_condition_variable_timedwait,
 };
 
-DEFINE_TYPE_INFO(yaooc_condition_variable,Y,Y,N,N,N,N,N,Y,yaooc_mutex)
+DEFINE_TYPE_INFO(yaooc_condition_variable,Y,Y,N,N,N,N,N,Y,yaooc_mutex);
 
 #ifdef __cplusplus
 }

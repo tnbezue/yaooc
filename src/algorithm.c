@@ -121,7 +121,10 @@ iterator __yaooc_copy_if(const type_info_t* ti,const_iterator f,const_iterator l
 	size_t type_size=yaooc_sizeof(ti);
   for(;first!=last;first+=type_size) {
     if(fun(first)) {
-      assign_func ? assign_func(dst,first) : memcpy(dst,first,type_size);
+      if(assign_func)
+        assign_func(dst,first);
+      else
+        memcpy(dst,first,type_size);
       dst+=type_size;
     }
   }
@@ -230,7 +233,10 @@ iterator __yaooc_remove_copy(const type_info_t*ti,const_iterator f,const_iterato
   	size_t type_size=yaooc_sizeof(ti);
   	for(;first != last;first+=type_size) {
       if(__op_ne__(first,value,lt_cmp)) {
-        assign_func ? assign_func(dst,first) : memcpy(dst,first,type_size);
+        if(assign_func)
+          assign_func(dst,first);
+        else
+          memcpy(dst,first,type_size);
         dst+=type_size;
       }
     }
@@ -247,7 +253,10 @@ iterator __yaooc_remove_copy_if(const type_info_t*ti,const_iterator f,const_iter
 	size_t type_size=yaooc_sizeof(ti);
 	for(;first != last;first+=type_size) {
     if(!fun(first)) {
-      assign_func ? assign_func(dst,first) : memcpy(dst,first,type_size);
+      if(assign_func)
+        assign_func(dst,first);
+      else
+        memcpy(dst,first,type_size);
       dst+=type_size;
     }
   }

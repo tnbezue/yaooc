@@ -106,6 +106,6 @@ yaooc_real_class_table_t yaooc_real_class_table =
   .get = (double (*) (const_pointer)) yaooc_real_get,
 };
 
-DEFINE_TYPE_INFO(yaooc_real,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_real,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object);
 
 /*  End YAOOC PreProcessor generated content */

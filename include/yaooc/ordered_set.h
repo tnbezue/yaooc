@@ -39,7 +39,7 @@ yaooc_class_instance(NAME) \
 yaooc_class(NAME);\
 NAME ## _iterator NAME ## _insert(pointer,const T ## _t*); \
 NAME ## _iterator NAME ## _insert_range(pointer,const_iterator,const_iterator); \
-void NAME ## _default_ctor(pointer);
+void NAME ## _default_ctor(pointer)
 
 #define ORDERED_SET_IMPLEMENTATION(T,NAME) \
 void NAME ## _default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor_ti,T ## _ti); } \

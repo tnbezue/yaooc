@@ -26,7 +26,7 @@
 typedef struct name ## _s name ## _t; \
 typedef struct name ## _s * const name ## _pointer; \
 typedef const struct name ## _s * const name ## _const_pointer; \
-extern const type_info_t* const name ## _ti;
+extern const type_info_t* const name ## _ti
 
 /*
 	Forward declaration of a struct. Same as class
@@ -105,7 +105,24 @@ struct name ## _s \
 { \
 	const name ## _class_table_t* class_table_; \
 	name ## _class_instance_t; \
-};
+}
+
+/*
+  Some compilers enforce the C standard that a structure can not be empty.  In a few
+  cases (base class yaooc_object for one), the instance is empty.  This macro will
+  specify only the class table when creating class object;
+*/
+#define yaooc_class_without_instance(name) \
+typedef struct name ## _s name ## _t; \
+typedef struct name ## _s * const name ## _pointer; \
+typedef const struct name ## _s * const name ## _const_pointer; \
+extern name ## _class_table_t name ## _class_table; \
+extern const type_info_t __ ## name ## _ti; \
+extern const type_info_t* const name ## _ti; \
+struct name ## _s \
+{ \
+	const name ## _class_table_t* class_table_; \
+}
 
 /*
   Defines class table for a union.  Same as class table for a class
@@ -140,7 +157,7 @@ struct name ## _s \
 {\
 	const name ## _class_table_t* class_table_; \
 	name ## _union_instance_t; \
-};
+}
 
 
 #define DEF_CTOR_Y(T) T ## _default_ctor
@@ -177,7 +194,7 @@ const type_info_t __ ## T ## _ti ={ \
 	.class_table_ = (const class_table_t*) CLASS_TABLE, \
 	.parent_ = (const type_info_t*) PARENT \
 }; \
-const type_info_t* const T ## _ti = &__ ## T ## _ti;
+const type_info_t* const T ## _ti = &__ ## T ## _ti
 
 #define DEFINE_TYPE_INFO(T,HAS_DEF_CTOR,HAS_DTOR,HAS_COPY_CTOR,HAS_ASSIGN,HAS_LT_COMPARE,HAS_TO_STREAM,HAS_FROM_STREAM,HAS_CLASS_TABLE,PARENT) \
 	__DEFINE_TYPE_INFO__(T,\
@@ -201,7 +218,7 @@ const pod_type_info_t __ ## T ## _ti ={ \
 	.to_stream_ = (to_stream) TO_STREAM, \
 	.from_stream_ = (from_stream) FROM_STREAM \
 }; \
-const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti;
+const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti
 
 #define DEFINE_POD_TYPE_INFO(T,HAS_LT_COMPARE,HAS_TO_STREAM,HAS_FROM_STREAM) \
 	__DEFINE_POD_TYPE_INFO__(T,\
@@ -216,7 +233,7 @@ const min_type_info_t __ ## T ## _ti ={ \
   .pod_flag_=0, \
 	.type_size_ = sizeof(T ## _t),\
 }; \
-const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti;
+const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti
 
 /*
 	Comparison operators

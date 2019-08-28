@@ -29,7 +29,6 @@ yaooc_class_table(yaooc_complex) {
 #define yaooc_complex_parent_class_table ((yaooc_object_class_table_t*)(yaooc_complex_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_complex) {
-  yaooc_object_class_instance_t;
   double real_;
   double imag_;
 };

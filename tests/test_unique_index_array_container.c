@@ -127,7 +127,7 @@ int_unique_index_array_container_class_table_t int_unique_index_array_container_
   .at = (int_unique_index_array_container_const_iterator(*)(const_pointer,size_t)) yaooc_array_container_at
 };
 
-DEFINE_TYPE_INFO(int_unique_index_array_container,Y,N,N,N,N,N,N,Y,yaooc_index_array_container)
+DEFINE_TYPE_INFO(int_unique_index_array_container,Y,N,N,N,N,N,N,Y,yaooc_index_array_container);
 
 void test_sizes()
 {

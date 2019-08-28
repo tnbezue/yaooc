@@ -94,11 +94,7 @@ yaooc_class_table(base)
 };
 #define base_parent_class_table ((yaooc_object_class_table_t*)(demo_class_table.parent_class_table_))
 
-yaooc_class_instance(base)
-{
-  yaooc_object_class_instance_t;
-};
-yaooc_class(base);
+yaooc_class_without_instance(base);
 
 int base_do_something_count=0;
 void base_do_something(pointer p)
@@ -112,7 +108,7 @@ base_class_table_t base_class_table =
   .swap = yaooc_object_swap,
   .do_something = base_do_something
 };
-DEFINE_TYPE_INFO(base,N,N,N,N,N,N,N,Y,yaooc_object)
+DEFINE_TYPE_INFO(base,N,N,N,N,N,N,N,Y,yaooc_object);
 
 yaooc_class_table(derived1)
 {
@@ -120,11 +116,7 @@ yaooc_class_table(derived1)
 };
 #define derived1_parent_class_table ((base_class_table_t*)(derived1_class_table.parent_class_table_))
 
-yaooc_class_instance(derived1)
-{
-  base_class_instance_t;
-};
-yaooc_class(derived1);
+yaooc_class_without_instance(derived1);
 
 int derived1_do_something_count=0;
 /*
@@ -190,7 +182,7 @@ derived1_class_table_t derived1_class_table =
   .swap = yaooc_object_swap,
   .do_something = derived1_do_something_bad
 };
-DEFINE_TYPE_INFO(derived1,N,N,N,N,N,N,N,Y,base)
+DEFINE_TYPE_INFO(derived1,N,N,N,N,N,N,N,Y,base);
 
 
 
@@ -200,11 +192,7 @@ yaooc_class_table(derived2)
 };
 #define derived2_parent_class_table ((derived1_class_table_t*)(derived2_class_table.parent_class_table_))
 
-yaooc_class_instance(derived2)
-{
-  derived1_class_instance_t;
-};
-yaooc_class(derived2);
+yaooc_class_without_instance(derived2);
 
 int derived2_do_something_count=0;
 void derived2_do_something(pointer p)
@@ -222,7 +210,7 @@ derived2_class_table_t derived2_class_table =
   .swap = yaooc_object_swap,
   .do_something = derived2_do_something
 };
-DEFINE_TYPE_INFO(derived2,N,N,N,N,N,N,N,Y,derived1)
+DEFINE_TYPE_INFO(derived2,N,N,N,N,N,N,N,Y,derived1);
 
 void test_inheritance()
 {

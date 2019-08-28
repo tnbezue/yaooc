@@ -35,7 +35,7 @@ yaooc_class_table(NAME) {\
 yaooc_class_instance(NAME) {\
   yaooc_array_container_class_instance_t; \
 };\
-yaooc_class(NAME); \
+yaooc_class(NAME)
 
 #define STACK_IMPLEMENTATION(T,NAME) \
 void NAME ## _default_ctor(pointer p) { call_constructor(p,yaooc_array_container_ctor_ti,T ## _ti); } \

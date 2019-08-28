@@ -299,5 +299,5 @@ yaooc_json_parser_class_table_t yaooc_json_parser_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_json_parser,N,N,N,N,N,N,N,Y,yaooc_base_parser)
+DEFINE_TYPE_INFO(yaooc_json_parser,N,N,N,N,N,N,N,Y,yaooc_base_parser);
 /*  End YAOOC PreProcessor generated content */

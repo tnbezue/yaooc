@@ -89,7 +89,7 @@ int_array_container_class_table_t int_array_container_class_table=
 	.clear = (void (*)(pointer))yaooc_array_container_clear, /* clear */
 };
 
-DEFINE_TYPE_INFO(int_array_container,Y,N,N,N,N,N,N,Y,yaooc_array_container)
+DEFINE_TYPE_INFO(int_array_container,Y,N,N,N,N,N,N,Y,yaooc_array_container);
 
 void print_int_container(int_array_container_const_pointer array)
 {
@@ -337,7 +337,7 @@ simple_object_array_container_class_table_t simple_object_array_container_class_
   .clear =  (void (*)(pointer)) yaooc_array_container_clear
 };
 
-DEFINE_TYPE_INFO(simple_object_array_container,Y,N,N,N,N,N,N,Y,yaooc_array_container)
+DEFINE_TYPE_INFO(simple_object_array_container,Y,N,N,N,N,N,N,Y,yaooc_array_container);
 
 void test_resize_shrink()
 {

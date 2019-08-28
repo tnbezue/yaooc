@@ -25,7 +25,7 @@
 #include <yaooc/pair.h>
 
 #define __MAP_DEFINITION(K,V,C,NAME) \
-PAIR_DEFINITION(K,V, NAME ## _pair) \
+PAIR_DEFINITION(K,V, NAME ## _pair); \
 typedef NAME ## _pair_t* NAME ## _iterator; \
 typedef const NAME ## _pair_t* NAME ## _const_iterator; \
 yaooc_class_table(NAME) {\
@@ -47,10 +47,10 @@ yaooc_class(NAME); \
 NAME ## _iterator NAME ## _insert(pointer,const K ## _t*,const V ## _t*); \
 size_t NAME ## _erase_key(pointer,const K ## _t*); \
 V ## _t* NAME ## _at(const_pointer,const K ## _t*); \
-NAME ## _iterator NAME ## _find(const_pointer, const K ## _t*);
+NAME ## _iterator NAME ## _find(const_pointer, const K ## _t*)
 
 #define __MAP_IMPLEMENTATION(K,V,C,NAME) \
-PAIR_IMPLEMENTATION(K,V,NAME ## _pair) \
+PAIR_IMPLEMENTATION(K,V,NAME ## _pair); \
 NAME ## _iterator NAME ## _insert(pointer p,const K ## _t* k,const V ## _t* v) \
 { \
   NAME ## _pair_t pair; \

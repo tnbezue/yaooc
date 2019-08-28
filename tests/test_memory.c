@@ -74,10 +74,10 @@ void demo_say(demo_const_pointer this)
   printf("X = %d  Y = %d\n",this->x,this->y);
 }
 
-DEFINE_TYPE_INFO(demo,Y,Y,Y,Y,Y,N,N,N,NULL)
+DEFINE_TYPE_INFO(demo,Y,Y,Y,Y,Y,N,N,N,NULL);
 
-DYNAMIC_POINTER_DEFINITION(demo,dynamic_demo)
-DYNAMIC_POINTER_IMPLEMENTATION(demo,dynamic_demo)
+DYNAMIC_POINTER_DEFINITION(demo,dynamic_demo);
+DYNAMIC_POINTER_IMPLEMENTATION(demo,dynamic_demo);
 
 
 void test_dynamic_pointer()
@@ -89,8 +89,8 @@ void test_dynamic_pointer()
   DELETE_LIST(dd,d);
 }
 
-VECTOR_DEFINITION(dynamic_demo,dynamic_demo_pointer_vector)
-VECTOR_IMPLEMENTATION(dynamic_demo,dynamic_demo_pointer_vector)
+VECTOR_DEFINITION(dynamic_demo,dynamic_demo_pointer_vector);
+VECTOR_IMPLEMENTATION(dynamic_demo,dynamic_demo_pointer_vector);
 
 void test_dynamic_pointer_vector()
 {
@@ -149,8 +149,8 @@ void test_unique_pointer()
 /*
   Same as above but using template
 */
-UNIQUE_PTR_DEFINITION(demo,demo_unique_ptr)
-UNIQUE_PTR_IMPLEMENTATION(demo,demo_unique_ptr)
+UNIQUE_PTR_DEFINITION(demo,demo_unique_ptr);
+UNIQUE_PTR_IMPLEMENTATION(demo,demo_unique_ptr);
 
 void test_unique_pointer_tmpl()
 {
@@ -223,8 +223,8 @@ void test_shared_pointer()
 /*
   Same as above but using template
 */
-SHARED_PTR_DEFINITION(demo,demo_shared_ptr)
-SHARED_PTR_IMPLEMENTATION(demo,demo_shared_ptr)
+SHARED_PTR_DEFINITION(demo,demo_shared_ptr);
+SHARED_PTR_IMPLEMENTATION(demo,demo_shared_ptr);
 
 void test_shared_pointer_tmpl()
 {
@@ -250,8 +250,8 @@ void test_shared_pointer_tmpl()
 }
 
 #include <yaooc/vector.h>
-VECTOR_DEFINITION(demo_unique_ptr,demo_unique_ptr_vector)
-VECTOR_IMPLEMENTATION(demo_unique_ptr,demo_unique_ptr_vector)
+VECTOR_DEFINITION(demo_unique_ptr,demo_unique_ptr_vector);
+VECTOR_IMPLEMENTATION(demo_unique_ptr,demo_unique_ptr_vector);
 
 void test_vector()
 {
@@ -279,11 +279,11 @@ void test_vector()
 
 #include "shape.inc"
 
-UNIQUE_PTR_DEFINITION(shape,shape_unique_ptr)
-UNIQUE_PTR_IMPLEMENTATION(shape,shape_unique_ptr)
+UNIQUE_PTR_DEFINITION(shape,shape_unique_ptr);
+UNIQUE_PTR_IMPLEMENTATION(shape,shape_unique_ptr);
 
-VECTOR_DEFINITION(shape_unique_ptr,shape_unique_ptr_vector)
-VECTOR_IMPLEMENTATION(shape_unique_ptr,shape_unique_ptr_vector)
+VECTOR_DEFINITION(shape_unique_ptr,shape_unique_ptr_vector);
+VECTOR_IMPLEMENTATION(shape_unique_ptr,shape_unique_ptr_vector);
 
 void test_polymorphism()
 {

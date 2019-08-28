@@ -318,6 +318,6 @@ yaooc_date_time_class_table_t yaooc_date_time_class_table =
   .strftime = (char* (*) (const_pointer,const char*)) yaooc_date_time_strftime,
 };
 
-DEFINE_TYPE_INFO(yaooc_date_time,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object)
+DEFINE_TYPE_INFO(yaooc_date_time,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object);
 
 /*  End YAOOC PreProcessor generated content */

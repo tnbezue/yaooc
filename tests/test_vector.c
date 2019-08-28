@@ -28,8 +28,8 @@ extern int count;
 #include "demo_def.inc"
 #include "test_harness.h"
 
-VECTOR_DEFINITION(long,long_vector)  /* Normally in header file */
-VECTOR_IMPLEMENTATION(long,long_vector) /* Normally in c source file (.c) */
+VECTOR_DEFINITION(long,long_vector);  /* Normally in header file */
+VECTOR_IMPLEMENTATION(long,long_vector); /* Normally in c source file (.c) */
 
 void test_long()
 {
@@ -61,10 +61,10 @@ bool str_8_less_than_compare(const_pointer v1,const_pointer v2)
 {
 	return strcmp((const char*)(((str_8_const_pointer)v1)->str),(const char*)(((str_8_const_pointer)v2)->str)) < 0;
 }
-DEFINE_TYPE_INFO(str_8,Y,N,N,N,Y,N,N,N,NULL)
+DEFINE_TYPE_INFO(str_8,Y,N,N,N,Y,N,N,N,NULL);
 
-VECTOR_DEFINITION(str_8,str_8_vector)
-VECTOR_IMPLEMENTATION(str_8,str_8_vector)
+VECTOR_DEFINITION(str_8,str_8_vector);
+VECTOR_IMPLEMENTATION(str_8,str_8_vector);
 void test_str_8()
 {
   printf("Size is %zu\n",sizeof(str_8_t));
@@ -108,8 +108,8 @@ void test_str_8()
 /*
 	Same as above but using yaooc_string_t objects
 */
-VECTOR_DEFINITION(yaooc_string,string_vector)
-VECTOR_IMPLEMENTATION(yaooc_string,string_vector)
+VECTOR_DEFINITION(yaooc_string,string_vector);
+VECTOR_IMPLEMENTATION(yaooc_string,string_vector);
 void test_string_vector()
 {
 	string_vector_pointer vec = new(string_vector);

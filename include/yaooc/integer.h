@@ -37,7 +37,6 @@ yaooc_class_table(yaooc_integer)
 
 yaooc_class_instance(yaooc_integer)
 {
-	yaooc_object_class_instance_t;
 	long long value_;
 };
 
@@ -75,7 +74,6 @@ yaooc_class_table(yaooc_unsigned_integer)
 
 yaooc_class_instance(yaooc_unsigned_integer)
 {
-	yaooc_object_class_instance_t;
 	unsigned long long value_;
 };
 

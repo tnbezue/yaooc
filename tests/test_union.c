@@ -16,7 +16,7 @@ yaooc_union_instance(sample)
 	const char* ptr;
 };
 
-yaooc_union(sample)
+yaooc_union(sample);
 
 void sample_swap(pointer p,pointer o)
 {

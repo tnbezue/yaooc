@@ -322,6 +322,6 @@ yaooc_index_array_container_class_table_t yaooc_index_array_container_class_tabl
 };
 
 
-DEFINE_TYPE_INFO(yaooc_index_array_container,N,Y,Y,Y,N,N,N,Y,yaooc_array_container)
+DEFINE_TYPE_INFO(yaooc_index_array_container,N,Y,Y,Y,N,N,N,Y,yaooc_array_container);
 
 /*  End YAOOC PreProcessor generated content */

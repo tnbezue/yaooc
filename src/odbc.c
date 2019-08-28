@@ -19,7 +19,7 @@
 #include <yaooc/odbc.h>
 #include <stdio.h>
 
-MINI_MAP_IMPLEMENTATION(yaooc_string,yaooc_string,map_odbc_string_string)
+MINI_MAP_IMPLEMENTATION(yaooc_string,yaooc_string,map_odbc_string_string);
 
 /* Type Info implemmentation for yaooc_odbc_exception */
 /* Constructors implementation for yaooc_odbc_exception */

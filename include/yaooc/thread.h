@@ -50,7 +50,6 @@ yaooc_class_table(yaooc_thread)
 
 yaooc_class_instance(yaooc_thread)
 {
-  yaooc_object_class_instance_t;
   yaooc_thread_method method;
   pthread_t thread_id_;
   yaooc_thread_state_t state_;
@@ -94,7 +93,6 @@ yaooc_class_table(yaooc_mutex)
 
 yaooc_class_instance(yaooc_mutex)
 {
-  yaooc_object_class_instance_t;
   pthread_mutex_t mutex_;
 };
 

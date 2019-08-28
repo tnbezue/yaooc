@@ -87,7 +87,7 @@ int_unique_ordered_array_container_class_table_t int_unique_ordered_array_contai
 	.at = (iterator (*)(const_pointer,size_t))yaooc_array_container_at, /* at */
 };
 
-DEFINE_TYPE_INFO(int_unique_ordered_array_container,Y,N,N,N,N,N,N,Y,yaooc_array_container)
+DEFINE_TYPE_INFO(int_unique_ordered_array_container,Y,N,N,N,N,N,N,Y,yaooc_array_container);
 
 void test_sizes()
 {
@@ -141,7 +141,7 @@ void test_insert()
 
 
 	for(i=18;i<n;i++) {
-		pos=M(bc,cbegin)+8;
+		pos=M(bc,at,8);
 		M(bc,insert,pos,values+i);
 	}
 	TEST("Size is 15",bc->size_==15);
@@ -339,7 +339,7 @@ simple_object_ordered_container_class_table_t simple_object_ordered_container_cl
 	.at = (void (*)(const_pointer,size_t))yaooc_array_container_at
 };
 
-DEFINE_TYPE_INFO(simple_object_ordered_container,Y,N,N,N,N,N,N,Y,yaooc_array_container)
+DEFINE_TYPE_INFO(simple_object_ordered_container,Y,N,N,N,N,N,N,Y,yaooc_array_container);
 
 void test_resize_shrink()
 {

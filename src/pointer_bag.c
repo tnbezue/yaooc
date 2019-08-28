@@ -136,4 +136,4 @@ yaooc_pointer_bag_class_table_t yaooc_pointer_bag_class_table =
   .delete_all = (void (*) (pointer p)) yaooc_pointer_bag_delete_all,
 };
 
-DEFINE_TYPE_INFO(yaooc_pointer_bag,Y,Y,N,N,N,N,N,Y,yaooc_array_container)
+DEFINE_TYPE_INFO(yaooc_pointer_bag,Y,Y,N,N,N,N,N,Y,yaooc_array_container);

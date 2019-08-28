@@ -24,8 +24,8 @@
 #include <time.h>
 #include "test_harness.h"
 
-QUEUE_DEFINITION(long,long_queue)  /* Normally in header file */
-QUEUE_IMPLEMENTATION(long,long_queue) /* Normally in c source file (.c) */
+QUEUE_DEFINITION(long,long_queue);  /* Normally in header file */
+QUEUE_IMPLEMENTATION(long,long_queue); /* Normally in c source file (.c) */
 
 void test_long()
 {

@@ -26,8 +26,8 @@
 typedef enum { JSON_UNDEFINED=0, JSON_NULL, JSON_BOOL, JSON_INTEGER, JSON_REAL, JSON_STRING,
         JSON_ARRAY, JSON_OBJECT } yaooc_json_type_t;
 
-yaooc_class_forward(yaooc_json_value_array)
-yaooc_class_forward(yaooc_json_string_value_map)
+yaooc_class_forward(yaooc_json_value_array);
+yaooc_class_forward(yaooc_json_string_value_map);
 
 typedef union {
   bool    bool_;
@@ -88,7 +88,6 @@ yaooc_class_table(yaooc_json_value)
 
 yaooc_class_instance(yaooc_json_value)
 {
-  yaooc_object_class_instance_t;
   yaooc_json_type_t type_;
   json_data_t;
 };
@@ -306,7 +305,7 @@ void yaooc_json_string_clear(pointer);
 
 /* Prototypes for yaooc_json_string class protected items*/
 
-VECTOR_DEFINITION(yaooc_json_value,yaooc_json_value_array)
+VECTOR_DEFINITION(yaooc_json_value,yaooc_json_value_array);
 typedef yaooc_json_value_array_iterator yaooc_json_array_iterator;
 typedef yaooc_json_value_array_const_iterator yaooc_json_array_const_iterator;
 
@@ -356,7 +355,7 @@ yaooc_json_array_iterator yaooc_json_array_end(const_pointer);
 
 /* Prototypes for yaooc_json_array class protected items*/
 
-MINI_MAP_DEFINITION(yaooc_json_string,yaooc_json_value,yaooc_json_string_value_map)
+MINI_MAP_DEFINITION(yaooc_json_string,yaooc_json_value,yaooc_json_string_value_map);
 typedef yaooc_json_string_value_map_iterator yaooc_json_object_iterator;
 typedef yaooc_json_string_value_map_const_iterator yaooc_json_object_const_iterator;
 

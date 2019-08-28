@@ -25,8 +25,8 @@
 #include "demo_def.inc"
 #include "test_harness.h"
 
-ORDERED_SET_DEFINITION(int,int_ordered_set)
-ORDERED_SET_IMPLEMENTATION(int,int_ordered_set)
+ORDERED_SET_DEFINITION(int,int_ordered_set);
+ORDERED_SET_IMPLEMENTATION(int,int_ordered_set);
 
 void test_basic()
 {
@@ -46,8 +46,8 @@ void test_basic()
   delete(s32);
 }
 
-ORDERED_SET_DEFINITION(demo,demo_ordered_set)
-ORDERED_SET_IMPLEMENTATION(demo,demo_ordered_set)
+ORDERED_SET_DEFINITION(demo,demo_ordered_set);
+ORDERED_SET_IMPLEMENTATION(demo,demo_ordered_set);
 extern int demo_counter;
 void test_object()
 {

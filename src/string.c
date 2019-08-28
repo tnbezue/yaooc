@@ -765,8 +765,8 @@ yaooc_string_class_table_t yaooc_string_class_table =
 };
 
 
-DEFINE_TYPE_INFO(yaooc_string,Y,N,Y,Y,Y,Y,Y,Y,yaooc_array_container)
+DEFINE_TYPE_INFO(yaooc_string,Y,N,Y,Y,Y,Y,Y,Y,yaooc_array_container);
 
 /* End */
 
-VECTOR_IMPLEMENTATION(yaooc_string,yaooc_string_vector)
+VECTOR_IMPLEMENTATION(yaooc_string,yaooc_string_vector);
