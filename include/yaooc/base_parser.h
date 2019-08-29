@@ -45,8 +45,8 @@ enum { PARSE_SUCCESS = 0, PARSE_FAILED };
 #define RULE_SUCCESS(p) M((yaooc_base_parser_pointer)this,rule_success)
 
 //#define NEXT_CHR (yaooc_base_parser_current_char_=*this->current_pos_++,yaooc_base_parser_current_char_)
-#define OPTIONAL(rule) ((rule),true)
-#define TRY_RULE(p,rule) (RULE_START(p), (rule) ? RULE_SUCCESS(p) : RULE_FAIL(p))
+#define YAOOC_PARSER_OPTIONAL(rule) ((rule),true)
+#define YAOOC_PARSER_TRY_RULE(p,rule) (RULE_START(p), (rule) ? RULE_SUCCESS(p) : RULE_FAIL(p))
 
 /*
   Struct Definition for parser_position
