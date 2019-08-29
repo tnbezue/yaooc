@@ -160,7 +160,7 @@ DEFINE_TYPE_INFO(int_rbtree_index_array_container,Y,N,N,N,N,N,N,Y,yaooc_rbtree_i
 
 void test_sizes()
 {
-	printf("%zu %zu\n",sizeof(yaooc_rbnode_t),sizeof(int_rbtree_index_array_container_t));
+	printf("%" PRIULONG " %" PRIULONG "\n",sizeof(yaooc_rbnode_t),sizeof(int_rbtree_index_array_container_t));
 	TEST("SIZE yaooc_rbnode_t == 32",sizeof(yaooc_rbnode_t)== 32);
 	TEST("SIZE index_array_container == 48",sizeof(int_rbtree_index_array_container_t)== 48);
 }
@@ -188,7 +188,7 @@ void test_insert()
 		M(bc,insert,M(bc,cend),values+i);
 	}
 	TEST("Array is not NULL",bc->array_!=NULL);
-	printf("%zu\n",bc->size_);
+	printf("%" PRIULONG "\n",bc->size_);
 	TEST("Size is 4",bc->size_==4);
 	TEST("Capacity is 16",bc->capacity_==16);
   TEST("Index is ordered",index_ordered(bc));

@@ -99,7 +99,7 @@ void test_match_info()
 void test_regex()
 {
   PB_INIT;
-	printf("%zu %zu\n",sizeof(yaooc_matchdata_t),sizeof(yaooc_regex_t));
+	printf("%" PRIULONG " %" PRIULONG "\n",sizeof(yaooc_matchdata_t),sizeof(yaooc_regex_t));
 	yaooc_regex_pointer re=PB_SAVE(new(yaooc_regex));
 
 	TEST("RE not ok",!M(re,bool));

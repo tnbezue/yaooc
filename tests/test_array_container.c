@@ -101,7 +101,7 @@ void print_int_container(int_array_container_const_pointer array)
 
 void test_sizes()
 {
-	printf("%zu\n",sizeof(int_array_container_t));
+	printf("%" PRIULONG "\n",sizeof(int_array_container_t));
 	TEST("SIZE container == 40",sizeof(int_array_container_t)== 40);
 }
 
@@ -147,7 +147,7 @@ void test_insert()
 	for(i=18;i<n;i++) {
 		pos=M(bc,at,8);
     print_int_container(bc);
-    printf("Before: Val: %d  Insert at: %zu  Size: %zu  Capacity: %zu  Array: %s\n",
+    printf("Before: Val: %d  Insert at: %" PRIULONG "  Size: %" PRIULONG "  Capacity: %" PRIULONG "  Array: %s\n",
         values[i],pos -(int_array_container_const_iterator)M(bc,begin),M(bc,size),M(bc,capacity),output);
 		M(bc,insert,pos,values+i);
 	}

@@ -37,7 +37,7 @@ void test_long()
 		M(si64,push,numbers+i);
 	long_stack_const_iterator ivi;
 	for(ivi=M(si64,begin);ivi!=M(si64,end);ivi++)
-		printf("%lld ",*ivi);
+		printf("%" PRIULONG " ",*ivi);
 	puts("\n");
 	delete(si64);
 }

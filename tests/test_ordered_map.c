@@ -135,7 +135,7 @@ ORDERED_MAP_IMPLEMENTATION(student_id,student_info,student_id_student_info_order
 
 void test_basic()
 {
-  printf("Test map size %zu\n",sizeof(student_id_student_info_ordered_map_t));
+  printf("Test map size %" PRIULONG "\n",sizeof(student_id_student_info_ordered_map_t));
   student_id_student_info_ordered_map_pointer student_info_map=new(student_id_student_info_ordered_map);
   student_data_t * isd=students;
   for(;isd->student_id!=0;isd++) {
@@ -201,7 +201,7 @@ void test_big()
 		}
 	}
 
-	printf("%lg seconds to insert %zu items\n",((double)(clock()-start))/CLOCKS_PER_SEC,M(mfls,size));
+	printf("%lg seconds to insert %" PRIULONG " items\n",((double)(clock()-start))/CLOCKS_PER_SEC,M(mfls,size));
 //	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
 /*	yaooc_string_int_map_const_iterator isi;
 	for(isi=M(mfls,begin);isi!=M(mfls,end);isi++) {
@@ -243,7 +243,7 @@ void test_big_unique_ptr()
 			}
 		}
 	}
-	printf("%ld clock cycles to insert %zu items\n",clock()-start,M(mfls,size));
+	printf("%ld clock cycles to insert %" PRIULONG " items\n",clock()-start,M(mfls,size));
 //	printf("%5s %6d\n",M(&mfls->first,c_str),p.second);
 	yaooc_string_unique_ptr_int_map_const_iterator isi;
 	for(isi=M(mfls,begin);isi!=M(mfls,end);isi++) {

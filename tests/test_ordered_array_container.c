@@ -91,7 +91,7 @@ DEFINE_TYPE_INFO(int_ordered_array_container,Y,N,N,N,N,N,N,Y,yaooc_array_contain
 
 void test_sizes()
 {
-//	printf("%zu\n",sizeof(int_ordered_array_container_t));
+//	printf("%" PRIULONG "\n",sizeof(int_ordered_array_container_t));
 	TEST("SIZE container == 40",sizeof(int_ordered_array_container_t)== 40);
 }
 

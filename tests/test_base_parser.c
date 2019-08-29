@@ -85,7 +85,7 @@ void test_whitespace()
   do_cpp_comment=true;
   M(bp,whitespace,&ws);
   TEST("Offset is 47",bp->current_pos_-str == 47);
-  printf("%zu X%s\n",bp->current_pos_-str,bp->current_pos_);
+  printf("%" PRIULONG " X%s\n",bp->current_pos_-str,bp->current_pos_);
   do_shell_comment=true;
   M(bp,whitespace,&ws);
   TEST("Offset is 64",bp->current_pos_-str == 64);
@@ -124,7 +124,7 @@ void test_str()
   M(bp,set_parse_string,str);
   yaooc_terminal_t r;
   TEST("Matches \"this\"",M(bp,str,"this",&r));
-  printf("%zu X%s\n",bp->current_pos_-str,bp->current_pos_);
+  printf("%" PRIULONG " X%s\n",bp->current_pos_-str,bp->current_pos_);
   TEST("Offset is 5",bp->current_pos_-str == 5);
   TEST("Does not match \"this\"",!M(bp,str,"this",&r));
   TEST("Offset is 5",bp->current_pos_-str == 5);
@@ -409,17 +409,17 @@ void test_qouted_string()
   M(bp,double_quoted_string,&r);
   TEST("Found valid quoted string",r.end_!=NULL);
   ts=yaooc_terminal_text(&r);
-//  printf("%zu X%sX\n",strlen(ts),ts);
+//  printf("%" PRIULONG " X%sX\n",strlen(ts),ts);
   TEST("Match string is \"quoted string\"",strcmp(ts,"quoted string")==0);
   TEST("Offset is 18",bp->current_pos_-str==18);
   if(ts) delete(ts);
   M(bp,double_quoted_string,&r);
   TEST("Found valid quoted string",r.end_!=NULL);
-//  printf("%zu X%sX\n",strlen(ts),ts);
+//  printf("%" PRIULONG " X%sX\n",strlen(ts),ts);
   ts=yaooc_terminal_text(&r);
-//  printf("%zu Y%sY\n",strlen(ts),ts);
+//  printf("%" PRIULONG " Y%sY\n",strlen(ts),ts);
   char *ns="This is \a \b \f \r \n \t \v \"inside\" \\ \t test";
-//  printf("%zu Z%sZ\n",strlen(ns),ns);
+//  printf("%" PRIULONG " Z%sZ\n",strlen(ns),ns);
   TEST("Match string is \"quoted string\"",strcmp(ts,ns)==0);
 /*  puts(ts);
   puts(ns);*/

@@ -34,7 +34,7 @@ void sample_default_ctor(pointer p)
 void sample_print(const_pointer p)
 {
 	sample_const_pointer this=p;
-	printf("%hd %d %lld\n",this->short_,this->int_,this->ll_); //,this->ptr);
+	printf("%hd %d %" PRIULONG "\n",this->short_,this->int_,this->ll_); //,this->ptr);
 }
 
 sample_class_table_t sample_class_table = {

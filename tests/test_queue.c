@@ -37,7 +37,7 @@ void test_long()
 		M(slong,push,numbers+i);
 	long_queue_const_iterator ivi;
 	for(ivi=M(slong,begin);ivi!=M(slong,end);ivi++)
-		printf("%lld ",*ivi);
+		printf("%l" PRId64 " ",*ivi);
 	puts("\n");
 	delete(slong);
 }

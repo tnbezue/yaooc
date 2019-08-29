@@ -45,7 +45,7 @@ void test_construtor()
 	TEST("matched original",strncmp(M(s3,c_str),temp,30) == 0);
 
 	yaooc_string_t* s4=new_ctor(yaooc_string,yaooc_string_ctor_n_chr,10,'c');
-	printf("%zu %zu %s\n",M(s4,size),M(s4,capacity),M(s4,c_str));
+	printf("%" PRIULONG " %" PRIULONG " %s\n",M(s4,size),M(s4,capacity),M(s4,c_str));
 	TEST("Size is 10",M(s4,size) == 10);
 	TEST("Capacity is 16",M(s4,capacity) == 16);
 	TEST("matched 10 c's'",strcmp(M(s4,c_str),"cccccccccc") == 0);
@@ -135,7 +135,7 @@ void test_erase()
 	TEST("Erase",strcmp(M(s1,c_str),"This test string")==0);
 	TEST("Size is 16",M(s1,size)==16);*/
 	M(s1,erasen,8,yaooc_string_npos);
-	printf("*** X%sX %zu ****\n",M(s1,c_str),M(s1,size));
+	printf("*** X%sX %" PRIULONG " ****\n",M(s1,c_str),M(s1,size));
   puts(M(s1,c_str));
 	TEST("Erase",strcmp(M(s1,c_str),"This is ")==0);
 	puts(M(s1,c_str));
@@ -144,7 +144,7 @@ void test_erase()
 	TEST("Erase",strcmp(M(s1,c_str),"his is ")==0);
 	TEST("Size is 7",M(s1,size)==7);
 
-//	printf("*** %s %zu ****\n",M(s1,c_str),M(s1,size));
+//	printf("*** %s %" PRIULONG " ****\n",M(s1,c_str),M(s1,size));
   delete(s1);
 }
 
@@ -285,7 +285,7 @@ void test_find()
 	TEST("findstr(\"needle\",28) found at 73",pos==73);
 
 	pos=M(s1,rfindstr,"needle",yaooc_string_npos);
-  printf("Z%zuZ\n",pos);
+  printf("Z%" PRIULONG "Z\n",pos);
 	TEST("rfindstr(\"needle\",string_npos) found at 96",pos==96);
 	pos=M(s1,rfindstr,"needle",97);
 	TEST("rfindstr(\"needle\",97) found at 73",pos==73);
@@ -311,10 +311,10 @@ void test_find()
 	TEST("rfindchr('H',string_npos) not found",pos==yaooc_string_npos);
 	pos=M(s1,rfindchr,'h',yaooc_string_npos);
 	TEST("rfindchr('h',string_npos) found at 93",pos==93);
-	printf("BB %zu %zu\n",pos,(size_t)-1);
+	printf("BB %" PRIULONG " %" PRIULONG "\n",pos,(size_t)-1);
 	pos=M(s1,rfindchr,'h',33);
 	TEST("rfindchr('h',33) found at 24",pos==24);
-	printf("**** %zu\n",pos);
+	printf("**** %" PRIULONG "\n",pos);
 	pos=M(s1,rfindchr,'h',92);
 	TEST("rfindchr('h',92) found at 83",pos==83);
 	pos=M(s1,rfindchr,'h',9);
@@ -390,11 +390,11 @@ void test_resize_shrink()
 	TEST("Capacity is 256",M(s1,capacity)==256);
 	TEST("String not changed",strcmp(M(s1,c_str),"This should be a long string.  I would make it longer but I'm tired of typingaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")==0);
 
-  printf("&&&&&  %zu %zu %s\n",M(s1,size),M(s1,capacity),M(s1,c_str));
+  printf("&&&&&  %" PRIULONG " %" PRIULONG " %s\n",M(s1,size),M(s1,capacity),M(s1,c_str));
 	M(s1,resize_value,100,'a');
 	TEST("Resize to 100 changes size to 100",M(s1,size)==100);
 	TEST("Resize to 100 does not change capacity",M(s1,capacity)==256);
-  printf("&&&&&  %zu %zu %s\n",M(s1,size),M(s1,capacity),M(s1,c_str));
+  printf("&&&&&  %" PRIULONG " %" PRIULONG " %s\n",M(s1,size),M(s1,capacity),M(s1,c_str));
 	TEST("String changed",strcmp(M(s1,c_str),"This should be a long string.  I would make it longer but I'm tired of typingaaaaaaaaaaaaaaaaaaaaaaa")==0);
 
 	M(s1,shrink_to_fit);
@@ -422,7 +422,7 @@ void test_split()
   yaooc_string_pointer str=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"This  is   a    test    ");
   yaooc_string_vector_pointer sv=M(str,split," ",3);
   TEST("Array size is 4",M(sv,size)==4);
-  printf("%zu\n",M(sv,size));
+  printf("%" PRIULONG "\n",M(sv,size));
   yaooc_string_vector_const_iterator isv;
   for(isv=M(sv,begin);isv!=M(sv,end);isv++) {
     printf("%s\n",M(isv,c_str));

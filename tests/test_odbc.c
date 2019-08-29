@@ -32,7 +32,7 @@ void test_get_drivers()
 {
 	map_odbc_string_string_t *drivers=yaooc_odbc_environment_get_drivers(NULL);
 	map_odbc_string_string_const_iterator i;
-	printf("Found %zu drivers\n",M(drivers,size));
+	printf("Found %" PRIULONG " drivers\n",M(drivers,size));
 	for(i=M(drivers,begin);i!=M(drivers,end);i++)
 		printf("%s %s\n",M(&i->first,c_str),M(&i->second,c_str));
 	delete(drivers);
@@ -42,7 +42,7 @@ void test_get_sources()
 {
 	map_odbc_string_string_t *drivers=yaooc_odbc_environment_get_sources(NULL);
 	map_odbc_string_string_const_iterator i;
-	printf("Found %zu sources\n",M(drivers,size));
+	printf("Found %" PRIULONG " sources\n",M(drivers,size));
 	for(i=M(drivers,begin);i!=M(drivers,end);i++)
 		printf("%s %s\n",M(&i->first,c_str),M(&i->second,c_str));
 	delete(drivers);
@@ -247,7 +247,6 @@ int main(int argc,char*argv[])
 	setbuf(stdout,NULL);
 	setbuf(stderr,NULL);
 	yaooc_init();
-	output=(char*)malloc(10240);
 	optr=NULL;
   srand(time(NULL));
 
@@ -268,7 +267,6 @@ int main(int argc,char*argv[])
 		}
 	}
 	FINAL_SUMMARY;
-	free(output);
 	delete(env);
 	return 0;
 }

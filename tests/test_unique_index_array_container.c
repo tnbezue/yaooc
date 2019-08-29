@@ -131,7 +131,7 @@ DEFINE_TYPE_INFO(int_unique_index_array_container,Y,N,N,N,N,N,N,Y,yaooc_index_ar
 
 void test_sizes()
 {
-//	printf("%zu\n",sizeof(int_unique_index_array_container_t));
+//	printf("%" PRIULONG "\n",sizeof(int_unique_index_array_container_t));
 	TEST("SIZE index_array_container == 48",sizeof(int_unique_index_array_container_t)== 48);
 }
 

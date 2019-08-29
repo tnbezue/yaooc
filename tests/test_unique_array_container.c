@@ -86,7 +86,7 @@ DEFINE_TYPE_INFO(int_unique_container,Y,N,N,N,N,N,N,Y,yaooc_array_container);
 
 void test_sizes()
 {
-//	printf("%zu\n",sizeof(int_unique_container_t));
+//	printf("%" PRIULONG "\n",sizeof(int_unique_container_t));
 	TEST("SIZE container == 40",sizeof(int_unique_container_t)== 40);
 }
 
@@ -287,7 +287,7 @@ void test_resize_shrink()
 	new_size=M(soc,size)+5;
 	M(soc,resize,new_size,so);
 	TESTCASE("Resize: Increase by 5 objects");
-  printf("BBBBB %zu\n",M(soc,size));
+  printf("BBBBB %" PRIULONG "\n",M(soc,size));
 	TEST("Size is 1",M(soc,size)==1);
 	TEST("Capacity is 16",M(soc,capacity)==16);
 	TEST("Output string",strcmp(output,"SOCC:X:12 ")==0);

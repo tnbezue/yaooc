@@ -263,7 +263,6 @@ void test_assign()
   delete(js);
   delete(jv);
   delete(os);
-  YAOOC_THREAD_CLEANUP
 }
 
 #if 0
