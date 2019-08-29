@@ -15,7 +15,7 @@
 #define INSTANCE(term) M(this,str,"instance",&term)
 #define PROTECTED(term) M(this,str,"protected",&term)
 #define PRIVATE(term) M(this,str,"private",&term)
-#define CONST(term) M(this,str,"const",&term)
+#define __CONST__(term) M(this,str,"const",&term)
 #define OPERATOR(term) M(this,str,"operator",&term)
 #define COMMA(term) M(this,chr,',',&term)
 #define COLON(term) M(this,chr,':',&term)
@@ -135,7 +135,7 @@ bool yaoocpp_parser_line_directive(pointer p,yaooc_terminal_t* ws)
   RULE_START(p);
   *ws=(yaooc_terminal_t) { NULL, NULL };
   yaooc_terminal_t r,l;
-//        && OPTIONAL(M(this,integer,&r) && OPTIONAL(M(this,integer,&r) && OPTIONAL(M(this,integer,&r))) {
+//        && YAOOC_PARSER_OPTIONAL(M(this,integer,&r) && YAOOC_PARSER_OPTIONAL(M(this,integer,&r) && YAOOC_PARSER_OPTIONAL(M(this,integer,&r))) {
   if(M(this,chr,'#',&r) && M(this,integer,&l)) {
     this->line_no_=atoi(l.beg_)-1;
     if(*this->current_pos_=='"') { // This should always be true -- but just in case
@@ -506,11 +506,11 @@ static bool yaoocpp_parser_arguments(pointer p,yaoocpp_argument_vector_t** args)
     delete(arg);
 //    arg=PB_SAVE(new(yaoocpp_argument));
     ret=true;
-    while(TRY_RULE(p,COMMA(r) && yaoocpp_parser_argument(this,&arg))) {
+    while(YAOOC_PARSER_TRY_RULE(p,COMMA(r) && yaoocpp_parser_argument(this,&arg))) {
       M(*args,push_back,arg);
       delete(arg); //=PB_SAVE(new(yaoocpp_argument));
     }
-    if(TRY_RULE(p,COMMA(r) && yaoocpp_parser_va_argument(this,&arg))) {
+    if(YAOOC_PARSER_TRY_RULE(p,COMMA(r) && yaoocpp_parser_va_argument(this,&arg))) {
       M(*args,push_back,arg);
       delete(arg);
     }
@@ -791,7 +791,7 @@ static bool yaoocpp_parser_table_struct_not_allowed(pointer p)
   yaoocpp_parser_pointer this=p;
   bool ret=false;
   yaooc_terminal_t r;
-  if(TRY_RULE(p,TABLE(r) && COLON(r))) {
+  if(YAOOC_PARSER_TRY_RULE(p,TABLE(r) && COLON(r))) {
      THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
         "Table section not allowd in struct declaration"));
   }
@@ -830,7 +830,7 @@ static bool yaoocpp_parser_method(pointer p,yaoocpp_method_t** meth)
   yaoocpp_parser_pointer this=p;
   bool ret=false;
   yaooc_terminal_t r;
-  if(TRY_RULE(p,yaoocpp_parser_method_base(this,meth) && SEMICOLON(r))) {
+  if(YAOOC_PARSER_TRY_RULE(p,yaoocpp_parser_method_base(this,meth) && SEMICOLON(r))) {
     ret=true;
   }
   return ret;
@@ -846,8 +846,8 @@ static bool yaoocpp_parser_method_base(pointer p,yaoocpp_method_t** meth)
   yaooc_terminal_t r,is_const;
   bool ret=false;
   if(yaoocpp_parser_type_variable(p,&var)) {
-    if(LPAREN(r) && OPTIONAL(yaoocpp_parser_arguments(p,&args)) && RPAREN(r) &&
-          OPTIONAL(M(this,str,"const",&is_const))) {
+    if(LPAREN(r) && YAOOC_PARSER_OPTIONAL(yaoocpp_parser_arguments(p,&args)) && RPAREN(r) &&
+          YAOOC_PARSER_OPTIONAL(__CONST__(is_const))) {
       *meth=new(yaoocpp_method);
       assign_static(&(*meth)->return_type_,&var->type_,yaooc_string);
       assign_static(&(*meth)->name_,&var->name_,yaooc_string);
@@ -896,7 +896,7 @@ static bool yaoocpp_parser_variable(pointer p,yaoocpp_variable_t** var)
 {
   yaoocpp_parser_pointer this=p;
   yaooc_terminal_t r;
-  bool ret=TRY_RULE(p,yaoocpp_parser_variable_base(p,var) && SEMICOLON(r));
+  bool ret=YAOOC_PARSER_TRY_RULE(p,yaoocpp_parser_variable_base(p,var) && SEMICOLON(r));
   return ret;
 }
 
@@ -969,7 +969,7 @@ static bool yaoocpp_parser_type_only(pointer p,yaoocpp_type_t** type)
   bool ret=false;
   yaooc_terminal_t t;
   yaooc_terminal_t r;
-  if(TRY_RULE(this,M(this,ident,&t) && SEMICOLON(r))) {
+  if(YAOOC_PARSER_TRY_RULE(this,M(this,ident,&t) && SEMICOLON(r))) {
     *type=new(yaoocpp_type);
     M(&(*type)->name_,setn,t.beg_,t.end_-t.beg_);
     ret=true;
