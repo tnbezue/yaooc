@@ -17,10 +17,12 @@
 
 #ifndef __YAOOC_EXCEPTION_INCLUDED__
 #define __YAOOC_EXCEPTION_INCLUDED__
+
 #include <setjmp.h>
-#include <pthread.h>
 #include <yaooc/object.h>
-//#include <yaooc/pointer_bag.h>
+#include <yaooc/thread.h>
+
+void init_exceptions();
 
 /*  Begin YAOOC PreProcessor generated content */
 
@@ -61,28 +63,23 @@ const char* yaooc_exception_what(const_pointer);
 /*  End YAOOC PreProcessor generated content */
 
 
-yaooc_exception_pointer yaooc_exception_current_exception_thrown();
-
-void yaooc_exception_remove_jmpbuf(pthread_t);
-void yaooc_exception_thread_list_remove_exception_thread(pthread_t);
-#define YAOOC_THREAD_CLEANUP yaooc_exception_thread_list_remove_exception_thread(pthread_self());
+//#define YAOOC_THREAD_CLEANUP yaooc_exception_thread_list_remove_exception_thread(yaooc_current_thread_id());
 
 /*
   Macros/routines to implement TRY/CATCH
 */
-void yaooc_exception_handled();
+void __yaooc_exception_handled__();
 
-jmp_buf* yaooc_jmpbuf_new(void);
-
+jmp_buf* yaooc_jmpbuf_new();
+yaooc_exception_pointer yaooc_exception_current_exception_thrown();
 void __throw__(pointer);
 bool __catch__(const char*);
 void __rethrow_last_exception__();
+
 pointer yaooc_exception_pointer_bag_save(pointer);
 void yaooc_exception_pointer_bag_clear();
 void yaooc_exception_pointer_bag_delete();
 
-typedef struct yaooc_exception_thread_jmpbuf_node_s yaooc_exception_thread_jmpbuf_node_t;
-yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_list_find_jmpbuf(pthread_t);
 
 #define EPB_SAVE(ptr) yaooc_exception_pointer_bag_save(ptr)
 #define EPB_CLEAR  yaooc_exception_pointer_bag_clear(ptr)
@@ -92,24 +89,24 @@ yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_list_find_jm
   throw an exception
 */
 #define THROW(e) \
-    __throw__(e);
+    __throw__(e)
 
 #define TRY if(setjmp(*yaooc_jmpbuf_new()) == 0) { \
-    do {
+     {
 
 #define CATCH(exception_type,e) \
     /* No exception thrown or exception was caught in preceding block */ \
-    } while(0); \
-    yaooc_exception_handled(); \
+    }  \
+    __yaooc_exception_handled__(); \
   } else  \
       /* Exception thrown not caught by preceding block. Check if it should be caught here */ \
-  if(__catch__(# exception_type "_t")) {  do { \
+  if(__catch__(# exception_type "_t")) {   { \
     exception_type ## _const_pointer e=(exception_type ## _const_pointer)yaooc_exception_current_exception_thrown();
 
 #define ETRY \
-    } while(0); \
+    }  \
     /* No exception thrown or exception was caught in preceding block */ \
-    yaooc_exception_handled(); \
+    __yaooc_exception_handled__(); \
 } else  {\
     /* Exception not caught by any catch block in the TRY/ETRY section -- rethrow */ \
     __rethrow_last_exception__(); \

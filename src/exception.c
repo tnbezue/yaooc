@@ -16,11 +16,15 @@
 */
 
 #include <yaooc/exception.h>
-#include <yaooc/pointer_bag.h>
+
+#if defined(_WIN32) && !defined(__YAOOC_USE_PTRHEADS)
+#include <windows.h>
+#else
+#include <pthread.h>
+#endif
 #include <stdio.h>
 #include <string.h>
-#include <pthread.h>
-
+#include <yaooc/pointer_bag.h>
 /*  Begin YAOOC PreProcessor generated content */
 
 /* Private items for yaooc_exception */
@@ -105,17 +109,28 @@ struct yaooc_jmpbuf_s {
 typedef struct yaooc_exception_thread_jmpbuf_node_s yaooc_exception_thread_jmpbuf_node_t;
 struct yaooc_exception_thread_jmpbuf_node_s {
   yaooc_exception_thread_jmpbuf_node_t* next_;
-  pthread_t tid_;
+  yaooc_internal_thread_t tid_;
   yaooc_jmpbuf_t* current_jmpbuf_;
 };
 
-static pthread_mutex_t exception_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+#if defined(_WIN32) && !defined(__YAOOC_USE_PTHREADS)
+static CRITICAL_SECTION exception_mutex; // = PTHREAD_MUTEX_INITIALIZER;
+void init_exceptions() { InitializeCriticalSection(&exception_mutex); }
+#else
+static pthread_mutex_t exception_mutex  = PTHREAD_MUTEX_INITIALIZER;
+void init_exceptions() { }
+#endif
+
+void yaooc_exception_remove_jmpbuf(yaooc_internal_thread_t);
+void yaooc_exception_thread_list_remove_exception_thread(yaooc_internal_thread_t);
+
 static void yaooc_exception_terminate(yaooc_exception_pointer e);
 static void yaooc_jmpbuf_destroy(yaooc_jmpbuf_t*);
 yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_head=NULL;
 yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_tail=NULL;
 
-yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_list_find_jmpbuf(pthread_t tid)
+yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_internal_thread_t tid)
 {
   yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_head;
   while(current != NULL) {
@@ -130,9 +145,13 @@ yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_list_find_jm
   Make sure to call find before calling this function.  It does not check if one exists
   before creating a new one.
 */
-yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_node_create_thread_list(pthread_t tid)
+yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_node_create_thread_list(yaooc_internal_thread_t tid)
 {
+#if defined(_WIN32) && !defined(_YAOOC_USE_PTHREADS)
+  EnterCriticalSection(&exception_mutex);
+#else
   pthread_mutex_lock(&exception_mutex);
+#endif
   yaooc_exception_thread_jmpbuf_node_t* current=MALLOC(sizeof(yaooc_exception_thread_jmpbuf_node_t));
   current->tid_=tid;
   current->next_=NULL;
@@ -144,14 +163,18 @@ yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_node_create_thread_
     yaooc_exception_thread_jmpbuf_tail->next_=current;
     yaooc_exception_thread_jmpbuf_tail=current;
   }
+#if defined(_WIN32) && !defined(_YAOOC_USE_PTHREADS)
+  LeaveCriticalSection(&exception_mutex);
+#else
   pthread_mutex_unlock(&exception_mutex);
+#endif
   return current;
 }
 
 /*
 
 */
-yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_find_or_create_exception_thread(pthread_t tid)
+yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_find_or_create_exception_thread(yaooc_internal_thread_t tid)
 {
   yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(tid);
   return current ? current : yaooc_exception_thread_node_create_thread_list(tid);
@@ -169,13 +192,17 @@ void yaooc_exception_thread_list_remove_all()
 
 }
 
-void yaooc_exception_thread_list_remove_exception_thread(pthread_t tid)
+void yaooc_exception_thread_list_remove_exception_thread(yaooc_internal_thread_t tid)
 {
   yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_head;
   yaooc_exception_thread_jmpbuf_node_t* previous=NULL;
   while(current != NULL) {
     if(tid==current->tid_) {
+#if defined(_WIN32) && !defined(_YAOOC_USE_PTHREADS)
+      EnterCriticalSection(&exception_mutex);
+#else
       pthread_mutex_lock(&exception_mutex);
+#endif
       if(previous) {
         previous->next_=current->next_;
         if(current->next_ ==NULL) { /* removing last item in list */
@@ -189,7 +216,11 @@ void yaooc_exception_thread_list_remove_exception_thread(pthread_t tid)
           yaooc_exception_thread_jmpbuf_head=yaooc_exception_thread_jmpbuf_tail=NULL;
         }
       }
+#ifdef _WIN32
+      LeaveCriticalSection(&exception_mutex);
+#else
       pthread_mutex_unlock(&exception_mutex);
+#endif
 //      yaooc_exception_thread_destroy(current->exception_thread_);
       FREE(current);
       break;
@@ -216,7 +247,7 @@ void yaooc_jmpbuf_dump(* et)
 
 jmp_buf* yaooc_jmpbuf_new()
 {
-  yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_find_or_create_exception_thread(pthread_self());
+  yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_find_or_create_exception_thread(yaooc_current_thread_id());
   yaooc_jmpbuf_t* prev=node->current_jmpbuf_;
   node->current_jmpbuf_=(yaooc_jmpbuf_t*)MALLOC(sizeof(yaooc_jmpbuf_t));
   node->current_jmpbuf_->exception_thrown_=NULL;
@@ -228,9 +259,9 @@ jmp_buf* yaooc_jmpbuf_new()
 /*
   Moves to previous jumbuf when no exception occurred or after successfully handling an exception
 */
-void yaooc_exception_handled()
+void __yaooc_exception_handled__()
 {
-  yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(pthread_self());
+  yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_current_thread_id());
   yaooc_jmpbuf_t* temp=node->current_jmpbuf_;
   node->current_jmpbuf_=temp->prev_;
   yaooc_jmpbuf_destroy(temp);
@@ -264,7 +295,7 @@ static void yaooc_exception_terminate(yaooc_exception_pointer e)
 */
 void __throw__(pointer e)
 {
-  yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(pthread_self());
+  yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_current_thread_id());
   if(node != NULL) { // && node->current_jmpbuf_ != NULL) {
     /*
       Traverse upward until a jmpbuf found that has not had an exception thrown
@@ -286,7 +317,7 @@ void __throw__(pointer e)
 */
 void __rethrow_last_exception__()
 {
-  yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(pthread_self());
+  yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_current_thread_id());
   yaooc_jmpbuf_t* temp =node->current_jmpbuf_;
   pointer e = temp->exception_thrown_;
   temp->exception_thrown_ = NULL;
@@ -304,7 +335,7 @@ bool __catch__(const char* etype)
 */
 yaooc_jmpbuf_t* yaooc_current_jmpbuf()
 {
-  yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(pthread_self());
+  yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_current_thread_id());
   return node->current_jmpbuf_;
 }
 

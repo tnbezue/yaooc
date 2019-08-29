@@ -5,7 +5,7 @@ YAOOC_MINOR_VERSION=3
 YAOOC_PATCH_VERSION=1
 
 AM_CFLAGS=-I$(top_srcdir)/include
-AM_LDFLAGS=-L$(top_srcdir)/lib -pthread
+AM_LDFLAGS=-L$(top_srcdir)/lib
 ACLOCAL_AMFLAGS=-I m4
 
 DOC_FILES=doc/yaooc/tutorial/map.html \
@@ -202,4 +202,4 @@ yaoocpp_yaoocpp_SOURCES=yaoocpp/yaoocpp.c yaoocpp/parser.c \
         yaoocpp/template_objects.c  yaoocpp/parser.h \
         yaoocpp/template_objects.h
 
-yaoocpp_yaoocpp_LDFLAGS=-L$(top_srcdir)/lib -lyaooc -pthread
+yaoocpp_yaoocpp_LDFLAGS=-L$(top_srcdir)/lib -lyaooc

@@ -74,6 +74,18 @@ case $host_os in
 	;;
 esac
 
+# For windows, check if pthreads should be used
+# For non-windows, assume pthreads
+case $host_os in
+	mingw* | cygwin*)
+	;;
+  *)
+
+    LIBS="$LIBS -lpthread"
+    CFLAGS="$CFLAGS -pthread"
+  ;;
+esac
+
 AC_MSG_CHECKING(for garbage collection)
 AC_ARG_ENABLE([gc],[AC_HELP_STRING([--enable-gc],[compile using garbage collection])],
 	[
@@ -114,6 +126,7 @@ AC_ARG_WITH([tre],
 		AC_CHECK_LIB(c,regcomp,[],[AC_MSG_ERROR(suitable regular expression library not found)])
 	]
 )
+
 
 AC_CONFIG_FILES([yaooc-config Makefile])
 

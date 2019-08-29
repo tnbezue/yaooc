@@ -15,14 +15,23 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef __THREAD_INCLUDED__
-#define __THREAD_INCLUDED__
+#ifndef __YAOOC_THREAD_INCLUDED__
+#define __YAOOC_THREAD_INCLUDED__
 
 #include <yaooc/object.h>
-#include <yaooc/exception.h>
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+typedef uintptr_t yaooc_internal_thread_t;
+typedef HANDLE yaooc_internal_mutex_t;
+#define yaooc_current_thread_id() (uintptr_t)GetCurrentThread()
+#else
 #include <pthread.h>
-
+typedef pthread_t yaooc_internal_thread_t;
+typedef pthread_mutex_t yaooc_internal_mutex_t;
+#define yaooc_current_thread_id() pthread_self()
+#endif
 typedef enum { THREAD_READY=0,THREAD_RUNNING,THREAD_TERMINATED } yaooc_thread_state_t;
 
 #ifdef __cplusplus
@@ -39,7 +48,7 @@ typedef void* (*yaooc_thread_method) (pointer,void*);
 yaooc_class_table(yaooc_thread)
 {
   yaooc_object_class_table_t;
-  pthread_t (*id)(const_pointer);
+  yaooc_internal_thread_t (*id)(const_pointer);
   int (*join)(pointer);
   int (*cancel)(pointer);
   int (*detach)(pointer);
@@ -51,7 +60,7 @@ yaooc_class_table(yaooc_thread)
 yaooc_class_instance(yaooc_thread)
 {
   yaooc_thread_method method;
-  pthread_t thread_id_;
+  yaooc_internal_thread_t thread_id_;
   yaooc_thread_state_t state_;
   bool is_detached_;
   bool request_exit_;
@@ -67,7 +76,7 @@ void yaooc_thread_ctor_method(pointer,va_list);
 
 /* Prototypes for yaooc_thread class table*/
 #define yaooc_thread_swap yaooc_object_swap
-pthread_t yaooc_thread_id(const_pointer);
+yaooc_internal_thread_t yaooc_thread_id(const_pointer);
 int yaooc_thread_join(pointer);
 int yaooc_thread_cancel(pointer);
 int yaooc_thread_detach(pointer);
@@ -93,7 +102,7 @@ yaooc_class_table(yaooc_mutex)
 
 yaooc_class_instance(yaooc_mutex)
 {
-  pthread_mutex_t mutex_;
+  yaooc_internal_mutex_t mutex_;
 };
 
 yaooc_class(yaooc_mutex);
@@ -114,7 +123,7 @@ bool yaooc_mutex_unlock(pointer);
 /* Prototypes for yaooc_mutex class protected items*/
 
 /*  End YAOOC PreProcessor generated content */
-
+#if 0
 /*
   Class definition for yaooc_condition_variable
 */
@@ -153,7 +162,7 @@ int yaooc_condition_variable_timedwait(pointer,double);
 /* Prototypes for yaooc_condition_variable class instance*/
 
 /* Prototypes for yaooc_condition_variable class protected items*/
-
+#endif
 #ifdef __cplusplus
 }
 #endif

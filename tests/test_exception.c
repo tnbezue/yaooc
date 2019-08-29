@@ -24,7 +24,6 @@
 #include <yaooc/pointer_bag.h>
 #include "test_harness.h"
 #include "demo_def.inc"
-#include <pthread.h>
 
 yaooc_class_table(demo_exception)
 {
@@ -34,44 +33,22 @@ yaooc_class_table(demo_exception)
 yaooc_class_instance(demo_exception)
 {
   yaooc_exception_class_instance_t;
-  char* msg_;
 };
 
 yaooc_class(demo_exception);
 
-void demo_exception_default_ctor(pointer p)
-{
-  ((demo_exception_pointer)p)->msg_=NULL;
-}
-
-void demo_exception_dtor(pointer p)
-{
-  demo_exception_pointer this=p;
-  if(this->msg_!=NULL)
-    FREE(this->msg_);
-}
-
-const char* demo_exception_what(const_pointer p)
-{
-  return ((demo_exception_const_pointer)p)->msg_;
-}
 
 demo_exception_class_table_t demo_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
   .type_name_ = (const char*) "demo_exception_t",
   .swap = (void(*) (pointer,pointer)) yaooc_object_swap,
-  .what = (const char*(*) (const_pointer)) demo_exception_what,
+  .what = (const char*(*) (const_pointer)) yaooc_exception_what,
 
 };
+#define demo_exception_ctor_v yaooc_exception_ctor_v
+DEFINE_TYPE_INFO(demo_exception,N,N,N,N,N,N,N,Y,yaooc_exception);
 
-DEFINE_TYPE_INFO(demo_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception);
-
-void demo_exception_ctor_ccs(pointer p,va_list args)
-{
-  const char* str=va_arg(args,const char*);
-  ((demo_exception_pointer)p)->msg_=str?STRDUP(str):NULL;
-}
 
 /*  *** */
 
@@ -83,47 +60,25 @@ yaooc_class_table(demo2_exception)
 yaooc_class_instance(demo2_exception)
 {
   yaooc_exception_class_instance_t;
-  char* msg_;
 };
 
 yaooc_class(demo2_exception);
-
-void demo2_exception_default_ctor(pointer p)
-{
-  ((demo2_exception_pointer)p)->msg_=NULL;
-}
-
-void demo2_exception_dtor(pointer p)
-{
-  demo2_exception_pointer this=p;
-  if(this->msg_!=NULL)
-    FREE(this->msg_);
-}
-
-const char* demo2_exception_what(const_pointer p)
-{
-  return ((demo2_exception_const_pointer)p)->msg_;
-}
 
 demo2_exception_class_table_t demo2_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
   .type_name_ = (const char*) "demo2_exception_t",
   .swap = (void(*) (pointer,pointer)) yaooc_object_swap,
-  .what = (const char*(*) (const_pointer)) demo2_exception_what,
+  .what = (const char*(*) (const_pointer)) yaooc_exception_what,
 };
 
-DEFINE_TYPE_INFO(demo2_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception);
+DEFINE_TYPE_INFO(demo2_exception,N,N,N,N,N,N,N,Y,yaooc_exception);
 
-void demo2_exception_ctor_ccs(pointer p,va_list args)
-{
-  const char* str=va_arg(args,const char*);
-  ((demo2_exception_pointer)p)->msg_=str?STRDUP(str):NULL;
-}
+#define demo2_exception_ctor_v yaooc_exception_ctor_v
 
 
 /* **** */
-
+#if 0
 yaooc_class_table(uncaught_exception)
 {
   yaooc_exception_class_table_t;
@@ -131,228 +86,261 @@ yaooc_class_table(uncaught_exception)
 yaooc_class_instance(uncaught_exception)
 {
   yaooc_exception_class_instance_t;
-  char* msg_;
 };
 yaooc_class(uncaught_exception);
 
-
-void uncaught_exception_default_ctor(pointer p)
-{
-  ((uncaught_exception_pointer)p)->msg_=NULL;
-}
-
-void uncaught_exception_dtor(pointer p)
-{
-  uncaught_exception_pointer this=p;
-  if(this->msg_!=NULL)
-    FREE(this->msg_);
-}
-
-const char* uncaught_exception_what(const_pointer p)
-{
-  return ((uncaught_exception_const_pointer)p)->msg_;
-}
 
 uncaught_exception_class_table_t uncaught_exception_class_table =
 {
   .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
   .type_name_ = (const char*) "uncaught_exception_t",
   .swap = (void(*) (pointer,pointer)) yaooc_object_swap,
-  .what = (const char*(*) (const_pointer)) uncaught_exception_what,
+  .what = (const char*(*) (const_pointer)) yaooc_exception_what,
 };
 
-DEFINE_TYPE_INFO(uncaught_exception,Y,Y,N,N,N,N,N,Y,yaooc_exception);
+DEFINE_TYPE_INFO(uncaught_exception,N,N,N,N,N,N,N,Y,yaooc_exception);
 
-void uncaught_exception_ctor_ccs(pointer p,va_list args)
-{
-  const char* str=va_arg(args,const char*);
-  ((uncaught_exception_pointer)p)->msg_=str?STRDUP(str):NULL;
-}
-
+#define uncaugh_exception_ctor_v yaooc_exception_ctor_v
+#endif
 /*  ****  */
-int result=-10;
-
-typedef struct {
-  int x;
-  int catch_block;
-} test_data_t;
-
+char *path=output;
 void sub(int x)
 {
   TRY
   {
-    printf("X is %d\n",x);
-    if(x==10) {
-      result=10;
-    } else if(x==11) {
-      THROW(new_ctor(demo_exception,demo_exception_ctor_ccs,"Inner Catch Block 1"));
-    } else if(x==12) {
-      THROW(new_ctor(demo2_exception,demo2_exception_ctor_ccs,"Catch Block 2"))
+    strcat(path,":TRY_SUB");
+    if(x==1) {
+      strcat(path,":THROW1_SUB");
+      THROW(new_ctor(demo_exception,demo_exception_ctor_v,"Inner Catch Level 1"));
+    } else if(x==2) {
+      strcat(path,":THROW2_SUB");
+      THROW(new_ctor(demo2_exception,demo2_exception_ctor_v,"Catch Level 2"));
     }
   }
   CATCH(demo_exception,e)
   {
-    result=11;
-    TEST("Exception caught in block 1",strcmp(M(e,what),"Inner Catch Block 1")==0);
+    (void)e;
+    strcat(path,":CATCH1_SUB");
   }
   ETRY
 }
 
-void test_exception()
-{
-  test_data_t tries[] =
+typedef struct {
+  const char* desc;
+  const char* path;
+} test_result_t;
+
+test_result_t results1[]=
   {
-    { 0, 0 },
-    { 1, 0 },
-    { 2, 1 },
-    { 3, 2 },
-    { 5, 0 },
-    { 10, 0 },  /* no exception occurs in sub */
-    { 11, 0 },  /* exception is handled in sub and it returns normally */
-    { 12, 2 },  /* exception is not handled in sub */
-    { 4, -1 },
+    { "Normal Flow -- no throw or catch","TRY_L1" },
+    { "Throwing demo1 exception caught by yaooc exception" , "TRY_L1:THROW_1:CATCH_YE"},
+    { "Throwing demo2 exception caught by yaooc exception" , "TRY_L1:THROW_2:CATCH_YE"},
+    { "Throwing yaooc exception caught by yaooc exception" , "TRY_L1:THROW_YE:CATCH_YE"},
   };
-  TESTCASE("Basic Exception");
-  int n=ARRAY_SIZE(tries);
+void test_basic()
+{
+  TESTCASE("Single TRY/CATCH");
+  int n=ARRAY_SIZE(results1);
   int i;
-  yaooc_exception_thread_jmpbuf_node_t* tl=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(pthread_self());
-  for(i=0; i<n;i++) {
-    int x=tries[i].x;
-    if(x==4) {
-      FINAL_SUMMARY;
-      puts("*****\nThe next test throws an uncaught exception which terminates this program\n*****");
-    }
+  for(i=0;i<n;i++) {
+    TRY {
+      strcpy(path,"TRY_L1");
+      if(i==1) {
+        strcat(path,":THROW_1");
+        THROW(new(demo_exception));
+      } else if(i==2) {
+        strcat(path,":THROW_2");
+        THROW(new(demo2_exception));
+      } else if(i==3) {
+        strcat(path,":THROW_YE");
+        THROW(new(yaooc_exception));
+      }
+    } CATCH(yaooc_exception,ye) {
+      (void)ye;
+      strcat(path,":CATCH_YE");
+    } ETRY
+//    printf("%d -- %s\n",i,path);
+    TEST(results1[i].desc,strcmp(results1[i].path,path)==0);
+  }
+
+}
+
+test_result_t results2[]=
+  {
+    { "Normal Flow -- no throw or catch","TRY_L1:TRY_SUB:END_TRY_L1" },
+    { "Throw demo 1 exception caught by demo 1 exception" , "TRY_L1:THROW_1:CATCH_1"},
+    { "Throw demo 2 exception caught by demo 2 exception" , "TRY_L1:THROW_2:CATCH_2"},
+    { "Throw yaooc exception caught by yaooc exception" , "TRY_L1:THROW_YE:CATCH_YE"},
+    { "Throw demo 1 exception from sub caught by demo 1 exception in sub" , "TRY_L1:TRY_SUB:THROW1_SUB:CATCH1_SUB:TRY_SUB:END_TRY_L1"},
+    { "Throw demo 1 exception from sub caught by demo 1 exception outside sub" , "TRY_L1:TRY_SUB:THROW2_SUB:CATCH_2"},
+  };
+
+
+void test_multi_catch()
+{
+  TESTCASE("Multiple catches");
+  int n=ARRAY_SIZE(results2);
+  int i;
+  for(i=0; i< n;i++) {
     TRY
     {
-      tl=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(pthread_self());
-      TEST("Thread list is not NULL",tl!=NULL);
-      if(x==0) {
-        result=0;
-      } else if(x==1) {
-        result=0;
-        break; // breaks out of TRY/CATCH block
-      } else if(x==2) {
-        THROW(new_ctor(demo_exception,demo_exception_ctor_ccs,"Catch Block 1"))
-      } else if(x==3) {
-        THROW(new_ctor(demo2_exception,demo2_exception_ctor_ccs,"Catch Block 2"))
-      } else if(x == 4 ) {
-        puts("Throwing uncaught");
-        THROW(new_ctor(uncaught_exception,uncaught_exception_ctor_ccs,"Uncaught"))
-      }
-      sub(x);
-      result=0;
+      strcpy(path,"TRY_L1");
+      // at i==0 no throws or catches -- normal flow
+      if(i==1) {
+        strcat(path,":THROW_1");
+        THROW(new(demo_exception));
+      } else if(i==2) {
+        strcat(path,":THROW_2");
+        THROW(new_ctor(demo2_exception,demo2_exception_ctor_v,"Catch Level 2"));
+      } else if(i==3) {
+        strcat(path,":THROW_YE");
+        THROW(new_ctor(yaooc_exception,yaooc_exception_ctor_v,"Catch Level 2"));
+      } else if(i==4) {
+        sub(1);
+      } else if(i==5)
+        sub(2);
+      sub(0);
+      strcat(path,":END_TRY_L1");
     }
     CATCH(demo_exception,e)
     {
-      printf("Caught %s in block 1\n",TYPE(e));
-      result=1;
-      TEST("Exception caught in block 1",strcmp(M(e,what),"Catch Block 1")==0);
+      (void)e;
+      strcat(path,":CATCH_1");
     }
     CATCH(demo2_exception,e)
     {
-      printf("Caught %s in block 2\n",TYPE(e));
-      result=2;
-      printf(" ZZZZ %s\n",M(e,what));
-      TEST("Exception caught in block 2",strcmp(M(e,what),"Catch Block 2")==0);
+      (void)e;
+      strcat(path,":CATCH_2");
+    }
+    CATCH(yaooc_exception,e)
+    {
+      (void)e;
+      strcat(path,":CATCH_YE");
     }
     ETRY
-    char result_msg[128];
-    sprintf(result_msg,"Result = %d for x = %d",tries[i].catch_block,tries[i].x);
-    printf("*** %d\n",tries[i].catch_block);
-    TEST(result_msg,result==tries[i].catch_block);
+//    printf("%d -- %s\n",i,path);
+    TEST(results2[i].desc,strcmp(results2[i].path,path)==0);
   }
 }
 
+
+test_result_t results3[]=
+  {
+    { "Normal Flow -- no throw or catch","TRY_L1:END_TRY_L1" },
+    { "Level 1 throw demo 1 exception caught by level 1 demo 1 exception" , "TRY_L1:THROW_L1_1:CATCH_L1_1"},
+    { "Level 1 throw demo 2 exception caught by level 1 demo 2 exception" , "TRY_L1:THROW_L1_2:CATCH_L1_2"},
+    { "Level 1 throw yaooc exception caught by level 1 yaooc exception" , "TRY_L1:THROW_L1_YE:CATCH_L1_YE"},
+    { "Normal flow -- no throw or catch through level 2" , "TRY_L1:TRY_L2:END_TRY_L2:END_TRY_L1"},
+    { "Level 2 throw demo 1 exception caught by level 2 demo 1 exception" ,
+            "TRY_L1:TRY_L2:THROW_L2_1:CATCH_L2_1:END_TRY_L1"},
+    { "Level 2 throw demo 2 exception caught by level 2 demo 2 exception and process in level 3" ,
+            "TRY_L1:TRY_L2:THROW_L2_2:CATCH_L2_2:TRY_L3:END_TRY_L3:END_CATCH_L2_2:END_TRY_L1"},
+    { "Level 2 throw demo 2 exception caught by level 2 demo2 exception and  throw yaooc exception and caught in level 1" ,
+            "TRY_L1:TRY_L2:THROW_L2_2:CATCH_L2_2:TRY_L3:THROW_L3:CATCH_L3_1:END_CATCH_L3_1:END_CATCH_L2_2:END_TRY_L1"},
+    { "Level 2 throw demo 2 exception caught by level 2 demo2 exception and " ,
+          "TRY_L1:TRY_L2:THROW_L2_2:CATCH_L2_2:TRY_L3:THROW_L3:CATCH_L3_1:THROW_L3_YE:CATCH_L1_YE"},
+    { "Throw demo 1 exception from sub caught by demo 1 exception in sub" ,
+          "TRY_L1:TRY_L2:THROW_L2_YE:CATCH_L2_YE:END_TRY_L1"},
+  };
+
 void test_nested()
 {
-  PB_INIT;
+  TESTCASE("Nested TRY/CATCH");
   int i;
-//  yaooc_exeception_pointer ptr;
-  char* path=PB_SAVE(new_array(char,1024));
-  for(i=0;i<10;i++) {
-    path[0]=0;
-//    et[0]=0;
-    TRY { /* TB1 */
-        strcat(path,"TB1");
+  int n = ARRAY_SIZE(results3);
+  for(i=0;i<n;i++) {
+    TRY { /* TL1 */
+      strcpy(path,"TRY_L1");
       if(i==1) {
+        strcat(path,":THROW_L1_1");
         THROW(new(demo_exception));
-      }
-      if(i==2) {
+      } else if(i==2) {
+        strcat(path,":THROW_L1_2");
         THROW(new(demo2_exception));
-      }
-      if(i==3) {
+      } else if(i==3) {
+        strcat(path,":THROW_L1_YE");
         THROW(new(yaooc_exception));
-      }
-      if(i>3) {
-        TRY { /* TB2 */
-          strcat(path,"TB2");
-          if(i==4) {
+      } else if(i>3) {
+        TRY {
+          // i==4 goes to end of try
+          strcat(path,":TRY_L2");
+          if(i==5) {
+            strcat(path,":THROW_L2_1");
             THROW(new(demo_exception));
-          } else  if(i==5) {
+          } else  if(i>=6 && i<=8) {
+            strcat(path,":THROW_L2_2");
             THROW(new(demo2_exception));
+          } else  if(i==9) {
+            strcat(path,":THROW_L2_YE");
+            THROW(new(yaooc_exception));
           }
-        } CATCH(demo_exception,ed) {  /* CB2_1 */
-          strcat(path,"CB2_1");
-          strcat(path,TYPE(ed));
-        } CATCH(demo2_exception,ed2) { /* CB2_2 */
-          strcat(path,"CB_2");
-          strcat(path,TYPE(ed2));
-          if(i==6) {
-            TRY { /* CB2_T1 */
+          strcat(path,":END_TRY_L2");
+        } CATCH(demo_exception,ed) {
+          (void)ed;
+          strcat(path,":CATCH_L2_1");
+        } CATCH(demo2_exception,ed2) {
+          (void)ed2;
+          strcat(path,":CATCH_L2_2");
+          TRY { /* Try level 3 */
+            strcat(path,":TRY_L3");
+            // i=6 continues to end of this catch block
+            if(i>=7) {
+              strcat(path,":THROW_L3");
               THROW(new(demo_exception));
-            } CATCH(demo_exception,aed) { /* CB2_CB1 */
-              M(aed,what);  // just to avoid warning of unused variable
+            }
+            strcat(path,":END_TRY_L3");
+          } CATCH(demo_exception,aed) {
+            strcat(path,":CATCH_L3_1");
+            (void)aed;
+            if(i==8) {
+              strcat(path,":THROW_L3_YE");
               THROW(new(yaooc_exception));
             }
-            ETRY
+            strcat(path,":END_CATCH_L3_1");
           }
-        } CATCH(yaooc_exception,ye) { /* CB2_3 */
-          M(ye,what);
+          ETRY
+          strcat(path,":END_CATCH_L2_2");
+        } CATCH(yaooc_exception,yye) {
+          strcat(path,":CATCH_L2_YE");
+          (void)yye;
         }
         ETRY
       }
-    } CATCH(yaooc_exception,yye) { /* CB1 */
-			M(yye,what);
+      strcat(path,":END_TRY_L1");
+    } CATCH(demo_exception,ed) {
+			(void)ed;
+      strcat(path,":CATCH_L1_1");
+    } CATCH(demo2_exception,ed2) {
+			(void)ed2;
+      strcat(path,":CATCH_L1_2");
+    } CATCH(yaooc_exception,yye) {
+      strcat(path,":CATCH_L1_YE");
+			(void)yye;
     }
     ETRY
-    printf("%d %s\n",i,path);
-    switch(i) {
-      case 0:
-        TEST("i==0: 'TB1'",strcmp(path,"TB1")==0);
-        break;
-
-      case 1:
-        TEST("Exception what is 'L1:DE1'",strcmp(path,"L1:DE1")==0);
-        break;
-
-      case 2:
-        TEST("Exception what is 'L1:DE2'",strcmp(path,"L1:DE2")==0);
-        break;
-
-      case 3:
-        TEST("Exception what is empty",path[0]==0);
-        break;
-
-      case 4:
-          TEST("Exception what is 'L1:DE1'",strcmp(path,"L2:DE1")==0);
-          break;
-
-      case 5:
-        TEST("Exception what is 'L2:DE2'",strcmp(path,"L2:DE2")==0);
-        break;
-
-    }
+//    printf("%d -- %s\n",i,path);
+    TEST(results3[i].desc,strcmp(results3[i].path,path)==0);
   }
-  PB_EXIT;
 }
 
 void test_throw_without_catch()
 {
-  THROW(new(yaooc_exception));
+  printf("Throwing uncaught exeption. Program will terminate\n");
+  TRY {
+    THROW(new_ctor(yaooc_exception,yaooc_exception_ctor_v,"This exception is not caught"));
+  }
+  CATCH(demo2_exception,e) {
+    (void)e;
+  }
+  CATCH(demo_exception,e) {
+    (void)e;
+  } ETRY
 }
+
 test_function tests[]=
 {
- 	test_exception,
+  test_basic,
+ 	test_multi_catch,
   test_nested,
   test_throw_without_catch,
 };

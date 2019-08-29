@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <limits.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <stdint.h>
 
@@ -278,4 +279,17 @@ extern const type_info_t* const size_ti;
 void size_to_stream(const_pointer,pointer);
 void size_from_stream(pointer,pointer);
 
+#define PRISHORT PRId16
+#define PRIUSHORT PRIu16
+#define PRIINT PRId32
+#define PRIUINT PRIu32
+#if defined(_WIN64) || __WORDSIZE == 64
+#define PRILONG PRId64
+#define PRIULONG PRIu64
+#else
+#define PRILONG PRId32
+#define PRIULONG PRIu32
+#endif
+#define PRILONGLONG PRId64
+#define PRIULONGLONG PRIu64
 #endif

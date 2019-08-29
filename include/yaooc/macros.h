@@ -272,9 +272,11 @@ const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti
 #define DISTANCE(ti,first,last) ((((yaooc_private_const_iterator)last) - ((yaooc_private_const_iterator)first))/yaooc_sizeof(ti))
 
 void init_streams();
+void init_exceptions();
 
 #define yaooc_init() \
 GC_INIT(); \
-init_streams();
+init_streams(); \
+init_exceptions(); 
 
 #endif
