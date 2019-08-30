@@ -494,21 +494,20 @@ static bool yaoocpp_parser_from_stream(pointer p)
 
 static bool yaoocpp_parser_arguments(pointer p,yaoocpp_argument_vector_t** args)
 {
-  PB_INIT;
+  pb_init();
   yaoocpp_parser_pointer this=p;
   bool ret=false;
   yaooc_terminal_t r;
   *args=new(yaoocpp_argument_vector);
-  yaoocpp_argument_t* arg; //=PB_SAVE(new(yaoocpp_argument));
+  yaoocpp_argument_t* arg;
   /* One are more argumetns seperated by comma.  Last argument can be va_arg (...) */
   if(yaoocpp_parser_argument(this,&arg)) {
     M(*args,push_back,arg);
     delete(arg);
-//    arg=PB_SAVE(new(yaoocpp_argument));
     ret=true;
     while(YAOOC_PARSER_TRY_RULE(p,COMMA(r) && yaoocpp_parser_argument(this,&arg))) {
       M(*args,push_back,arg);
-      delete(arg); //=PB_SAVE(new(yaoocpp_argument));
+      delete(arg);
     }
     if(YAOOC_PARSER_TRY_RULE(p,COMMA(r) && yaoocpp_parser_va_argument(this,&arg))) {
       M(*args,push_back,arg);
@@ -522,16 +521,16 @@ static bool yaoocpp_parser_arguments(pointer p,yaoocpp_argument_vector_t** args)
       ret = true;
     }
   }
-  PB_EXIT;
+  pb_exit();
   return ret;
 }
 
 static bool yaoocpp_parser_argument(pointer p,yaoocpp_argument_t** arg)
 {
-  PB_INIT;
+  pb_init();
   yaoocpp_parser_pointer this=p;
   bool ret=false;
-  yaoocpp_variable_t* var; //=PB_SAVE(new(yaoocpp_variable));
+  yaoocpp_variable_t* var;
   if(yaoocpp_parser_variable_base(this,&var)) {
     *arg=new(yaoocpp_argument);
     assign_static(&(*arg)->type_,&var->type_,yaooc_string);
@@ -541,7 +540,7 @@ static bool yaoocpp_parser_argument(pointer p,yaoocpp_argument_t** arg)
     delete(var);
     ret=true;
   }
-  PB_EXIT;
+  pb_exit();
   return ret;
 }
 
@@ -562,12 +561,11 @@ static bool yaoocpp_parser_constructor(pointer p)
 {
   yaoocpp_parser_pointer this=p;
   bool ret=false;
-  PB_INIT;
+  pb_init();
   RULE_START(p);
-  yaoocpp_constructor_t* con=PB_SAVE(new(yaoocpp_constructor));
+  yaoocpp_constructor_t* con=pb_new(yaoocpp_constructor);
   yaooc_terminal_t r,name,imp_con={NULL,NULL};
-  yaoocpp_argument_vector_t* args; //=PB_SAVE(new(yaoocpp_argument_vector));
-//  yaoocpp_constructor_t* con=PB_SAVE(new(yaoocpp_constructor));
+  yaoocpp_argument_vector_t* args;
   if(M(this,ident,&name) && LPAREN(r) && yaoocpp_parser_arguments(this,&args) && RPAREN(r)) {
     size_t class_name_len=M(&this->current_class_->name_,size);
     if(class_name_len < name.end_-name.beg_ &&
@@ -597,7 +595,7 @@ static bool yaoocpp_parser_constructor(pointer p)
   }
   else
     RULE_FAIL(p);
-  PB_EXIT;
+  pb_exit();
   return ret;
 }
 
@@ -605,12 +603,12 @@ static bool yaoocpp_parser_table(pointer p)
 {
   yaoocpp_parser_pointer this=p;
   bool ret=false;
-  PB_INIT;
+  pb_init();
   yaooc_terminal_t r;
   if(TABLE(r) && COLON(r)) {
     while(true) {
 #define container ((yaoocpp_container_with_class_table_t*)(this->current_class_))->table_
-      yaoocpp_method_t* proc; //=PB_SAVE(new(yaoocpp_method));
+      yaoocpp_method_t* proc;
       if(yaoocpp_parser_method_with_implementation_method(p,&proc)) {
         debug_printf("Table: Got method %s\n",M(&proc->name_,c_str));
         yaoocpp_method_t** orig=yaoocpp_find_element(&container,proc);
@@ -623,7 +621,7 @@ static bool yaoocpp_parser_table(pointer p)
         }
         delete(proc);
       } else {
-        yaoocpp_variable_t* var; //=PB_SAVE(new(yaoocpp_variable));
+        yaoocpp_variable_t* var;
         if(yaoocpp_parser_variable_with_default_value(p,&var)) {
           debug_printf("Table: Got var %s\n",M(&var->name_,c_str));
           /* If already defined, replace default value */
@@ -641,7 +639,7 @@ static bool yaoocpp_parser_table(pointer p)
     }
     ret=true;
   }
-  PB_EXIT;
+  pb_exit();
   return ret;
 }
 
@@ -649,12 +647,12 @@ static bool yaoocpp_parser_instance(pointer p)
 {
   yaoocpp_parser_pointer this=p;
   bool ret=false;
-  PB_INIT;
+  pb_init();
   yaooc_terminal_t r;
   if(INSTANCE(r) && COLON(r)) {
 #define container this->current_class_->instance_
     while(true) {
-      yaoocpp_variable_t* var; //=PB_SAVE(new(yaoocpp_variable));
+      yaoocpp_variable_t* var;
       if(yaoocpp_parser_variable(p,&var)) {
         debug_printf("Instance: Got var %s\n",M(&var->name_,c_str));
         /* Variables can't be redefined in instance definition */
@@ -666,7 +664,7 @@ static bool yaoocpp_parser_instance(pointer p)
         M(&container,push_back,(yaoocpp_element_t**)&var);
         delete(var);
       } else {
-        yaoocpp_method_t* proc; //=PB_SAVE(new(yaoocpp_method));
+        yaoocpp_method_t* proc;
         if(yaoocpp_parser_method(p,&proc)) {
           debug_printf("Instance: Got method %s\n",M(&proc->name_,c_str));
           /* Methods can't be overridden in instance definition */
@@ -678,7 +676,7 @@ static bool yaoocpp_parser_instance(pointer p)
           M(&container,push_back,(yaoocpp_element_t**)&proc);
           delete(proc);
         } else {
-          yaoocpp_type_t* type; //=PB_SAVE(new(yaoocpp_type));
+          yaoocpp_type_t* type;
           if(yaoocpp_parser_type_only(p,&type)) {
             /* Can only have one type only entry */
             if(yaoocpp_find_element(&container,type) != M(&container,end)) {
@@ -696,7 +694,7 @@ static bool yaoocpp_parser_instance(pointer p)
 #undef container
     ret=true;
   }
-  PB_EXIT;
+  pb_exit();
   return ret;
 }
 
@@ -704,12 +702,12 @@ static bool yaoocpp_parser_protected(pointer p)
 {
   yaoocpp_parser_pointer this=p;
   bool ret=false;
-  PB_INIT;
+  pb_init();
   yaooc_terminal_t r;
   if(PROTECTED(r) && COLON(r)) {
 #define container this->current_class_->protected_
     while(true) {
-      yaoocpp_method_t* proc; //=PB_SAVE(new(yaoocpp_method));
+      yaoocpp_method_t* proc;
       if(yaoocpp_parser_method_with_implementation_method(p,&proc)) {
         debug_printf("Protected: Got method %s\n",M(&proc->name_,c_str));
         /* Methods can't be overridden in protected definition */
@@ -721,7 +719,7 @@ static bool yaoocpp_parser_protected(pointer p)
         M(&container,push_back,(yaoocpp_element_t**)&proc);
         delete(proc);
       } else {
-        yaoocpp_variable_t* var; //=PB_SAVE(new(yaoocpp_variable));
+        yaoocpp_variable_t* var;
         if(yaoocpp_parser_variable_with_default_value(p,&var)) {
           debug_printf("Protected: Got var %s\n",M(&var->name_,c_str));
           /* Variables can't be redefined in instance definition */
@@ -739,7 +737,7 @@ static bool yaoocpp_parser_protected(pointer p)
 #undef container
     ret=true;
   }
-  PB_EXIT;
+  pb_exit();
   return ret;
 }
 
@@ -747,12 +745,12 @@ static bool yaoocpp_parser_private(pointer p)
 {
   yaoocpp_parser_pointer this=p;
   bool ret=false;
-  PB_INIT;
+  pb_init();
   yaooc_terminal_t r;
   if(PRIVATE(r) && COLON(r)) {
 #define container this->current_class_->private_
     while(true) {
-      yaoocpp_method_t* proc; //=PB_SAVE(new(yaoocpp_method));
+      yaoocpp_method_t* proc;
       if(yaoocpp_parser_method_with_implementation_method(p,&proc)) {
         debug_printf("Private: Got method %s\n",M(&proc->name_,c_str));
         /* Methods can't be overridden in private definition */
@@ -764,7 +762,7 @@ static bool yaoocpp_parser_private(pointer p)
         M(&container,push_back,(yaoocpp_element_t**)&proc);
         delete(proc);
       } else {
-        yaoocpp_variable_t* var; //=PB_SAVE(new(yaoocpp_variable));
+        yaoocpp_variable_t* var;
         if(yaoocpp_parser_variable_with_default_value(p,&var)) {
           debug_printf("Private: Got var %s\n",M(&var->name_,c_str));
           /* Variables can't be redefined in private definition */
@@ -782,7 +780,7 @@ static bool yaoocpp_parser_private(pointer p)
 #undef container
     ret=true;
   }
-  PB_EXIT;
+  pb_exit();
   return ret;
 }
 
@@ -802,10 +800,9 @@ static bool yaoocpp_parser_method_with_implementation_method(pointer p,yaoocpp_m
 {
   yaoocpp_parser_pointer this=p;
 
-  PB_INIT;
+  pb_init();
   RULE_START(p);
   yaooc_terminal_t r;
-//  yaoocpp_method_t* meth=PB_SAVE(new(yaoocpp_method));
   bool ret=yaoocpp_parser_method_base(this,meth);
   if(ret) {
     if(EQUAL(r)) {
@@ -821,7 +818,7 @@ static bool yaoocpp_parser_method_with_implementation_method(pointer p,yaoocpp_m
     RULE_SUCCESS(p);
   else
     RULE_FAIL(p);
-  PB_EXIT;
+  pb_exit();
   return ret;
 }
 
@@ -839,10 +836,10 @@ static bool yaoocpp_parser_method(pointer p,yaoocpp_method_t** meth)
 static bool yaoocpp_parser_method_base(pointer p,yaoocpp_method_t** meth)
 {
   yaoocpp_parser_pointer this=p;
-  PB_INIT;
+  pb_init();
   RULE_START(p);
-  yaoocpp_variable_t* var=NULL; //=PB_SAVE(new(yaoocpp_variable));
-  yaoocpp_argument_vector_t* args; //=PB_SAVE(new(yaoocpp_argument_vector));
+  yaoocpp_variable_t* var=NULL;
+  yaoocpp_argument_vector_t* args;
   yaooc_terminal_t r,is_const;
   bool ret=false;
   if(yaoocpp_parser_type_variable(p,&var)) {
@@ -861,7 +858,7 @@ static bool yaoocpp_parser_method_base(pointer p,yaoocpp_method_t** meth)
     } else
       delete(var);
   }
-  PB_EXIT;
+  pb_exit();
   if(ret)
     RULE_SUCCESS(p);
   else

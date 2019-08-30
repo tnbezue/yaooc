@@ -77,13 +77,9 @@ bool __catch__(const char*);
 void __rethrow_last_exception__();
 
 pointer yaooc_exception_pointer_bag_save(pointer);
+pointer yaooc_exception_pointer_bag_save_static_array(pointer,const type_info_t*,size_t);
 void yaooc_exception_pointer_bag_clear();
 void yaooc_exception_pointer_bag_delete();
-
-
-#define EPB_SAVE(ptr) yaooc_exception_pointer_bag_save(ptr)
-#define EPB_CLEAR  yaooc_exception_pointer_bag_clear(ptr)
-#define EPB_DELETE yaooc_exception_pointer_bag_delete(ptr)
 
 /*
   throw an exception
@@ -111,5 +107,27 @@ void yaooc_exception_pointer_bag_delete();
     /* Exception not caught by any catch block in the TRY/ETRY section -- rethrow */ \
     __rethrow_last_exception__(); \
 }
+
+#define epb_save(ptr) yaooc_exception_pointer_bag_save(ptr)
+
+#define epb_new(T)         epb_save(new(T))
+#define epb_new_array(T,N) epb_save(new_array(T,N))
+#define epb_new_copy(P)    epb_save(new_copy(P))
+#define epb_new_array_copy(P,N)    epb_save(new_array_copy(P,N))
+#define epb_new_ctor(T,CON,...)     epb_save(new_ctor(T,CON,## __VA_ARGS__))
+#define epb_new_array_ctor(T,N,...)     epb_save(new_array_ctor(T,N,CON,## __VA_ARGS__))
+
+#define epb_save_static(P,T)       yaooc_exception_pointer_bag_save_static_array(P,T ## _ti,1)
+#define epb_save_static_array(P,T,N)       yaooc_exception_pointer_bag_save_static_array(P,T ## _ti,N)
+#define epb_newp(P,T)      epb_save_static(newp(P,T),T ## _ti,1)
+#define epb_newp_array(P,T,N)      epb_save_static_array(newp_array(P,T,N),T ## _ti,N)
+#define epb_newp_copy_static(P,T,CP)      epb_save_static(newp_copy_static(P,T,CP),T ## _ti,1)
+#define epb_newp_array_copy_static(P,T,CP,N)      epb_save_static_array(newp_array_copy_static(P,T,CP,N),T ## _ti,N)
+#define epb_newp_ctor(P,T,CON,...)      epb_save_static(newp_ctor(P,T,CON,## __VA_ARGG__),T ## _ti,1)
+#define epb_newp_array_ctor(P,T,N,CON,...)      epb_save_static_array(newp_array_ctor(P,T,N,CON,## __VA_ARGG__),T ## _ti,1)
+
+
+#define epb_clear()  yaooc_exception_pointer_bag_clear(ptr)
+#define epb_delete() yaooc_exception_pointer_bag_delete(ptr)
 
 #endif

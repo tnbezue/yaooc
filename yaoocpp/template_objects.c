@@ -709,12 +709,12 @@ static void yaoocpp_container_print_define_type_info(const_pointer p,ostream_poi
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"/* Type info structure for %s */\n",M(&this->name_,c_str));
   if(M(this,is_min_pod)) {
-    M(ostrm,printf,"DEFINE_MIN_POD_TYPE_INFO(%s)\n",M(&this->name_,c_str));
+    M(ostrm,printf,"DEFINE_MIN_TYPE_INFO(%s);\n",M(&this->name_,c_str));
   } else if (M(this,is_pod)) {
     M(ostrm,printf,"DEFINE_POD_TYPE_INFO(%s",M(&this->name_,c_str));
     M(ostrm,printf,",%c",this->has_lt_cmp_ ? 'Y' : 'N');
     M(ostrm,printf,",%c",this->has_to_stream_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c)\n\n",this->has_from_stream_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c);\n\n",this->has_from_stream_ ? 'Y' : 'N');
   } else {
     M(ostrm,printf,"DEFINE_TYPE_INFO(%s",M(&this->name_,c_str));
     M(ostrm,printf,",%c",this->has_default_ctor_ ? 'Y' : 'N');
@@ -760,20 +760,20 @@ static void yaoocpp_container_print_default_ctor_implementation(const_pointer p,
 static void yaoocpp_container_print_dtor_implementation(const_pointer p,ostream_pointer o)
 {
   yaoocpp_container_const_pointer this=p;
-  PB_INIT;
+  pb_init();
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"void %s_dtor(pointer p)\n"
                 "{\n"
                 "  %s_pointer this=p;\n",M(&this->name_,c_str),M(&this->name_,c_str));
   yaoocpp_element_pointer_vector_const_iterator i;
-  yaooc_regex_pointer re=PB_SAVE(new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"(.*)_t\\s+\\*",0));
+  yaooc_regex_pointer re=pb_new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"(.*)_t\\s+\\*",0);
   CFOR_EACH(i,&this->instance_) {
     if((*i)->state_ == INITIAL && ISA(*i,yaoocpp_variable)) {
       yaoocpp_variable_pointer ivar=(yaoocpp_variable_pointer)*i;
       if(M(&ivar->type_,ends_with,"*")) {
         // If varible is const, then most likely a pointer to an object that was deleted elsewhere
         if(!M(&ivar->type_,starts_with,"const")) {
-          yaooc_matchdata_pointer md=PB_SAVE(M(re,match,M(&ivar->type_,c_str),0));
+          yaooc_matchdata_pointer md=pb_save(M(re,match,M(&ivar->type_,c_str),0));
           if(M(md,bool)) {
             M(ostrm,printf,"  if(this->%s)\n"
                            "     delete(this->%s);\n",M(&ivar->name_,c_str),M(&ivar->name_,c_str));
@@ -785,20 +785,20 @@ static void yaoocpp_container_print_dtor_implementation(const_pointer p,ostream_
           M(ostrm,printf,"  this->%s = NULL;\n",M(&ivar->name_,c_str));
         }
       } else if(M(&ivar->type_,ends_with,"_t")) {
-        yaooc_string_pointer temp=PB_SAVE(M(&ivar->type_,substr,0,M(&ivar->type_,size)-2));
+        yaooc_string_pointer temp=pb_save(M(&ivar->type_,substr,0,M(&ivar->type_,size)-2));
         M(ostrm,printf,"  deletep(&this->%s,%s);\n",M(&ivar->name_,c_str),M(temp,c_str));
 //        delete(temp);
       }
     }
   }
   M(ostrm,printf,"}\n\n");
-  PB_EXIT;
+  pb_exit();
 }
 
 static void yaoocpp_container_print_assign_implementation(const_pointer p,ostream_pointer o)
 {
   yaoocpp_container_const_pointer this=p;
-  PB_INIT;
+  pb_init();
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"void %s_assign(pointer p,const_pointer s)\n"
                 "{\n"
@@ -807,7 +807,7 @@ static void yaoocpp_container_print_assign_implementation(const_pointer p,ostrea
   if(this->parent_ && strcmp(M(&this->parent_->name_,c_str),"yaooc_object") != 0) {
     M(ostrm,printf,"  %s_assign(this,src);\n",M(&this->parent_->name_,c_str));
   }
-  yaooc_regex_pointer re=PB_SAVE(new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"(.*)_t\\s+\\*",0));
+  yaooc_regex_pointer re=pb_new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"(.*)_t\\s+\\*",0);
   yaoocpp_element_pointer_vector_const_iterator i;
   CFOR_EACH(i,&this->instance_) {
     if((*i)->state_ == INITIAL && ISA(*i,yaoocpp_variable)) {
@@ -817,7 +817,7 @@ static void yaoocpp_container_print_assign_implementation(const_pointer p,ostrea
           M(ostrm,printf,"  this->%s=src->%s;\n",M(&ivar->name_,c_str),M(&ivar->name_,c_str));
         } else {
 //          M(ostrm,printf,"  if(this->%s != NULL) \n",M(&ivar->name_,c_str));
-          yaooc_matchdata_pointer md=PB_SAVE(M(re,match,M(&ivar->type_,c_str),0));
+          yaooc_matchdata_pointer md=pb_save(M(re,match,M(&ivar->type_,c_str),0));
 //          yaooc_string_pointer temp=M(md,at,1);
           if(M(md,bool)) {
             M(ostrm,printf,"  if(this->%s!=NULL)\n"
@@ -829,7 +829,7 @@ static void yaoocpp_container_print_assign_implementation(const_pointer p,ostrea
           }
         }
       } else if(M(&ivar->type_,ends_with,"_t")) {
-        yaooc_string_pointer temp=PB_SAVE(M(&ivar->type_,substr,0,M(&ivar->type_,size)-2));
+        yaooc_string_pointer temp=pb_save(M(&ivar->type_,substr,0,M(&ivar->type_,size)-2));
         M(ostrm,printf,"  assign_static(&this->%s,&src->%s,%s);\n",M(&ivar->name_,c_str),M(&ivar->name_,c_str),M(temp,c_str));
       } else {
         M(ostrm,printf,"  this->%s = src->%s;\n",M(&ivar->name_,c_str),M(&ivar->name_,c_str));
@@ -837,7 +837,7 @@ static void yaoocpp_container_print_assign_implementation(const_pointer p,ostrea
     }
   }
   M(ostrm,printf,"}\n\n");
-  PB_EXIT;
+  pb_exit();
 }
 
 static void yaoocpp_container_print_type_info_implementation(const_pointer p,ostream_pointer o)

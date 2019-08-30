@@ -98,9 +98,9 @@ void test_match_info()
 
 void test_regex()
 {
-  PB_INIT;
+  pb_init();
 	printf("%" PRIULONG " %" PRIULONG "\n",sizeof(yaooc_matchdata_t),sizeof(yaooc_regex_t));
-	yaooc_regex_pointer re=PB_SAVE(new(yaooc_regex));
+	yaooc_regex_pointer re=pb_new(yaooc_regex);
 
 	TEST("RE not ok",!M(re,bool));
 	M(re,set_pattern_flags,"this( \\w+",REG_EXTENDED);
@@ -111,26 +111,26 @@ void test_regex()
 	M(re,set_pattern_flags,"this\\s+(\\w+)\\s+([0-9]+)",REG_EXTENDED);
 #endif
 	TEST("RE is ok",M(re,bool));
-	yaooc_matchdata_t* md=PB_SAVE(M(re,match,"should not match",0));
+	yaooc_matchdata_t* md=pb_save(M(re,match,"should not match",0));
 	TEST("Not matches",!M(md,bool))
 
 	const char* subject="this is 27 and it should match";
-	md=PB_SAVE(M(re,match,subject,0));
+	md=pb_save(M(re,match,subject,0));
 	TEST("matches",M(md,bool))
 	TEST("number of matches is 3",M(md,size)==3)
 	const char* scp=M(md,subject);
 	TEST("subject is same as str",strcmp(scp,subject)==0);
-	yaooc_string_t* s=PB_SAVE(M(md,at,0));
+	yaooc_string_t* s=pb_save(M(md,at,0));
 	TEST("String is \"this is 27\"",strcmp(M(s,c_str),"this is 27")==0);
-	s=PB_SAVE(M(md,at,1));
+	s=pb_save(M(md,at,1));
 	TEST("String is \"is\"",strcmp(M(s,c_str),"is")==0);
 
-	PB_EXIT;
+	pb_exit();
 }
 
 void test_next()
 {
-	PB_INIT;
+	pb_init();
 	const char* numbers="  123  45 6 28 ignore this 9084 853 4444235 99924";
 	const char* numbs[]={"123","45","6","28","9084","853","4444235","99924"};
 #ifdef __YAOOC_USE_TRE__
@@ -138,20 +138,20 @@ void test_next()
 #else
 	const char* re_str="([0-9]+)";
 #endif
-	yaooc_regex_pointer re=PB_SAVE(new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,re_str,REG_EXTENDED));
+	yaooc_regex_pointer re=pb_new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,re_str,REG_EXTENDED);
 	TEST("RE OK",M(re,bool));
 
-	yaooc_matchdata_pointer md = PB_SAVE(M(re,match,numbers,0));
+	yaooc_matchdata_pointer md = pb_save(M(re,match,numbers,0));
 	int nmatch=0;
 	char msg[64];
 	while(M(md,bool)) {
-		yaooc_string_pointer s=PB_SAVE(M(md,at,0));
+		yaooc_string_pointer s=pb_save(M(md,at,0));
 		sprintf(msg,"Matched %s",numbs[nmatch]);
 		TEST(msg,strcmp(M(s,c_str),numbs[nmatch++])==0);
 		M(re,match_next,md);
 	}
 	TEST("All numbers matched",nmatch==8);
-	PB_EXIT;
+	pb_exit();
 }
 
 test_function tests[]=

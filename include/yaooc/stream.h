@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <yaooc/object.h>
 #include <yaooc/exception.h>
+#include <yaooc/types.h>
 
 /*
 	In C, if yaooc_istream_pointer is a parameter in a method and yaooc_ifstream_pointer or yaooc_istringstream_pointer

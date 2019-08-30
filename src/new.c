@@ -219,7 +219,7 @@ pointer __newp_array_copy_range(pointer dst,const_pointer src,size_t n)
 	New using a constructor other than default or copy constructor
 */
 
-static void new_ctor_private(yaooc_private_iterator ptr,const type_info_t* ti,size_t n_elements,constructor ctor,va_list args)
+void new_ctor_private(yaooc_private_iterator ptr,const type_info_t* ti,size_t n_elements,constructor ctor,va_list args)
 {
 	size_t i;
 	size_t element_size=yaooc_sizeof(ti);

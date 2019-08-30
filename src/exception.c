@@ -343,7 +343,15 @@ pointer yaooc_exception_pointer_bag_save(pointer p)
 {
   yaooc_jmpbuf_t* cjb=yaooc_current_jmpbuf();
   if(cjb)
-    M(cjb->pb_,push,p);
+    M(cjb->pb_,add,p);
+  return p;
+}
+
+pointer yaooc_exception_pointer_bag_save_static_array(pointer p,const type_info_t* ti,size_t n)
+{
+  yaooc_jmpbuf_t* cjb=yaooc_current_jmpbuf();
+  if(cjb)
+    M(cjb->pb_,add_static,p,ti,n);
   return p;
 }
 
@@ -358,7 +366,7 @@ void yaooc_exception_pointer_bag_delete(pointer p)
 {
   yaooc_jmpbuf_t* cjb=yaooc_current_jmpbuf();
   if(cjb)
-    M(cjb->pb_,delete_all);
+    M(cjb->pb_,del_all);
 }
 
 /*

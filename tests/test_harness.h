@@ -40,7 +40,7 @@ int nTotalPass=0;
 #define TEST_ALL(test_funcs) unsigned i; for( i=0;i<sizeof(test_funcs)/sizeof(test_funcs[1]);i++) \
       { optr=NULL; test_funcs[i](); }
 
-char* output;
+char output[10240];
 char* optr;
 #define STD_MAIN(test_array) \
 int main(int argc,char*argv[]) \
@@ -48,9 +48,7 @@ int main(int argc,char*argv[]) \
 	setbuf(stdout,NULL); \
 	setbuf(stderr,NULL); \
 	yaooc_init(); \
-	output=(char*)malloc(10240);\
 	optr=NULL; \
-	GC_INIT(); \
   srand(time(NULL)); \
 	int ntest=sizeof(test_array)/sizeof(test_array[0]); \
 	if(argc == 1) \
@@ -67,7 +65,6 @@ int main(int argc,char*argv[]) \
 		} \
 	} \
 	FINAL_SUMMARY; \
-	free(output); \
 	return 0; \
 }
 

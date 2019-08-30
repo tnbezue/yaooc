@@ -249,8 +249,13 @@ POD_DEFINITION(short,short)
 POD_DEFINITION(unsigned short,ushort)
 POD_DEFINITION(int,int)
 POD_DEFINITION(unsigned int,uint)
+#if __WORDSIZE == 64
+POD_DEFINITION(long,long)
+POD_DEFINITION(unsigned long,ulong)
+#else
 POD_DEFINITION(long long,long)
 POD_DEFINITION(unsigned long long,ulong)
+#endif
 typedef double * double_pointer;
 typedef const double* double_const_pointer;
 void double_to_stream(const_pointer,pointer);
@@ -283,7 +288,7 @@ void size_from_stream(pointer,pointer);
 #define PRIUSHORT PRIu16
 #define PRIINT PRId32
 #define PRIUINT PRIu32
-#if defined(_WIN64) || __WORDSIZE == 64
+#if __WORDSIZE == 64
 #define PRILONG PRId64
 #define PRIULONG PRIu64
 #else

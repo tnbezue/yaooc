@@ -3,18 +3,24 @@
 
 #include <yaooc/array_container.yaooc>
 
+struct yaooc_pointer_bag_item {
+  instance:
+    pointer pointer_;
+    const type_info_t* ti_; // For static objects need type information, NULL if dynamic object
+    unsigned count_;  // For static objects need the count
+};
+
 class yaooc_pointer_bag : yaooc_array_container
 {
     yaooc_pointer_bag();
     ~yaooc_pointer_bag();
   table:
-    pointer push(pointer v);
-    void push_list(...);
-    void remove(pointer v);
+    pointer add(pointer);
+    pointer add_static(pointer v,const type_info_t* ti,size_t n);
+    void del(const_pointer ptr);
+    void del_all();  /* This deletes objects before clearing */
+    pointer remove(pointer v);
     void clear();  /* Clear remove all pointer without deleteing */
-    void delete_all();  /* This deletes objects before clearing */
-  instance:
-    pointer_bag_array_t* pointers_;
 };
 
 #endif

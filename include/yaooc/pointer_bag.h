@@ -1,89 +1,102 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #ifndef __POINTER_BAG_INCLUDED__
 #define __POINTER_BAG_INCLUDED__
 
+/* Begin YAOOCPP output */
+
 #include <yaooc/array_container.h>
+#include <yaooc/macros.h>
 
 /*
-  Class definition for yaooc_pointer_bag
+  Struct Definition for yaooc_pointer_bag_item
 */
-typedef struct yaooc_pointer_bag_s yaooc_pointer_bag_t;
-yaooc_class_table(yaooc_pointer_bag)
-{
-  yaooc_array_container_class_table_t;
-  pointer (*push)(pointer,pointer);
-  void (*push_list)(pointer,...);
-  void (*remove)(pointer,pointer);
-  void (*clear)(pointer);
-  void (*delete_all)(pointer);
+yaooc_min_struct(yaooc_pointer_bag_item) {
+  void* pointer_;
+  const type_info_t* ti_;
+  unsigned count_;
 };
 
-yaooc_class_instance(yaooc_pointer_bag)
-{
+/* Protected prototypes for yaooc_pointer_bag_item */
+
+/* Type Info Prototypes for yaooc_pointer_bag_item */
+#define yaooc_pointer_bag_item_default_ctor yaooc_do_nothing_default_ctor
+#define yaooc_pointer_bag_item_dtor yaooc_do_nothing_dtor
+#define yaooc_pointer_bag_item_copy_ctor yaooc_do_nothing_copy_ctor
+#define yaooc_pointer_bag_item_assign yaooc_do_nothing_assign
+
+/* Constructor prototypes for yaooc_pointer_bag_item */
+
+/*
+  Class Definition for yaooc_pointer_bag
+*/
+yaooc_class_table(yaooc_pointer_bag) {
+  yaooc_array_container_class_table_t;
+  pointer (*add)(pointer, pointer);
+  pointer (*add_static)(pointer, pointer, const type_info_t*, size_t);
+  void (*del)(pointer,const_pointer);
+  void (*del_all)(pointer);
+  pointer (*remove)(pointer, pointer);
+  void (*clear)(pointer);
+};
+#define yaooc_pointer_bag_parent_class_table ((yaooc_array_container_class_table_t*)(yaooc_pointer_bag_class_table.parent_class_table_))
+
+yaooc_class_instance(yaooc_pointer_bag) {
   yaooc_array_container_class_instance_t;
 };
 
 yaooc_class(yaooc_pointer_bag);
 
-typedef pointer* pointer_bag_iterator;
-typedef const pointer* pointer_bag_const_iterator;
+typedef yaooc_pointer_bag_item_t* yaooc_pointer_bag_iterator;
+typedef const yaooc_pointer_bag_item_t* yaooc_pointer_bag_const_iterator;
 
-/* Prototypes for type info */
+/* Type Info Prototypes for yaooc_pointer_bag */
 void yaooc_pointer_bag_default_ctor(pointer);
 void yaooc_pointer_bag_dtor(pointer);
+#define yaooc_pointer_bag_copy_ctor yaooc_array_container_copy_ctor
+#define yaooc_pointer_bag_assign yaooc_array_container_assign
 
-/* Prototypes for Constructors */
+/* Constructors prototypes for yaooc_pointer_bag */
 
-/* Prototypes for class table members */
+/* Table prototypes for yaooc_pointer_bag */
 #define yaooc_pointer_bag_swap yaooc_array_container_swap
-#define yaooc_pointer_bag_increase_capacity  yaooc_array_container_increase_capacity
-#define yaooc_pointer_bag_size_needed  yaooc_array_container_size_needed
-#define yaooc_pointer_bag_size  yaooc_array_container_size
-#define yaooc_pointer_bag_capacity  yaooc_array_container_capacity
-#define yaooc_pointer_bag_empty  yaooc_array_container_empty
-#define yaooc_pointer_bag_begin  yaooc_array_container_begin
-#define yaooc_pointer_bag_end  yaooc_array_container_end
-#define yaooc_pointer_bag_cbegin  yaooc_array_container_cbegin
-#define yaooc_pointer_bag_cend  yaooc_array_container_cend
-void yaooc_pointer_bag_swap(pointer,pointer);
-pointer yaooc_pointer_bag_push(pointer,pointer);
-void yaooc_pointer_bag_push_list(pointer,...);
-void yaooc_pointer_bag_remove(pointer,pointer);
+#define yaooc_pointer_bag_increase_capacity yaooc_array_container_increase_capacity
+#define yaooc_pointer_bag_size_needed yaooc_array_container_size_needed
+#define yaooc_pointer_bag_size yaooc_array_container_size
+#define yaooc_pointer_bag_capacity yaooc_array_container_capacity
+#define yaooc_pointer_bag_empty yaooc_array_container_empty
+#define yaooc_pointer_bag_begin yaooc_array_container_begin
+#define yaooc_pointer_bag_end yaooc_array_container_end
+#define yaooc_pointer_bag_cbegin yaooc_array_container_cbegin
+#define yaooc_pointer_bag_cend yaooc_array_container_cend
+pointer yaooc_pointer_bag_add(pointer, pointer);
+pointer yaooc_pointer_bag_add_static(pointer, pointer, const type_info_t*, size_t);
+void yaooc_pointer_bag_del_all(pointer);
+void yaooc_pointer_bag_del(pointer,const_pointer);
+pointer yaooc_pointer_bag_remove(pointer, pointer);
 void yaooc_pointer_bag_clear(pointer);
-void yaooc_pointer_bag_delete_all(pointer);
-size_t yaooc_pointer_bag_size(const_pointer);
-bool yaooc_pointer_bag_empty(const_pointer);
 
-/* Prototypes for class instance members */
+/* Protected prototypes for yaooc_pointer_bag */
 
-/* Prototypes for class protected members */
+/* End YAOOCPP output */
+#define pb_init()         yaooc_pointer_bag_pointer local_pb=__new_array(yaooc_pointer_bag_ti,1)
 
+#define pb_save(P)        yaooc_pointer_bag_add(local_pb,P)
+#define pb_new(T)         pb_save(new(T))
+#define pb_new_array(T,N) pb_save(new_array(T,N))
+#define pb_new_copy(P)    pb_save(new_copy(P))
+#define pb_new_array_copy(P,N)    pb_save(new_array_copy(P,N))
+#define pb_new_ctor(T,CON,...)     pb_save(new_ctor(T,CON,## __VA_ARGS__))
+#define pb_new_array_ctor(T,N,...)     pb_save(new_array_ctor(T,N,CON,## __VA_ARGS__))
 
-/* Use this at start of routine */
-#define PB_INIT  yaooc_pointer_bag_pointer local_pb=__new_array(yaooc_pointer_bag_ti,1)
-/* Saves objects to be deleted at end */
-#define PB_SAVE(ptr) (local_pb->class_table_->push(local_pb,ptr))
-/* Clears objects, thus none will be deleted at end */
-#define PB_CLEAR  (local_pb->class_table_->clear(local_pb))
-/* Delete pointers contained in pointer */
-#define PB_DELETE (local_pb->class_table_->delete_all(local_pb))
-/* Delete pointers in bag and delete pointer bag */
-#define PB_EXIT   delete(local_pb)
+#define pb_save_static(P,T)       yaooc_pointer_bag_add_static(local_pb,P,T ## _ti,1)
+#define pb_save_static_array(P,T,N)       yaooc_pointer_bag_add_static(local_pb,P,T ## _ti,N)
+#define pb_newp(P,T)      yaooc_pointer_bag_newp_array(local_pb,P,T ## _ti,1)
+#define pb_newp_array(P,T,N)      yaooc_pointer_bag_newp_array(local_pb,P,T ## _ti,N)
+#define pb_newp_copy_static(P,T,CP)      yaooc_pointer_bag_newp_array_copy_static(local_pb,P,T ## _ti,1)
+#define pb_newp_array_copy_static(P,T,CP,N)      yaooc_pointer_bag_newp_array_copy_static(local_pb,P,T ## _ti,N)
+#define pb_newp_ctor(P,T,CON,...)      yaooc_pointer_bag_newp_array_ctor(local_pb,P,T,1,CON,## __VA_ARGG__)
+#define pb_newp_array_ctor(P,T,N,CON,...)      yaooc_pointer_bag_newp_array_ctor(local_pb,P,T,N,CON,## __VA_ARGG__)
+
+#define pb_delete()  yaooc_pointer_bag_del_all(local_pb)
+#define pb_exit()   delete(local_pb)
 
 #endif

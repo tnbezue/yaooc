@@ -125,7 +125,7 @@ char* root_name(const char* fname)
 
 int main(int argc,char* argv[])
 {
-	PB_INIT;
+	pb_init();
 //	newp(&include_files,yaooc_string_vector);
 //	M(&cpp,set,"cpp -nostdinc");
   parse_options(argc,argv);
@@ -147,13 +147,13 @@ int main(int argc,char* argv[])
             if(M(&output_file,size) > 0)
               root=yaooc_strdup(M(&output_file,c_str));
             else
-              root=PB_SAVE(root_name(argv[i]));
+              root=pb_save(root_name(argv[i]));
             size_t l=strlen(root)+12; // root + ".[ch].template"
-            char* header_fname=PB_SAVE(new_array(char,l));
+            char* header_fname=pb_new_array(char,l);
             strcpy(header_fname,root);
             strcat(header_fname,".h.template");
             M(&h_strm,open,header_fname,"w");
-            char* uc_root=PB_SAVE(yaooc_upcase(root));
+            char* uc_root=pb_save(yaooc_upcase(root));
             M(&h_strm,printf,"#ifndef __%s_INCLUDED__\n"
                             "#define __%s_INCLUDED__\n\n",uc_root,uc_root);
             M(&h_strm,printf,"/* Begin YAOOCPP output */\n\n");
@@ -169,7 +169,7 @@ int main(int argc,char* argv[])
             if(M(&parser.header_text_,size)>0)
               M(&h_strm,printf,"\n%s\n",M(&parser.header_text_,c_str));
 
-            char* source_fname=PB_SAVE(new_array(char,l));
+            char* source_fname=pb_new_array(char,l);
             strcpy(source_fname,root);
             strcat(source_fname,".c.template");
             M(&c_strm,open,source_fname,"w");
@@ -213,6 +213,6 @@ int main(int argc,char* argv[])
 //  deletep(&cpp,yaooc_string);
   deletep(&include_directories,yaooc_string);
   deletep(&output_file,yaooc_string);
-  PB_EXIT;
+  pb_exit();
 	return 0;
 }
