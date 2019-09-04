@@ -65,7 +65,6 @@ void yaooc_istringstream_ctor_ccs_n(pointer p,va_list args)
 /* yaooc_istringstream protected members */
 
 /* Class table methods for yaooc_istringstream */
-const char* yaooc_istringstream_isa(const_pointer p) { return "yaooc_istringstream_t"; }
 
 const char* yaooc_istringstream_c_str(const_pointer p)
 {
@@ -158,7 +157,6 @@ void yaooc_ostringstream_dtor(pointer p)
 /* yaooc_ostringstream protected members */
 
 /* Class table methods for yaooc_ostringstream */
-const char* yaooc_ostringstream_isa(const_pointer p) { return "yaooc_ostringstream_t"; }
 
 const char* yaooc_ostringstream_c_str(const_pointer p)
 {

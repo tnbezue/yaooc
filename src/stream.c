@@ -61,7 +61,6 @@ void yaooc_base_stream_set_handle(pointer p,FILE* h)
 }
 
 /* Class table methods for yaooc_base_stream */
-//const char* yaooc_base_stream_isa(const_pointer p) { return "yaooc_base_stream_t"; }
 
 bool yaooc_base_stream_eof(const_pointer p)
 {
@@ -114,7 +113,6 @@ void yaooc_istream_default_ctor(pointer p)
 /* yaooc_istream protected members */
 
 /* Class table methods for yaooc_istream */
-//const char* yaooc_istream_isa(const_pointer p) { return "yaooc_istream_t"; }
 
 void yaooc_istream_stream(pointer p,...)
 {
@@ -209,7 +207,6 @@ void yaooc_ostream_default_ctor(pointer p)
 /* yaooc_ostream protected members */
 
 /* Class table methods for yaooc_ostream */
-//const char* yaooc_ostream_isa(const_pointer p) { return "yaooc_ostream_t"; }
 
 void yaooc_ostream_stream(pointer p,...)
 {

@@ -50,7 +50,6 @@ void yaooc_ifstream_ctor_fname_mode(pointer p,va_list args)
 /* yaooc_ifstream protected members */
 
 /* Class table methods for yaooc_ifstream */
-const char* yaooc_ifstream_isa(const_pointer p) { return "yaooc_ifstream_t"; }
 
 void yaooc_ifstream_open(pointer p,const char* fname,const char* mode)
 {
@@ -119,7 +118,6 @@ void yaooc_ofstream_ctor_fname_mode(pointer p,va_list args)
 /* yaooc_ofstream protected members */
 
 /* Class table methods for yaooc_ofstream */
-const char* yaooc_ofstream_isa(const_pointer p) { return "yaooc_ofstream_t"; }
 
 void yaooc_ofstream_open(pointer p,const char* fname,const char* mode)
 {
