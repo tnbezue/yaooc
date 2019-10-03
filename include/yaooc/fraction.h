@@ -8,19 +8,25 @@
 #include <yaooc/stream.h>
 #include <yaooc/string.h>
 
+#define YAOOC_FRACTION_DEF_INIT (yaooc_fraction_t) { .class_table_=&yaooc_fraction_class_table, \
+      .numerator_=0,.denominator_=1 }
 /*
   Class Definition for yaooc_fraction
 */
 yaooc_class_table(yaooc_fraction) {
   yaooc_object_class_table_t;
-  void (*plus)(pointer, const_pointer);
-  void (*minus)(pointer, const_pointer);
-  void (*times)(pointer, const_pointer);
-  void (*divided_by)(pointer, const_pointer);
-  void (*set)(pointer, int64_t, int64_t);
-  void (*set_mixed)(pointer, int64_t, int64_t, int64_t);
+  void (*plus)(pointer, yaooc_fraction_t);
+  void (*minus)(pointer, yaooc_fraction_t);
+  void (*times)(pointer, yaooc_fraction_t);
+  void (*divided_by)(pointer, yaooc_fraction_t);
+  void (*set)(pointer, int32_t, int32_t);
+  void (*set_mixed)(pointer, int32_t, int32_t, int32_t);
   double (*to_double)(const_pointer);
   void (*from_double)(pointer, double);
+  yaooc_fraction_t (*round)(const_pointer,int);
+  void (*round_)(pointer,int);
+  yaooc_fraction_t (*abs)(const_pointer);
+  void (*abs_)(pointer);
   yaooc_string_t* (*to_s)(const_pointer);
   yaooc_string_t* (*to_mixed_s)(const_pointer);
 };
@@ -48,26 +54,30 @@ void yaooc_fraction_ctor_mixed(pointer,va_list);
 void yaooc_fraction_ctor_double(pointer,va_list);
 
 /* Table prototypes for yaooc_fraction */
-#define yaooc_fraction_swap yaooc_object_swap
-void yaooc_fraction_plus(pointer, const_pointer);
-void yaooc_fraction_minus(pointer, const_pointer);
-void yaooc_fraction_times(pointer, const_pointer);
-void yaooc_fraction_divided_by(pointer, const_pointer);
-void yaooc_fraction_set(pointer, int64_t, int64_t);
-void yaooc_fraction_set_mixed(pointer, int64_t, int64_t, int64_t);
+void yaooc_fraction_swap(pointer,pointer);
+void yaooc_fraction_plus(pointer, yaooc_fraction_t);
+void yaooc_fraction_minus(pointer, yaooc_fraction_t);
+void yaooc_fraction_times(pointer, yaooc_fraction_t);
+void yaooc_fraction_divided_by(pointer, yaooc_fraction_t);
+void yaooc_fraction_set(pointer, int32_t, int32_t);
+void yaooc_fraction_set_mixed(pointer, int32_t, int32_t, int32_t);
 double yaooc_fraction_to_double(const_pointer);
 void yaooc_fraction_from_double(pointer, double);
+yaooc_fraction_t yaooc_fraction_round(const_pointer,int);
+void yaooc_fraction_round_(pointer,int);
+yaooc_fraction_t yaooc_fraction_abs(const_pointer);
+void yaooc_fraction_abs_(pointer);
 yaooc_string_t* yaooc_fraction_to_s(const_pointer);
 yaooc_string_t* yaooc_fraction_to_mixed_s(const_pointer);
 
 /* Protected prototypes for yaooc_fraction */
 extern double yaooc_fraction_epsilon;
-extern int64_t yaooc_fraction_gcd(int64_t, int64_t);
-extern yaooc_fraction_t* yaooc_fraction_plus_fraction(const_pointer, yaooc_fraction_const_pointer);
-extern yaooc_fraction_t* yaooc_fraction_minus_fraction(const_pointer, yaooc_fraction_const_pointer);
-extern yaooc_fraction_t* yaooc_fraction_times_fraction(const_pointer, yaooc_fraction_const_pointer);
-extern yaooc_fraction_t* yaooc_fraction_divided_by_fraction(const_pointer, yaooc_fraction_const_pointer);
-//extern void yaooc_fraction_adjust(pointer, int64_t,int64_t);
+extern int32_t yaooc_fraction_gcd(int32_t, int32_t);
+extern yaooc_fraction_t yaooc_fraction_plus_fraction(yaooc_fraction_t, yaooc_fraction_t);
+extern yaooc_fraction_t yaooc_fraction_minus_fraction(yaooc_fraction_t, yaooc_fraction_t);
+extern yaooc_fraction_t yaooc_fraction_times_fraction(yaooc_fraction_t, yaooc_fraction_t);
+extern yaooc_fraction_t yaooc_fraction_divided_by_fraction(yaooc_fraction_t, yaooc_fraction_t);
+//extern void yaooc_fraction_adjust(pointer, int32_t,int32_t);
 
 /*
   Class Definition for yaooc_fraction_exception

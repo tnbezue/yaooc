@@ -26,10 +26,11 @@ class yaooc_fraction {
     void minus(pointer other);
     void times(pointer other);
     void divided_by(pointer other);
-    void set(int64_t n,int64_t d);
-    void set_mixed(int64_t w,int64_t n,int64_t d);
+    void set(int32_t n,int32_t d);
+    void set_mixed(int32_t w,int32_t n,int32_t d);
     double to_double() const;
     void from_double(double d);
+    yaooc_fraction_t* abs() const;
     yaooc_string_t* to_s() const;
     yaooc_string_t* to_mixed_s() const;
 
@@ -39,13 +40,13 @@ class yaooc_fraction {
 
   protected:
     double epsilon=0.000005;
-    int64_t gcd(int64_t a,int64_t b);
+    int32_t gcd(int32_t a,int32_t b);
 
     yaooc_fraction_t* plus_fraction(yaooc_fraction_const_pointer b) const;
     yaooc_fraction_t* minus_fraction(yaooc_fraction_const_pointer b) const;
     yaooc_fraction_t* times_fraction(yaooc_fraction_const_pointer b) const;
     yaooc_fraction_t* divided_by_fraction(yaooc_fraction_const_pointer b) const;
-//    void adjust(int64_t n,int64_t d);
+//    void adjust(int32_t n,int32_t d);
 };
 
 class yaooc_fraction_exception : yaooc_exception

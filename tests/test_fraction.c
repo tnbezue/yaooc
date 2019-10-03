@@ -32,14 +32,20 @@ void test_init()
 
 void test_gcd()
 {
+  typedef struct {
+    int n;
+    int d;
+    int gcd;
+  } gcd_test_data_t;
+  gcd_test_data_t test_data[] = { {0,2,2},{ 10,1,1},{105,15,15},{10,230,10},{28,234,2 },{872452914,78241452,6}};
+  char msg[256];
+  int n = ARRAY_SIZE(test_data);
   TESTCASE("Greatest Common Divisor");
-
-  TEST("GCD(0,2) = 1",yaooc_fraction_gcd(0,2)==2);
-  TEST("GCD(10,1) = 1",yaooc_fraction_gcd(10,1)==1);
-  TEST("GCD(105,15) = 1",yaooc_fraction_gcd(105,15)==15);
-  TEST("GCD(10,230) = 1",yaooc_fraction_gcd(10,230)==10);
-  TEST("GCD(28,234) = 1",yaooc_fraction_gcd(28,234)==2);
-  TEST("GCD(872452914,78241452) = 1",yaooc_fraction_gcd(872452914,78241452)==6);
+  int i;
+  for(i=0;i<n;i++) {
+    sprintf(msg,"GCD(%d,%d) = %d",test_data[i].n,test_data[i].d,test_data[i].gcd);
+    TEST(msg,yaooc_fraction_gcd(test_data[i].n,test_data[i].d)==test_data[i].gcd);
+  }
 }
 
 #define S(f,n,d) yaooc_fraction_set(&f,n,d)
@@ -62,513 +68,347 @@ void test_fraction_set()
   TESTCASE("Fraction set");
   yaooc_fraction_t f;
 
-  S(f,0,1);
-  TEST("Set 0/1 = 0/1",R(f,0,1));
+  int set_test_data[][4]={ { 0,1,0,1 }, {1,1,1,1}, {-2,3,-2,3}, {2,-3,-2,3}, {-2,-3,2,3}};
+  int i,n = ARRAY_SIZE(set_test_data);
+  char msg[64];
+  for(i=0;i<n;i++) {
+    sprintf(msg,"set(%d,%d) = (%d,%d)",set_test_data[i][0],set_test_data[i][1],
+            set_test_data[i][2],set_test_data[i][3]);
+    S(f,set_test_data[i][0],set_test_data[i][1]);
+    TEST(msg,R(f,set_test_data[i][2],set_test_data[i][3]));
+  }
+}
 
-  S(f,1,1);
-  TEST("Set 1/1 = 1/1",R(f,1,1));
+void test_fraction_set_wnd()
+{
+  TESTCASE("Fraction set");
+  yaooc_fraction_t f;
 
-  S(f,-2,3);
-  TEST("Set -2/3 = -2/3",R(f,-2,3));
-
-  S(f,2,-3);
-  TEST("Set 2/-3 = -2/3",R(f,-2,3));
-
-  S(f,-2,-3);
-  TEST("Set -2/-3 = 2/3",R(f,2,3));
-
-  SM(f,10,0,1);
-  TEST("Set 10 0/1 = 10/1",R(f,10,1));
-
-  SM(f,-10,2,3);
-  TEST("Set -10 2/3 = -32/3",R(f,-32,3));
-
-  SM(f,0,0,1);
-  TEST("Set 0 0/1 = 0/1",R(f,0,1));
+  int set_test_data[][5]={ { -10,2,3,-32,3 }, {0,-2,3,-2,3}, {0,0,1,0,1}, {0,2,3,2,3}, {10,2,3,32,3}};
+  int i,n = ARRAY_SIZE(set_test_data);
+  char msg[64];
+  for(i=0;i<n;i++) {
+    sprintf(msg,"set(%d,%d,%d) = (%d,%d)",set_test_data[i][0],set_test_data[i][1],
+            set_test_data[i][2],set_test_data[i][3],set_test_data[i][4]);
+    SM(f,set_test_data[i][0],set_test_data[i][1],set_test_data[i][2]);
+    TEST(msg,R(f,set_test_data[i][3],set_test_data[i][4]));
+  }
 
 }
 
 void test_fraction_plus_fraction()
 {
-  pb_init();
   TESTCASE("Add Fractions");
-  yaooc_fraction_t f1;
-  newp(&f1,yaooc_fraction);
-  yaooc_fraction_t f2;
-  newp(&f2,yaooc_fraction);
-  yaooc_fraction_t* f3;
-
-  S(f1,0,1);
-  S(f2,0,1);
-  f3=pb_save(yaooc_fraction_plus_fraction(&f1,&f2));
-  TEST("0/1 + 0/1 = 0/1",R((*f3),0,1));
-
-  S(f1,0,1);
-  S(f2,1,1);
-  f3=pb_save(yaooc_fraction_plus_fraction(&f1,&f2));
-  TEST("0/1 + 1/1 = 1/1",R((*f3),1,1));
-
-  S(f1,3,5);
-  S(f2,-2,9);
-  f3=pb_save(yaooc_fraction_plus_fraction(&f1,&f2));
-  TEST("3/5 + -2/9 = 17/45",R((*f3),17,45));
-
-  S(f1,-2,8);
-  S(f2,-6,8);
-  f3=pb_save(yaooc_fraction_plus_fraction(&f1,&f2));
-  TEST("-2/8 + -6/8 = -1/1",R((*f3),-1,1));
-
-  S(f1,7,3);
-  S(f2,10,7);
-  f3=pb_save(yaooc_fraction_plus_fraction(&f1,&f2));
-  TEST("7/3 + 10/7 = 79/21",R((*f3),79,21));
-
-  S(f1,-5,7);
-  S(f2,25,35);
-  f3=pb_save(yaooc_fraction_plus_fraction(&f1,&f2));
-  TEST("-5/7 + 25/35 = 0/1",R((*f3),0,1));
-
-  pb_exit();
+  int plus_data[][6] = { {0,1,0,1,0,1}, {0,1,1,1,1,1},{3,5,-2,9,17,45},
+        {-2,8,-6,8,-1,1}, {7,3,10,7,79,21}, {-5,7,25,35,0,1}};
+  int n = ARRAY_SIZE(plus_data);
+  int i;
+  yaooc_fraction_t f1 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f2 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f3;
+  char msg[64];
+  for(i=0;i<n;i++) {
+    sprintf(msg,"(%d/%d) + (%d/%d) = (%d/%d)",plus_data[i][0],plus_data[i][1],plus_data[i][2],plus_data[i][3],
+          plus_data[i][4],plus_data[i][5]);
+    S(f1,plus_data[i][0],plus_data[i][1]);
+    S(f2,plus_data[i][2],plus_data[i][3]);
+    f3 = yaooc_fraction_plus_fraction(f1,f2);
+    TEST(msg,R(f3,plus_data[i][4],plus_data[i][5]));
+  }
 }
 
 void test_fraction_minus_fraction()
 {
-  pb_init();
   TESTCASE("Subtract Fractions");
-  yaooc_fraction_t f1;
-  newp(&f1,yaooc_fraction);
-  yaooc_fraction_t f2;
-  newp(&f2,yaooc_fraction);
-  yaooc_fraction_t* f3;
-
-  S(f1,0,1);
-  S(f2,0,1);
-  f3=pb_save(yaooc_fraction_minus_fraction(&f1,&f2));
-  TEST("0/1 - 0/1 = 0/1",R((*f3),0,1));
-
-  S(f1,0,1);
-  S(f2,1,1);
-  f3=pb_save(yaooc_fraction_minus_fraction(&f1,&f2));
-  TEST("0/1 - 1/1 = -1/1",R((*f3),-1,1));
-
-  S(f1,3,5);
-  S(f2,-2,9);
-  f3=pb_save(yaooc_fraction_minus_fraction(&f1,&f2));
-  TEST("3/5 - -2/9 = 37/45",R((*f3),37,45));
-
-  S(f1,-2,8);
-  S(f2,-6,8);
-  f3=pb_save(yaooc_fraction_minus_fraction(&f1,&f2));
-  TEST("-2/8 - -6/8 = 1/2",R((*f3),1,2));
-
-  S(f1,7,3);
-  S(f2,10,7);
-  f3=pb_save(yaooc_fraction_minus_fraction(&f1,&f2));
-  TEST("7/3 - 10/7 = 19/21",R((*f3),19,21));
-
-  S(f1,-5,7);
-  S(f2,25,35);
-  f3=pb_save(yaooc_fraction_minus_fraction(&f1,&f2));
-  TEST("-5/7 - 25/35 = -10/7",R((*f3),-10,7));
-
-  pb_exit();
+  int minus_data[][6] = { {0,1,0,1,0,1} , {0,1,1,1,-1,1},{3,5,-2,9,37,45},
+          {-2,8,-6,8,1,2}, {7,3,10,7,19,21}, {-5,7,25,35,-10,7}};
+  int n = ARRAY_SIZE(minus_data);
+  int i;
+  yaooc_fraction_t f1 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f2 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f3;
+  char msg[64];
+  for(i=0;i<n;i++) {
+    sprintf(msg,"(%d/%d) - (%d/%d) = (%d/%d)",minus_data[i][0],minus_data[i][1],minus_data[i][2],minus_data[i][3],
+          minus_data[i][4],minus_data[i][5]);
+    S(f1,minus_data[i][0],minus_data[i][1]);
+    S(f2,minus_data[i][2],minus_data[i][3]);
+    f3 = yaooc_fraction_minus_fraction(f1,f2);
+    TEST(msg,R(f3,minus_data[i][4],minus_data[i][5]));
+  }
 }
 
 void test_fraction_times_fraction()
 {
-  pb_init();
   TESTCASE("Multiply Fractions");
-  yaooc_fraction_t f1;
-  newp(&f1,yaooc_fraction);
-  yaooc_fraction_t f2;
-  newp(&f2,yaooc_fraction);
-  yaooc_fraction_t* f3;
-
-  S(f1,0,1);
-  S(f2,0,1);
-  f3=pb_save(yaooc_fraction_times_fraction(&f1,&f2));
-  TEST("0/1 * 0/1 = 0/1",R((*f3),0,1));
-
-  S(f1,0,1);
-  S(f2,1,1);
-  f3=pb_save(yaooc_fraction_times_fraction(&f1,&f2));
-  TEST("0/1 * 1/1 = 0/1",R((*f3),0,1));
-
-  S(f1,3,5);
-  S(f2,-2,9);
-  f3=pb_save(yaooc_fraction_times_fraction(&f1,&f2));
-  TEST("3/5 * -2/9 = -2/15",R((*f3),-2,15));
-
-  S(f1,-2,8);
-  S(f2,-6,8);
-  f3=pb_save(yaooc_fraction_times_fraction(&f1,&f2));
-  TEST("-2/8 * -6/8 = 3/16",R((*f3),3,16));
-
-  S(f1,7,3);
-  S(f2,10,7);
-  f3=pb_save(yaooc_fraction_times_fraction(&f1,&f2));
-  TEST("7/3 * 10/7 = 10/3",R((*f3),10,3));
-
-  S(f1,-5,7);
-  S(f2,25,35);
-  f3=pb_save(yaooc_fraction_times_fraction(&f1,&f2));
-  TEST("-5/7 * 25/35 = -25/49",R((*f3),-25,49));
-
-  pb_exit();
+  int times_data[][6] = { {0,1,0,1,0,1} , {0,1,1,1,0,1},{3,5,-2,9,-2,15},
+          {-2,8,-6,8,3,16}, {7,3,10,7,10,3}, {-5,7,25,35,-25,49}};
+  int n = ARRAY_SIZE(times_data);
+  int i;
+  yaooc_fraction_t f1 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f2 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f3;
+  char msg[64];
+  for(i=0;i<n;i++) {
+    sprintf(msg,"(%d/%d) * (%d/%d) = (%d/%d)",times_data[i][0],times_data[i][1],times_data[i][2],times_data[i][3],
+          times_data[i][4],times_data[i][5]);
+    S(f1,times_data[i][0],times_data[i][1]);
+    S(f2,times_data[i][2],times_data[i][3]);
+    f3 = yaooc_fraction_times_fraction(f1,f2);
+    TEST(msg,R(f3,times_data[i][4],times_data[i][5]));
+  }
 }
 
 void test_fraction_divided_by_fraction()
 {
-  pb_init();
   TESTCASE("Divide Fractions");
-  yaooc_fraction_t f1;
-  newp(&f1,yaooc_fraction);
-  yaooc_fraction_t f2;
-  newp(&f2,yaooc_fraction);
-  yaooc_fraction_t* f3;
-
-  S(f1,0,1);
-  S(f2,1,1);
-  f3=pb_save(yaooc_fraction_divided_by_fraction(&f1,&f2));
-  TEST("0/1 / 1/1 = 1/1",R((*f3),0,1));
-
-  S(f1,3,5);
-  S(f2,-2,9);
-  f3=pb_save(yaooc_fraction_divided_by_fraction(&f1,&f2));
-  TEST("3/5 / -2/9 = -27/10",R((*f3),-27,10));
-
-  S(f1,-2,8);
-  S(f2,-6,8);
-  f3=pb_save(yaooc_fraction_divided_by_fraction(&f1,&f2));
-  TEST("-2/8 / -6/8 = 1/3",R((*f3),1,3));
-
-  S(f1,7,3);
-  S(f2,10,7);
-  f3=pb_save(yaooc_fraction_divided_by_fraction(&f1,&f2));
-  TEST("7/3 / 10/7 = 49/30",R((*f3),49,30));
-
-  S(f1,-5,7);
-  S(f2,25,35);
-  f3=pb_save(yaooc_fraction_divided_by_fraction(&f1,&f2));
-  TEST("-5/7 / 25/35 = -1",R((*f3),-1,1));
-
-  pb_exit();
+  int divide_data[][6] = { {0,1,1,1,0,1},{3,5,-2,9,-27,10},
+          {-2,8,-6,8,1,3}, {7,3,10,7,49,30}, {-5,7,25,35,-1,1}};
+  int n = ARRAY_SIZE(divide_data);
+  int i;
+  yaooc_fraction_t f1 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f2 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f3;
+  char msg[64];
+  for(i=0;i<n;i++) {
+    sprintf(msg,"(%d/%d) / (%d/%d) = (%d/%d)",divide_data[i][0],divide_data[i][1],divide_data[i][2],divide_data[i][3],
+          divide_data[i][4],divide_data[i][5]);
+    S(f1,divide_data[i][0],divide_data[i][1]);
+    S(f2,divide_data[i][2],divide_data[i][3]);
+    f3 = yaooc_fraction_divided_by_fraction(f1,f2);
+    TEST(msg,R(f3,divide_data[i][4],divide_data[i][5]));
+  }
 }
 
 void test_fraction_eq_fraction()
 {
+  int eq_data[][5] = { { 0,1,0,1,1}, {0,1,1,2,0}, {2,3,-2,4,0}, {2,3,16,24,1}, {1,3,1,3,1},{-5,7,25,35,0}};
   TESTCASE("Fraction Equality");
   yaooc_fraction_t f1;
-  newp(&f1,yaooc_fraction);
   yaooc_fraction_t f2;
 
-  S(f1,0,1);
-  S(f2,0,1);
-  TEST("0/1 == 0/1 - true ",op_eq_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,0,1);
-  S(f2,1,1);
-  TEST("0/1 == 1/2 - false ",!op_eq_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,-2,3);
-  TEST("2/1 == -2/3 - false ",!op_eq_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,16,24);
-  TEST("2/3 == 16/24 - true ",op_eq_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,1,3);
-  S(f2,1,3);
-  TEST("1/3 == 1/3 - true ",op_eq_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,-5,7);
-  S(f2,25,35);
-  TEST("-5/7 == 25/35 - false ",!op_eq_static(&f1,&f2,yaooc_fraction));
+  char msg[64];
+  int i,n=ARRAY_SIZE(eq_data);
+  for(i=0;i<n;i++) {
+    sprintf(msg,"(%d/%d) == (%d/%d) -- %s",eq_data[i][0],eq_data[i][1],eq_data[i][2],
+          eq_data[i][3],(eq_data[i][4] == 1 ? "true" : "false"));
+    S(f1,eq_data[i][0],eq_data[i][1]);
+    S(f2,eq_data[i][2],eq_data[i][3]);
+    TEST(msg,op_eq_static(&f1,&f2,yaooc_fraction) == (eq_data[i][4] == 1));
+  }
 }
 
 void test_fraction_ne_fraction()
 {
-  TESTCASE("Fraction inequality");
+  int ne_data[][5] = { { 0,1,0,1,0}, {0,1,1,2,1}, {2,3,-2,4,1}, {2,3,16,24,0}, {1,3,1,3,0}, {-5,7,25,35,1}};
+  TESTCASE("Fraction inquality");
   yaooc_fraction_t f1;
-  newp(&f1,yaooc_fraction);
   yaooc_fraction_t f2;
 
-  S(f1,0,1);
-  S(f2,0,1);
-  TEST("0/1 != 0/1 - true ",!op_ne_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,0,1);
-  S(f2,1,1);
-  TEST("0/1 != 1/2 - true ",op_ne_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,-2,3);
-  TEST("2/1 != -2/3 - true ",op_ne_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,16,24);
-  TEST("2/3 != 16/24 - false ",!op_ne_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,1,3);
-  S(f2,1,3);
-  TEST("1/3 != 1/3 - false ",!op_ne_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,-5,7);
-  S(f2,25,35);
-  TEST("-5/7 != 25/35 - true ",op_ne_static(&f1,&f2,yaooc_fraction));
+  char msg[64];
+  int i,n=ARRAY_SIZE(ne_data);
+  for(i=0;i<n;i++) {
+    sprintf(msg,"(%d/%d) == (%d/%d) -- %s",ne_data[i][0],ne_data[i][1],ne_data[i][2],
+          ne_data[i][3],(ne_data[i][4] == 1 ? "true" : "false"));
+    S(f1,ne_data[i][0],ne_data[i][1]);
+    S(f2,ne_data[i][2],ne_data[i][3]);
+    TEST(msg,op_ne_static(&f1,&f2,yaooc_fraction) == (ne_data[i][4] == 1));
+  }
 }
 
 void test_fraction_lt_fraction()
 {
+  int lt_data[][5] = { { 0,1,0,1,0}, {0,1,1,2,1}, {2,3,-2,4,0}, {2,3,16,24,0}, {1,3,1,3,0}, {-5,7,25,35,1}};
   TESTCASE("Fraction less than");
   yaooc_fraction_t f1;
-  newp(&f1,yaooc_fraction);
   yaooc_fraction_t f2;
 
-  S(f1,0,1);
-  S(f2,0,1);
-  TEST("0/1 < 0/1 - false ",!op_lt_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,0,1);
-  S(f2,1,1);
-  TEST("0/1 < 1/2 - true ",op_lt_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,-2,3);
-  TEST("2/1 < -2/3 - false ",!op_lt_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,16,24);
-  TEST("2/3 < 16/24 - talse ",!op_lt_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,1,3);
-  S(f2,1,3);
-  TEST("1/3 < 1/3 - false ",!op_lt_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,-5,7);
-  S(f2,25,35);
-  TEST("-5/7 < 25/35 - true ",op_lt_static(&f1,&f2,yaooc_fraction));
+  char msg[64];
+  int i,n=ARRAY_SIZE(lt_data);
+  for(i=0;i<n;i++) {
+    sprintf(msg,"(%d/%d) == (%d/%d) -- %s",lt_data[i][0],lt_data[i][1],lt_data[i][2],
+          lt_data[i][3],(lt_data[i][4] == 1 ? "true" : "false"));
+    S(f1,lt_data[i][0],lt_data[i][1]);
+    S(f2,lt_data[i][2],lt_data[i][3]);
+    TEST(msg,op_lt_static(&f1,&f2,yaooc_fraction) == (lt_data[i][4] == 1));
+  }
 }
 
 void test_fraction_le_fraction()
 {
-  TESTCASE("Fraction less than or equal");
+  int le_data[][5] = { { 0,1,0,1,1}, {0,1,1,2,1}, {2,3,-2,4,0}, {2,3,16,24,1}, {1,3,1,3,1}, {-5,7,25,35,1}};
+  TESTCASE("Fraction Equality");
   yaooc_fraction_t f1;
-  newp(&f1,yaooc_fraction);
   yaooc_fraction_t f2;
 
-  S(f1,0,1);
-  S(f2,0,1);
-  TEST("0/1 <= 0/1 - true ",op_le_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,0,1);
-  S(f2,1,1);
-  TEST("0/1 <= 1/2 - true ",op_le_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,-2,3);
-  TEST("2/3 <= -2/3 - false ",!op_le_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,16,24);
-  TEST("2/3 <= 16/24 - true ",op_le_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,1,3);
-  S(f2,1,3);
-  TEST("1/3 <= 1/3 - true ",op_le_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,-5,7);
-  S(f2,25,35);
-  TEST("-5/7 <= 25/35 - true ",op_le_static(&f1,&f2,yaooc_fraction));
+  char msg[64];
+  int i,n=ARRAY_SIZE(le_data);
+  for(i=0;i<n;i++) {
+    sprintf(msg,"(%d/%d) == (%d/%d) -- %s",le_data[i][0],le_data[i][1],le_data[i][2],
+          le_data[i][3],(le_data[i][4] == 1 ? "true" : "false"));
+    S(f1,le_data[i][0],le_data[i][1]);
+    S(f2,le_data[i][2],le_data[i][3]);
+    TEST(msg,op_le_static(&f1,&f2,yaooc_fraction) == (le_data[i][4] == 1));
+  }
 }
 
 void test_fraction_gt_fraction()
 {
+  int gt_data[][5] = { { 0,1,0,1,0}, {0,1,1,2,0}, {2,3,-2,4,1}, {2,3,16,24,0}, {1,3,1,3,0}, {-5,7,25,35,0}};
   TESTCASE("Fraction greater than");
   yaooc_fraction_t f1;
-  newp(&f1,yaooc_fraction);
   yaooc_fraction_t f2;
-  newp(&f1,yaooc_fraction);
 
-  S(f1,0,1);
-  S(f2,0,1);
-  TEST("0/1 > 0/1 - false ",!op_gt_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,0,1);
-  S(f2,1,1);
-  TEST("0/1 > 1/2 - false ",!op_gt_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,-2,3);
-  TEST("2/1 > -2/3 - true ",op_gt_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,16,24);
-  TEST("2/3 > 16/24 - talse ",!op_gt_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,1,3);
-  S(f2,1,3);
-  TEST("1/3 > 1/3 - false ",!op_gt_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,-5,7);
-  S(f2,25,35);
-  TEST("-5/7 > 25/35 - false ",!op_gt_static(&f1,&f2,yaooc_fraction));
+  char msg[64];
+  int i,n=ARRAY_SIZE(gt_data);
+  for(i=0;i<n;i++) {
+    sprintf(msg,"(%d/%d) == (%d/%d) -- %s",gt_data[i][0],gt_data[i][1],gt_data[i][2],
+          gt_data[i][3],(gt_data[i][4] == 1 ? "true" : "false"));
+    S(f1,gt_data[i][0],gt_data[i][1]);
+    S(f2,gt_data[i][2],gt_data[i][3]);
+    TEST(msg,op_gt_static(&f1,&f2,yaooc_fraction) == (gt_data[i][4] == 1));
+  }
 }
-
 
 void test_fraction_ge_fraction()
 {
+  int ge_data[][5] = { { 0,1,0,1,1}, {0,1,1,2,0}, {2,3,-2,4,1}, {2,3,16,24,1}, {1,3,1,3,1}, {-5,7,25,35,0}};
   TESTCASE("Fraction greater than or equal");
   yaooc_fraction_t f1;
-  newp(&f1,yaooc_fraction);
   yaooc_fraction_t f2;
-  newp(&f1,yaooc_fraction);
 
-  S(f1,0,1);
-  S(f2,0,1);
-  TEST("0/1 >= 0/1 - true ",op_ge_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,0,1);
-  S(f2,1,1);
-  TEST("0/1 >= 1/2 - false ",!op_ge_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,-2,3);
-  TEST("2/1 >= -2/3 - true ",op_ge_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,2,3);
-  S(f2,16,24);
-  TEST("2/3 >= 16/24 - true ",op_ge_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,1,3);
-  S(f2,1,3);
-  TEST("1/3 >= 1/3 - true ",op_ge_static(&f1,&f2,yaooc_fraction));
-
-  S(f1,-5,7);
-  S(f2,25,35);
-  TEST("-5/7 >= 25/35 - false ",!op_ge_static(&f1,&f2,yaooc_fraction));
+  char msg[64];
+  int i,n=ARRAY_SIZE(ge_data);
+  for(i=0;i<n;i++) {
+    sprintf(msg,"(%d/%d) == (%d/%d) -- %s",ge_data[i][0],ge_data[i][1],ge_data[i][2],
+          ge_data[i][3],(ge_data[i][4] == 1 ? "true" : "false"));
+    S(f1,ge_data[i][0],ge_data[i][1]);
+    S(f2,ge_data[i][2],ge_data[i][3]);
+    TEST(msg,op_ge_static(&f1,&f2,yaooc_fraction) == (ge_data[i][4] == 1));
+  }
 }
+
 
 void test_to_double()
 {
+  TESTCASE("Fraction to double")
   yaooc_fraction_t f;
-  TESTCASE("To double")
+  int to_double_input [][2] = { {0,1}, {1,1}, {1,2}, {1,3}, {3,5}, {20,3}, {-20,3}, {-2,3}};
+  double to_double_output[] = { 0.0, 1.0, 0.5, 1.0/3.0, 3.0/5.0, 20.0/3.0, -20.0/3.0, -2.0/3.0 };
   newp(&f,yaooc_fraction);
 
-  f.numerator_=0;
-  f.denominator_=1;
-  TEST("Fraction 0/1 as double == 0",fabs(yaooc_fraction_to_double(&f) - 0.0) < yaooc_fraction_epsilon);
-
-  f.numerator_=1;
-  TEST("Fraction 1/1 as double == 1",fabs(yaooc_fraction_to_double(&f) - 1.0) < yaooc_fraction_epsilon);
-
-  f.denominator_=2;
-  TEST("Fraction 1/2 as double == 0.5",fabs(yaooc_fraction_to_double(&f) - 0.5) < yaooc_fraction_epsilon);
-
-  f.denominator_=3;
-  TEST("Fraction 1/3 as double == 0.33333333",fabs(yaooc_fraction_to_double(&f) - 1.0/3.0) < yaooc_fraction_epsilon);
-
-  f.numerator_=3;
-  f.denominator_=5;
-  TEST("Fraction 3/5 as double == 0.6",fabs(yaooc_fraction_to_double(&f) - 3.0/5.0) < yaooc_fraction_epsilon);
-
-  f.numerator_=20;
-  f.denominator_=3;
-  TEST("Fraction 20/3 as double == 6.66666667",fabs(yaooc_fraction_to_double(&f) - 20.0/3.0) < yaooc_fraction_epsilon);
-
-  f.numerator_=-20;
-  f.denominator_=3;
-  TEST("Fraction -20/3 as double == -6.66666667",fabs(yaooc_fraction_to_double(&f) - (-20.0/3.0)) < yaooc_fraction_epsilon);
+  int n =ARRAY_SIZE(to_double_input);
+  int i;
+  char msg[64];
+  for(i=0;i<n;i++) {
+    sprintf(msg,"to_double(%d/%d) = %lg",to_double_input[i][0],to_double_input[i][1],to_double_output[i]);
+    S(f,to_double_input[i][0],to_double_input[i][1]);
+    TEST(msg,fabs(yaooc_fraction_to_double(&f) - to_double_output[i]) < yaooc_fraction_epsilon);
+  }
 }
+
 
 void test_from_double()
 {
-  yaooc_fraction_t f;
-  newp(&f,yaooc_fraction);
+  TESTCASE("Fraction from double")
+  double from_double_input [] = { -2.25, -.25, 0.0, .25, 2.25, .3, .33, .333333333 };
+  int from_double_output [][2] = { { -9,4} , { -1, 4}, { 0,1 }, {1,4}, {9,4} , {3,10}, {33,100}, {1,3}};
+  yaooc_fraction_t f = YAOOC_FRACTION_DEF_INIT;
+  int n=ARRAY_SIZE(from_double_input);
+  int i;
+  char msg[64];
+  for(i=0;i<n;i++) {
+    sprintf(msg,"from_double(%lg)=(%d/%d)",from_double_input[i],from_double_output[i][0],from_double_output[i][1]);
+    M(&f,from_double,from_double_input[i]);
+    TEST(msg,R(f,from_double_output[i][0],from_double_output[i][1]));
+  }
+}
 
-  TESTCASE("From double")
+void test_to_string()
+{
+  TESTCASE("To String");
+  int to_string_input[][2] = { { -9,4} , { -1, 4}, { 0,1 }, {1,4}, {9,4} };
+  const char* to_string_output[] = {"-9/4", "-1/4", "0" , "1/4","9/4"};
+  int n=ARRAY_SIZE(to_string_input);
+  int i;
+  char msg[64];
+  pb_init();
+  for(i=0;i<n;i++) {
+    sprintf(msg,"to_s(%d/%d) = \"%s\"",to_string_input[i][0],to_string_input[i][1],to_string_output[i]);
+    yaooc_fraction_t f = YAOOC_FRACTION_DEF_INIT;
+    S(f,to_string_input[i][0],to_string_input[i][1]);
+    yaooc_string_t* f_str = pb_save(M(&f,to_s));
+    TEST(msg,strcmp(M(f_str,c_str),to_string_output[i])==0);
+  }
+  pb_exit();
+}
 
-  M(&f,from_double,0.0);
-  TEST("Fraction from 0.0 is 0/1",R(f,0,1));
-
-  M(&f,from_double,1.0);
-  TEST("Fraction from 1.0 is 1/1",R(f,1,1));
-
-  M(&f,from_double,12.25);
-  TEST("Fraction from 12.25 is 49/4",R(f,49,4));
-
-  M(&f,from_double,-100.0625);
-  TEST("Fraction from -100.0625 is -1601/16",R(f,-1601,16));
-
-  M(&f,from_double,0.3);
-  TEST("Fraction from 0.3 is 3/10",R(f,3,10));
-
-  M(&f,from_double,0.33);
-  TEST("Fraction from 0.33 is 33/100",R(f,33,100));
-
-  M(&f,from_double,0.33333333333);
-  TEST("Fraction from 0.33333333 is 1/3",R(f,1,3));
+void test_to_mixed_string()
+{
+  pb_init();
+  TESTCASE("To Mixed String");
+  int to_mixed_string_input[][2] = { { -9,4} , { -1, 4}, { 0,1 }, {1,4}, {9,4} };
+  const char* to_mixed_string_output[] = {"-2 1/4", "-1/4", "0" , "1/4","2 1/4"};
+  int n=ARRAY_SIZE(to_mixed_string_input);
+  int i;
+  char msg[64];
+  for(i=0;i<n;i++) {
+    sprintf(msg,"to_mixed_s(%d/%d) = \"%s\"",to_mixed_string_input[i][0],to_mixed_string_input[i][1],to_mixed_string_output[i]);
+    yaooc_fraction_t f = YAOOC_FRACTION_DEF_INIT;
+    S(f,to_mixed_string_input[i][0],to_mixed_string_input[i][1]);
+    yaooc_string_t* f_str = pb_save(M(&f,to_mixed_s));
+    TEST(msg,strcmp(M(f_str,c_str),to_mixed_string_output[i])==0);
+  }
+  pb_exit();
 }
 
 void test_to_stream()
 {
-  yaooc_fraction_t f;
-  newp(&f,yaooc_fraction);
+  pb_init();
   yaooc_ostringstream_t* os=new(yaooc_ostringstream);
   TESTCASE("To stream")
-
-  S(f,0,1);
-  STREAM(os,O_OBJ(yaooc_fraction,f));
-  TEST("Fraction 0/1 to stream is \"0\"",strcmp(M(os,c_str),"0")==0);
-  M(os,seek,0,SEEK_SET);
-
-  S(f,1,1);
-  STREAM(os,O_OBJ(yaooc_fraction,f));
-  TEST("Fraction 1/1 to stream is \"1\"",strcmp(M(os,c_str),"1")==0);
-  M(os,seek,0,SEEK_SET);
-
-  S(f,1,3);
-  STREAM(os,O_OBJ(yaooc_fraction,f));
-  TEST("Fraction 1/3 to stream is \"1/3\"",strcmp(M(os,c_str),"1/3")==0);
-  M(os,seek,0,SEEK_SET);
-
-  delete(os);
+  int to_stream_input[][2] = { { -9,4} , { -1, 4}, { 0,1 }, {1,4}, {9,4} };
+  const char* to_stream_output[] = {"-9/4", "-1/4", "0" , "1/4","9/4"};
+  int n=ARRAY_SIZE(to_stream_input);
+  int i;
+  char msg[64];
+  yaooc_fraction_t f = YAOOC_FRACTION_DEF_INIT;
+  for(i=0;i<n;i++) {
+    sprintf(msg,"to_stream(%d/%d) = \"%s\"",to_stream_input[i][0],to_stream_input[i][1],to_stream_output[i]);
+    S(f,to_stream_input[i][0],to_stream_input[i][1]);
+    STREAM(os,O_OBJ(yaooc_fraction,f));
+    TEST(msg,strcmp(M(os,c_str),to_stream_output[i])==0);
+    M(os,seek,0,SEEK_SET);
+  }
+  pb_exit();
 }
 
 void test_from_stream()
 {
-  yaooc_istringstream_t* is=new_ctor(yaooc_istringstream,yaooc_istringstream_ctor_ccs,"0 1 10/3 -3/4 -8 5/10 8/ 3");
-  yaooc_fraction_t f;
-  newp(&f,yaooc_fraction);
+  pb_init();
+  yaooc_istringstream_t* is=pb_new_ctor(yaooc_istringstream,yaooc_istringstream_ctor_ccs,"0 1 10/3 -3/4 -8 5/10 8/ 3");
+  const char* from_stream_input[] = {"0", "1","10/3","-3/4","-8","5/10"};
+  int from_stream_output[][2] = { {0,1}, {1,1}, {10,3}, {-3,4}, {-8,1}, {1,2}};
+  yaooc_fraction_t f = YAOOC_FRACTION_DEF_INIT;
   TESTCASE("From Stream")
 
-  STREAM(is,I_OBJ(yaooc_fraction,f));
-  TEST("Fraction 0 from stream",f.numerator_==0 && f.denominator_==1);
-
-  STREAM(is,I_OBJ(yaooc_fraction,f));
-  TEST("Fraction 1 from stream",f.numerator_==1 && f.denominator_==1);
-
-  STREAM(is,I_OBJ(yaooc_fraction,f));
-  TEST("Fraction 10/3 from stream",f.numerator_==10 && f.denominator_==3);
-
-  STREAM(is,I_OBJ(yaooc_fraction,f));
-  TEST("Fraction -3/4 from stream",f.numerator_==-3 && f.denominator_==4);
-
-  STREAM(is,I_OBJ(yaooc_fraction,f));
-  TEST("Fraction -8 from stream",f.numerator_==-8 && f.denominator_==1);
-
-  STREAM(is,I_OBJ(yaooc_fraction,f));
-  TEST("Fraction 5/10 from stream reduced to 1/2",f.numerator_==1 && f.denominator_==2);
+  int n = ARRAY_SIZE(from_stream_input);
+  int i;
+  char msg[64];
+  for(i=0;i<n;i++) {
+    sprintf(msg,"Read \"%s\" from stream is (%d/%d)",from_stream_input[i],from_stream_output[i][0],from_stream_output[i][1]);
+    STREAM(is,I_OBJ(yaooc_fraction,f));
+    TEST(msg,R(f,from_stream_output[i][0],from_stream_output[i][1]));
+  }
 
   TRY {
     STREAM(is,I_OBJ(yaooc_fraction,f));
+    TEST("Fraction 8/ 3 from stream throws exception",false);
   } CATCH(yaooc_fraction_exception,e) {
-    (void)e; // to avoid warning of unused variable
     TEST("Fraction 8/ 3 from stream throws exception",true);
   }
   ETRY
-  delete(is);
+  pb_exit();
 }
 
 test_function tests[]=
@@ -576,6 +416,7 @@ test_function tests[]=
   test_gcd,
 	test_default_constructor,
   test_fraction_set,
+  test_fraction_set_wnd,
   test_fraction_plus_fraction,
   test_fraction_minus_fraction,
   test_fraction_times_fraction,
@@ -588,6 +429,8 @@ test_function tests[]=
   test_fraction_ge_fraction,
   test_to_double,
   test_from_double,
+  test_to_string,
+  test_to_mixed_string,
   test_to_stream,
   test_from_stream,
 };
