@@ -143,14 +143,16 @@ void test_mutex()
   }
   for(i=0;i<N_TEST_THREADS;i++) {
     int sleep_time=rand() % 5 + 1;
-    printf("Sleeping %" PRIINT " seconds before requesting thread %" PRIULONG " to exit\n",sleep_time,M(threads+i,id));
+    printf("Main thread sleeping %" PRIINT " seconds before requesting thread %" PRIULONG " to exit\n",sleep_time,M(threads+i,id));
     sleep(sleep_time);
     M(threads+i,cancel);
-    M(threads+i,join);
   }
-
-//  test_multiple_thread_using_thread_function(mythread_run_with_mutex);
-//  test_thread(N_TEST_THREADS,test_thread_with_mutex);
+  sleep(1); // Give last thread time to exit
+  for(i=0;i<N_TEST_THREADS;i++) {
+    printf("Main thread joining thread %" PRIULONG "\n",M(threads+i,id));
+    M(threads+i,join);
+    printf("Main thread successfully joined thread %" PRIULONG "\n",M(threads+i,id));
+  }
 }
 #if 0
 yaooc_condition_variable_t cond_var;

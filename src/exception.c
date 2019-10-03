@@ -179,19 +179,18 @@ yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_find_or_crea
   yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(tid);
   return current ? current : yaooc_exception_thread_node_create_thread_list(tid);
 }
-
+/*
 void yaooc_exception_thread_list_remove_all()
 {
   yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_head;
   yaooc_exception_thread_jmpbuf_node_t* temp;
   while(current != NULL) {
     temp=current->next_;
-    yaooc_exception_thread_jmpbuf_head=yaooc_exception_thread_jmpbuf_tail=NULL;
     current=temp;
   }
-
+  yaooc_exception_thread_jmpbuf_head=yaooc_exception_thread_jmpbuf_tail=NULL;
 }
-
+*/
 void yaooc_exception_thread_list_remove_exception_thread(yaooc_internal_thread_t tid)
 {
   yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_head;

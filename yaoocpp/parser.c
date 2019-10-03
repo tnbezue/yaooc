@@ -15,6 +15,7 @@
 #define INSTANCE(term) M(this,str,"instance",&term)
 #define PROTECTED(term) M(this,str,"protected",&term)
 #define PRIVATE(term) M(this,str,"private",&term)
+#define STATIC(term) M(this,str,"static",&term)
 #define __CONST__(term) M(this,str,"const",&term)
 #define OPERATOR(term) M(this,str,"operator",&term)
 #define COMMA(term) M(this,chr,',',&term)
@@ -100,6 +101,7 @@ static bool yaoocpp_parser_table(pointer);
 static bool yaoocpp_parser_instance(pointer);
 static bool yaoocpp_parser_protected(pointer);
 static bool yaoocpp_parser_private(pointer);
+static bool yaoocpp_parser_static(pointer);
 static bool yaoocpp_parser_table_struct_not_allowed(pointer);
 
 /* Type Info implemmentation for yaoocpp_parser */
@@ -368,7 +370,8 @@ static bool yaoocpp_parser_contents(pointer p)
         if(!yaoocpp_parser_instance(p))
           if(!yaoocpp_parser_protected(p))
             if(!yaoocpp_parser_private(p))
-              break;
+              if(!yaoocpp_parser_static(p))
+                break;
     }
     if(RBRACE(r) && SEMICOLON(r))
       ret=true;
@@ -769,6 +772,49 @@ static bool yaoocpp_parser_private(pointer p)
           if(yaoocpp_find_element(&container,var) != M(&container,end)) {
             THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
                   "Redefining private variable %s on or before line %d",
+                  M(&var->name_,c_str),this->line_no_));
+          }
+          M(&container,push_back,(yaoocpp_element_t**)&var);
+          delete(var);
+        } else
+          break;
+      }
+    }
+#undef container
+    ret=true;
+  }
+  pb_exit();
+  return ret;
+}
+
+static bool yaoocpp_parser_static(pointer p)
+{
+  yaoocpp_parser_pointer this=p;
+  bool ret=false;
+  pb_init();
+  yaooc_terminal_t r;
+  if(STATIC(r) && COLON(r)) {
+#define container this->current_class_->static_
+    while(true) {
+      yaoocpp_method_t* proc;
+      if(yaoocpp_parser_method_with_implementation_method(p,&proc)) {
+        debug_printf("Static: Got method %s\n",M(&proc->name_,c_str));
+        /* Methods can't be overridden in private definition */
+        if(yaoocpp_find_element(&container,proc) != M(&container,end)) {
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                "Redefining static method %s on or before line %d",
+                M(&proc->name_,c_str),this->line_no_));
+        }
+        M(&container,push_back,(yaoocpp_element_t**)&proc);
+        delete(proc);
+      } else {
+        yaoocpp_variable_t* var;
+        if(yaoocpp_parser_variable_with_default_value(p,&var)) {
+          debug_printf("Static: Got var %s\n",M(&var->name_,c_str));
+          /* Variables can't be redefined in private definition */
+          if(yaoocpp_find_element(&container,var) != M(&container,end)) {
+            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                  "Redefining static variable %s on or before line %d",
                   M(&var->name_,c_str),this->line_no_));
           }
           M(&container,push_back,(yaoocpp_element_t**)&var);

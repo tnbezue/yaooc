@@ -647,6 +647,7 @@ void yaoocpp_container_default_ctor(pointer p)
 	newp(&this->instance_,yaoocpp_element_pointer_vector);
 	newp(&this->private_,yaoocpp_element_pointer_vector);
 	newp(&this->protected_,yaoocpp_element_pointer_vector);
+	newp(&this->static_,yaoocpp_element_pointer_vector);
 	this->has_default_ctor_ = false;
 	this->has_dtor_ = false;
 	this->has_copy_ctor_ = false;
@@ -665,6 +666,7 @@ void yaoocpp_container_dtor(pointer p)
 	deletep(&this->instance_,yaoocpp_element_pointer_vector);
 	deletep(&this->private_,yaoocpp_element_pointer_vector);
 	deletep(&this->protected_,yaoocpp_element_pointer_vector);
+	deletep(&this->static_,yaoocpp_element_pointer_vector);
 }
 
 void yaoocpp_container_copy_ctor(pointer p,const_pointer s)

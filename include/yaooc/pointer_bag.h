@@ -88,7 +88,7 @@ void yaooc_pointer_bag_clear(pointer);
 #define pb_new_array_ctor(T,N,...)     pb_save(new_array_ctor(T,N,CON,## __VA_ARGS__))
 
 #define pb_save_static(P,T)       yaooc_pointer_bag_add_static(local_pb,P,T ## _ti,1)
-#define pb_save_static_array(P,T,N)       yaooc_pointer_bag_add_static(local_pb,P,T ## _ti,N)
+#define pb_save_array_static(P,T,N)       yaooc_pointer_bag_add_static(local_pb,P,T ## _ti,N)
 #define pb_newp(P,T)      yaooc_pointer_bag_newp_array(local_pb,P,T ## _ti,1)
 #define pb_newp_array(P,T,N)      yaooc_pointer_bag_newp_array(local_pb,P,T ## _ti,N)
 #define pb_newp_copy_static(P,T,CP)      yaooc_pointer_bag_newp_array_copy_static(local_pb,P,T ## _ti,1)

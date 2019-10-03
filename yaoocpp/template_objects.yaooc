@@ -3,7 +3,7 @@
 
 #include <object.yaooc>
 
-%header
+#if 0 // HEADER
 #include <yaooc/string.h>
 #include <yaooc/vector.h>
 #include <yaooc/stream.h>
@@ -11,14 +11,14 @@
 
 yaooc_struct_forward(yaoocpp_argument);
 VECTOR_IMPLEMENTATION(yaoocpp_argument,yaoocpp_argument_vector);
-%%
+#endif // HEADER
 
-%source
+#if 0  // SOURCE
 #include <yaooc/regex.h>
 #include <yaooc/pointer_bag.h>
 
 VECTOR_IMPLEMENTATION(yaoocpp_argument,yaoocpp_argument_vector);
-%%
+#endif  // SOURCE
 
 struct yaoocpp_argument {
     yaoocpp_argument();
@@ -155,6 +155,7 @@ class yaoocpp_container : yaooc_object
 	  yaoocpp_element_pointer_vector_t instance_;
 	  yaoocpp_element_pointer_vector_t private_;
 		yaoocpp_element_pointer_vector_t protected_;
+		yaoocpp_element_pointer_vector_t static_;
 		bool has_default_ctor_;
 		bool has_dtor_;
 		bool has_copy_ctor_;

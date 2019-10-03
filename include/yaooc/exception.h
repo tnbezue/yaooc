@@ -97,7 +97,8 @@ void yaooc_exception_pointer_bag_delete();
   } else  \
       /* Exception thrown not caught by preceding block. Check if it should be caught here */ \
   if(__catch__(# exception_type "_t")) {   { \
-    exception_type ## _const_pointer e=(exception_type ## _const_pointer)yaooc_exception_current_exception_thrown();
+    exception_type ## _const_pointer e=(exception_type ## _const_pointer)yaooc_exception_current_exception_thrown(); \
+    (void) e;
 
 #define ETRY \
     }  \

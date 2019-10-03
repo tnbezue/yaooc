@@ -261,6 +261,7 @@ yaooc_class_instance(yaoocpp_container) {
   yaoocpp_element_pointer_vector_t instance_;
   yaoocpp_element_pointer_vector_t private_;
   yaoocpp_element_pointer_vector_t protected_;
+  yaoocpp_element_pointer_vector_t static_;
   bool has_default_ctor_;
   bool has_dtor_;
   bool has_copy_ctor_;
