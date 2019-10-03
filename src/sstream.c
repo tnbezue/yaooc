@@ -24,6 +24,7 @@
 /* yaooc_istringstream private members */
 
 /* yaooc_istringstream type info members */
+
 void yaooc_istringstream_default_ctor(pointer p)
 {
   yaooc_istringstream_pointer this=p;
@@ -145,8 +146,13 @@ void yaooc_ostringstream_default_ctor(pointer p)
 
 void yaooc_ostringstream_dtor(pointer p)
 {
-//  yaooc_ostringstream_pointer this=p;
-	yaooc_istringstream_dtor(p);
+  yaooc_ostringstream_pointer this=p;
+	if(this->handle_) {
+		fclose(this->handle_);
+		this->handle_=NULL;
+	}
+	if(this->buffer_)
+		FREE(this->buffer_);
 }
 
 
@@ -166,9 +172,11 @@ const char* yaooc_ostringstream_c_str(const_pointer p)
 	size_t n=ftell(this->handle_);
 	if(n>0) {
 		fseek(this->handle_,0,SEEK_SET);
+    if(this->buffer_)
+      FREE(this->buffer_);
 		this->buffer_=MALLOC(n+1);
 		fread(this->buffer_,1,n,this->handle_);
-		this->buffer_[n]=0;
+		this->buffer_[ofs]=0;
 	}
 	fseek(this->handle_,ofs,SEEK_SET);
 	return this->buffer_;
@@ -177,7 +185,9 @@ const char* yaooc_ostringstream_c_str(const_pointer p)
 void yaooc_ostringstream_reset(pointer p)
 {
   yaooc_ostringstream_pointer this=p;
-  fclose(this->handle_);
+	if(this->handle_) {
+		fclose(this->handle_);
+	}
   this->handle_=tmpfile();
 }
 

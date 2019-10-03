@@ -141,14 +141,14 @@ For example, consider the case of base_t being the parent of derived_t.  In C++,
   derived_t* d = new derived_t;
 </code></pre>
 <p>
-The output would be
+The base_t constructor is automatically called when derived_t is executed.  Thus the output would be
 </p>
 <pre><code>
   Base
   Derived
 </code></pre>
 <p>
-In YAOOC, the default constructors would be:
+To get the same behaviour in YAOOC, the base default constructor has to be explicitly called.
 </p>
 <pre><code>
   base_default_ctor(pointer p) { puts("Base"); }

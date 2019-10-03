@@ -138,7 +138,7 @@ int yaooc_thread_detach(pointer p)
   if(!this->is_detached_) {
 #ifdef _WIN32
     ret=CloseHandle((HANDLE)this->thread_id_);
-    this->thread_id_=0;
+//    this->thread_id_=0;
 #else
     ret=pthread_detach(this->thread_id_);
 #endif
