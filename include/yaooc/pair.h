@@ -43,7 +43,7 @@ void  NAME ## _default_ctor(pointer); \
 void  NAME ## _dtor(pointer); \
 void  NAME ## _copy_ctor(pointer,const_pointer); \
 void  NAME ## _assign(pointer,const_pointer); \
-bool  K ## _ ## V ## _less_than_compare(const_pointer,const_pointer);\
+int  K ## _ ## V ## _rich_compare(const_pointer,const_pointer);\
 void make_ ## NAME (NAME ## _t*,const K ## _t*,const V ## _t*);\
 extern const type_info_t* const NAME ## _ti
 
@@ -72,9 +72,9 @@ void NAME ## _copy_ctor(pointer d,const_pointer s) \
 	NAME ## _default_ctor(d); \
 	NAME ## _assign(d,s); \
 } \
-bool NAME ## _less_than_compare(const_pointer v1,const_pointer v2) \
+int NAME ## _rich_compare(const_pointer v1,const_pointer v2) \
 { \
-	return op_lt_static(&((const NAME ## _t*)v1)->first,&((const NAME ## _t*)v2)->first,K); \
+	return op_rich_compare_static(&((const NAME ## _t*)v1)->first,&((const NAME ## _t*)v2)->first,K); \
 } \
 void NAME ## _to_stream(const_pointer p,pointer s) \
 { \

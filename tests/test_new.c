@@ -67,10 +67,10 @@ void demo_copy_ctor(pointer dst,const_pointer src)
   demo_assign(dst,src);
 }
 
-bool demo_less_than_compare(const_pointer v1,const_pointer v2)
+int demo_rich_compare(const_pointer v1,const_pointer v2)
 {
 	if(optr) optr+=sprintf(optr,"%d<%d",((demo_const_pointer)v1)->x,((demo_const_pointer)v2)->x);
-	return ((demo_const_pointer)v1)->x < ((demo_const_pointer)v2)->x;
+	return ((demo_const_pointer)v1)->x - ((demo_const_pointer)v2)->x;
 }
 
 DEFINE_TYPE_INFO(demo,Y,Y,Y,Y,Y,N,N,N,NULL);
@@ -247,10 +247,10 @@ void base_copy_ctor(pointer dst,const_pointer src)
   base_assign(dst,src);
 }
 
-bool base_less_than_compare(const_pointer v1,const_pointer v2)
+int base_rich_compare(const_pointer v1,const_pointer v2)
 {
   if(optr) optr+=sprintf(optr,"BLTC%d-%d",((const base_t*)v1)->x,((const base_t*)v2)->x);
-  return ((const base_t*)v1)->x < ((const base_t*)v2)->x;
+  return ((const base_t*)v1)->x - ((const base_t*)v2)->x;
 }
 DEFINE_TYPE_INFO(base,Y,Y,Y,Y,Y,N,N,N,NULL);
 

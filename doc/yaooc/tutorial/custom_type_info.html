@@ -130,24 +130,25 @@ Note that both objects in assignment must be initialized.  The following most li
 <p>
 In the above case, rather than assign, the new_copy method should be used.
 </p>
-<h3>Less than compare</h3>
-If comparisons (==, !=, <, <=, >, >=) of objects of this class type will be performed, then less than compare method should be defined.  The two arguments are constant
-pointers to the objects to be compared.  If the less than compare method is not defined (NULL),
-then it would be as if the method return false -- thus, all items of this type would be equal.
-The method name is class name appended with "_less_than_compare".
+<h3>Rich compare</h3>
+If comparisons (==, !=, <, <=, >, >=) of objects of this class type will be performed, then rich compare method should be defined.
+The two arguments are constant pointers to the objects to be compared.  The method should return a negative value if lhs < rhs,
+0 if lhs == rhs, a positive value if lhs > rhs.  If the rich compare method is not defined (NULL),
+then it would be as if the method returned 0 -- thus, all items of this type would be equal.
+The method name is class name appended with "_rich_compare".
 <pre><code>
-  bool my_string_less_than_compare(const_pointer p1,const_pointer p2)
+  bool my_string_rich_compare(const_pointer cp_lhs,const_pointer cp_rhs)
   {
-    my_string_const_pointer msp1 = p1;
-    my_string_const_pointer msp2 = p2;
-    if(msp1->str == NULL) {
-      if(msp2->str == NULL)
-        return false; /* both NULL, equal -- not less  */
+    my_string_const_pointer lhs = cp_lhs;
+    my_string_const_pointer rhs = cp_rhs;
+    if(lhs->str == NULL) {
+      if(rhs->str == NULL)
+        return 0; /* both NULL, equal */
       else
-        return true; /* 1st is NULL, 2nd is not.  NULL is less than not NULL */
-    } else if(msp2 == NULL)
-      return false; /* 1st is not NULL, 2nd is NULL. 1st is greater than 2nd, not less */
-    return strcmp(msp1->str,msp2->str) < 0; /* Both not null, compare the strings */
+        return -1; /* 1st is NULL, 2nd is not.  NULL is less than not NULL */
+    } else if(rhs == NULL)
+      return 1; /* lhs is not NULL, rhs is NULL. Non null is greater than NULL */
+    return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
   }
 </code></pre>
 <p>
@@ -203,7 +204,7 @@ The following compares if two my_string objects are equal.
   ....
   if(p1==p2) /* Again, valid C but most likely not what was intended */
     { puts(&quot;Equal&quot;); }
-  if(op_eq(p1,p2)) /* Will perform comparisons as specified by less than compare method */
+  if(op_eq(p1,p2)) /* Will perform comparisons as specified by rich compare method */
     { puts(&quot;Equal&quot;); }
 </code></pre>
 
@@ -217,7 +218,7 @@ The to/from stream, class table, and parent type info entries will be covered in
     my_string_dtor,
     my_string_copy_ctor,
     my_string_assign,
-    my_string_less_than_compare,
+    my_string_rich_compare,
     NULL,
     NULL,
     NULL,
@@ -230,7 +231,7 @@ The to/from stream, class table, and parent type info entries will be covered in
 Since creation of type info structures is so common, the DEFINE_TYPE_INFO macro is much easier to use.  To use DEFINE_TYPE_INFO, the naming convention must be followed.
 </p>
 <pre><code>
-  DEFINE_TYPE_INFO(TYPE,HAS_DEFAULT_CTOR,HAS_DTOR,HAS_COPY_CTOR,HAS_ASSIGN,HAS_LESS_THAN_COMPARE,HAS_TO_STREAM,HAS_FROM_STREAM,HAS_CLASS_TABLE,PARENT)
+  DEFINE_TYPE_INFO(TYPE,HAS_DEFAULT_CTOR,HAS_DTOR,HAS_COPY_CTOR,HAS_ASSIGN,HAS_RICH_COMPARE,HAS_TO_STREAM,HAS_FROM_STREAM,HAS_CLASS_TABLE,PARENT)
 </code></pre>
 <p>
 TYPE is the type name -- without "_t".  The entries beginning with "HAS" require a Y or N entry to indicate if the type has the indicated method.  PARENT is the parent class -- also without "_t".

@@ -41,18 +41,18 @@ void my_string_assign(pointer p,const_pointer s)
 	my_string_set(this,src->str);
 }
 
-bool my_string_less_than_compare(const_pointer lhs_cp,const_pointer rhs_cp)
+int my_string_rich_compare(const_pointer p1,const_pointer p2)
 {
-  my_string_const_pointer lhs=lhs_cp;
-  my_string_const_pointer rhs=rhs_cp;
+  my_string_const_pointer lhs = p1;
+  my_string_const_pointer rhs = p2;
   if(lhs->str == NULL) {
     if(rhs->str == NULL)
-      return false;
+      return 0; /* both NULL, equal */
     else
-      return true;
+      return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
   } else if(rhs->str == NULL)
-    return false;
-  return strcmp(lhs->str,rhs->str) < 0;
+    return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
+  return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
 }
 
 void my_string_to_stream(const_pointer p,ostream_pointer o){
@@ -310,14 +310,14 @@ DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,Y,Y,Y,yaooc_object);
 /* End YAOOCPP output */
 int main(int argc,char* argv[])
 {
-	PB_INIT;
+	pb_init();
   /* Create a new my_string object using my_string_ctor_ccs ctor */
-  my_string_pointer sp1=PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is sp1 string."));
-  my_string_pointer sp2=PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is sp2 string."));
-  my_string_pointer sp3=PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is sp3 string."));
-  my_string_pointer sp4=PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is sp4 string."));
+  my_string_pointer sp1=pb_save(new_ctor(my_string,my_string_ctor_ccs,"This is sp1 string."));
+  my_string_pointer sp2=pb_new_ctor(my_string,my_string_ctor_ccs,"This is sp2 string.");
+  my_string_pointer sp3=pb_new_ctor(my_string,my_string_ctor_ccs,"This is sp3 string.");
+  my_string_pointer sp4=pb_save(new_ctor(my_string,my_string_ctor_ccs,"This is sp4 string."));
 
- 	my_string_pointer ss=PB_SAVE(M(sp2,substr,8,8));
+ 	my_string_pointer ss=pb_save(M(sp2,substr,8,8));
 
 	M(cout,printf,"%s\n",M(sp1,c_str));
 	M(cout,printf,"%s\n",M(sp2,c_str));
@@ -327,6 +327,6 @@ int main(int argc,char* argv[])
 	M(cout,printf,"Substring is %s\n",M(ss,c_str));
 
  /* Delete allocated objects */
-	PB_EXIT;
+	pb_exit();
 }
 

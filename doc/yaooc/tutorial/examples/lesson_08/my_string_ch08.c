@@ -19,7 +19,7 @@ void my_string_default_ctor(pointer);
 void my_string_dtor(pointer);
 void my_string_assign(pointer,const_pointer);
 void my_string_copy_ctor(pointer,const_pointer);
-bool my_string_less_than_compare(const_pointer,const_pointer);
+int my_string_rich_compare(const_pointer,const_pointer);
 void my_string_to_stream(const_pointer,ostream_pointer);
 void my_string_from_stream(pointer,istream_pointer);
 void my_string_set(pointer,const char*);
@@ -52,18 +52,18 @@ void my_string_assign(pointer p,const_pointer s)
 	M(this,set,src->str);  // Could have used my_string_set(this,src->str);
 }
 
-bool my_string_less_than_compare(const_pointer p1,const_pointer p2)
+int my_string_rich_compare(const_pointer p1,const_pointer p2)
 {
-  my_string_const_pointer bsp1 = p1;
-  my_string_const_pointer bsp2 = p2;
-  if(bsp1->str == NULL) {
-    if(bsp2->str == NULL)
-      return false; /* both NULL, equal -- not less */
+  my_string_const_pointer lhs = p1;
+  my_string_const_pointer rhs = p2;
+  if(lhs->str == NULL) {
+    if(rhs->str == NULL)
+      return 0; /* both NULL, equal */
     else
-      return true; /* 1st is NULL, second is not.  NULL is less than not NULL */
-  } else if(bsp2 == NULL)
-    return false; /* 1st is not NULL, second is NULL. 1st is greater than 2nd, not less */
-  return strcmp(bsp1->str,bsp2->str) < 0; /* Both not null, compare the strings */
+      return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
+  } else if(rhs->str == NULL)
+    return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
+  return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
 }
 
 void my_string_to_stream(const_pointer p,pointer s)

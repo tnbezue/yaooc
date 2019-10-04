@@ -18,6 +18,7 @@
 #include <yaooc/real.h>
 #include <yaooc/stream.h>
 #include <stdio.h>
+#include <math.h>
 
 /*  Begin YAOOC PreProcessor generated content */
 
@@ -45,11 +46,13 @@ void yaooc_real_assign(pointer p,const_pointer s)
   this->value_=src->value_;
 }
 
-bool yaooc_real_less_than_compare(const_pointer p1,const_pointer p2)
+int double_rich_compare(const double* lhs,const double* rhs);
+
+int yaooc_real_rich_compare(const_pointer p1,const_pointer p2)
 {
   yaooc_real_const_pointer vp1=p1;
   yaooc_real_const_pointer vp2=p2;
-  return vp1->value_<vp2->value_;
+  return double_rich_compare(&vp1->value_,&vp2->value_);
 }
 
 

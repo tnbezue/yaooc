@@ -30,10 +30,10 @@ iterator __yaooc_find(const type_info_t* ti,const_iterator f,const_iterator l,co
 {
 	yaooc_private_const_iterator first=f;
 	yaooc_private_const_iterator last=l;
-  less_than_compare lt_cmp=get_lt_cmp(ti);
+  rich_compare rich_cmp=get_rich_compare(ti);
 	size_t type_size=yaooc_sizeof(ti);
-  if(lt_cmp) {
-    while(first!=last && __op_ne__(first,value,lt_cmp))
+  if(rich_cmp) {
+    while(first!=last && __op_ne__(first,value,rich_cmp))
       first+=type_size;
   }
 	return (iterator)first;
@@ -147,14 +147,14 @@ size_t __yaooc_count(const type_info_t* ti,const_iterator f,const_iterator l,con
 	size_t count=0;
 	yaooc_private_const_iterator first=f;
 	yaooc_private_const_iterator last=l;
-	less_than_compare lt_cmp=get_lt_cmp(ti);
+	rich_compare rich_cmp=get_rich_compare(ti);
 	size_t type_size=yaooc_sizeof(ti);
-  if(lt_cmp) {
+  if(rich_cmp) {
     for(;first!=last;first+=type_size) {
-      if(__op_eq__(first,value,lt_cmp))
+      if(__op_eq__(first,value,rich_cmp))
         count++;
     }
-  } else { // All are equal if not lt_cmp
+  } else { // All are equal if rich cmp not defined
 		count=(last-first)/type_size;
 	}
 	return count;
@@ -181,15 +181,15 @@ iterator __yaooc_remove(const type_info_t*ti,iterator f,iterator l,const_pointer
 {
   yaooc_private_iterator first=f;
   yaooc_private_iterator last=l;
-  less_than_compare lt_cmp=get_lt_cmp(ti);
-  if(lt_cmp) {  // if lt_cmp not defined, all values are equal
+  rich_compare rich_cmp=get_rich_compare(ti);
+  if(rich_cmp) {  // if rich_cmp not defined, all values are equal
   	size_t type_size=yaooc_sizeof(ti);
     while(first != last) {
-      if(__op_eq__(first,value,lt_cmp)) {
+      if(__op_eq__(first,value,rich_cmp)) {
         // Find range of equal values
         yaooc_private_iterator temp=first+type_size;
         for(;temp!=last;temp+=type_size) {
-          if(__op_ne__(temp,value,lt_cmp))
+          if(__op_ne__(temp,value,rich_cmp))
             break;
         }
 				last=yaooc_move(temp,last,first);
@@ -227,12 +227,12 @@ iterator __yaooc_remove_copy(const type_info_t*ti,const_iterator f,const_iterato
   yaooc_private_const_iterator first=f;
   yaooc_private_const_iterator last=l;
   yaooc_private_iterator dst=d;
-  less_than_compare lt_cmp=get_lt_cmp(ti);
+  rich_compare rich_cmp=get_rich_compare(ti);
   assignment assign_func=get_assignment(ti);
-  if(lt_cmp) {  // if lt_cmp not defined, all values are equal and nothing will be copied
+  if(rich_cmp) {  // if rich_cmp not defined, all values are equal and nothing will be copied
   	size_t type_size=yaooc_sizeof(ti);
   	for(;first != last;first+=type_size) {
-      if(__op_ne__(first,value,lt_cmp)) {
+      if(__op_ne__(first,value,rich_cmp)) {
         if(assign_func)
           assign_func(dst,first);
         else
@@ -270,10 +270,10 @@ yaooc_iterator_pair_t __yaooc_mismatch(const type_info_t* ti,const_iterator f1,c
 	yaooc_private_const_iterator last1=l1;
 	yaooc_private_const_iterator first2=f2;
 	yaooc_private_const_iterator last2=l2;
-  less_than_compare lt_cmp=get_lt_cmp(ti);
+  rich_compare rich_cmp=get_rich_compare(ti);
   size_t type_size=yaooc_sizeof(ti);
   for(;first1!=last1 && first2!=last2;first1+=type_size,first2+=type_size) {
-    if(__op_ne__(first1,first2,lt_cmp))
+    if(__op_ne__(first1,first2,rich_cmp))
       break;
   }
 	return (yaooc_iterator_pair_t) { first1,first2 };
@@ -287,9 +287,9 @@ const_iterator __yaooc_find_end(const type_info_t* ti,const_iterator f,const_ite
   yaooc_private_const_iterator s_first=sf;
   yaooc_private_const_iterator s_last=sl;
 	size_t type_size=yaooc_sizeof(ti);
-  less_than_compare lt_cmp=get_lt_cmp(ti);
+  rich_compare rich_cmp=get_rich_compare(ti);
   yaooc_private_const_iterator pos=(yaooc_private_iterator)last;
-  if(lt_cmp) {
+  if(rich_cmp) {
     yaooc_private_iterator temp=(yaooc_private_iterator)last-(s_last-s_first);
     for(;temp>=first;temp-=type_size,last-=type_size) {
       if(__yaooc_mismatch(ti,temp,last,s_first,s_last).first == last) {
@@ -313,12 +313,12 @@ const_iterator __yaooc_find_first_of(const type_info_t* ti,const_iterator f,cons
   yaooc_private_const_iterator s_first=sf;
   yaooc_private_const_iterator s_last=sl;
 	size_t type_size=yaooc_sizeof(ti);
-  less_than_compare lt_cmp=get_lt_cmp(ti);
-  if(lt_cmp) {
+  rich_compare rich_cmp=get_rich_compare(ti);
+  if(rich_cmp) {
     for(;first!=last;first+=type_size) {
       yaooc_private_const_iterator temp;
       for(temp=s_first;temp!=s_last;temp+=type_size) {
-        if(__op_eq__(first,temp,lt_cmp))
+        if(__op_eq__(first,temp,rich_cmp))
           return first;
       }
     }

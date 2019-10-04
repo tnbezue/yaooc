@@ -154,7 +154,7 @@ default_constructor get_default_ctor(const type_info_t*);
 bool has_destructor(const type_info_t*);
 copy_constructor get_copy_ctor(const type_info_t*);
 assignment get_assignment(const type_info_t*);
-less_than_compare get_lt_cmp(const type_info_t*);
+rich_compare get_rich_compare(const type_info_t*);
 to_stream get_to_stream(const type_info_t*);
 from_stream get_from_stream(const type_info_t*);
 

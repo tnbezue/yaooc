@@ -289,9 +289,9 @@ void yaooc_rbtree_index_array_container_insert_index(pointer p,yaooc_rbnode_t** 
 		yaooc_rbtree_index_array_container_rbapply(this,yaooc_rbnode_increment_index,index,1,&n_gt_index);
 	yaooc_rbnode_t* node;
 
-	less_than_compare lt_cmp=get_lt_cmp(TYPE_INFO(p));
+	rich_compare rich_cmp=get_rich_compare(TYPE_INFO(p));
 	if (*parent == yaooc_rbtree_index_array_container_rbroot(this) ||
-						lt_cmp(AT(this,index),AT(this,(*parent)->index_))) {
+						(rich_cmp(AT(this,index),AT(this,(*parent)->index_)) < 0)) {
 		node = (*parent)->left_ = yaooc_rbnode_new();
 	} else {
 		node = (*parent)->right_ = yaooc_rbnode_new();
@@ -518,17 +518,18 @@ yaooc_rbtree_index_array_container_rbfind(const_pointer p,const_pointer value)
 	yaooc_rbnode_t** anode = &this->root_->left_;
 	yaooc_rbnode_t** aparent=(yaooc_rbnode_t**)&this->root_;
 
-	less_than_compare lt_cmp=get_lt_cmp(TYPE_INFO(p));  // lt_cmp should always be defined
+	rich_compare rich_cmp=get_rich_compare(TYPE_INFO(p));  // lt_cmp should always be defined
 	while (node != yaooc_rbnode_rbnil) {
 		aparent=anode;
-			if(lt_cmp(value,AT(this,node->index_))) {
-			node=node->left_;
-			anode=&(*anode)->left_;
-		} else if(lt_cmp(AT(this,node->index_),value)) {
-			node=node->right_;
-			anode=&(*anode)->right_;
-		} else
-			return (yaooc_rbtree_index_array_container_find_result_t){ anode, true };
+    int rc = rich_cmp(value,AT(this,node->index_));
+    if(rc < 0) {
+      node=node->left_;
+      anode=&(*anode)->left_;
+    } else if(rc > 0) {
+      node=node->right_;
+      anode=&(*anode)->right_;
+    } else
+      return (yaooc_rbtree_index_array_container_find_result_t){ anode, true };
 	}
 	return (yaooc_rbtree_index_array_container_find_result_t){ aparent, false};
 }

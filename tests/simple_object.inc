@@ -45,13 +45,13 @@ void simple_object_copy_ctor(pointer d,const_pointer s)
 	dst->x=src->x;
 }
 
-bool simple_object_less_than_compare(const_pointer v1,const_pointer v2)
+int simple_object_rich_compare(const_pointer v1,const_pointer v2)
 {
 	const simple_object_t* so1=v1;
 	const simple_object_t* so2=v2;
 /*	if(optr)
 		optr+=sprintf(optr,"SOLC:%d:%d",so1->x,so2->x);*/
-	return so1->x<so2->x;
+	return so1->x-so2->x;
 }
 
 DEFINE_TYPE_INFO(simple_object,Y,Y,Y,Y,Y,N,N,N,NULL);

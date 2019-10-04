@@ -18,6 +18,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <inttypes.h>
+#include <math.h>
 #include <yaooc/json.h>
 
 static const char* yaooc_json_type_strings[] =
@@ -86,7 +87,7 @@ void yaooc_json_value_assign(pointer d,const_pointer s)
   src->class_table_->virtual_assign(d,s);
 }
 
-bool yaooc_json_value_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_json_value_rich_compare(const_pointer p1,const_pointer p2)
 {
   yaooc_json_value_const_pointer vp1=p1;
   yaooc_json_value_const_pointer vp2=p2;
@@ -95,7 +96,7 @@ bool yaooc_json_value_less_than_compare(const_pointer p1,const_pointer p2)
 				"Attempt compare different json types: %s and %s",
 				yaooc_json_type_strings[vp1->type_],yaooc_json_type_strings[vp2->type_]));
   }
-  return M(vp1,virtual_less_than_compare,vp2);
+  return M(vp1,virtual_rich_compare,vp2);
 }
 
 void yaooc_json_value_to_stream(const_pointer p,pointer s)
@@ -129,9 +130,9 @@ void yaooc_json_value_virtual_assign(pointer p,const_pointer s)
 				"Trying to assign %d to %d\n",src->type_,this->type_));
 }
 
-bool yaooc_json_value_virtual_less_than_compare(const_pointer p,const_pointer o)
+int yaooc_json_value_virtual_rich_compare(const_pointer p,const_pointer o)
 {
-  return false;
+  return 0;
 }
 
 yaooc_json_type_t yaooc_json_value_type(const_pointer p)
@@ -153,7 +154,7 @@ yaooc_json_value_class_table_t yaooc_json_value_class_table =
   .virtual_dtor = (void (*) (pointer)) yaooc_json_value_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_value_virtual_copy_ctor,
   .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_value_virtual_assign,
-  .virtual_less_than_compare = (bool (*) (const_pointer,const_pointer)) yaooc_json_value_virtual_less_than_compare,
+  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_value_virtual_rich_compare,
   .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
   .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_value_print,
 };
@@ -205,9 +206,9 @@ void yaooc_json_null_virtual_assign(pointer p,const_pointer s)
   }
 }
 
-bool yaooc_json_null_virtual_less_than_compare(const_pointer p,const_pointer o)
+int yaooc_json_null_virtual_rich_compare(const_pointer p,const_pointer o)
 {
-  return false;
+  return 0;
 }
 
 void yaooc_json_null_print(const_pointer p,ostream_pointer s)
@@ -226,7 +227,7 @@ yaooc_json_null_class_table_t yaooc_json_null_class_table =
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_null_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_null_virtual_copy_ctor,
   .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_null_virtual_assign,
-  .virtual_less_than_compare = (bool (*) (const_pointer,const_pointer)) yaooc_json_null_virtual_less_than_compare,
+  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_null_virtual_rich_compare,
   .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
   .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_null_print,
 };
@@ -289,9 +290,13 @@ void yaooc_json_bool_virtual_assign(pointer p,const_pointer s)
   }
 }
 
-bool yaooc_json_bool_virtual_less_than_compare(const_pointer p,const_pointer p2)
+int yaooc_json_bool_virtual_rich_compare(const_pointer p,const_pointer p2)
 {
-  return ((yaooc_json_bool_const_pointer)p)->bool_ < ((yaooc_json_bool_const_pointer)p2)->bool_;
+  if(((yaooc_json_bool_const_pointer)p)->bool_ < ((yaooc_json_bool_const_pointer)p2)->bool_)
+    return -1;
+  if(((yaooc_json_bool_const_pointer)p)->bool_ > ((yaooc_json_bool_const_pointer)p2)->bool_)
+    return 1;
+  return 0;
 }
 
 void yaooc_json_bool_print(const_pointer p,ostream_pointer s)
@@ -323,7 +328,7 @@ yaooc_json_bool_class_table_t yaooc_json_bool_class_table =
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_bool_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_bool_virtual_copy_ctor,
   .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_bool_virtual_assign,
-  .virtual_less_than_compare = (bool (*) (const_pointer,const_pointer)) yaooc_json_bool_virtual_less_than_compare,
+  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_bool_virtual_rich_compare,
   .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
   .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_bool_print,
   .set = (void (*) (pointer p,bool)) yaooc_json_bool_set,
@@ -385,9 +390,9 @@ void yaooc_json_integer_virtual_assign(pointer p,const_pointer s)
   }
 }
 
-bool yaooc_json_integer_virtual_less_than_compare(const_pointer p,const_pointer o)
+int yaooc_json_integer_virtual_rich_compare(const_pointer p,const_pointer o)
 {
-  return ((yaooc_json_integer_const_pointer)p)->int_ < ((yaooc_json_integer_const_pointer)o)->int_;
+  return ((yaooc_json_integer_const_pointer)p)->int_ - ((yaooc_json_integer_const_pointer)o)->int_;
 }
 
 void yaooc_json_integer_print(const_pointer p,ostream_pointer s)
@@ -419,7 +424,7 @@ yaooc_json_integer_class_table_t yaooc_json_integer_class_table =
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_integer_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_integer_virtual_copy_ctor,
   .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_integer_virtual_assign,
-  .virtual_less_than_compare = (bool (*) (const_pointer,const_pointer)) yaooc_json_integer_virtual_less_than_compare,
+  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_integer_virtual_rich_compare,
   .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
   .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_integer_print,
   .set = (void (*) (pointer p,int64_t)) yaooc_json_integer_set,
@@ -480,9 +485,13 @@ void yaooc_json_real_virtual_assign(pointer p,const_pointer s)
   }
 }
 
-bool yaooc_json_real_virtual_less_than_compare(const_pointer p,const_pointer o)
+int yaooc_json_real_virtual_rich_compare(const_pointer p,const_pointer o)
 {
-  return ((yaooc_json_real_const_pointer)p)->real_ < ((yaooc_json_real_const_pointer)o)->real_;
+  if(fabs(((yaooc_json_real_const_pointer)p)->real_ < ((yaooc_json_real_const_pointer)o)->real_) < 1e-8)
+    return 0;
+  if(((yaooc_json_real_const_pointer)p)->real_ < ((yaooc_json_real_const_pointer)o)->real_)
+    return -1;
+  return 1;
 }
 
 void yaooc_json_real_print(const_pointer p,ostream_pointer s)
@@ -513,7 +522,7 @@ yaooc_json_real_class_table_t yaooc_json_real_class_table =
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_real_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_real_virtual_copy_ctor,
   .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_real_virtual_assign,
-  .virtual_less_than_compare = (bool (*) (const_pointer,const_pointer)) yaooc_json_real_virtual_less_than_compare,
+  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_real_virtual_rich_compare,
   .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
   .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_real_print,
   .set = (void (*) (pointer p,double)) yaooc_json_real_set,
@@ -594,9 +603,9 @@ void yaooc_json_string_virtual_assign(pointer p,const_pointer s)
   }
 }
 
-bool yaooc_json_string_virtual_less_than_compare(const_pointer p,const_pointer o)
+int yaooc_json_string_virtual_rich_compare(const_pointer p,const_pointer o)
 {
-  return strcmp(((yaooc_json_string_const_pointer)p)->string_,((yaooc_json_string_const_pointer)o)->string_)<0;
+  return strcmp(((yaooc_json_string_const_pointer)p)->string_,((yaooc_json_string_const_pointer)o)->string_);
 }
 
 void yaooc_json_string_print(const_pointer p,ostream_pointer s)
@@ -640,7 +649,7 @@ yaooc_json_string_class_table_t yaooc_json_string_class_table =
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_string_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_string_virtual_copy_ctor,
   .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_string_virtual_assign,
-  .virtual_less_than_compare = (bool (*) (const_pointer,const_pointer)) yaooc_json_string_virtual_less_than_compare,
+  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_string_virtual_rich_compare,
   .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
   .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_string_print,
   .set = (void (*) (pointer p,const char*)) yaooc_json_string_set,
@@ -705,9 +714,9 @@ void yaooc_json_array_virtual_assign(pointer p,const_pointer s)
   }
 }
 
-bool yaooc_json_array_virtual_less_than_compare(const_pointer p,const_pointer o)
+int yaooc_json_array_virtual_rich_compare(const_pointer p,const_pointer o)
 {
-  return false;
+  return 0;
 }
 
 void yaooc_json_array_print(const_pointer p,ostream_pointer s)
@@ -780,7 +789,7 @@ yaooc_json_array_class_table_t yaooc_json_array_class_table =
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_array_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_array_virtual_copy_ctor,
   .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_array_virtual_assign,
-  .virtual_less_than_compare = (bool (*) (const_pointer,const_pointer)) yaooc_json_array_virtual_less_than_compare,
+  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_array_virtual_rich_compare,
   .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
   .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_array_print,
   .insert = (yaooc_json_array_iterator (*) (pointer p,pointer)) yaooc_json_array_insert,
@@ -849,9 +858,9 @@ void yaooc_json_object_virtual_assign(pointer p,const_pointer s)
   }
 }
 
-bool yaooc_json_object_virtual_less_than_compare(const_pointer p,const_pointer o)
+int yaooc_json_object_virtual_rich_compare(const_pointer p,const_pointer o)
 {
-  return false;
+  return 0;
 }
 
 void yaooc_json_object_print(const_pointer p,ostream_pointer s)
@@ -927,7 +936,7 @@ yaooc_json_object_class_table_t yaooc_json_object_class_table =
   .virtual_dtor = (void (*) (pointer p)) yaooc_json_object_virtual_dtor,
   .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_object_virtual_copy_ctor,
   .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_object_virtual_assign,
-  .virtual_less_than_compare = (bool (*) (const_pointer,const_pointer)) yaooc_json_object_virtual_less_than_compare,
+  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_object_virtual_rich_compare,
   .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
   .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_object_print,
   .insert = (yaooc_json_object_iterator (*) (pointer p,const_pointer,const_pointer)) yaooc_json_object_insert,

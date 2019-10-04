@@ -19,7 +19,7 @@ void my_string_default_ctor(pointer);
 void my_string_dtor(pointer);
 void my_string_assign(pointer,const_pointer);
 void my_string_copy_ctor(pointer,const_pointer);
-bool my_string_less_than_compare(const_pointer,const_pointer);
+int my_string_rich_compare(const_pointer,const_pointer);
 
 const char* my_string_get(const_pointer);
 void my_string_set(pointer,const char*);
@@ -52,18 +52,18 @@ void my_string_assign(pointer p,const_pointer s)
 	M(this,set,src->str);  // Could have used my_string_set(this,src->str);
 }
 
-bool my_string_less_than_compare(const_pointer p1,const_pointer p2)
+int my_string_rich_compare(const_pointer p1,const_pointer p2)
 {
   my_string_const_pointer bsp1 = p1;
   my_string_const_pointer bsp2 = p2;
   if(bsp1->str == NULL) {
     if(bsp2->str == NULL)
-      return false;
+      return 0;
     else
-      return true;
+      return -1;
   } else if(bsp2 == NULL)
-    return false;
-  return strcmp(bsp1->str,bsp2->str) < 0;
+    return 1;
+  return strcmp(bsp1->str,bsp2->str);
 }
 
 const char* my_string_get(const_pointer p)

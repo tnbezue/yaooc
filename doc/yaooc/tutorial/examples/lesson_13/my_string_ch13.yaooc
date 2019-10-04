@@ -27,7 +27,7 @@ class my_string : yaooc_object   /* my_string inherits from yaooc_object */
     ~my_string();             /* destructor */
     my_string(my_string);     /* copy constructor */
     operator=();              /* assignment */
-    operator<();              /* less than compare */
+    operator<=>();            /* rich compare */
     operator<<();             /* to stream */
 		operator>>();             /* from stream */
     /*

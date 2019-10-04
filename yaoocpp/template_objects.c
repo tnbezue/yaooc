@@ -120,11 +120,11 @@ void yaoocpp_element_assign(pointer p,const_pointer s)
   this->state_=src->state_;
 }
 
-bool yaoocpp_element_less_than_compare(const_pointer p1,const_pointer p2)
+int yaoocpp_element_rich_compare(const_pointer p1,const_pointer p2)
 {
   yaoocpp_element_const_pointer vp1=p1;
   yaoocpp_element_const_pointer vp2=p2;
-  return op_lt_static(&vp1->name_,&vp2->name_,yaooc_string);
+  return op_rich_compare_static(&vp1->name_,&vp2->name_,yaooc_string);
 }
 
 /* Constructors implementation for yaoocpp_element */
@@ -652,7 +652,7 @@ void yaoocpp_container_default_ctor(pointer p)
 	this->has_dtor_ = false;
 	this->has_copy_ctor_ = false;
 	this->has_assign_ = false;
-	this->has_lt_cmp_ = false;
+	this->has_rich_cmp_ = false;
 	this->has_to_stream_ = false;
 	this->has_from_stream_ = false;
 	this->defined_in_top_level_file_ = false;
@@ -689,17 +689,17 @@ void yaoocpp_container_assign(pointer p,const_pointer s)
 	this->has_dtor_ = src->has_dtor_;
 	this->has_copy_ctor_ = src->has_copy_ctor_;
 	this->has_assign_ = src->has_assign_;
-	this->has_lt_cmp_ = src->has_lt_cmp_;
+	this->has_rich_cmp_ = src->has_rich_cmp_;
 	this->has_to_stream_ = src->has_to_stream_;
 	this->has_from_stream_ = src->has_from_stream_;
 	this->defined_in_top_level_file_ = src->defined_in_top_level_file_;
 }
 
-bool yaoocpp_container_less_than_compare(const_pointer p1,const_pointer p2)
+int yaoocpp_container_rich_compare(const_pointer p1,const_pointer p2)
 {
   yaoocpp_container_const_pointer vp1=p1;
   yaoocpp_container_const_pointer vp2=p2;
-  return op_lt_static(&vp1->name_,&vp2->name_,yaooc_string);
+  return op_rich_compare_static(&vp1->name_,&vp2->name_,yaooc_string);
 }
 
 /* Constructors implementation for yaoocpp_container */
@@ -714,7 +714,7 @@ static void yaoocpp_container_print_define_type_info(const_pointer p,ostream_poi
     M(ostrm,printf,"DEFINE_MIN_TYPE_INFO(%s);\n",M(&this->name_,c_str));
   } else if (M(this,is_pod)) {
     M(ostrm,printf,"DEFINE_POD_TYPE_INFO(%s",M(&this->name_,c_str));
-    M(ostrm,printf,",%c",this->has_lt_cmp_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",this->has_rich_cmp_ ? 'Y' : 'N');
     M(ostrm,printf,",%c",this->has_to_stream_ ? 'Y' : 'N');
     M(ostrm,printf,",%c);\n\n",this->has_from_stream_ ? 'Y' : 'N');
   } else {
@@ -723,7 +723,7 @@ static void yaoocpp_container_print_define_type_info(const_pointer p,ostream_poi
     M(ostrm,printf,",%c",this->has_dtor_ ? 'Y' : 'N');
     M(ostrm,printf,",%c",this->has_copy_ctor_ ? 'Y' : 'N');
     M(ostrm,printf,",%c",this->has_assign_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c",this->has_lt_cmp_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",this->has_rich_cmp_ ? 'Y' : 'N');
     M(ostrm,printf,",%c",this->has_to_stream_ ? 'Y' : 'N');
     M(ostrm,printf,",%c",this->has_from_stream_ ? 'Y' : 'N');
     M(ostrm,printf,",%c",has_class_table ? 'Y' : 'N' );
@@ -864,12 +864,12 @@ static void yaoocpp_container_print_type_info_implementation(const_pointer p,ost
                   "  %s_pointer this=p;\n"
                   "  %s_const_pointer src=s;\n"
                   "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));*/
-  if(this->has_lt_cmp_)
-    M(ostrm,printf,"bool %s_less_than_compare(const_pointer p1,const_pointer p2)\n"
+  if(this->has_rich_cmp_)
+    M(ostrm,printf,"int %s_rich_compare(const_pointer p1,const_pointer p2)\n"
                   "{\n"
                   "  %s_const_pointer lhs=p1;\n"
                   "  %s_const_pointer rhs=p2;\n"
-                  "  bool ret=false;\n"
+                  "  int ret=0;\n"
                   "  return ret;\n"
                   "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));
   if(this->has_to_stream_)
@@ -948,8 +948,8 @@ static void yaoocpp_container_print_type_info_prototype(const_pointer p,ostream_
     M(ostrm,printf,"#define %s_assign %s_assign\n",M(&this->name_,c_str),M(&this->parent_->name_,c_str));
   else
     M(ostrm,printf,"#define %s_assign yaooc_do_nothing_assign\n",M(&this->name_,c_str));
-  if(this->has_lt_cmp_)
-    M(ostrm,printf,"bool %s_less_than_compare(const_pointer,const_pointer);\n",M(&this->name_,c_str));
+  if(this->has_rich_cmp_)
+    M(ostrm,printf,"int %s_rich_compare(const_pointer,const_pointer);\n",M(&this->name_,c_str));
   if(this->has_to_stream_)
     M(ostrm,printf,"void %s_to_stream(const_pointer,ostream_pointer);\n",M(&this->name_,c_str));
   if(this->has_from_stream_)
@@ -1013,7 +1013,7 @@ bool yaoocpp_struct_is_min_pod(const_pointer p)
 {
   yaoocpp_struct_const_pointer this=p;
   bool ret = this->parent_ ? yaoocpp_struct_is_min_pod(this->parent_) : true;
-  return ret && !this->has_default_ctor_ && !this->has_dtor_ && !this->has_copy_ctor_ && !this->has_assign_ && !this->has_lt_cmp_ && !this->has_to_stream_ && !this->has_from_stream_;
+  return ret && !this->has_default_ctor_ && !this->has_dtor_ && !this->has_copy_ctor_ && !this->has_assign_ && !this->has_rich_cmp_ && !this->has_to_stream_ && !this->has_from_stream_;
 }
 
 bool yaoocpp_struct_is_pod(const_pointer p)

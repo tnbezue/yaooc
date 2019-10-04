@@ -15,11 +15,11 @@ void yaooc_fraction_default_ctor(pointer p)
   this->denominator_=1;
 }
 
-bool yaooc_fraction_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_fraction_rich_compare(const_pointer p1,const_pointer p2)
 {
   yaooc_fraction_const_pointer lhs=p1;
   yaooc_fraction_const_pointer rhs=p2;
-  return lhs->numerator_*rhs->denominator_ - rhs->numerator_*lhs->denominator_ < 0;
+  return lhs->numerator_*rhs->denominator_ - rhs->numerator_*lhs->denominator_;
 }
 
 void yaooc_fraction_to_stream(const_pointer p,ostream_pointer o)

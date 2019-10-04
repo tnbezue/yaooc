@@ -55,7 +55,7 @@ yaooc_class(yaooc_date_time);
 void yaooc_date_time_default_ctor(pointer);
 void yaooc_date_time_copy_ctor(pointer,const_pointer);
 #define yaooc_date_time_assign yaooc_date_time_copy_ctor
-bool yaooc_date_time_less_than_compare(const_pointer,const_pointer);
+int yaooc_date_time_rich_compare(const_pointer,const_pointer);
 void yaooc_date_time_to_stream(const_pointer,pointer);
 void yaooc_date_time_from_stream(pointer,pointer);
 

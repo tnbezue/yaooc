@@ -44,9 +44,9 @@ void dynamic_pointer_assign(pointer d,const_pointer s)
   dynamic_pointer_copy_ctor(d,s);
 }
 
-bool dynamic_pointer_less_than_compare(const_pointer p1,const_pointer p2)
+int dynamic_pointer_rich_compare(const_pointer p1,const_pointer p2)
 {
-  return op_lt(*(pointer**)p1,*(pointer**)p2);
+  return op_rich_compare(*(pointer**)p1,*(pointer**)p2);
 }
 
 
@@ -86,22 +86,22 @@ void yaooc_unique_ptr_assign(pointer d,const_pointer s)
   }
 }
 
-static bool yaooc_memory_pointer_compare(const_pointer p1,const_pointer p2)
+static int yaooc_memory_pointer_compare(const_pointer p1,const_pointer p2)
 {
 
   if(p1==p2)
-    return false;
+    return 0;
   if(p1 != NULL) {
     if(p2 != NULL) {
-      return op_lt(p1,p2);
+      return op_rich_compare(p1,p2);
     } else {
-      return false;
+      return 1;
     }
   }
-  return true;
+  return -1;
 }
 
-bool yaooc_unique_ptr_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_unique_ptr_rich_compare(const_pointer p1,const_pointer p2)
 {
   return yaooc_memory_pointer_compare(((yaooc_unique_ptr_const_pointer)p1)->ptr_,((yaooc_unique_ptr_const_pointer)p2)->ptr_);
 }
@@ -213,7 +213,7 @@ void yaooc_shared_ptr_assign(pointer d,const_pointer s)
 	}
 }
 
-bool yaooc_shared_ptr_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_shared_ptr_rich_compare(const_pointer p1,const_pointer p2)
 {
   return yaooc_memory_pointer_compare(yaooc_shared_ptr_get(p1),yaooc_shared_ptr_get(p2));
 }

@@ -33,14 +33,14 @@ yaooc_ordered_array_container_find_result_t yaooc_ordered_array_container_find_p
   ret.position_=AT(this,0);
 //  size_t element_size=TYPE_SIZE(this);
   size_t lower=0,upper=SIZE(this)-1,middle=0,position=0;
-  less_than_compare lt_cmp=get_lt_cmp(this->type_info_);
+  rich_compare rich_cmp=get_rich_compare(this->type_info_);
   while(lower <= upper && upper != (size_t)-1) {
     middle=(lower+upper)>>1;
     pointer middle_ptr=AT(this,middle);
-    if(lt_cmp(middle_ptr,value)) {
+    if(rich_cmp(middle_ptr,value) < 0) {
       lower=middle+1;
       position=lower;
-    } else if(lt_cmp(value,middle_ptr)) {
+    } else if(rich_cmp(middle_ptr,value) > 0) {
       upper=middle-1;
       position=middle;
     } else {
@@ -51,7 +51,7 @@ yaooc_ordered_array_container_find_result_t yaooc_ordered_array_container_find_p
 
       while(middle > 0) {
         middle--;
-        if(lt_cmp(AT(this,middle),value)) {
+        if(rich_cmp(AT(this,middle),value)!=0) {
           middle++;
           break;
         }
@@ -108,11 +108,11 @@ size_t yaooc_ordered_array_container_erase_value(pointer p,const_pointer value)
   size_t ret=0;
   yaooc_ordered_array_container_find_result_t fr=yaooc_ordered_array_container_find_protected(p,value);
   if(fr.found_) {
-    less_than_compare lt_cmp=get_lt_cmp(TYPE_INFO(p));
+    rich_compare rich_cmp=get_rich_compare(TYPE_INFO(p));
     yaooc_private_const_iterator first=fr.position_;
     yaooc_private_const_iterator last=fr.position_+TYPE_SIZE(p);
     while(last < END(p)) {
-      if(lt_cmp(fr.position_,value))
+      if(rich_cmp(fr.position_,value)<0)
         break;
       last+=TYPE_SIZE(p);
     };

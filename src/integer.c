@@ -46,11 +46,11 @@ void yaooc_integer_assign(pointer p,const_pointer s)
   this->value_=src->value_;
 }
 
-bool yaooc_integer_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_integer_rich_compare(const_pointer p1,const_pointer p2)
 {
   yaooc_integer_const_pointer vp1=p1;
   yaooc_integer_const_pointer vp2=p2;
-  return vp1->value_<vp2->value_;
+  return vp1->value_-vp2->value_;
 }
 
 
@@ -131,11 +131,11 @@ void yaooc_unsigned_integer_assign(pointer p,const_pointer s)
 	this->value_=src->value_;
 }
 
-bool yaooc_unsigned_integer_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_unsigned_integer_rich_compare(const_pointer p1,const_pointer p2)
 {
 	yaooc_unsigned_integer_const_pointer vp1=p1;
 	yaooc_unsigned_integer_const_pointer vp2=p2;
-	return vp1->value_<vp2->value_;
+	return (int)(vp1->value_-vp2->value_);
 }
 
 

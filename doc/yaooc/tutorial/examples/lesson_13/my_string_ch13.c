@@ -40,18 +40,18 @@ void my_string_assign(pointer p,const_pointer s)
 	my_string_set(this,src->str);
 }
 
-bool my_string_less_than_compare(const_pointer lhs_cp,const_pointer rhs_cp)
+int my_string_rich_compare(const_pointer p1,const_pointer p2)
 {
-  my_string_const_pointer lhs=lhs_cp;
-  my_string_const_pointer rhs=rhs_cp;
+  my_string_const_pointer lhs = p1;
+  my_string_const_pointer rhs = p2;
   if(lhs->str == NULL) {
     if(rhs->str == NULL)
-      return false;
+      return 0; /* both NULL, equal */
     else
-      return true;
+      return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
   } else if(rhs->str == NULL)
-    return false;
-  return strcmp(lhs->str,rhs->str) < 0;
+    return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
+  return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
 }
 
 void my_string_to_stream(const_pointer p,ostream_pointer o){

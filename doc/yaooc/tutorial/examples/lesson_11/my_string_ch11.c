@@ -12,7 +12,7 @@ yaooc_class_table(my_string) {
 };
 
 yaooc_class_instance(my_string) {
-  yaooc_object_class_instance_t;
+//  yaooc_object_class_instance_t;
   char* str;
 };
 
@@ -22,7 +22,7 @@ void my_string_default_ctor(pointer);
 void my_string_dtor(pointer);
 void my_string_assign(pointer,const_pointer);
 void my_string_copy_ctor(pointer,const_pointer);
-bool my_string_less_than_compare(const_pointer,const_pointer);
+int my_string_rich_compare(const_pointer,const_pointer);
 
 const char* my_string_get(const_pointer);
 void my_string_set(pointer,const char*);
@@ -58,18 +58,18 @@ void my_string_assign(pointer p,const_pointer s)
 	my_string_set(this,src->str);
 }
 
-bool my_string_less_than_compare(const_pointer p1,const_pointer p2)
+int my_string_rich_compare(const_pointer p1,const_pointer p2)
 {
-  my_string_const_pointer bsp1 = p1;
-  my_string_const_pointer bsp2 = p2;
-  if(bsp1->str == NULL) {
-    if(bsp2->str == NULL)
-      return false;
+  my_string_const_pointer lhs = p1;
+  my_string_const_pointer rhs = p2;
+  if(lhs->str == NULL) {
+    if(rhs->str == NULL)
+      return 0; /* both NULL, equal */
     else
-      return true;
-  } else if(bsp2 == NULL)
-    return false;
-  return strcmp(bsp1->str,bsp2->str) < 0;
+      return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
+  } else if(rhs->str == NULL)
+    return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
+  return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
 }
 
 void my_string_to_stream(const_pointer p,pointer s)

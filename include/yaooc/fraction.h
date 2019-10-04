@@ -44,7 +44,7 @@ void yaooc_fraction_default_ctor(pointer);
 #define yaooc_fraction_dtor yaooc_object_dtor
 #define yaooc_fraction_copy_ctor yaooc_object_copy_ctor
 #define yaooc_fraction_assign yaooc_object_assign
-bool yaooc_fraction_less_than_compare(const_pointer,const_pointer);
+int yaooc_fraction_rich_compare(const_pointer,const_pointer);
 void yaooc_fraction_to_stream(const_pointer,ostream_pointer);
 void yaooc_fraction_from_stream(pointer,istream_pointer);
 

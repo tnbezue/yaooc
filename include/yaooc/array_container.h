@@ -54,7 +54,7 @@ void yaooc_array_container_default_ctor(pointer);
 void yaooc_array_container_dtor(pointer);
 void yaooc_array_container_copy_ctor(pointer,const_pointer);
 void yaooc_array_container_assign(pointer,const_pointer);
-bool yaooc_array_container_less_than_compare(const_pointer,const_pointer);
+int yaooc_array_container_rich_compare(const_pointer,const_pointer);
 void yaooc_array_container_to_stream(const_pointer,ostream_pointer);
 
 /* Constructors prototypes for yaooc_array_container */

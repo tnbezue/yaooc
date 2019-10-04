@@ -82,7 +82,7 @@ static bool yaoocpp_parser_default_constructor(pointer);
 static bool yaoocpp_parser_destructor(pointer);
 static bool yaoocpp_parser_copy_constructor(pointer);
 static bool yaoocpp_parser_assignment(pointer);
-static bool yaoocpp_parser_less_than_compare(pointer);
+static bool yaoocpp_parser_rich_compare(pointer);
 static bool yaoocpp_parser_to_stream(pointer);
 static bool yaoocpp_parser_from_stream(pointer);
 static bool yaoocpp_parser_arguments(pointer,yaoocpp_argument_vector_t**);
@@ -391,8 +391,8 @@ static bool yaoocpp_parser_type_info(pointer p)
     this->current_class_->has_copy_ctor_=true;
   } else if(yaoocpp_parser_assignment(p)) {
     this->current_class_->has_assign_=true;
-  } else if(yaoocpp_parser_less_than_compare(p)) {
-    this->current_class_->has_lt_cmp_=true;
+  } else if(yaoocpp_parser_rich_compare(p)) {
+    this->current_class_->has_rich_cmp_=true;
   } else if(yaoocpp_parser_to_stream(p)) {
     this->current_class_->has_to_stream_=true;
   } else if(yaoocpp_parser_from_stream(p)) {
@@ -456,12 +456,12 @@ static bool yaoocpp_parser_assignment(pointer p)
   return false;
 }
 
-static bool yaoocpp_parser_less_than_compare(pointer p)
+static bool yaoocpp_parser_rich_compare(pointer p)
 {
   yaoocpp_parser_pointer this=p;
   yaooc_terminal_t r;
   M(this,rule_start);
-  if(M(this,str,"operator",&r) && M(this,chr,'<',&r) && LPAREN(r) && RPAREN(r) && SEMICOLON(r)) {
+  if(M(this,str,"operator",&r) && M(this,str,"<=>",&r) && LPAREN(r) && RPAREN(r) && SEMICOLON(r)) {
     RULE_SUCCESS(p);
     return true;
   }

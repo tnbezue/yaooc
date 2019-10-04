@@ -149,7 +149,7 @@ Those entries are shown below.
   ~name();            /* Generate template for destructor */
   name(name*);        /* Generate template for copy constructor */
   operator=();        /* Generate template for assignment method */
-  operator&lt;();        /* Generate template for less than compare method */
+  operator&lt;=&gt;();      /* Generate template for rich compare method */
   operator&lt;&lt;();       /* Generate template for to_stream method */
   operator&gt;&gt;();       /* Generate template for from_stream method */
 </code>
@@ -289,8 +289,8 @@ Standard C structs and unions can not be declared within a YAOOC struct, class, 
   class yaooc_variant : yaooc_object {
     ...
     instance:
-      int type;
       <font color="red">variant_t;</font>
+      int type;
     ...
   };
 </code></pre>
@@ -440,7 +440,7 @@ class my_string : yaooc_object   /* my_string inherits from yaooc_object */
     ~my_string();             /* destructor */
     my_string(my_string*);    /* copy constructor */
     operator=();              /* assignment */
-    operator&lt;();              /* less than compare */
+    operator&lt;=&gt;();            /* rich compare */
     operator&lt;&lt;();             /* to stream */
     operator&gt;&gt;();             /* from stream */
     /*

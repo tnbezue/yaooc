@@ -45,20 +45,24 @@ void yaooc_array_container_assign(pointer p,const_pointer s)
 	yaooc_array_container_insert_range(p,BEGIN(p),BEGIN(s),END(s));
 }
 
-bool yaooc_array_container_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_array_container_rich_compare(const_pointer p1,const_pointer p2)
 {
   yaooc_array_container_const_pointer lhs=p1;
   yaooc_array_container_const_pointer rhs=p2;
   size_t n=M(lhs,size)<M(rhs,size) ? M(lhs,size) : M(rhs,size);
   size_t i;
-  less_than_compare lt_cmp=get_lt_cmp(TYPE_INFO(lhs));
-  for(i=0;i<n;i++) {
-    if(lt_cmp(AT(lhs,i),AT(rhs,i)))
-       return true;
-    if(lt_cmp(AT(rhs,i),AT(lhs,i)))
-      return false;
+  rich_compare rich_cmp=get_rich_compare(TYPE_INFO(lhs));
+  if(rich_cmp) {
+    for(i=0;i<n;i++) {
+      int rc = rich_cmp(AT(lhs,i),AT(rhs,i));
+      if(rc < 0)
+         return -1;
+      if(rc > 0)
+        return 1;
+    }
   }
-  return M(lhs,size) < M(rhs,size);
+  // Everything equal so far, use sizes for comparison
+  return (int)(M(lhs,size) - M(rhs,size));
 }
 
 void yaooc_array_container_to_stream(const_pointer p,ostream_pointer o){
@@ -171,9 +175,9 @@ size_t yaooc_array_container_erase_value(pointer p,const_pointer value)
   yaooc_array_container_pointer this=p;
   size_t ret=0;
   yaooc_private_iterator pos=END(this)-TYPE_SIZE(this);
-  less_than_compare lt_cmp = get_lt_cmp(this->type_info_);
+  rich_compare rich_cmp = get_rich_compare(this->type_info_);
   while(pos >= BEGIN(this) && SIZE(this)>0) {
-    if(__op_eq__(pos,value,lt_cmp)) {
+    if(__op_eq__(pos,value,rich_cmp)) {
       __deletep_array(pos,this->type_info_,1);
       yaooc_array_container_erase_space(this,pos,1);
       ret++;

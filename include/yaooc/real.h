@@ -45,7 +45,7 @@ yaooc_class(yaooc_real);
 void yaooc_real_default_ctor(pointer);
 void yaooc_real_copy_ctor(pointer,const_pointer);
 void yaooc_real_assign(pointer,const_pointer);
-bool yaooc_real_less_than_compare(const_pointer,const_pointer);
+int yaooc_real_rich_compare(const_pointer,const_pointer);
 
 /* Prototypes for yaooc_real constructors */
 void yaooc_real_ctor_real(pointer,va_list);

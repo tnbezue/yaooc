@@ -36,7 +36,7 @@ yaooc_class_table(my_string) {
 #define my_string_parent_class_table ((yaooc_object_class_table_t*)(my_string_class_table.parent_class_table_))
 
 yaooc_class_instance(my_string) {
-  yaooc_object_class_instance_t;
+//  yaooc_object_class_instance_t;
   char* str;
 };
 
@@ -47,7 +47,7 @@ void my_string_default_ctor(pointer);
 void my_string_dtor(pointer);
 void my_string_copy_ctor(pointer,const_pointer);
 void my_string_assign(pointer,const_pointer);
-bool my_string_less_than_compare(const_pointer,const_pointer);
+int my_string_rich_compare(const_pointer,const_pointer);
 void my_string_to_stream(const_pointer,ostream_pointer);
 void my_string_from_stream(pointer,istream_pointer);
 

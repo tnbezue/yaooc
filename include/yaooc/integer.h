@@ -46,7 +46,7 @@ yaooc_class(yaooc_integer);
 void yaooc_integer_default_ctor(pointer);
 void yaooc_integer_copy_ctor(pointer,const_pointer);
 void yaooc_integer_assign(pointer,const_pointer);
-bool yaooc_integer_less_than_compare(const_pointer,const_pointer);
+int yaooc_integer_rich_compare(const_pointer,const_pointer);
 void yaooc_integer_to_stream(const_pointer,ostream_pointer);
 void yaooc_integer_from_stream(pointer,istream_pointer);
 
@@ -83,7 +83,7 @@ yaooc_class(yaooc_unsigned_integer);
 void yaooc_unsigned_integer_default_ctor(pointer);
 void yaooc_unsigned_integer_copy_ctor(pointer,const_pointer);
 void yaooc_unsigned_integer_assign(pointer,const_pointer);
-bool yaooc_unsigned_integer_less_than_compare(const_pointer,const_pointer);
+int yaooc_unsigned_integer_rich_compare(const_pointer,const_pointer);
 void yaooc_unsigned_integer_to_stream(const_pointer,ostream_pointer);
 void yaooc_unsigned_integer_from_stream(pointer,istream_pointer);
 

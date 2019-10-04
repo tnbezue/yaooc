@@ -168,8 +168,8 @@ struct name ## _s \
 #define COPY_CTOR_N(T) NULL
 #define ASSIGN_Y(T) T ## _assign
 #define ASSIGN_N(T) NULL
-#define LT_Y(T) T ## _less_than_compare
-#define LT_N(T) NULL
+#define RICH_Y(T) T ## _rich_compare
+#define RICH_N(T) NULL
 #define TOS_Y(T) T ## _to_stream
 #define TOS_N(T) NULL
 #define FROMS_Y(T) T ## _from_stream
@@ -179,12 +179,12 @@ struct name ## _s \
 /* For when parent is specified as NULL */
 #define __NULL_ti *(char*)NULL
 
-#define __DEFINE_TYPE_INFO__(T,DEF_CTOR,DTOR,COPY_CTOR,ASSIGN,LT_COMPARE,TO_STREAM,FROM_STREAM,CLASS_TABLE,PARENT) \
+#define __DEFINE_TYPE_INFO__(T,DEF_CTOR,DTOR,COPY_CTOR,ASSIGN,RICH_COMPARE,TO_STREAM,FROM_STREAM,CLASS_TABLE,PARENT) \
 const type_info_t __ ## T ## _ti ={ \
   .min_flag_=0, \
   .pod_flag_=0, \
 	.type_size_ = sizeof(T ## _t),\
-	.less_than_compare_ = (less_than_compare) LT_COMPARE, \
+	.rich_compare_ = (rich_compare) RICH_COMPARE, \
 	.to_stream_ = (to_stream) TO_STREAM, \
 	.from_stream_ = (from_stream) FROM_STREAM, \
 	.default_ctor_ = (default_constructor) DEF_CTOR, \
@@ -196,33 +196,33 @@ const type_info_t __ ## T ## _ti ={ \
 }; \
 const type_info_t* const T ## _ti = &__ ## T ## _ti
 
-#define DEFINE_TYPE_INFO(T,HAS_DEF_CTOR,HAS_DTOR,HAS_COPY_CTOR,HAS_ASSIGN,HAS_LT_COMPARE,HAS_TO_STREAM,HAS_FROM_STREAM,HAS_CLASS_TABLE,PARENT) \
+#define DEFINE_TYPE_INFO(T,HAS_DEF_CTOR,HAS_DTOR,HAS_COPY_CTOR,HAS_ASSIGN,HAS_RICH_COMPARE,HAS_TO_STREAM,HAS_FROM_STREAM,HAS_CLASS_TABLE,PARENT) \
 	__DEFINE_TYPE_INFO__(T,\
 	DEF_CTOR_ ## HAS_DEF_CTOR(T),\
 	DTOR_ ## HAS_DTOR(T),\
 	COPY_CTOR_ ## HAS_COPY_CTOR(T),\
 	ASSIGN_ ## HAS_ASSIGN(T),\
-	LT_ ## HAS_LT_COMPARE(T),\
+	RICH_ ## HAS_RICH_COMPARE(T),\
 	TOS_ ## HAS_TO_STREAM(T),\
 	FROMS_ ## HAS_FROM_STREAM(T),\
 	CT_ ## HAS_CLASS_TABLE(T),\
 	&__ ## PARENT ## _ti \
 )
 
-#define __DEFINE_POD_TYPE_INFO__(T,LT_COMPARE,TO_STREAM,FROM_STREAM) \
+#define __DEFINE_POD_TYPE_INFO__(T,RICH_COMPARE,TO_STREAM,FROM_STREAM) \
 const pod_type_info_t __ ## T ## _ti ={ \
   .min_flag_=0, \
   .pod_flag_=1, \
 	.type_size_ = sizeof(T ## _t),\
-	.less_than_compare_ = (less_than_compare) LT_COMPARE, \
+	.rich_compare_ = (rich_compare) RICH_COMPARE, \
 	.to_stream_ = (to_stream) TO_STREAM, \
 	.from_stream_ = (from_stream) FROM_STREAM \
 }; \
 const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti
 
-#define DEFINE_POD_TYPE_INFO(T,HAS_LT_COMPARE,HAS_TO_STREAM,HAS_FROM_STREAM) \
+#define DEFINE_POD_TYPE_INFO(T,HAS_RICH_COMPARE,HAS_TO_STREAM,HAS_FROM_STREAM) \
 	__DEFINE_POD_TYPE_INFO__(T,\
-	LT_ ## HAS_LT_COMPARE(T),\
+	RICH_ ## HAS_RICH_COMPARE(T),\
 	TOS_ ## HAS_TO_STREAM(T),\
 	FROMS_ ## HAS_FROM_STREAM(T)\
 )
@@ -238,26 +238,29 @@ const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti
 /*
 	Comparison operators
 */
-#define __op_eq__(lhs,rhs,lt_cmp) (lt_cmp ? !(lt_cmp(lhs,rhs) || lt_cmp(rhs,lhs)) : true )
-#define __op_ne__(lhs,rhs,lt_cmp) (lt_cmp ? (lt_cmp(lhs,rhs) || lt_cmp(rhs,lhs)) : false )
-#define __op_gt__(lhs,rhs,lt_cmp) (lt_cmp ? lt_cmp(rhs,lhs) : false )
-#define __op_ge__(lhs,rhs,lt_cmp) (lt_cmp ? !lt_cmp(lhs,rhs) : true )
-#define __op_lt__(lhs,rhs,lt_cmp) (lt_cmp ? lt_cmp(lhs,rhs) : false )
-#define __op_le__(lhs,rhs,lt_cmp) (lt_cmp ? !lt_cmp(rhs,lhs) : true )
+#define __op_rich_rich_compare__(lhs,rhs,rich_compare) ( rich_compare ? rich_compare(lhs,rhs) : 0 )
+#define __op_eq__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) == 0 )
+#define __op_ne__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) != 0)
+#define __op_lt__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) <  0)
+#define __op_le__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) <= 0)
+#define __op_gt__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) >  0)
+#define __op_ge__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) >= 0)
 
-#define op_eq_static(lhs,rhs,T) __op_eq__(lhs,rhs,get_lt_cmp(T ## _ti))
-#define op_ne_static(lhs,rhs,T) __op_ne__(lhs,rhs,get_lt_cmp(T ## _ti))
-#define op_gt_static(lhs,rhs,T) __op_gt__(lhs,rhs,get_lt_cmp(T ## _ti))
-#define op_ge_static(lhs,rhs,T) __op_ge__(lhs,rhs,get_lt_cmp(T ## _ti))
-#define op_lt_static(lhs,rhs,T) __op_lt__(lhs,rhs,get_lt_cmp(T ## _ti))
-#define op_le_static(lhs,rhs,T) __op_le__(lhs,rhs,get_lt_cmp(T ## _ti))
+#define op_rich_compare_static(lhs,rhs,T) __op_rich_rich_compare__(lhs,rhs,get_rich_compare(T ## _ti))
+#define op_eq_static(lhs,rhs,T) (op_rich_compare_static(lhs,rhs,T) == 0)
+#define op_ne_static(lhs,rhs,T) (op_rich_compare_static(lhs,rhs,T) != 0)
+#define op_lt_static(lhs,rhs,T) (op_rich_compare_static(lhs,rhs,T) <  0)
+#define op_le_static(lhs,rhs,T) (op_rich_compare_static(lhs,rhs,T) <= 0)
+#define op_gt_static(lhs,rhs,T) (op_rich_compare_static(lhs,rhs,T) >  0)
+#define op_ge_static(lhs,rhs,T) (op_rich_compare_static(lhs,rhs,T) >= 0)
 
-#define op_eq(lhs,rhs) __op_eq__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
-#define op_ne(lhs,rhs) __op_ne__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
-#define op_gt(lhs,rhs) __op_gt__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
-#define op_ge(lhs,rhs) __op_ge__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
-#define op_lt(lhs,rhs) __op_lt__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
-#define op_le(lhs,rhs) __op_le__(lhs,rhs,get_lt_cmp(get_type_info(lhs)))
+#define op_rich_compare(lhs,rhs) __op_rich_rich_compare__(lhs,rhs,get_rich_compare(get_type_info(lhs)))
+#define op_eq(lhs,rhs) (op_rich_compare(lhs,rhs) == 0)
+#define op_ne(lhs,rhs) (op_rich_compare(lhs,rhs) != 0)
+#define op_lt(lhs,rhs) (op_rich_compare(lhs,rhs) <  0)
+#define op_le(lhs,rhs) (op_rich_compare(lhs,rhs) <= 0)
+#define op_gt(lhs,rhs) (op_rich_compare(lhs,rhs) >  0)
+#define op_ge(lhs,rhs) (op_rich_compare(lhs,rhs) >= 0)
 
 
 #define SWAP(T,x,y) { T __temp__=x; x=y; y=__temp__; }
@@ -277,6 +280,6 @@ void init_exceptions();
 #define yaooc_init() \
 GC_INIT(); \
 init_streams(); \
-init_exceptions(); 
+init_exceptions();
 
 #endif

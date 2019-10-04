@@ -24,7 +24,7 @@ void yaooc_uint24_from_uint32(pointer, uint32_t);
 #define yaooc_uint24_dtor yaooc_do_nothing_dtor
 #define yaooc_uint24_copy_ctor yaooc_do_nothing_copy_ctor
 #define yaooc_uint24_assign yaooc_do_nothing_assign
-bool yaooc_uint24_less_than_compare(const_pointer,const_pointer);
+int yaooc_uint24_rich_compare(const_pointer,const_pointer);
 void yaooc_uint24_to_stream(const_pointer,ostream_pointer);
 void yaooc_uint24_from_stream(pointer,istream_pointer);
 

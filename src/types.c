@@ -22,8 +22,8 @@
   Type info for POD
 */
 #define POD_TYPE_INFO_IMPLEMENTATION(T) \
-bool T ## _less_than_compare(const T ## _t * v1,const T ## _t * v2) { return *v1 < *v2; } \
-__DEFINE_POD_TYPE_INFO__(T,(less_than_compare)T ## _less_than_compare,(to_stream)T ## _to_stream,(from_stream) T ## _from_stream)
+int T ## _rich_compare(const T ## _t * v1,const T ## _t * v2) { return *v1 - *v2; } \
+__DEFINE_POD_TYPE_INFO__(T,(rich_compare)T ## _rich_compare,(to_stream)T ## _to_stream,(from_stream) T ## _from_stream)
 
 POD_TYPE_INFO_IMPLEMENTATION(char);
 POD_TYPE_INFO_IMPLEMENTATION(uchar);
@@ -33,17 +33,19 @@ POD_TYPE_INFO_IMPLEMENTATION(int);
 POD_TYPE_INFO_IMPLEMENTATION(uint);
 POD_TYPE_INFO_IMPLEMENTATION(long);
 POD_TYPE_INFO_IMPLEMENTATION(ulong);
-bool double_less_than_compare(const double* lhs,const double* rhs)
+int double_rich_compare(const double* lhs,const double* rhs)
 {
-  if(fabs(*lhs-*rhs)<0.000001)
-    return false;
-  return *lhs < *rhs;
+  if(fabs(*lhs-*rhs)<1e-8)
+    return 0;
+  if(*lhs < *rhs)
+    return -1;
+  return 1;
 }
 const pod_type_info_t __double_ti ={
   .min_flag_=0,
   .pod_flag_=1,
 	.type_size_ = sizeof(double),
-	.less_than_compare_ = (less_than_compare) double_less_than_compare ,
+	.rich_compare_ = (rich_compare) double_rich_compare ,
 	.to_stream_ = (to_stream) double_to_stream,
 	.from_stream_ = (from_stream) double_from_stream,
 };
@@ -51,22 +53,22 @@ const type_info_t* const double_ti = (const type_info_t*)&__double_ti;
 
 //POD_TYPE_INFO_IMPLEMENTATION(double);
 //POD_TYPE_INFO_IMPLEMENTATION(pointer);
-bool pointer_less_than_compare(const pointer *lhs,const pointer *rhs) { return *lhs < *rhs; }
+bool pointer_rich_compare(const pointer *lhs,const pointer *rhs) { return *lhs < *rhs; }
 
 POD_TYPE_INFO_IMPLEMENTATION(size);
 const pod_type_info_t __pointer_ti ={
   .min_flag_=0,
   .pod_flag_=1,
 	.type_size_ = sizeof(pointer),
-	.less_than_compare_ = (less_than_compare) pointer_less_than_compare ,
+	.rich_compare_ = (rich_compare) pointer_rich_compare ,
 	.to_stream_ = (to_stream) NULL,
 	.from_stream_ = (from_stream) NULL,
 };
 const type_info_t* const pointer_ti = (const type_info_t*)&__pointer_ti;
 
-bool yaooc_ccs_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_ccs_rich_compare(const_pointer p1,const_pointer p2)
 {
-	return strcmp(p1,p2) < 0;
+	return strcmp(p1,p2);
 }
 
 //DEFINE_TYPE_INFO(yaooc_ccs,N,N,N,N,Y,Y,Y,N,NULL)

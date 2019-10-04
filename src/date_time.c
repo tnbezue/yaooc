@@ -39,11 +39,11 @@ void yaooc_date_time_copy_ctor(pointer p,const_pointer s)
 	this->time_=src->time_;
 }
 
-bool yaooc_date_time_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_date_time_rich_compare(const_pointer p1,const_pointer p2)
 {
   yaooc_date_time_const_pointer vp1=p1;
   yaooc_date_time_const_pointer vp2=p2;
-  return vp1->time_<vp2->time_;
+  return vp1->time_-vp2->time_ ;
 
 }
 void yaooc_date_time_to_stream(const_pointer p,pointer s)

@@ -57,9 +57,9 @@ void str_8_default_ctor(pointer p)
 {
 	((str_8_pointer)p)->str[0]=0;
 }
-bool str_8_less_than_compare(const_pointer v1,const_pointer v2)
+int str_8_rich_compare(const_pointer v1,const_pointer v2)
 {
-	return strcmp((const char*)(((str_8_const_pointer)v1)->str),(const char*)(((str_8_const_pointer)v2)->str)) < 0;
+	return strcmp((const char*)(((str_8_const_pointer)v1)->str),(const char*)(((str_8_const_pointer)v2)->str));
 }
 DEFINE_TYPE_INFO(str_8,Y,N,N,N,Y,N,N,N,NULL);
 

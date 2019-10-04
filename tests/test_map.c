@@ -287,11 +287,11 @@ yaooc_pod_struct(temp_data) {
 	char temp[16];
 };
 
-bool temp_data_less_than_compare(const_pointer p1,const_pointer p2)
+bool temp_data_rich_compare(const_pointer p1,const_pointer p2)
 {
 	const temp_data_t* lhs=p1;
 	const temp_data_t* rhs=p2;
-	return strcmp(lhs->temp,rhs->temp) < 0;
+	return strcmp(lhs->temp,rhs->temp);
 }
 
 DEFINE_POD_TYPE_INFO(temp_data,Y,N,N);

@@ -49,7 +49,7 @@ a type information structure for each type -- even POD types like char or int.  
     void (*destructor)(pointer);  /* Destructor */
     void (*copy_constructor)(pointer,const_pointer);  /* Copy constructor */
     void (*assignment)(pointer,const_pointer);  /* Assignment.  Operator= in C++ */
-    bool (*less_than_compare)(const_pointer,const_pointer);  /* less than comparison of two objects. */
+    int (*rich_compare)(const_pointer,const_pointer);  /* rich comparison of two objects. */
     void (*to_stream)(const_pointer,pointer) to_stream_; /* method to write object to stream */
     void (*from_stream)(pointer,pointer) from_stream_; /* method to read object from stream */
     const class_table_t* class_table_; /* Class table */

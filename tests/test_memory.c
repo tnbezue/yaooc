@@ -58,9 +58,9 @@ void demo_copy_ctor(pointer d,const_pointer s)
   demo_assign(d,s);
 }
 
-int demo_less_than_compare(const_pointer p1,const_pointer p2)
+int demo_rich_compare(const_pointer p1,const_pointer p2)
 {
-  return ((const demo_t*)p1)->x < ((const demo_t*)p2)->x;
+  return ((const demo_t*)p1)->x - ((const demo_t*)p2)->x;
 }
 
 void demo_ctor_int_int(pointer p,va_list args)

@@ -40,14 +40,15 @@ yaooc_index_array_container_find_result_t yaooc_index_array_container_find_prote
   yaooc_index_array_container_const_pointer this=p;
   yaooc_index_array_container_find_result_t ret = { 0, 0, false };
   size_t lower=0,upper=this->size_-1,middle;
-  less_than_compare lt_cmp=get_lt_cmp(this->type_info_);
+  rich_compare rich_cmp=get_rich_compare(this->type_info_);
   while(lower <= upper && upper != (size_t)-1) {
     middle=(lower+upper)>>1;
     const_pointer middle_value=AT_I(this,middle);
-    if(lt_cmp(middle_value,value)) {
+    int rc = rich_cmp(middle_value,value);
+    if(rc < 0) {
       lower=middle+1;
       ret.lower_index_=lower;
-    } else if(lt_cmp(value,middle_value)) {
+    } else if(rc > 0) {
       upper=middle-1;
       ret.lower_index_=middle;
     } else {
@@ -58,12 +59,14 @@ yaooc_index_array_container_find_result_t yaooc_index_array_container_find_prote
 //      ret.upper_index_=middle;
       size_t idx=middle-1;
       for(;idx>=0 && idx != (size_t)-1;idx--) {
-        if(lt_cmp(AT_I(this,idx),value))
+//        if(lt_cmp(AT_I(this,idx),value))
+        if(__op_lt__(AT_I(this,idx),value,rich_cmp))
           break;
       }
       ret.lower_index_=idx+1;
       for(idx=middle+1;idx<SIZE(this);idx++) {
-        if(lt_cmp(value,AT_I(this,idx)))
+//        if(lt_cmp(value,AT_I(this,idx)))
+        if(__op_lt__(value,AT_I(this,idx),rich_cmp))
           break;
       }
       ret.upper_index_=idx-1;

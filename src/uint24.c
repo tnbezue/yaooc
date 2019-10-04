@@ -22,9 +22,9 @@ typedef union {
 /* Private methods prototypes for yaooc_uint24 */
 
 /* Type Info implemmentation for yaooc_uint24 */
-bool yaooc_uint24_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_uint24_rich_compare(const_pointer p1,const_pointer p2)
 {
-  return yaooc_uint24_to_uint32(p1) < yaooc_uint24_to_uint32(p2);
+  return yaooc_uint24_to_uint32(p1) - yaooc_uint24_to_uint32(p2);
 }
 
 void yaooc_uint24_to_stream(const_pointer p,ostream_pointer o)

@@ -28,7 +28,7 @@ void dynamic_pointer_default_ctor(pointer);
 void dynamic_pointer_dtor(pointer);
 void dynamic_pointer_copy_ctor(pointer,const_pointer);
 void dynamic_pointer_assign(pointer,const_pointer);
-bool dynamic_pointer_less_than_compare(const_pointer,const_pointer);
+int dynamic_pointer_rich_compare(const_pointer,const_pointer);
 
 
 #define DYNAMIC_POINTER_DEFINITION(T,N) \
@@ -38,7 +38,7 @@ typedef const N ## _t* N ## _const_pointer; \
 extern const type_info_t* const N ## _ti
 
 #define DYNAMIC_POINTER_IMPLEMENTATION(T,N) \
-__DEFINE_TYPE_INFO__(N,dynamic_pointer_default_ctor,dynamic_pointer_dtor,dynamic_pointer_copy_ctor,dynamic_pointer_assign,dynamic_pointer_less_than_compare,NULL,NULL,NULL,NULL)
+__DEFINE_TYPE_INFO__(N,dynamic_pointer_default_ctor,dynamic_pointer_dtor,dynamic_pointer_copy_ctor,dynamic_pointer_assign,dynamic_pointer_rich_compare,NULL,NULL,NULL,NULL)
 
 #if 0
 
@@ -65,7 +65,7 @@ void dynamic_pointer_assign(pointer d,const_pointer s) \
   pointer_dtor(*(pointer_t*)d); \
   pointer_copy_ctor(d,s); \
 } \
-bool dynamic_pointer_less_than_compare(const_pointer p1,const_pointer p2) \
+int dynamic_pointer_rich_compare(const_pointer p1,const_pointer p2) \
 { \
   return op_lt(*(pointer_t*)p1,*(pointer_t*)p2); \
 }\
@@ -98,7 +98,7 @@ void yaooc_unique_ptr_default_ctor(pointer);
 void yaooc_unique_ptr_dtor(pointer);
 void yaooc_unique_ptr_copy_ctor(pointer,const_pointer);
 void yaooc_unique_ptr_assign(pointer,const_pointer);
-bool yaooc_unique_ptr_less_than_compare(const_pointer,const_pointer);
+int yaooc_unique_ptr_rich_compare(const_pointer,const_pointer);
 
 /* Prototypes for Constructors */
 void yaooc_unique_ptr_ctor_ptr(pointer,va_list);
@@ -173,7 +173,7 @@ void yaooc_shared_ptr_default_ctor(pointer);
 void yaooc_shared_ptr_dtor(pointer);
 void yaooc_shared_ptr_copy_ctor(pointer,const_pointer);
 void yaooc_shared_ptr_assign(pointer,const_pointer);
-bool yaooc_shared_ptr_less_than_compare(const_pointer,const_pointer);
+int yaooc_shared_ptr_rich_compare(const_pointer,const_pointer);
 
 /* Prototypes for Constructors */
 void yaooc_shared_ptr_ctor_ptr(pointer,va_list);

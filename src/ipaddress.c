@@ -56,11 +56,11 @@ void yaooc_ipaddress_assign(pointer p,const_pointer s)
   memcpy(this->buf_,src->buf_,16);
 }
 
-bool yaooc_ipaddress_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_ipaddress_rich_compare(const_pointer p1,const_pointer p2)
 {
   yaooc_ipaddress_const_pointer vp1=p1;
   yaooc_ipaddress_const_pointer vp2=p2;
-	return memcmp(vp1->buf_,vp2->buf_,vp1->type_==1 ? 4 : 16) < 0;
+	return memcmp(vp1->buf_,vp2->buf_,vp1->type_==1 ? 4 : 16);
 }
 
 void yaooc_ipaddress_to_stream(const_pointer p,ostream_pointer o){

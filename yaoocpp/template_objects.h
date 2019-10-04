@@ -28,7 +28,7 @@ void yaoocpp_argument_default_ctor(pointer);
 void yaoocpp_argument_dtor(pointer);
 void yaoocpp_argument_copy_ctor(pointer,const_pointer);
 void yaoocpp_argument_assign(pointer,const_pointer);
-bool yaoocpp_argument_less_than_compare(const_pointer,const_pointer);
+int yaoocpp_argument_rich_compare(const_pointer,const_pointer);
 
 /* Constructor prototypes for yaoocpp_argument */
 
@@ -266,7 +266,7 @@ yaooc_class_instance(yaoocpp_container) {
   bool has_dtor_;
   bool has_copy_ctor_;
   bool has_assign_;
-  bool has_lt_cmp_;
+  bool has_rich_cmp_;
   bool has_to_stream_;
   bool has_from_stream_;
   bool defined_in_top_level_file_;
@@ -279,7 +279,7 @@ void yaoocpp_container_default_ctor(pointer);
 void yaoocpp_container_dtor(pointer);
 void yaoocpp_container_copy_ctor(pointer,const_pointer);
 void yaoocpp_container_assign(pointer,const_pointer);
-bool yaoocpp_container_less_than_compare(const_pointer,const_pointer);
+int yaoocpp_container_rich_compare(const_pointer,const_pointer);
 
 /* Constructors prototypes for yaoocpp_container */
 
@@ -403,7 +403,7 @@ void yaoocpp_class_default_ctor(pointer);
 void yaoocpp_class_dtor(pointer);
 void yaoocpp_class_copy_ctor(pointer,const_pointer);
 void yaoocpp_class_assign(pointer,const_pointer);
-bool yaoocpp_class_less_than_compare(const_pointer,const_pointer);
+int yaoocpp_class_rich_compare(const_pointer,const_pointer);
 
 /* Constructors prototypes for yaoocpp_class */
 

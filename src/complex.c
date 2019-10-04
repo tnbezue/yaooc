@@ -10,15 +10,18 @@
 
 /* Type Info implemmentation for yaooc_complex */
 static const double eps=1e-6;
-bool yaooc_complex_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_complex_rich_compare(const_pointer p1,const_pointer p2)
 {
   yaooc_complex_const_pointer lhs=p1;
   yaooc_complex_const_pointer rhs=p2;
-  if(fabs(lhs->real_-rhs->real_) > eps)
-    return lhs->real_ < rhs->real_;
-  if(fabs(lhs->imag_-rhs->imag_) > eps)
-    return lhs->imag_ < rhs->imag_;
-  return false;
+  double lhs_magnitude = lhs->real_*lhs->real_ + lhs->imag_*lhs->imag_;
+  double rhs_magnitude = rhs->real_*rhs->real_ + rhs->imag_*rhs->imag_;
+  double diff = lhs_magnitude < rhs_magnitude;
+  if(diff < eps)
+    return 0;
+  if(diff < 0)
+    return -1;
+  return 1;
 }
 
 void yaooc_complex_to_stream(const_pointer p,ostream_pointer o)

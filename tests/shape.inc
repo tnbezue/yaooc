@@ -9,7 +9,7 @@ yaooc_class_table(shape)
   void (*virtual_dtor)(pointer);
   void (*virtual_copy_ctor)(pointer,const_pointer);
   void (*virtual_assign)(pointer,const_pointer);
-  bool (*virtual_less_than_compare)(const_pointer,const_pointer);
+  int (*virtual_rich_compare)(const_pointer,const_pointer);
   double (*area)(const_pointer);
 };
 
@@ -48,11 +48,11 @@ void shape_assign(pointer d,const_pointer s)
   M(((shape_pointer)d),virtual_assign,s);
 }
 
-bool shape_less_than_compare(const_pointer p1,const_pointer p2)
+int shape_rich_compare(const_pointer p1,const_pointer p2)
 {
   if(optr)
     optr+=sprintf(optr,"SLT:");
-  return M((shape_const_pointer)p1,virtual_less_than_compare,p2);
+  return M((shape_const_pointer)p1,virtual_rich_compare,p2);
 }
 
 /*
@@ -148,11 +148,15 @@ void circle_ctor_radius(pointer p,va_list args)
   circle_set_radius(p,va_arg(args,double));
 }
 
-bool circle_less_than_compare(const_pointer p1,const_pointer p2)
+int circle_rich_compare(const_pointer p1,const_pointer p2)
 {
   if(optr)
     optr+=sprintf(optr,"CIRLT:");
-  return M((shape_const_pointer)p1,area) < M((shape_const_pointer)p2,area);
+  if(M((shape_const_pointer)p1,area) < M((shape_const_pointer)p2,area))
+    return -1;
+  if(M((shape_const_pointer)p1,area) > M((shape_const_pointer)p2,area))
+    return 1;
+  return 0;
 }
 
 circle_class_table_t circle_class_table=
@@ -160,7 +164,7 @@ circle_class_table_t circle_class_table=
   .virtual_dtor = circle_virtual_dtor,
   .virtual_copy_ctor = circle_virtual_copy_ctor,
   .virtual_assign = circle_virtual_assign,
-  .virtual_less_than_compare = circle_less_than_compare,
+  .virtual_rich_compare = circle_rich_compare,
   .area = circle_area,
   .set_radius = circle_set_radius
 };
@@ -231,11 +235,15 @@ void square_ctor_length(pointer p,va_list args)
   square_set_length(p,va_arg(args,double));
 }
 
-bool square_less_than_compare(const_pointer p1,const_pointer p2)
+int square_rich_compare(const_pointer p1,const_pointer p2)
 {
   if(optr)
     optr+=sprintf(optr,"SQLT:");
-  return M((shape_const_pointer)p1,area) < M((shape_const_pointer)p2,area);
+  if(M((shape_const_pointer)p1,area) < M((shape_const_pointer)p2,area))
+    return -1;
+  if(M((shape_const_pointer)p1,area) > M((shape_const_pointer)p2,area))
+    return 1;
+  return 0;
 }
 
 square_class_table_t square_class_table=
@@ -243,7 +251,7 @@ square_class_table_t square_class_table=
   .virtual_dtor = square_virtual_dtor,
   .virtual_copy_ctor = square_virtual_copy_ctor,
   .virtual_assign = square_virtual_assign,
-  .virtual_less_than_compare = square_less_than_compare,
+  .virtual_rich_compare = square_rich_compare,
   .area = square_area,
   .set_length = square_set_length
 };
@@ -321,7 +329,7 @@ void rectangle_ctor_length_width(pointer p,va_list args)
   rectangle_set_width(p,width);
 }
 
-bool rectangle_less_than_compare(const_pointer p1,const_pointer p2)
+int rectangle_rich_compare(const_pointer p1,const_pointer p2)
 {
   if(optr)
     optr+=sprintf(optr,"RLT:");
@@ -333,7 +341,7 @@ rectangle_class_table_t rectangle_class_table =
   .virtual_dtor = rectangle_virtual_dtor,
   .virtual_copy_ctor = rectangle_virtual_copy_ctor,
   .virtual_assign = rectangle_virtual_assign,
-  .virtual_less_than_compare = rectangle_less_than_compare,
+  .virtual_rich_compare = rectangle_rich_compare,
   .area = rectangle_area,
   .set_length = square_set_length,
   .set_width = rectangle_set_width

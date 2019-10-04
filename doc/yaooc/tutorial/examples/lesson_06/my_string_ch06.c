@@ -10,7 +10,7 @@ void my_string_default_ctor(pointer);
 void my_string_dtor(pointer);
 void my_string_assign(pointer,const_pointer);
 void my_string_copy_ctor(pointer,const_pointer);
-bool my_string_less_than_compare(const_pointer,const_pointer);
+int my_string_rich_compare(const_pointer,const_pointer);
 
 /*  --> to here. would be in the header file */
 
@@ -41,18 +41,18 @@ void my_string_assign(pointer p,const_pointer s)
   this->str=src->str==NULL ? NULL : strdup(src->str);
 }
 
-bool my_string_less_than_compare(const_pointer p1,const_pointer p2)
+int my_string_rich_compare(const_pointer p1,const_pointer p2)
 {
-  my_string_const_pointer bsp1 = p1;
-  my_string_const_pointer bsp2 = p2;
-  if(bsp1->str == NULL) {
-    if(bsp2->str == NULL)
-      return false; /* both NULL, equal -- not less */
+  my_string_const_pointer lhs = p1;
+  my_string_const_pointer rhs = p2;
+  if(lhs->str == NULL) {
+    if(rhs->str == NULL)
+      return 0; /* both NULL, equal */
     else
-      return true; /* 1st is NULL, second is not.  NULL is less than not NULL */
-  } else if(bsp2 == NULL)
-    return false; /* 1st is not NULL, second is NULL. 1st is greater than 2nd, not less */
-  return strcmp(bsp1->str,bsp2->str) < 0; /* Both not null, compare the strings */
+      return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
+  } else if(rhs->str == NULL)
+    return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
+  return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
 }
 
 DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,N,N,N,NULL);

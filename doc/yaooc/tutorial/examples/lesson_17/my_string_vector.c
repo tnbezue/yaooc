@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <yaooc/algorithm.h>
+#include <yaooc/pointer_bag.h>
 /* Private variables implementation for my_string */
 
 /* Private methods prototypes for my_string */
@@ -42,18 +43,18 @@ void my_string_assign(pointer p,const_pointer s)
   this->str = src->str ? strdup(src->str) : NULL;
 }
 
-bool my_string_less_than_compare(const_pointer lhs_cp,const_pointer rhs_cp)
+int my_string_rich_compare(const_pointer p1,const_pointer p2)
 {
-  my_string_const_pointer lhs=lhs_cp;
-  my_string_const_pointer rhs=rhs_cp;
+  my_string_const_pointer lhs = p1;
+  my_string_const_pointer rhs = p2;
   if(lhs->str == NULL) {
     if(rhs->str == NULL)
-      return false;
+      return 0; /* both NULL, equal */
     else
-      return true;
+      return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
   } else if(rhs->str == NULL)
-    return false;
-  return strcmp(lhs->str,rhs->str) < 0;
+    return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
+  return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
 }
 
 void my_string_to_stream(const_pointer p,ostream_pointer o){
@@ -420,25 +421,25 @@ VECTOR_IMPLEMENTATION(my_string,my_string_vector);
 
 int main(int argc,char* argv[])
 {
-	PB_INIT;
-	my_string_vector_pointer msv=PB_SAVE(new(my_string_vector));
-	M(msv,push_back,PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is the first string")));
-	M(msv,push_back,PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is the second string")));
-	M(msv,push_back,PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is the third string")));
-	M(msv,push_back,PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is the forth string")));
-	M(msv,push_back,PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is the fifth string")));
-	M(msv,push_back,PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is the sixth string")));
-	M(msv,push_back,PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is the seventh string")));
-	M(msv,push_back,PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is the eighth string")));
-	M(msv,push_back,PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is the ninth string")));
-	M(msv,push_back,PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is the tenth string")));
+	pb_init();
+	my_string_vector_pointer msv=pb_new(my_string_vector);
+	M(msv,push_back,pb_new_ctor(my_string,my_string_ctor_ccs,"This is the first string"));
+	M(msv,push_back,pb_new_ctor(my_string,my_string_ctor_ccs,"This is the second string"));
+	M(msv,push_back,pb_new_ctor(my_string,my_string_ctor_ccs,"This is the third string"));
+	M(msv,push_back,pb_new_ctor(my_string,my_string_ctor_ccs,"This is the forth string"));
+	M(msv,push_back,pb_new_ctor(my_string,my_string_ctor_ccs,"This is the fifth string"));
+	M(msv,push_back,pb_new_ctor(my_string,my_string_ctor_ccs,"This is the sixth string"));
+	M(msv,push_back,pb_new_ctor(my_string,my_string_ctor_ccs,"This is the seventh string"));
+	M(msv,push_back,pb_new_ctor(my_string,my_string_ctor_ccs,"This is the eighth string"));
+	M(msv,push_back,pb_new_ctor(my_string,my_string_ctor_ccs,"This is the ninth string"));
+	M(msv,push_back,pb_new_ctor(my_string,my_string_ctor_ccs,"This is the tenth string"));
 
 	my_string_vector_const_iterator i;
 	for(i=M(msv,begin);i!=M(msv,end);i++) {
 		STREAM(cout,O_OBJ(my_string,*i),endl);
 	}
 
-	my_string_pointer temp=PB_SAVE(new_ctor(my_string,my_string_ctor_ccs,"This is the fifth string"));
+	my_string_pointer temp=pb_new_ctor(my_string,my_string_ctor_ccs,"This is the fifth string");
 	my_string_const_pointer pos=yaooc_find(my_string,M(msv,begin),M(msv,end),temp);
 	if(pos != M(msv,end))
 		STREAM(cout,O_CCS("temp found at pos "),O_SIZE(pos-(my_string_const_pointer)M(msv,begin)),endl);
@@ -447,6 +448,6 @@ int main(int argc,char* argv[])
 	STREAM(cout,endl);
 	FOR_EACH(i,msv)
 		STREAM(cout,O_OBJ(my_string,*i),endl);
-	PB_EXIT;
+	pb_exit();
 
 }

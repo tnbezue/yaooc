@@ -86,9 +86,9 @@ void yaooc_string_assign(pointer d,const_pointer s)
   yaooc_string_insertn(d,0,BEGIN(s),SIZE(s));
 }
 
-bool yaooc_string_less_than_compare(const_pointer p1,const_pointer p2)
+int yaooc_string_rich_compare(const_pointer p1,const_pointer p2)
 {
-  return strcmp(((yaooc_string_const_pointer)p1)->array_,((yaooc_string_const_pointer)p2)->array_) < 0;
+  return strcmp(((yaooc_string_const_pointer)p1)->array_,((yaooc_string_const_pointer)p2)->array_);
 }
 
 void yaooc_string_to_stream(const_pointer p,pointer s)

@@ -100,10 +100,9 @@ typedef void(*copy_constructor)(pointer,const_pointer);
 typedef void(*assignment)(pointer,const_pointer);
 
 /*
-	Less than comparison function required if object is used in a container.  If not defined,
-  comparisons will return false -- thus all object of this type will be considered equal.
+	Return < 0 for less than, = 0 for equal, or > 0 for greater than
 */
-typedef bool(*less_than_compare)(const_pointer,const_pointer);
+typedef int(*rich_compare)(const_pointer,const_pointer);
 
 /*
 	Any number of non default constructors may be defined.  Arguments to these constructors are a pointer
@@ -140,7 +139,7 @@ typedef struct {
   The minimum requirement is the type size (min_type_info)
 
 	The pod_type_info_s structure  is for Plain Old Data (POD).
-    -- Has less than compare
+    -- Has rich compare
     -- Has to/from stream
     -- Does not have a parent
     -- Used for POD types (int, double, etc) and structures made of POD types
@@ -177,7 +176,7 @@ struct min_type_info_s {
 typedef struct pod_type_info_s pod_type_info_t;
 struct pod_type_info_s {
   min_type_info_t;
-	less_than_compare less_than_compare_;
+	rich_compare rich_compare_;
 	to_stream to_stream_;
 	from_stream from_stream_;
 };

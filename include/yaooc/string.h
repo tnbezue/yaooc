@@ -94,7 +94,7 @@ void yaooc_string_default_ctor(pointer);
 void yaooc_string_dtor(pointer);
 void yaooc_string_copy_ctor(pointer,const_pointer);
 void yaooc_string_assign(pointer,const_pointer);
-bool yaooc_string_less_than_compare(const_pointer,const_pointer);
+int yaooc_string_rich_compare(const_pointer,const_pointer);
 
 /* Constructors for yaooc_string */
 void yaooc_string_ctor_ccs(pointer,va_list);
