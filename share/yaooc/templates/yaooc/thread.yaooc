@@ -63,7 +63,7 @@ class yaooc_mutex : yaooc_object
     bool unlock();
   instance:
     pthread_mutex_t mutex_;
-}
+};
 
 class yaooc_condition_variable : yaooc_mutex
 {

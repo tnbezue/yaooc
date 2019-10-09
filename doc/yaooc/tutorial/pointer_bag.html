@@ -145,8 +145,29 @@ is called.
 </div>
 
 <p>
+YAOOC also provides macros than combine placement new and pbsave.
 </p>
 
+<div class="divTable">
+  <div class="divTableBody">
+    <div class="divTableRow">
+      <div class="divTableHead">Macro</div>
+      <div class="divTableHead">Purpose</div>
+    </div>
+    <div class="divTableRow">
+      <div class="divTableCell">pb_newp(ptr,T)</div>
+      <div class="divTableCell">Same as pb_save_static(newp(ptr,T),T)</div>
+    </div>
+    <div class="divTableRow">
+      <div class="divTableCell">pb_newp_array(ptr,T,N)</div>
+      <div class="divTableCell">Same as pb_save_static(new_array(ptr,T,N),T)</div>
+    </div>
+    <div class="divTableRow">
+      <div class="divTableCell">pb_newp_copy_static(ptr,T)</div>
+      <div class="divTableCell">Same as pb_save_static(new_copy(ptr,T),T)</div>
+    </div>
+  </div>
+</div>
 
 </div>
 </div>

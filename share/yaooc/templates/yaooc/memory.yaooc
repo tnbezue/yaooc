@@ -10,7 +10,7 @@ class yaooc_unique_ptr : yaooc_object
     yaooc_unique_ptr(yaooc_unique_ptr*);
     yaooc_unique_ptr_ctor_ptr(pointer ptr);
     operator=();
-    operator<();
+    operator<=>();
 
   table:
     void swap(pointer ptr);
@@ -28,7 +28,7 @@ class yaooc_shared_ptr : yaooc_object
     yaooc_shared_ptr(yaooc_shared_ptr*);
     yaooc_shared_ptr_ctor_ptr(pointer ptr);
     operator=();
-    operator<();
+    operator<=>();
   private:
     void acquire(yaooc_counter_t* counter);
   table:

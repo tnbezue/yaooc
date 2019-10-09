@@ -29,8 +29,8 @@ class yaooc_json_parser : yaooc_base_parser
     bool parse_json_string(yaooc_json_value_t** jstring);
     bool parse_json_array(yaooc_json_value_t** jarray);
     bool parse_json_object(yaooc_json_value_t** jobject);
-    bool parse_string(const char* str,yaooc_json_value_t**);
-    bool parse_file(const char* file,yaooc_json_value_t**);
+    bool parse_string(const char* str,yaooc_json_value_t** jvalue);
+    bool parse_file(const char* file,yaooc_json_value_t** jvalue);
 };
 
 #endif

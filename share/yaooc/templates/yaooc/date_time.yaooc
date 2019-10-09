@@ -17,7 +17,7 @@ class yaooc_date_time : yaooc_object {
 		yaooc_date_time();
 		yaooc_date_time(yaooc_date_time*);
 		operator=();
-		operator<();
+		operator<=>();
 		operator<<();
 		operator>>();
 
@@ -39,7 +39,7 @@ class yaooc_date_time : yaooc_object {
 		int day_of_week() const;
 		int day_of_year() const;
 		char* strftime(const char* fmt) const;
-		void strptime(const char*);
+//		void strptime(const char* fmt);
 	instance:
 		time_t  time_;
 };

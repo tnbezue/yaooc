@@ -47,13 +47,13 @@ class yaooc_json_value : yaooc_object
     yaooc_json_value(yaooc_json_value*);
     ~yaooc_json_value();
     operator=();
-    operator<();
+    operator<=>();
   table:
     void virtual_dtor();
     void virtual_copy_ctor(pointer s);
     void virtual_assign(pointer s);
     bool virtual_less_than_compare(const_pointer o) const;
-    void print(ostream_pointer);
+    void print(ostream_pointer o);
   instance:
     json_type_t type_;
     json_data_t data_;
@@ -68,7 +68,7 @@ class yaooc_json_null : yaooc_json_value
     void virtual_copy_ctor();
     void virtual_assign();
     bool virtual_less_than_compare();
-    void print(ostream_pointer);
+    void print(ostream_pointer o);
 };
 
 class yaooc_json_bool : yaooc_json_value
@@ -81,7 +81,7 @@ class yaooc_json_bool : yaooc_json_value
     void virtual_copy_ctor();
     void virtual_assign();
     bool virtual_less_than_compare();
-    void print(ostream_pointer);
+    void print(ostream_pointer o);
     void set(bool value);
     bool get() const;
 };
@@ -96,7 +96,7 @@ class yaooc_json_integer : yaooc_json_value
     void virtual_copy_ctor();
     void virtual_assign();
     bool virtual_less_than_compare();
-    void print(ostream_pointer);
+    void print(ostream_pointer o);
     void set(int64_t value);
     int64_t get() const;
 };
@@ -112,7 +112,7 @@ class yaooc_json_real : yaooc_json_value
     void virtual_copy_ctor();
     void virtual_assign();
     bool virtual_less_than_compare();
-    void print(ostream_pointer);
+    void print(ostream_pointer o);
     void set(double value);
     double get() const;
 };
@@ -129,7 +129,7 @@ class yaooc_json_string : yaooc_json_value
     void virtual_copy_ctor();
     void virtual_assign();
     bool virtual_less_than_compare();
-    void print(ostream_pointer);
+    void print(ostream_pointer o);
     void set(const char* value);
     const char* get() const;
     size_t size() const;
@@ -146,7 +146,7 @@ class yaooc_json_array : yaooc_json_value
     void virtual_copy_ctor();
     void virtual_assign();
     bool virtual_less_than_compare();
-    void print(ostream_pointer);
+    void print(ostream_pointer o);
     yaooc_json_array_iterator insert(pointer value);
     void erase(pointer value);
     void clear();
@@ -166,7 +166,7 @@ class yaooc_json_object : yaooc_json_value
     void virtual_copy_ctor();
     void virtual_assign();
     bool virtual_less_than_compare();
-    void print(ostream_pointer);
+    void print(ostream_pointer o);
     yaooc_json_object_iterator insert(const_pointer str,const_pointer val);
     void erase(const_pointer str);
     void clear();

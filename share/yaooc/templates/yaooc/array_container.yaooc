@@ -35,7 +35,7 @@ class yaooc_array_container : yaooc_object
     ~yaooc_array_container();
     yaooc_array_container(yaooc_array_container*);
     operator=();
-    operator<();
+    operator<=>();
 		operator<<();
 
 	instance:

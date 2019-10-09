@@ -25,7 +25,7 @@ typedef struct {
 class yaooc_index_array_container : yaooc_array_container
 {
     yaooc_index_array_container(yaooc_index_array_container*);
-    yaooc_index_array_container_ctor_ti();
+    yaooc_index_array_container_ctor_ti(type_info_t* ti);
     ~yaooc_index_array_container();
     operator=();
 

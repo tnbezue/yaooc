@@ -69,7 +69,7 @@ class yaooc_regex : yaooc_object {
     void compile();
     bool match_private(yaooc_matchdata_pointer md,int offset);
 	protected:
-		int regexec(const regex_t*,const char*,int,size_t,regmatch_t*,int);
+		int regexec(const regex_t* re,const char* subject,int pos ,size_t nmatch,regmatch_t* matches,int flags);
   table:
     void set_pattern_flags(const char* pattern);
     void set_pattern_flags(const char* pattern,int flags);

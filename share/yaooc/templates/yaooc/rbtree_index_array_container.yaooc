@@ -55,7 +55,7 @@ int yaooc_rbnode_decrement_index(yaooc_rbnode_t*, unsigned int,unsigned int*);
 
 class yaooc_rbtree_index_array_container : yaooc_array_container
 {
-    yaooc_rbtree_index_array_container_ctor_ti();
+    yaooc_rbtree_index_array_container_ctor_ti(type_info_t* ti);
     ~yaooc_rbtree_index_array_container();
 		yaooc_rbtree_index_array_container(yaooc_rbtree_index_array_container*);
     operator=();

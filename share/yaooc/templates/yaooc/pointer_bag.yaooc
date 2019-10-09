@@ -15,7 +15,7 @@ class yaooc_pointer_bag : yaooc_array_container
     yaooc_pointer_bag();
     ~yaooc_pointer_bag();
   table:
-    pointer add(pointer);
+    pointer add(pointer obj);
     pointer add_static(pointer v,const type_info_t* ti,size_t n);
     void del(const_pointer ptr);
     void del_all();  /* This deletes objects before clearing */

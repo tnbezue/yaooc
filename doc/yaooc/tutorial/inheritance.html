@@ -182,10 +182,10 @@ Like the default and copy constructors, ancestor assignment or methods must be c
 perform assignment.  It is common practice to call the parent assign method before assigning variables
 defined at the current level of inheritance.
 </p>
-<h3>Less than compare</h3>
+<h3>Rich compare</h3>
 <p>
-Comparison methods will traverse the inheritance tree until a non NULL less than compare method is found and use it to compare the objects.
-If a non NULL less than compare method is not found, then the comparison will be as if the method returned false.
+Comparison methods will traverse the inheritance tree until a non NULL rich compare method is found and use it to compare the objects.
+If a non NULL rich compare method is not found, then the comparison will be as if the method returned zero (0).
 </p>
 <h3>To/From stream</h3>
 <p>

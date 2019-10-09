@@ -8,7 +8,7 @@
 #endif // HEADER
 
 class yaooc_complex : yaooc_object {
-    operator<();
+    operator<=>();
     operator<<();
     operator>>();
     yaooc_complex_ctor_r_i(double r,double i);

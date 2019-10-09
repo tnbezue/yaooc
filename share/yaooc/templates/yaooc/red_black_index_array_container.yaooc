@@ -5,7 +5,7 @@
 
 class yaooc_red_black_index_array_container : yaooc_array_container
 {
-    yaooc_red_black_index_array_container_ctor_ti();
+    yaooc_red_black_index_array_container_ctor_ti(type_info_t* ti);
     yaooc_red_black_index_array_container(yaooc_red_black_index_array_container*);
     ~yaooc_red_black_index_array_container();
     operator=();

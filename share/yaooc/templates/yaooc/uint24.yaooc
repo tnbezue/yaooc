@@ -27,7 +27,7 @@ typedef union {
 #endif  // SOURCE
 
 struct yaooc_uint24 {
-    operator<();
+    operator<=>();
     operator<<();
     operator>>();
   protected:

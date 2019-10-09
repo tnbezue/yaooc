@@ -14,7 +14,7 @@ class yaooc_real : yaooc_object
     yaooc_real(yaooc_real*);
     yaooc_real_ctor_real(double value);
     operator=();
-    operator<();
+    operator<=>();
 
   protected:
   table:

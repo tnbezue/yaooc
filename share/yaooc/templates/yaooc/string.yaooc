@@ -19,7 +19,7 @@ class yaooc_string : yaooc_array_container
     yaooc_string_ctor_ccs_n(const char* str, size_t n);
     yaooc_string_ctor_chr_n(char c,size_t n);
     operator=();
-    operator<();
+    operator<=>();
 		operator<<();
 		operator>>();
 

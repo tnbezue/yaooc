@@ -14,7 +14,7 @@
 
 class yaooc_fraction {
     yaooc_fraction();
-    operator<();
+    operator<=>();
     operator<<();
     operator>>();
     yaooc_fraction_ctor_n_d(int32_t n,int32_t d);

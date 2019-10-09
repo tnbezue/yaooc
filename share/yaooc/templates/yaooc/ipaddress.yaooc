@@ -23,7 +23,7 @@ class yaooc_ipaddress : yaooc_object
 		yaooc_ipaddress(yaooc_ipaddress*);
 		yaooc_ipaddress_ctor_ccs(const char* ip_str);
 		operator=();
-		operator<();
+		operator<=>();
 		operator<<();
 
 	instance:
