@@ -74,8 +74,10 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
             this->str[n]=0;
           }
         }
-    // Table members
+    // Table members (available to all instances of my_string)
       table:
+        size_t npos = -1;
+
         void swap(pointer o)
         {
           my_string_pointer other=o;
@@ -92,7 +94,7 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
           my_string_dtor(this);
           this->str = str==NULL ? NULL : strdup(str);
         }
-      // Instance members
+      // Instance members (available only to this instance)
       instance:
         char *str;
     };
