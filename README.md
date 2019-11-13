@@ -31,7 +31,7 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
             if(rhs->str == NULL)
               return 0; /* both NULL, equal */
             else
-              return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
+              return -1; /* lhs is NULL, rhs is not.  NULL is less than non NULL */
           } else if(rhs->str == NULL)
             return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
           return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
@@ -114,42 +114,6 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
       delete(ms3);
       delete(ms4);
     }
-
-    /* Plain old data */
-    char* string=new_array(char,128);
-    strcpy(string,"Testing");
-    /* and any other string functions (strcat, strchr, etc) */
-    delete(string);
-
-    /* Containers */
-    VECTOR(long,long_vector);  /*  Vector of longs */
-    long_vector_pointer lv=new(long_vector);
-    long_t i;
-    for(i=0;i<100;i++)
-      M(lv,push_back,&i)
-    long_vector_const_iterator ilv; /* const iterator for long vector */
-    for(ilv=M(lv,cbegin);ilv!=M(lv,cend);ilv++)
-      printf("%ld ",*ilv);
-    delete(lv);
-
-    /* Custom class */
-    yaooc_struct(custom) {
-      int x;
-      double d;
-      char* string;
-    };
-		/* Can be used in container */
-    MAP(yaooc_string,custom,yaooc_string_custom_map);
-    yaooc_string_custom_map_pointer mymap=new(yaooc_string_custom_map);
-    custom_pointer cp=new(custom);
-    ....
-    M(mymap,insert,str,cp);
-    ...
-    yaooc_string_custom_map_const_iterator i;
-    CFOR_EACH(i,mymap) { /* same as for (i=M(mymap,cbegin);i!=M(mymap,cend);i++) */
-      printf("%s %d %lf %s\n",M(i->first,c_str),i->second.x,i->second.y,i->second.string);
-    }
-    delete(mymap);
 
 ## Goals
 
