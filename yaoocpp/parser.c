@@ -145,7 +145,7 @@ bool yaoocpp_parser_line_directive(pointer p,yaooc_terminal_t* ws)
       this->current_pos_++;
       const char* ptr=this->current_pos_;
       for(;*this->current_pos_!='"';this->current_pos_++);
-      yaoocpp_parser_is_top_level=strncmp(yaoocpp_parser_current_file,ptr,this->current_pos_-ptr-2)==0;
+      yaoocpp_parser_is_top_level=strncmp(yaoocpp_parser_current_file,ptr,this->current_pos_-ptr)==0;
       for(;*this->current_pos_ != 0;this->current_pos_++)
         if(*this->current_pos_ == '\r' || *this->current_pos_ == '\n')
           break;
@@ -382,23 +382,16 @@ static bool yaoocpp_parser_contents(pointer p)
 static bool yaoocpp_parser_type_info(pointer p)
 {
   yaoocpp_parser_pointer this=p;
+  (void)this;
   bool ret=true;
-  if(yaoocpp_parser_default_constructor(p)) {
-    this->current_class_->has_default_ctor_=true;
-  } else if(yaoocpp_parser_destructor(p)) {
-    this->current_class_->has_dtor_=true;
-  } else if(yaoocpp_parser_copy_constructor(p)) {
-    this->current_class_->has_copy_ctor_=true;
-  } else if(yaoocpp_parser_assignment(p)) {
-    this->current_class_->has_assign_=true;
-  } else if(yaoocpp_parser_rich_compare(p)) {
-    this->current_class_->has_rich_cmp_=true;
-  } else if(yaoocpp_parser_to_stream(p)) {
-    this->current_class_->has_to_stream_=true;
-  } else if(yaoocpp_parser_from_stream(p)) {
-    this->current_class_->has_from_stream_=true;
-  } else
-    ret=false;
+  if(!yaoocpp_parser_default_constructor(p))
+    if(!yaoocpp_parser_destructor(p))
+      if(!yaoocpp_parser_copy_constructor(p))
+        if(!yaoocpp_parser_assignment(p))
+          if(!yaoocpp_parser_rich_compare(p))
+            if(!yaoocpp_parser_to_stream(p))
+              if(!yaoocpp_parser_from_stream(p))
+                ret=false;
   return ret;
 }
 
@@ -407,7 +400,8 @@ static bool yaoocpp_parser_default_constructor(pointer p)
   yaoocpp_parser_pointer this=p;
   RULE_START(p);
   yaooc_terminal_t r;
-  if(M(this,str,M(&this->current_class_->name_,c_str),&r) && LPAREN(r) && RPAREN(r) && SEMICOLON(r)) {
+  if(M(this,str,M(&this->current_class_->name_,c_str),&r) && LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
+    M(&this->current_class_->default_ctor_implementation_,setn,r.beg_,r.end_-r.beg_);
     RULE_SUCCESS(p);
     return true;
   }
@@ -421,7 +415,8 @@ static bool yaoocpp_parser_destructor(pointer p)
   yaooc_terminal_t r;
   M(this,rule_start);
   if(M(this,chr,'~',&r) && M(this,str,M(&this->current_class_->name_,c_str),&r) &&
-            LPAREN(r) && RPAREN(r) && SEMICOLON(r)) {
+            LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
+    M(&this->current_class_->dtor_implementation_,setn,r.beg_,r.end_-r.beg_);
     RULE_SUCCESS(p);
     return true;
   }
@@ -435,7 +430,9 @@ static bool yaoocpp_parser_copy_constructor(pointer p)
   yaooc_terminal_t r;
   M(this,rule_start);
   if(M(this,str,M(&this->current_class_->name_,c_str),&r) && LPAREN(r)
-        && M(this,str,M(&this->current_class_->name_,c_str),&r) && STAR(r) && RPAREN(r) && SEMICOLON(r)) {
+        && M(this,str,M(&this->current_class_->name_,c_str),&r) &&
+        STAR(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
+    M(&this->current_class_->copy_ctor_implementation_,setn,r.beg_,r.end_-r.beg_);
     RULE_SUCCESS(p);
     return true;
   }
@@ -448,7 +445,8 @@ static bool yaoocpp_parser_assignment(pointer p)
   yaoocpp_parser_pointer this=p;
   yaooc_terminal_t r;
   M(this,rule_start);
-  if(M(this,str,"operator",&r) && EQUAL(r) && LPAREN(r) && RPAREN(r) && SEMICOLON(r)) {
+  if(M(this,str,"operator",&r) && EQUAL(r) && LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
+    M(&this->current_class_->assign_implementation_,setn,r.beg_,r.end_-r.beg_);
     RULE_SUCCESS(p);
     return true;
   }
@@ -461,7 +459,8 @@ static bool yaoocpp_parser_rich_compare(pointer p)
   yaoocpp_parser_pointer this=p;
   yaooc_terminal_t r;
   M(this,rule_start);
-  if(M(this,str,"operator",&r) && M(this,str,"<=>",&r) && LPAREN(r) && RPAREN(r) && SEMICOLON(r)) {
+  if(M(this,str,"operator",&r) && M(this,str,"<=>",&r) && LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
+    M(&this->current_class_->rich_cmp_implementation_,setn,r.beg_,r.end_-r.beg_);
     RULE_SUCCESS(p);
     return true;
   }
@@ -474,7 +473,8 @@ static bool yaoocpp_parser_to_stream(pointer p)
   yaooc_terminal_t r;
   yaoocpp_parser_pointer this=p;
   M(this,rule_start);
-  if(M(this,str,"operator",&r) && M(this,str,"<<",&r) && LPAREN(r) && RPAREN(r) && SEMICOLON(r)) {
+  if(M(this,str,"operator",&r) && M(this,str,"<<",&r) && LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
+    M(&this->current_class_->to_stream_implementation_,setn,r.beg_,r.end_-r.beg_);
     RULE_SUCCESS(p);
     return true;
   }
@@ -487,7 +487,8 @@ static bool yaoocpp_parser_from_stream(pointer p)
   yaoocpp_parser_pointer this=p;
   yaooc_terminal_t r;
   M(this,rule_start);
-  if(M(this,str,"operator",&r) && M(this,str,">>",&r) && LPAREN(r) && RPAREN(r) && SEMICOLON(r)) {
+  if(M(this,str,"operator",&r) && M(this,str,">>",&r) && LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
+    M(&this->current_class_->from_stream_implementation_,setn,r.beg_,r.end_-r.beg_);
     RULE_SUCCESS(p);
     return true;
   }
@@ -573,31 +574,31 @@ static bool yaoocpp_parser_constructor(pointer p)
     size_t class_name_len=M(&this->current_class_->name_,size);
     if(class_name_len < name.end_-name.beg_ &&
             strncmp(M(&this->current_class_->name_,c_str),name.beg_,class_name_len) ==0) {
-      ret=true;
+      M(&con->name_,setn,name.beg_,name.end_-name.beg_);
+      yaoocpp_argument_vector_const_iterator i;
+      CFOR_EACH(i,args)
+        M(&con->arguments_,push_back,i);
+      delete(args);
       if(EQUAL(r)) {
-        if(M(this,ident,&imp_con))
-          ret=true;
-        else
-          ret=false;
-      }
-      if(ret && SEMICOLON(r)) {
-        M(&con->name_,setn,name.beg_,name.end_-name.beg_);
-        yaoocpp_argument_vector_const_iterator i;
-        CFOR_EACH(i,args)
-          M(&con->arguments_,push_back,i);
-        delete(args);
-        if(imp_con.end_!=NULL)
+        if(M(this,ident,&imp_con)) {
           M(&con->implementation_method_,setn,imp_con.beg_,imp_con.end_-imp_con.beg_);
-      } else
-        ret=false;
+          ret=true;
+        } else
+          ret = false;
+      } else if(M(this,string_until_matching_chr,'{','}',&r)) {
+        M(&con->implementation_,setn,r.beg_,r.end_-r.beg_);
+        ret = true;
+      } else {
+        ret = false;
+      }
     }
   }
   if(ret) {
     RULE_SUCCESS(p);
     M(&this->current_class_->constructors_,push_back,(yaoocpp_element_t **)&con);
-  }
-  else
+  } else {
     RULE_FAIL(p);
+  }
   pb_exit();
   return ret;
 }
@@ -620,6 +621,7 @@ static bool yaoocpp_parser_table(pointer p)
           M(&container,push_back,(yaoocpp_element_t**)&proc);
         } else {
           assign_static(&(*orig)->implementation_method_,&proc->implementation_method_,yaooc_string);
+          assign_static(&(*orig)->implementation_,&proc->implementation_,yaooc_string);
           (*orig)->state_=OVERRIDDEN;
         }
         delete(proc);
@@ -852,14 +854,16 @@ static bool yaoocpp_parser_method_with_implementation_method(pointer p,yaoocpp_m
   bool ret=yaoocpp_parser_method_base(this,meth);
   if(ret) {
     if(EQUAL(r)) {
-      if(M(this,ident,&r)) {
+      if(M(this,ident,&r) && SEMICOLON(r)) {
         M(&(*meth)->implementation_method_,setn,r.beg_,r.end_-r.beg_);
         ret=true;
       }
-    }
+    } else if(M(this,string_until_matching_chr,'{','}',&r)) {
+      M(&(*meth)->implementation_,setn,r.beg_,r.end_-r.beg_);
+      ret = true;
+    } else
+      ret = false;
   }
-  if(!SEMICOLON(r))
-    ret=false;
   if(ret)
     RULE_SUCCESS(p);
   else
@@ -873,7 +877,7 @@ static bool yaoocpp_parser_method(pointer p,yaoocpp_method_t** meth)
   yaoocpp_parser_pointer this=p;
   bool ret=false;
   yaooc_terminal_t r;
-  if(YAOOC_PARSER_TRY_RULE(p,yaoocpp_parser_method_base(this,meth) && SEMICOLON(r))) {
+  if(YAOOC_PARSER_TRY_RULE(p,yaoocpp_parser_method_base(this,meth) && M(this,string_until_matching_chr,'{','}',&r))) {
     ret=true;
   }
   return ret;

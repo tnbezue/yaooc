@@ -38,124 +38,57 @@
 <div style="overflow-y: scroll; height:900px">
 <h2>Inheritance</h2>
 <p>
-For a yaooc_struct, inheritance is done by specifying the parent struct type as the first member of the struct.  The below example demonstrates
-how struct derived inherits from base.
+For a yaooc_struct, inheritance as follows:
 </p>
 <pre><code>
-  yaooc_struct(base) {
-    int z;
-    double d;
-  };
-  yaooc_struct(derived) {
-    <font color="red">base_t;</font>
-    const char* str;
+  %class class_name : parent_name {
+    ...
   };
 </code></pre>
 <p>
-For a yaooc_class, inheritance is done by specifying the parent class table type as the first member in the class table definition and
-the parent class instance type as the first member in the class instance definition.  All classes should be a descendant
-of yaooc_object.  The following shows how to have my_string class inherit from yaooc_object.
+For &quot;%class&quot;, a parent is required.  If not specified, the parent will be &quot;yaooc_object&quot;.
+&quot;%struct&quot; does not require a parent.  &quot;yaooc_object&quot; is defined as follows.
 </p>
-<pre>
-<code>
-  yaooc_class_table(my_string) {
-    <font color="red">yaooc_object_class_table_t;</font>
-    const char* (*get)(const_pointer);
-    void (*set)(pointer,const char*);
+<pre><code>
+  %class yaooc_object {
+    table:
+      void swap(pointer s) { }
   };
-
-  yaooc_class_instance(my_string) {
-    <font color="red">yaooc_object_class_instance_t;</font>
-    char* str;
-  };
-
-  yaooc_class(my_string);
-</code>
-</pre>
+</code></pre>
 
 <p>
 Although possible, generally, a struct should not have a class as a parent and a class should not have a struct as a parent.
 </p>
 <p>
-yaooc_object has no instance members.  It has three table entries -- two variables and one method. They are:
-</p>
-<pre><code>
-  const class_table_t* parent_class_table_;  /* Pointer to parent class table */
-  const char * type_name_;       /* type name of the class */
-  void (*swap)(pointer,pointer); /* Swaps contents of instances */
-</code></pre>
-<p>
-The parent class table is the class table of the parent.  The type_name_ variable should be set to the type name -- including the "_t".
-The swap method is used to swap the values of the two object.  It should be overridden as needed -- the yaooc_object version does nothing.
+A class inherits all instance and table members.  Table members can be overriden.  An overridden should method should have
+the same name and argument types.
 </p>
 <p>
 For the my_string class, the swap method will be overridden with the following:
 </p>
 <pre><code>
-  void my_string_swap(pointer p,pointer o)
-  {
-    my_string_pointer this=p;
-    my_string_pointer other=o;
-    char* temp=this->str;
-    this->str=other->str;
-    other->str=temp;
-  }
-</code></pre>
-<p>
-The class table and DEFINE_TYPE_INFO for my_string will be:
-</p>
-<pre><code>
-  my_string_class_table_t my_string_class_table =
-  {
-    .parent_class_table_=(const class_table_t*) &yaooc_object_class_table,
-    .type_name_ = "my_string_t",
-    .swap = my_string_swap,
-    .get = my_string_get,
-    .set = my_string_set
+  %class my_string : yaooc_object {
+      ...
+    instance:
+      ...
+    table:
+      void swap(pointer o)
+      {
+        my_string_pointer other=o;  // pointer is a generic pointer, must use my_string_pointer
+        char* temp=this->str;
+        this->str=other->str;
+        other->str=temp;
+      }
   };
-  DEFINE_TYPE_INFO(my_string,Y,Y,Y,Y,Y,Y,Y,Y,<font color="red">yaooc_object</font>)
 </code></pre>
-
 <p>
 When a class is inherited from another, the behavior of the type info methods is as follows.
 </p>
 <h3>Default Constructor</h3>
 <p>
-If the default constructor for a derived class is defined, new will use it to initialize the object.  If the default constructor is not
-defined (NULL), then the parent default constructor is used.  If the parent default constructor is not defined, the parents' parent is used. This is continued until
-a non NULL default constructor is found or the root of the inheritance tree is reached.  If a non NULL default constructor is not found,
-no action is taken.
+Any parent constructor can be used as an initializer.  If not specified, the parent default constructor is used. If a default constructor is not specified and
+the class has instance variables defined, a default constructor is automatically generated.
 </p>
-<p>
-<font color="red">
-In C++, unless otherwise specified, the default constructor of the parent class is automatically called. YAOOC does not do this.
-If needed, any child class constructor must explicitly call the parent default constructor (or any other parent class constructor using call_constructor method).
-</font>
-</p>
-<p>
-For example, consider the case of base_t being the parent of derived_t.  In C++, with the following default constructors,
-<pre><code>
-  base_t::base_t() { puts("Base");}
-  derived_t::derived_t() { puts("Derived");
-  ...
-  derived_t* d = new derived_t;
-</code></pre>
-<p>
-The base_t constructor is automatically called when derived_t is executed.  Thus the output would be
-</p>
-<pre><code>
-  Base
-  Derived
-</code></pre>
-<p>
-To get the same behaviour in YAOOC, the base default constructor has to be explicitly called.
-</p>
-<pre><code>
-  base_default_ctor(pointer p) { puts("Base"); }
-  derived_default_ctor(pointer p) { <font color="red">base_default_ctor(p);</font> puts("Derived"); }
-  ...
-  derived_t* d=new(derived);
-</code></pre>
 </p>
 <h3>Destructor</h3>
 <p>
@@ -165,36 +98,23 @@ initialized at the current level of inheritance.  The ancestors will destroy the
 </p>
 <h3>Copy Constructor</h3>
 <p>
-The new_copy method behaves as new does with the default constructor.  It traverses the inheritance tree until a non NULL copy constructor is found and uses
-it to copy the object.  If a non NULL copy constructor is not found, then the object is copied (using memcpy) to the target object.
-</p>
-<p>
-As mentioned above, if any ancestor constructors/methods are needed, then they must be explicitly called.  It is common practice for the copy constructor
-to call the default constructor for the newly created object and then call the assign method.
+Any constructor for the current class or parent class can be specified as an initializer.  If no initilizers are specified, the current class default constructor is called.
+As with default constructor, if the copy constructor is not defined and instance variables are defined, a copy constructor is automatically generated.
 </p>
 <h3>Assignment</h3>
 <p>
-The assign method behaves just as the copy constructor does.  It traverses the inheritance tree until a non NULL assignment method is found and uses
-it to assign one object to the other.  If a non NULL assignment method is not found, then the object is copied (using memcpy) to the target object.
-</p>
-<p>
-Like the default and copy constructors, ancestor assignment or methods must be called if needed to
-perform assignment.  It is common practice to call the parent assign method before assigning variables
-defined at the current level of inheritance.
+Normally, the assignment method calls the parent assignment method and then assigns variables defined in this instance.
 </p>
 <h3>Rich compare</h3>
 <p>
-Comparison methods will traverse the inheritance tree until a non NULL rich compare method is found and use it to compare the objects.
-If a non NULL rich compare method is not found, then the comparison will be as if the method returned zero (0).
 </p>
 <h3>To/From stream</h3>
 <p>
-The inheritance tree is traversed until a non NULL method is found.  If a non NULL method is not found, an exception is thrown (more on exceptions later).
 </p>
 
 <h3>Calling Parent Method</h3>
 <p>
-There are a few ways to call a parent method.  See the test_object.c file in the tests directory for various ways to call the parent method.
+The parent method,
 </p>
 
 </div>

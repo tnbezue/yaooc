@@ -655,24 +655,34 @@ bool yaooc_base_parser_bare_string(pointer p,yaooc_terminal_t* r)
   return r->end_!=NULL;
 }
 
+/*
+*/
 bool yaooc_base_parser_string_until_matching_chr(pointer p,char lch,char rch,yaooc_terminal_t* r)
 {
   yaooc_base_parser_pointer this=p;
   yaooc_terminal_t ws;
   *r=default_terminal(p);
-  int level=1;
-  char c=yaooc_base_parser_next_chr(p);
-  for(;c!= 0;c=yaooc_base_parser_next_chr(p)) {
-    if(c==lch) {
-      level++;
-    } else if(c==rch) {
-      if(--level==0) {
-        r->end_=yaooc_base_parser_current_pos(p)-1;
-        M(this,whitespace,&ws);
-        break;
+  int level=0;
+  RULE_START(p);
+  if(*this->current_pos_ == lch) {
+    char c=yaooc_base_parser_next_chr(p);
+    r->beg_ = this->current_pos_;
+    for(;c!= 0;c=yaooc_base_parser_next_chr(p)) {
+      if(c==lch) {
+        level++;
+      } else if(c==rch) {
+        if(--level==0) {
+          r->end_=yaooc_base_parser_current_pos(p)-1;
+          M(this,whitespace,&ws);
+          break;
+        }
       }
     }
   }
+  if(r->end_)
+    RULE_SUCCESS(p);
+  else
+    RULE_FAIL(p);
   return r->end_!=NULL;
 }
 

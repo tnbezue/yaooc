@@ -1,7 +1,7 @@
 #ifndef __YAOOCPP_TEMPLATE_OBJECTS_INCLUDED__
 #define __YAOOCPP_TEMPLATE_OBJECTS_INCLUDED__
 
-#include <object.yaooc>
+#include <yaooc/object.yaooc>
 
 #if 0 // HEADER
 #include <yaooc/string.h>
@@ -23,7 +23,7 @@ VECTOR_IMPLEMENTATION(yaoocpp_argument,yaoocpp_argument_vector);
 struct yaoocpp_argument {
     yaoocpp_argument();
     ~yaoocpp_argument();
-    yaoocpp_argument(yaoocpp_argument);
+    yaoocpp_argument(yaoocpp_argument*);
     operator=();
   instance:
     yaooc_string_t type_;
@@ -38,9 +38,9 @@ struct yaoocpp_argument {
 class yaoocpp_element : yaooc_object {
     yaoocpp_element();
     ~yaoocpp_element();
-    yaoocpp_element(yaoocpp_element);
+    yaoocpp_element(yaoocpp_element*);
     operator=();
-    operator<();
+    operator<=>();
   table:
     void print_class_table_definition(ostream_pointer o) const = NULL;
     void print_class_instance_definition(ostream_pointer o) const = NULL;
@@ -69,7 +69,7 @@ class yaoocpp_variable : yaoocpp_element
 {
     yaoocpp_variable();
     ~yaoocpp_variable();
-    yaoocpp_variable(yaoocpp_variable);
+    yaoocpp_variable(yaoocpp_variable*);
     operator=();
   table:
     void print_class_table_definition(ostream_pointer o) const;
@@ -86,7 +86,7 @@ class yaoocpp_raw_struct_union : yaoocpp_element
 {
 		yaoocpp_raw_struct_union();
 		~yaoocpp_raw_struct_union();
-		yaoocpp_raw_struct_union(yaoocpp_raw_struct_union);
+		yaoocpp_raw_struct_union(yaoocpp_raw_struct_union*);
 		operator=();
 
   table:
@@ -103,7 +103,7 @@ class yaoocpp_constructor : yaoocpp_element
 {
 		yaoocpp_constructor();
 		~yaoocpp_constructor();
-		yaoocpp_constructor(yaoocpp_constructor);
+		yaoocpp_constructor(yaoocpp_constructor*);
 		operator=();
   table:
     void print_class_table_definition(ostream_pointer o) const = NULL;
@@ -121,7 +121,7 @@ class yaoocpp_method : yaoocpp_constructor
 {
 		yaoocpp_method();
 		~yaoocpp_method();
-		yaoocpp_method(yaoocpp_method);
+		yaoocpp_method(yaoocpp_method*);
 		operator=();
   table:
     void print_class_table_definition(ostream_pointer o) const;
@@ -139,9 +139,9 @@ class yaoocpp_container : yaooc_object
 {
 	yaoocpp_container();
 	~yaoocpp_container();
-	yaoocpp_container(yaoocpp_container);
+	yaoocpp_container(yaoocpp_container*);
 	operator=();
-	operator<();
+	operator<=>();
 	table:
     void inherit();
     bool is_min_pod() const;
@@ -175,7 +175,7 @@ class yaoocpp_container : yaooc_object
     void print_dtor_implementation(const_pointer p,ostream_pointer o);
     void print_assign_implementation(const_pointer p,ostream_pointer o);
     void print_type_info_implementation(ostream_pointer o) const;
-    void print_define_type_info(ostream_pointer o,bool has_class_table) const;
+//    void print_define_type_info(ostream_pointer o,bool has_class_table) const;
     void print_element_prototype(ostream_pointer o,const char* sub_section,
         yaoocpp_element_pointer_vector_const_pointer elements,print_member_t pvt,const char* storage_class) const;
     void print_element_implementation(ostream_pointer o,const char* sub_section,
@@ -198,7 +198,7 @@ class yaoocpp_container_with_class_table : yaoocpp_container
 {
 		yaoocpp_container_with_class_table();
 		~yaoocpp_container_with_class_table();
-		yaoocpp_container_with_class_table(yaoocpp_container_with_class_table);
+		yaoocpp_container_with_class_table(yaoocpp_container_with_class_table*);
 		operator=();
 	table:
     void inherit();

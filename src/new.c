@@ -38,7 +38,7 @@ static void __yaooc_gc_finalizer__(GC_PTR obj, GC_PTR x)
 */
 bool has_destructor(const type_info_t* ti)
 {
-	if(!is_min_pod_type(ti)) {
+	if(ti && !is_min_pod_type(ti)) {
 		while(ti) {
 			if(ti->dtor_)
 				return true;
@@ -74,15 +74,24 @@ memory_header_t* allocate_memory(const type_info_t* ti,size_t n_elements)
 */
 default_constructor get_default_ctor(const type_info_t* ti)
 {
-	if(!is_min_pod_type(ti)) {
-		while(ti != NULL) {
-			if(ti->default_ctor_ != NULL) {
-				return ti->default_ctor_;
-			}
-			ti=ti->parent_;
-		}
-	}
+  if(ti && !is_min_pod_type(ti)) {
+    while(ti != NULL) {
+      if(ti->default_ctor_ != NULL) {
+        return ti->default_ctor_;
+      }
+      ti=ti->parent_;
+    }
+  }
 	return NULL;
+}
+
+// Calls the parent default ctor
+// Meant to be used by constructors
+void __call_default_ctor_static(pointer ptr,const type_info_t* ti)
+{
+  default_constructor pdc = get_default_ctor(ti);
+  if(pdc)
+    pdc(ptr);
 }
 
 pointer __newp_array(pointer ptr,const type_info_t* ti,size_t n_elements)
@@ -124,7 +133,7 @@ pointer __new_array(const type_info_t* ti,size_t n)
 */
 copy_constructor get_copy_ctor(const type_info_t* ti)
 {
-	if(!is_min_pod_type(ti)) {
+	if(ti && !is_min_pod_type(ti)) {
 		while(ti != NULL) {
 			if(ti->copy_ctor_ != NULL) {
 				return ti->copy_ctor_;
@@ -395,7 +404,7 @@ pointer renew_array_ctor(pointer ptr,size_t n,constructor ctor,...)
 */
 assignment get_assignment(const type_info_t* ti)
 {
-	if(!is_min_pod_type(ti)) {
+	if(ti && !is_min_pod_type(ti)) {
 		while(ti) {
 			if(ti->assign_)
 				return ti->assign_;
@@ -412,9 +421,15 @@ pointer __assign_static(pointer dst,const_pointer src,const type_info_t* ti)
 		assign_func(dst,src);
 	} else {
     /*
-      If no assignment function found, assume this is POD
+      If no assignment function, copy element members but don't change class table if it exists
     */
-		memcpy(dst,src,yaooc_sizeof(ti));
+    size_t type_size=yaooc_sizeof(ti);
+    size_t ofs=0;
+    if(!is_min_pod_type(ti) && ti->class_table_ != NULL) {
+      type_size -= sizeof(void*);
+      ofs=sizeof(void*);
+    }
+		memcpy(dst+ofs,src+ofs,type_size);
 	}
 	return dst;
 }

@@ -38,20 +38,15 @@
 <div style="overflow-y: scroll; height:900px">
 <h2>Construtors</h2>
 <p>
-In this lesson three constructors for my_string class will be created.  The arguments to a constructor is a pointer to the object
-being initialized and a va_list of variables used to initialize the object.
+In this lesson three constructors for my_string class will be created. Constructors names can be any valid C identifier but must begin with
+the name of the class. It is suggested that it be the class name appended with "_ctor_" and abbreviations of argument types.
 </p>
 <p></p>
-For my_string class, the first constructor initializes my_string object using n characters of the supplied string.
+The first constructor initializes my_string object using n characters of the supplied string.
 </p>
 <pre><code>
-  /* Uses n characters of string to initilize object */
-  void my_string_ctor_ccs_size(pointer p,va_list args)
+  my_string_ctor_ccs_size(const char* str,size_t n) : my_string()
   {
-    my_string_pointer this=p;
-    const char* str=va_arg(args,const char*);
-    size_t n = va_arg(args,size_t);
-    my_string_default_ctor(p);
     if(str != NULL) {
       if(n > strlen(str))
         n=strlen(str);
@@ -63,33 +58,25 @@ For my_string class, the first constructor initializes my_string object using n 
     }
   }
 </code></pre>
-<p>
 The second constructor creates a my_string object using the entire string specified.
 </p>
 <pre><code>
   /* Uses string to initialize object */
-  void my_string_ctor_ccs(pointer p,va_list args)
+  my_string_ctor_ccs(const char* str) : my_string_ctor_ccs_size(str,SIZE_MAX)
   {
-    const char* str=va_arg(args,const char*);
-    call_constructor(p,my_string_ctor_ccs_size,str,SIZE_MAX);
   }
 </code></pre>
 <p>
-In the second constructor, notice that a call is made to the first constructor using the call_constructor method.  The default and
-copy constructors can be called by using the corresponding method name.  Other constructors (because of the va_list argument) can not.  The call_constructor method
-must be used.  The call_constructor can not be used to call the default or copy constructor.
+In the second constructor, notice that a call is made to the first constructor by specifying the first constructor as an initializer.
+If no initializers are specified, the default constructor is called by default.
 </p>
 
 <p>
 The third constructor initializes a my_string object with n copies of the specified character.
 </p>
 <pre><code>
-  void my_string_ctor_chr_size(pointer p,va_list args)
+  my_string_ctor_chr_size(int c,size_t n)
   {
-    my_string_pointer this=p;
-    char c = va_arg(args,int);
-    size_t n = va_arg(args,size_t);
-    my_string_default_ctor(p);
     if(c && n > 0) {
       this->str=malloc(n+1);
       memset(this->str,c,n);
@@ -98,19 +85,18 @@ The third constructor initializes a my_string object with n copies of the specif
   }
 </code></pre>
 <p>
+</p>
+<p>
 The constructors are called using "new_ctor" version of new.
 </p>
 <pre><code>
-  my_string_pointer sp1 = new_ctor(my_string,my_string_ctor_ccs_size,"This is a test.",1024);
-  my_string_pointer sp2 = new_ctor(my_string,my_string_ctor_ccs,"This is a test.");
-  my_string_pointer sp3 = new_ctor(my_string,my_string_ctor_chr_size,'Y',24);
+  my_string_pointer ms1 = new_ctor(my_string,my_string_ctor_ccs_size,"This is a test.",1024);
+  my_string_pointer ms2 = new_ctor(my_string,my_string_ctor_ccs,"This is a test.");
+  my_string_pointer ms3 = new_ctor(my_string,my_string_ctor_chr_size,'Y',24);
 </code></pre>
-<h3>Naming Convention</h3>
 <p>
-In YAOOC, using the naming convention, the constructor name begins with the class name, followed by "_ctor_", then followed
-by any valid C ident characters.  It is suggested that the abbreviations of the argument types be used as the remainder of the name.
+See the example for this section for a complete listing.
 </p>
-
 </div>
 </div>
 </div>

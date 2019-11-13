@@ -185,6 +185,7 @@ yaooc_class_instance(yaoocpp_constructor) {
   yaoocpp_element_class_instance_t;
   yaoocpp_argument_vector_t arguments_;
   yaooc_string_t implementation_method_;
+  yaooc_string_t implementation_;
 };
 
 yaooc_class(yaoocpp_constructor);
@@ -262,13 +263,13 @@ yaooc_class_instance(yaoocpp_container) {
   yaoocpp_element_pointer_vector_t private_;
   yaoocpp_element_pointer_vector_t protected_;
   yaoocpp_element_pointer_vector_t static_;
-  bool has_default_ctor_;
-  bool has_dtor_;
-  bool has_copy_ctor_;
-  bool has_assign_;
-  bool has_rich_cmp_;
-  bool has_to_stream_;
-  bool has_from_stream_;
+  yaooc_string_t default_ctor_implementation_;
+  yaooc_string_t dtor_implementation_;
+  yaooc_string_t copy_ctor_implementation_;
+  yaooc_string_t assign_implementation_;
+  yaooc_string_t rich_cmp_implementation_;
+  yaooc_string_t to_stream_implementation_;
+  yaooc_string_t from_stream_implementation_;
   bool defined_in_top_level_file_;
 };
 

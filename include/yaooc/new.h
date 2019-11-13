@@ -151,6 +151,12 @@ pointer renew_array_ctor(pointer,size_t,constructor,...); // new objects initial
 #define get_type_info(ptr) ( ptr ? (get_memory_header(ptr)->type_info_) : NULL)
 #define get_n_elem(ptr) ( ptr ? (get_memory_header(ptr)->n_elem_) : 0 )
 default_constructor get_default_ctor(const type_info_t*);
+void __call_default_ctor_static(pointer,const type_info_t*);
+#define call_default_ctor_static(P,T) __call_default_ctor_static(P,T ## _ti)
+#define call_default_ctor(P) __call_default_ctor_static(P,get_type_info(P))
+#define call_parent_default_ctor_static(P,T) __call_default_ctor_static(P,T ## _ti->parent_)
+#define call_parent_default_ctor(P) __call_default_ctor_static(P,get_type_info(P)->parent_)
+
 bool has_destructor(const type_info_t*);
 copy_constructor get_copy_ctor(const type_info_t*);
 assignment get_assignment(const type_info_t*);

@@ -56,12 +56,22 @@ typedef const void* const_iterator;
 /*
 	The yaooc_iterator to be used privately by yaooc classes/methods.
 	Some compilers don't allow adding integer values to above iterators (void*).
-	The below "iterators" are used where iterators are involved mathmatical operations.
+	The below "iterators" are used where iterators involve mathmatical operations.
 */
 typedef char* const yaooc_private_pointer;
 typedef const char* const yaooc_private_const_pointer;
 typedef char* yaooc_private_iterator;
 typedef const char* yaooc_private_const_iterator;
+
+/*
+	Although yaooc_ifstream_pointer are yaooc_istringstream_pointer decendent from yaooc_istream_pointer
+	is passed as an argument, this will generate waring messgage.  Therefore, a generic stream pointer (void*) is used.
+	Using the stream pointers defined below serves as a reminder a stream is expected as a argument.
+*/
+typedef pointer ostream_pointer;
+typedef pointer istream_pointer;
+typedef const_pointer ostream_const_pointer;
+typedef const_pointer istream_const_pointer;
 
 /*
 	Default constructor.  Same as C++.  Called after memory for object has been allocated.  Pointer argument
@@ -121,7 +131,7 @@ typedef void (*to_stream)(const_pointer,pointer);
 typedef void (*from_stream)(pointer,pointer);
 
 /*
-	For objects with class tables, it must be first in list.
+	For objects with class tables, it must be first in structure.
 */
 typedef struct class_table_s class_table_t;
 struct class_table_s {
@@ -145,8 +155,7 @@ typedef struct {
     -- Used for POD types (int, double, etc) and structures made of POD types
 
 	The type_info_s structure is used for full class definitions.
-    -- Has less than compare
-    -- Has to/from stream
+    -- pod_type pluse
     -- Can have constructor
     -- Can have destructor
     -- Can have copy constructor

@@ -43,6 +43,7 @@ bool test_yaooc_base_parser_whitespace(pointer p,yaooc_terminal_t* r)
 
 void test_parser_position()
 {
+  TESTCASE("Parser Position");
   parser_position_t pp;
   const char* str="this is a test";
   pp.pos_=str;
@@ -64,6 +65,7 @@ void test_parser_position()
 
 void test_whitespace()
 {
+  TESTCASE("Whitespace");
   // Never do this in production application
   bool (*old_ws)(pointer, yaooc_terminal_t*)=yaooc_base_parser_class_table.whitespace;
   yaooc_base_parser_class_table.whitespace=test_yaooc_base_parser_whitespace;
@@ -101,6 +103,7 @@ void test_whitespace()
 
 void test_chr()
 {
+  TESTCASE("Single Character");
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="a test";
   yaooc_terminal_t r;
@@ -119,6 +122,7 @@ void test_chr()
 
 void test_str()
 {
+  TESTCASE("String of characters");
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="this is some test";
   M(bp,set_parse_string,str);
@@ -138,6 +142,7 @@ void test_str()
 
 void test_integer()
 {
+  TESTCASE("Integer");
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="12 12. 12e3 +324 -0002";
   char* ts;
@@ -181,6 +186,7 @@ void test_integer()
 
 void test_hexinteger()
 {
+  TESTCASE("Hex Integer");
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="12 0X12 0xG12 0x12e3 +0x324 -0x0002 0x 0x1 0x-3";
   char* ts;
@@ -249,6 +255,7 @@ void test_hexinteger()
 
 void test_real()
 {
+  TESTCASE("Floating point");
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="12 12. 12e3 +324 .002 -.02 -1.3 +3e-3 +3.e-3 -3.2e4 -3e3x";
   char* ts;
@@ -323,6 +330,7 @@ void test_real()
 
 void test_ident()
 {
+  TESTCASE("Ident");
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="a 3a a3a _ident7 a-7 m_m";
   char* ts;
@@ -377,6 +385,7 @@ void test_ident()
 
 void test_regex()
 {
+  TESTCASE("Regex");
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="yaooc_test  test_yaooc";
   char* ts;
@@ -399,6 +408,7 @@ void test_regex()
 
 void test_qouted_string()
 {
+  TESTCASE("Quoted string");
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="\"quoted string\"   \"This is \\a \\b \\f \\r \\n \\t \\v \\\"inside\\\" \\\\ \\t test\"   \"Start but no end";
 //  const char* str="\"quoted string\"   \"This is \\\"inside\\\"\"  \"Start but no end";
@@ -433,6 +443,7 @@ void test_qouted_string()
 
 void test_string_until_chrs()
 {
+  TESTCASE("Until characters");
   const char* str="abcdefghijklmnopqrstuvwxyz5173904268";
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   M(bp,set_parse_string,str);
@@ -449,6 +460,7 @@ void test_string_until_chrs()
 
 void test_string_while_chrs()
 {
+  TESTCASE("While characters");
   const char* str="abcdefghijklmnopqrstuvwxyz5173904268";
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   M(bp,set_parse_string,str);
@@ -465,32 +477,36 @@ void test_string_while_chrs()
 
 void test_string_until_matching_chr()
 {
+  TESTCASE("Until matching char");
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
-  const char* str="( parens ) {  { (within braces) } }   [ { [ inside square brackets ] }  ] [  [ unmatched ] ";
+  const char* str="{} ( parens ) {  { (within braces) } }   [ { [ inside square brackets ] }  ] [  [ unmatched ] ";
   yaooc_terminal_t r;
   char* ts;
   M(bp,set_parse_string,str);
-  TEST("Found open paren",M(bp,chr,'(',&r));
-  TEST("Offset is 2",bp->current_pos_-str==2);
+//  TEST("Found open paren",M(bp,chr,'(',&r));
+//  TEST("Offset is 2",bp->current_pos_-str==2);
+  TEST("Found empty braces",M(bp,string_until_matching_chr,'{','}',&r));
+  ts=yaooc_terminal_raw_text(&r);
+  TEST("String is zero length",*ts == 0);
+  if(ts) delete(ts);
   M(bp,string_until_matching_chr,'(',')',&r);
   ts=yaooc_terminal_raw_text(&r);
-  TEST("Captured string is \"parens \"",strcmp(ts,"parens ")==0);
-  puts(ts);
+  TEST("Captured string is \" parens \"",strcmp(ts," parens ")==0);
   if(ts) delete(ts);
-  TEST("Offset is 11",bp->current_pos_-str==11);
-  TEST("Found open bracket",M(bp,chr,'{',&r));
+  TEST("Offset is 11",bp->current_pos_-str==14);
+//  TEST("Found open bracket",M(bp,chr,'{',&r));
   M(bp,string_until_matching_chr,'{','}',&r);
   ts=yaooc_terminal_raw_text(&r);
-  TEST("Captured string is \"{ (within braces) } \"",strcmp(ts,"{ (within braces) } ")==0);
+  TEST("Captured string is \"  { (within braces) } \"",strcmp(ts,"  { (within braces) } ")==0);
   if(ts) delete(ts);
-  TEST("Offset is 38",bp->current_pos_-str==38);
-  TEST("Found open bracket",M(bp,chr,'[',&r));
+  TEST("Offset is 38",bp->current_pos_-str==41);
+//  TEST("Found open bracket",M(bp,chr,'[',&r));
   M(bp,string_until_matching_chr,'[',']',&r);
   ts=yaooc_terminal_raw_text(&r);
-  TEST("Captured string is \"{ [ inside square brackets ] }  \"",strcmp(ts,"{ [ inside square brackets ] }  ")==0);
+  TEST("Captured string is \" { [ inside square brackets ] }  \"",strcmp(ts," { [ inside square brackets ] }  ")==0);
   if(ts) delete(ts);
-  TEST("Offset is 74",bp->current_pos_-str==74);
-  TEST("Found open bracket",M(bp,chr,'[',&r));
+  TEST("Offset is 74",bp->current_pos_-str==77);
+//  TEST("Found open bracket",M(bp,chr,'[',&r));
   M(bp,string_until_matching_chr,'[',']',&r);
   ts=yaooc_terminal_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);

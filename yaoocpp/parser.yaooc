@@ -59,7 +59,7 @@ class yaoocpp_parser : yaooc_base_parser
     bool to_stream();
     bool from_stream();
     bool table();
-    bool instance(s);
+    bool instance();
     bool protected();
     bool private();
     bool arguments(yaoocpp_argument_vector_t** args);

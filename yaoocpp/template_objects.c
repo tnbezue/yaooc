@@ -413,6 +413,7 @@ void yaoocpp_constructor_default_ctor(pointer p)
   yaoocpp_element_default_ctor(p);
   newp(&this->arguments_,yaoocpp_argument_vector);
   newp(&this->implementation_method_,yaooc_string);
+  newp(&this->implementation_,yaooc_string);
 }
 
 void yaoocpp_constructor_dtor(pointer p)
@@ -420,6 +421,7 @@ void yaoocpp_constructor_dtor(pointer p)
   yaoocpp_constructor_pointer this=p;
   deletep(&this->arguments_,yaoocpp_argument_vector);
   deletep(&this->implementation_method_,yaooc_string);
+  deletep(&this->implementation_,yaooc_string);
 }
 
 void yaoocpp_constructor_copy_ctor(pointer p,const_pointer s)
@@ -435,6 +437,7 @@ void yaoocpp_constructor_assign(pointer p,const_pointer s)
   yaoocpp_element_assign(p,s);
   assign_static(&this->arguments_,&src->arguments_,yaoocpp_argument_vector);
   assign_static(&this->implementation_method_,&src->implementation_method_,yaooc_string);
+  assign_static(&this->implementation_,&src->implementation_,yaooc_string);
 }
 
 /* Constructors implementation for yaoocpp_constructor */
@@ -462,7 +465,7 @@ void yaoocpp_constructor_print_implementation(const_pointer p,ostream_pointer o,
   if(M(&this->implementation_method_,size) == 0) {
     M(ostrm,printf,"void %s(pointer p,va_list args)\n",M(&this->name_,c_str));
     M(ostrm,printf,"{\n");
-    M(ostrm,printf,"  %s_pointer this=p;\n",class_name);
+    M(ostrm,printf,"  %s_pointer this=p;\n  (void)this;\n",class_name);
     yaoocpp_argument_vector_const_iterator iarg;
     CFOR_EACH(iarg,&this->arguments_) {
       if(strcmp(M(&iarg->type_,c_str),"...") != 0) {
@@ -472,9 +475,9 @@ void yaoocpp_constructor_print_implementation(const_pointer p,ostream_pointer o,
 				yaoocpp_argument_print_type(iarg,o);
 				M(ostrm,printf,");\n");
 			}
-//        M(ostrm,printf,"  %s %s = va_arg(args,%s);\n",M(&iarg->type_,c_str),M(&iarg->name_,c_str),M(&iarg->type_,c_str));
+      //        M(ostrm,printf,"  %s %s = va_arg(args,%s);\n",M(&iarg->type_,c_str),M(&iarg->name_,c_str),M(&iarg->type_,c_str));
     }
-    M(ostrm,printf,"}\n\n");
+    M(ostrm,printf,"%s\n}\n\n",M(&this->implementation_,c_str));
   }
 }
 
@@ -586,11 +589,11 @@ void yaoocpp_method_print_implementation(const_pointer p,ostream_pointer o,const
     }
     M(ostrm,printf,")");
 		M(ostrm,printf,"\n{\n"
-						"  %s_%spointer this=p;\n",class_name,(this->is_const_ ? "const_": ""));
-		if(strcmp(M(&this->return_type_,c_str),"void") != 0)
+						"  %s_%spointer this=p;\n  (void)this;\n",class_name,(this->is_const_ ? "const_": ""));
+/*		if(strcmp(M(&this->return_type_,c_str),"void") != 0)
 			M(ostrm,printf,"  %s ret;\n"
-										"  return ret;\n",M(&this->return_type_,c_str));
-    M(ostrm,printf,"}\n\n");
+										"  return ret;\n",M(&this->return_type_,c_str));*/
+    M(ostrm,printf,"%s\n}\n\n",M(&this->implementation_,c_str));
   }
 }
 
@@ -643,19 +646,19 @@ void yaoocpp_container_default_ctor(pointer p)
   yaoocpp_container_pointer this=p;
 	this->parent_=NULL;
 	newp(&this->name_,yaooc_string);
+  this->defined_in_top_level_file_=false;
 	newp(&this->constructors_,yaoocpp_element_pointer_vector);
 	newp(&this->instance_,yaoocpp_element_pointer_vector);
 	newp(&this->private_,yaoocpp_element_pointer_vector);
 	newp(&this->protected_,yaoocpp_element_pointer_vector);
 	newp(&this->static_,yaoocpp_element_pointer_vector);
-	this->has_default_ctor_ = false;
-	this->has_dtor_ = false;
-	this->has_copy_ctor_ = false;
-	this->has_assign_ = false;
-	this->has_rich_cmp_ = false;
-	this->has_to_stream_ = false;
-	this->has_from_stream_ = false;
-	this->defined_in_top_level_file_ = false;
+  newp(&this->default_ctor_implementation_,yaooc_string);
+  newp(&this->dtor_implementation_,yaooc_string);
+  newp(&this->copy_ctor_implementation_,yaooc_string);
+  newp(&this->assign_implementation_,yaooc_string);
+  newp(&this->rich_cmp_implementation_,yaooc_string);
+  newp(&this->to_stream_implementation_,yaooc_string);
+  newp(&this->from_stream_implementation_,yaooc_string);
 }
 
 void yaoocpp_container_dtor(pointer p)
@@ -667,6 +670,13 @@ void yaoocpp_container_dtor(pointer p)
 	deletep(&this->private_,yaoocpp_element_pointer_vector);
 	deletep(&this->protected_,yaoocpp_element_pointer_vector);
 	deletep(&this->static_,yaoocpp_element_pointer_vector);
+  deletep(&this->default_ctor_implementation_,yaooc_string);
+  deletep(&this->dtor_implementation_,yaooc_string);
+  deletep(&this->copy_ctor_implementation_,yaooc_string);
+  deletep(&this->assign_implementation_,yaooc_string);
+  deletep(&this->rich_cmp_implementation_,yaooc_string);
+  deletep(&this->to_stream_implementation_,yaooc_string);
+  deletep(&this->from_stream_implementation_,yaooc_string);
 }
 
 void yaoocpp_container_copy_ctor(pointer p,const_pointer s)
@@ -680,19 +690,19 @@ void yaoocpp_container_assign(pointer p,const_pointer s)
   yaoocpp_container_pointer this=p;
   yaoocpp_container_const_pointer src=s;
 	this->parent_=src->parent_;
+  this->defined_in_top_level_file_=src->defined_in_top_level_file_;
   assign_static(&this->name_,&src->name_,yaooc_string);
 	assign_static(&this->constructors_,&src->constructors_,yaoocpp_element_pointer_vector);
 	assign_static(&this->instance_,&src->instance_,yaoocpp_element_pointer_vector);
 	assign_static(&this->private_,&src->private_,yaoocpp_element_pointer_vector);
 	assign_static(&this->protected_,&src->protected_,yaoocpp_element_pointer_vector);
-	this->has_default_ctor_ = src->has_default_ctor_;
-	this->has_dtor_ = src->has_dtor_;
-	this->has_copy_ctor_ = src->has_copy_ctor_;
-	this->has_assign_ = src->has_assign_;
-	this->has_rich_cmp_ = src->has_rich_cmp_;
-	this->has_to_stream_ = src->has_to_stream_;
-	this->has_from_stream_ = src->has_from_stream_;
-	this->defined_in_top_level_file_ = src->defined_in_top_level_file_;
+  assign_static(&this->default_ctor_implementation_,&src->default_ctor_implementation_,yaooc_string);
+  assign_static(&this->dtor_implementation_,&src->dtor_implementation_,yaooc_string);
+  assign_static(&this->copy_ctor_implementation_,&src->copy_ctor_implementation_,yaooc_string);
+  assign_static(&this->assign_implementation_,&src->assign_implementation_,yaooc_string);
+  assign_static(&this->rich_cmp_implementation_,&src->rich_cmp_implementation_,yaooc_string);
+  assign_static(&this->to_stream_implementation_,&src->to_stream_implementation_,yaooc_string);
+  assign_static(&this->from_stream_implementation_,&src->from_stream_implementation_,yaooc_string);
 }
 
 int yaoocpp_container_rich_compare(const_pointer p1,const_pointer p2)
@@ -705,6 +715,7 @@ int yaoocpp_container_rich_compare(const_pointer p1,const_pointer p2)
 /* Constructors implementation for yaoocpp_container */
 
 /* Private methods implementation for yaoocpp_container */
+#define HAS(ys) (M(&ys,size)>0)
 static void yaoocpp_container_print_define_type_info(const_pointer p,ostream_pointer o,bool has_class_table)
 {
   yaoocpp_container_const_pointer this=p;
@@ -714,18 +725,18 @@ static void yaoocpp_container_print_define_type_info(const_pointer p,ostream_poi
     M(ostrm,printf,"DEFINE_MIN_TYPE_INFO(%s);\n",M(&this->name_,c_str));
   } else if (M(this,is_pod)) {
     M(ostrm,printf,"DEFINE_POD_TYPE_INFO(%s",M(&this->name_,c_str));
-    M(ostrm,printf,",%c",this->has_rich_cmp_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c",this->has_to_stream_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c);\n\n",this->has_from_stream_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",HAS(this->rich_cmp_implementation_) ? 'Y' : 'N');
+    M(ostrm,printf,",%c",HAS(this->to_stream_implementation_) ? 'Y' : 'N');
+    M(ostrm,printf,",%c);\n\n",HAS(this->from_stream_implementation_) ? 'Y' : 'N');
   } else {
     M(ostrm,printf,"DEFINE_TYPE_INFO(%s",M(&this->name_,c_str));
-    M(ostrm,printf,",%c",this->has_default_ctor_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c",this->has_dtor_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c",this->has_copy_ctor_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c",this->has_assign_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c",this->has_rich_cmp_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c",this->has_to_stream_ ? 'Y' : 'N');
-    M(ostrm,printf,",%c",this->has_from_stream_ ? 'Y' : 'N');
+    M(ostrm,printf,",%c",HAS(this->default_ctor_implementation_) ? 'Y' : 'N');
+    M(ostrm,printf,",%c",HAS(this->dtor_implementation_) ? 'Y' : 'N');
+    M(ostrm,printf,",%c",HAS(this->copy_ctor_implementation_) ? 'Y' : 'N');
+    M(ostrm,printf,",%c",HAS(this->assign_implementation_) ? 'Y' : 'N');
+    M(ostrm,printf,",%c",HAS(this->rich_cmp_implementation_) ? 'Y' : 'N');
+    M(ostrm,printf,",%c",HAS(this->to_stream_implementation_) ? 'Y' : 'N');
+    M(ostrm,printf,",%c",HAS(this->from_stream_implementation_) ? 'Y' : 'N');
     M(ostrm,printf,",%c",has_class_table ? 'Y' : 'N' );
     M(ostrm,printf,",%s);\n\n",this->parent_ ? M(&this->parent_->name_,c_str) : "NULL" );
   }
@@ -737,7 +748,8 @@ static void yaoocpp_container_print_default_ctor_implementation(const_pointer p,
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"void %s_default_ctor(pointer p)\n"
                 "{\n"
-                "  %s_pointer this=p;\n",M(&this->name_,c_str),M(&this->name_,c_str));
+                "  %s_pointer this=p;\n"
+                "  (void)this;\n",M(&this->name_,c_str),M(&this->name_,c_str));
   if(this->parent_ && strcmp(M(&this->parent_->name_,c_str),"yaooc_object") != 0) {
     M(ostrm,printf,"  %s_default_ctor(this);\n",M(&this->parent_->name_,c_str));
   }
@@ -766,7 +778,7 @@ static void yaoocpp_container_print_dtor_implementation(const_pointer p,ostream_
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"void %s_dtor(pointer p)\n"
                 "{\n"
-                "  %s_pointer this=p;\n",M(&this->name_,c_str),M(&this->name_,c_str));
+                "  %s_pointer this=p;\n  (void)this;\n",M(&this->name_,c_str),M(&this->name_,c_str));
   yaoocpp_element_pointer_vector_const_iterator i;
   yaooc_regex_pointer re=pb_new_ctor(yaooc_regex,yaooc_regex_ctor_ccs_int,"(.*)_t\\s+\\*",0);
   CFOR_EACH(i,&this->instance_) {
@@ -796,7 +808,7 @@ static void yaoocpp_container_print_dtor_implementation(const_pointer p,ostream_
   M(ostrm,printf,"}\n\n");
   pb_exit();
 }
-
+#if 0
 static void yaoocpp_container_print_assign_implementation(const_pointer p,ostream_pointer o)
 {
   yaoocpp_container_const_pointer this=p;
@@ -841,49 +853,57 @@ static void yaoocpp_container_print_assign_implementation(const_pointer p,ostrea
   M(ostrm,printf,"}\n\n");
   pb_exit();
 }
+#endif
 
 static void yaoocpp_container_print_type_info_implementation(const_pointer p,ostream_pointer o)
 {
   yaoocpp_container_const_pointer this=p;
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"/* Type Info implemmentation for %s */\n",M(&this->name_,c_str));
-  if(this->has_default_ctor_)
+//  if(this->has_default_ctor_)
     yaoocpp_container_print_default_ctor_implementation(this,ostrm);
-  if(this->has_dtor_)
+//  if(this->has_dtor_)
     yaoocpp_container_print_dtor_implementation(this,ostrm);
-  if(this->has_copy_ctor_)
+  if(HAS(this->copy_ctor_implementation_))
     M(ostrm,printf,"void %s_copy_ctor(pointer p,const_pointer s)\n"
                   "{\n"
-                  "  %s_default_ctor(p);\n"
-                  "  %s_assign(p,s);\n"
-                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));
-  if(this->has_assign_)
-    yaoocpp_container_print_assign_implementation(this,ostrm);
-/*    M(ostrm,printf,"void %s_assign(pointer p,const_pointer s)\n"
+                  "  %s_pointer this=p;\n  (void)this;\n"
+                  "  %s_const_pointer src=s;\n  (void)src;\n"
+                  "  %s\n"
+                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str),
+                      M(&this->copy_ctor_implementation_,c_str));
+  if(HAS(this->assign_implementation_)) {
+//    yaoocpp_container_print_assign_implementation(this,ostrm);
+    M(ostrm,printf,"void %s_assign(pointer p,const_pointer s)\n"
                   "{\n"
-                  "  %s_pointer this=p;\n"
-                  "  %s_const_pointer src=s;\n"
-                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));*/
-  if(this->has_rich_cmp_)
+                  "  %s_pointer this=p;\n  (void)this;\n"
+                  "  %s_const_pointer src=s;\n  (void)src;\n"
+                  "%s\n"
+                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str),
+                     M(&this->assign_implementation_,c_str));
+  }
+  if(HAS(this->rich_cmp_implementation_))
     M(ostrm,printf,"int %s_rich_compare(const_pointer p1,const_pointer p2)\n"
                   "{\n"
                   "  %s_const_pointer lhs=p1;\n"
                   "  %s_const_pointer rhs=p2;\n"
-                  "  int ret=0;\n"
-                  "  return ret;\n"
-                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str));
-  if(this->has_to_stream_)
+                  "%s\n"
+                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->name_,c_str),
+                    M(&this->rich_cmp_implementation_,c_str));
+  if(HAS(this->to_stream_implementation_))
     M(ostrm,printf,"void %s_to_stream(const_pointer p,ostream_pointer o)\n"
                   "{\n"
-                  "  %s_const_pointer this=p;\n"
-                  "  yaooc_ostream_pointer ostrm=o;\n"
-                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str));
-  if(this->has_from_stream_)
+                  "  %s_const_pointer this=p;  (void)this;\n"
+                  "  yaooc_ostream_pointer ostrm=o;\n  (void)ostrm;"
+                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),
+                    M(&this->to_stream_implementation_,c_str));
+  if(HAS(this->from_stream_implementation_))
     M(ostrm,printf,"void %s_from_stream(pointer p,istream_pointer i)\n"
                   "{\n"
-                  "  %s_pointer this=p;\n"
-                  "  yaooc_istream_pointer istrm=i;\n"
-                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str));
+                  "  %s_pointer this=p;  (void)this;\n"
+                  "  yaooc_istream_pointer istrm=i;  (void)istrm;\n"
+                  "}\n\n",M(&this->name_,c_str),M(&this->name_,c_str),
+                    M(&this->from_stream_implementation_,c_str));
 }
 
 
@@ -924,35 +944,35 @@ static void yaoocpp_container_print_type_info_prototype(const_pointer p,ostream_
   yaoocpp_container_const_pointer this=p;
   yaooc_ostream_pointer ostrm=o;
   M(ostrm,printf,"/* Type Info Prototypes for %s */\n",M(&this->name_,c_str));
-  if(this->has_default_ctor_)
+  if(HAS(this->default_ctor_implementation_))
     M(ostrm,printf,"void %s_default_ctor(pointer);\n",M(&this->name_,c_str));
   else if(this->parent_)
     M(ostrm,printf,"#define %s_default_ctor %s_default_ctor\n",M(&this->name_,c_str),M(&this->parent_->name_,c_str));
   else
     M(ostrm,printf,"#define %s_default_ctor yaooc_do_nothing_default_ctor\n",M(&this->name_,c_str));
-  if(this->has_dtor_)
+  if(HAS(this->dtor_implementation_))
     M(ostrm,printf,"void %s_dtor(pointer);\n",M(&this->name_,c_str));
   else if(this->parent_)
     M(ostrm,printf,"#define %s_dtor %s_dtor\n",M(&this->name_,c_str),M(&this->parent_->name_,c_str));
   else
     M(ostrm,printf,"#define %s_dtor yaooc_do_nothing_dtor\n",M(&this->name_,c_str));
-  if(this->has_copy_ctor_)
+  if(HAS(this->copy_ctor_implementation_))
     M(ostrm,printf,"void %s_copy_ctor(pointer,const_pointer);\n",M(&this->name_,c_str));
   else if(this->parent_)
     M(ostrm,printf,"#define %s_copy_ctor %s_copy_ctor\n",M(&this->name_,c_str),M(&this->parent_->name_,c_str));
   else
     M(ostrm,printf,"#define %s_copy_ctor yaooc_do_nothing_copy_ctor\n",M(&this->name_,c_str));
-  if(this->has_assign_)
+  if(HAS(this->assign_implementation_))
     M(ostrm,printf,"void %s_assign(pointer,const_pointer);\n",M(&this->name_,c_str));
   else if(this->parent_)
     M(ostrm,printf,"#define %s_assign %s_assign\n",M(&this->name_,c_str),M(&this->parent_->name_,c_str));
   else
     M(ostrm,printf,"#define %s_assign yaooc_do_nothing_assign\n",M(&this->name_,c_str));
-  if(this->has_rich_cmp_)
+  if(HAS(this->rich_cmp_implementation_))
     M(ostrm,printf,"int %s_rich_compare(const_pointer,const_pointer);\n",M(&this->name_,c_str));
-  if(this->has_to_stream_)
+  if(HAS(this->to_stream_implementation_))
     M(ostrm,printf,"void %s_to_stream(const_pointer,ostream_pointer);\n",M(&this->name_,c_str));
-  if(this->has_from_stream_)
+  if(HAS(this->from_stream_implementation_))
     M(ostrm,printf,"void %s_from_stream(pointer,istream_pointer);\n",M(&this->name_,c_str));
   M(ostrm,printf,"\n");
 }
@@ -1013,14 +1033,17 @@ bool yaoocpp_struct_is_min_pod(const_pointer p)
 {
   yaoocpp_struct_const_pointer this=p;
   bool ret = this->parent_ ? yaoocpp_struct_is_min_pod(this->parent_) : true;
-  return ret && !this->has_default_ctor_ && !this->has_dtor_ && !this->has_copy_ctor_ && !this->has_assign_ && !this->has_rich_cmp_ && !this->has_to_stream_ && !this->has_from_stream_;
+  return ret && !HAS(this->default_ctor_implementation_) && !HAS(this->dtor_implementation_)
+    && !HAS(this->copy_ctor_implementation_) && !HAS(this->assign_implementation_) && !HAS(this->rich_cmp_implementation_)
+    && !HAS(this->to_stream_implementation_) && !HAS(this->from_stream_implementation_);
 }
 
 bool yaoocpp_struct_is_pod(const_pointer p)
 {
   yaoocpp_struct_const_pointer this=p;
   bool ret = this->parent_ ? yaoocpp_struct_is_pod(this->parent_) : true;
-  return ret && !this->has_default_ctor_ && !this->has_dtor_ && !this->has_copy_ctor_ && !this->has_assign_;
+  return ret && !HAS(this->default_ctor_implementation_) && !HAS(this->dtor_implementation_)
+        && !HAS(this->copy_ctor_implementation_) && !HAS(this->assign_implementation_);
 }
 
 void yaoocpp_struct_print_to_header(const_pointer p,ostream_pointer o)
