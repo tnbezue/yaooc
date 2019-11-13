@@ -105,16 +105,23 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
       // My string using constructor my_string_ctor_ccs_size
       my_string_t* ms2=new_ctor(my_string,my_string_ctor_ccs_size,"This is string 2. Will not be included",17);
       // My string using constructor my_string_ctor_ccs
-      my_string_t* ms3=new_ctor(my_string,my_string_ctor_ccs_size,"This is string 3.");
+      my_string_t* ms3=new_ctor(my_string,my_string_ctor_ccs,"This is string 3.");
       // My string using constructor my_string_chr_size
-      my_string_t* ms4=new_ctor(my_string,my_string_ctor_ccs_size,'A',26);
+      my_string_t* ms4=new_ctor(my_string,my_string_ctor_chr_size,'A',26);
       // Set value for ms1
       M(ms1,set,"This is string 1");
-      STREAM(cout,ms1,endl,ms2,endl,ms3,endl,ms4,endl);
+      // My string using copy constructor
+      my_string_t* ms5 = new_copy(ms1);
+      M(ms5,set,"This is string 5")
+      STREAM(cout,ms1,endl,ms2,endl,ms3,endl,ms4,endl,ms5,endl);
+      if(op_lt(ms2,ms4)) {
+        printf("'%s' is less than '%s'.\n",ms2->str,ms4->str);
+      }
       delete(ms1);
       delete(ms2);
       delete(ms3);
       delete(ms4);
+      delete(ms5);
     }
 
 ## Goals
