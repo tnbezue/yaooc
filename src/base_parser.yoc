@@ -1,0 +1,646 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+%include <yaooc/object.yod>
+%header_directory yaooc
+
+%header
+#include <yaooc/stack.h>
+#ifdef __YAOOC_USE_TRE__
+#include <tre/regex.h>
+#else
+#include <regex.h>
+#endif
+
+yaooc_struct_forward(parser_position);
+
+# define yaooc_base_parser_current_pos(p) ((yaooc_base_parser_pointer)p)->current_pos_
+# define yaooc_base_parser_peek(p) *(((yaooc_base_parser_pointer)p)->current_pos_)
+# define yaooc_base_parser_skip(p,n) { int __nn__=n; for(;__nn__>0;__nn__--) yaooc_base_parser_next_chr(p); }
+
+STACK_DEFINITION(parser_position,parser_position_stack);
+
+#define yaooc_default_token(p) \
+     (yaooc_token_t){ .beg_=((yaooc_base_parser_pointer)p)->current_pos_, .end_=NULL }
+
+enum { PARSE_SUCCESS = 0, PARSE_FAILED };
+
+#define RULE_START(p) M((yaooc_base_parser_pointer)this,rule_start)
+#define RULE_FAIL(p) M((yaooc_base_parser_pointer)this,rule_fail)
+#define RULE_SUCCESS(p) M((yaooc_base_parser_pointer)this,rule_success)
+
+#define YAOOC_PARSER_OPTIONAL(rule) ((rule),true)
+#define YAOOC_PARSER_TRY_RULE(p,rule) (RULE_START(p), (rule) ? RULE_SUCCESS(p) : RULE_FAIL(p))
+#define yaooc_token_len(t) (((t).end_ > (t).beg_ ) ? (t).end_ - (t).beg_ : 0 )
+
+%%
+
+#include <yaooc/base_parser.h>
+#include <string.h>
+#include <ctype.h>
+
+/*
+  Holds parser position.
+*/
+%struct parser_position
+{
+    parser_position() = delete;
+    ~parser_position() = delete;
+    parser_position(src) = delete;
+    operator=(src) = delete;
+  instance:
+    const char* pos_;
+    size_t line_no_;
+};
+
+/*
+  Contains start and end of token
+*/
+%struct yaooc_token
+{
+    yaooc_token() = delete;
+    ~yaooc_token() = delete;
+    yaooc_token(src) = delete;
+    operator=(src) = delete;
+
+  instance:
+    const char* beg_;
+    const char* end_;
+
+  adjunct:
+    char* raw_text() const
+    {
+      char* text=NULL;
+      if(this->end_) {
+        size_t n=this->end_-this->beg_;
+        text=new_array(char,n+1);
+        memcpy(text,this->beg_,n);
+        text[n]=0;
+      }
+      return text;
+    }
+
+    char* text() const
+    {
+      char* text=yaooc_token_raw_text(this);
+      if(text) {
+        char *inp=text;
+        char *out=inp;
+        bool finished=false;
+        while(*inp != 0 && !finished) {
+          if(*inp == '\\') {
+            inp++;
+            switch(*inp) {
+              case 0: // end_ of string
+                *out='\\'; // include in string
+                finished=true;
+                break;
+
+              case 'a':
+                *out='\a';
+                break;
+
+              case 'b':
+                *out='\b';
+                break;
+
+              case 'f':
+                *out='\f';
+                break;
+
+              case 'n':
+                *out='\n';
+                break;
+
+              case 'r':
+                *out='\r';
+                break;
+
+              case 't':
+                *out='\t';
+                break;
+
+              case 'v':
+                *out='\v';
+                break;
+
+              case '\'':
+              case '"':
+              case '?':
+              case '\\':
+                *out=*inp;
+                break;
+
+              default:  // put backslash and char in string
+                *out++='\\';
+                *out=*inp;
+            }
+          } else
+            *out=*inp;
+          inp++;
+          out++;
+        }
+        *out=0;
+
+      }
+      return text;
+    }
+
+};
+
+STACK_IMPLEMENTATION(parser_position,parser_position_stack);
+
+
+%class yaooc_base_parser {
+
+    yaooc_base_parser()
+    {
+      this->parse_string_=NULL;
+      this->current_pos_=NULL;
+      this->stack_=new(parser_position_stack);
+      this->line_no_=1;
+    }
+
+    ~yaooc_base_parser()
+    {
+      delete(this->stack_);
+    }
+
+    yaooc_base_parser(src) = delete;
+
+    operator=(src) = delete;
+
+  instance:
+    parser_position_stack_t* stack_;
+    const char* parse_string_;
+    const char* current_pos_;
+    unsigned int line_no_;
+  table:
+    void set_parse_string(const char* pstr)
+    {
+      this->line_no_=1;
+      this->parse_string_=pstr;
+      this->current_pos_=pstr;
+    }
+
+    void rule_start()
+    {
+      parser_position_t temp={ this->current_pos_,this->line_no_};
+      M(this->stack_,push,&temp);
+    }
+
+    bool rule_success()
+    {
+      M(this->stack_,pop);
+      return true;
+    }
+
+    bool rule_fail()
+    {
+      parser_position_t* temp=M(this->stack_,top);
+      this->current_pos_=temp->pos_;
+      this->line_no_=temp->line_no_;
+      M(this->stack_,pop);
+      return false;
+    }
+
+    bool eos()
+    {
+      return *this->current_pos_==0;
+    }
+
+    bool chr(char ch,yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      if(yaooc_base_parser_peek(this) == ch) {
+        yaooc_base_parser_next_chr(this);
+        r->end_=yaooc_base_parser_current_pos(this);
+        M(this,whitespace,&ws);
+      }
+      return r->end_!=NULL;
+    }
+
+    int chr_choices(const char* ch_choices,yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      int ret=-1;
+      const char* ptr=strchr(ch_choices,yaooc_base_parser_peek(this));
+      if(ptr) {
+        ret=ptr-ch_choices;
+        yaooc_base_parser_next_chr(this);
+        r->end_=yaooc_base_parser_current_pos(this);
+        M(this,whitespace,&ws);
+      }
+      return ret;
+    }
+
+    bool str(const char* str,yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      int l=strlen(str);
+      if(l>0 && strncmp(this->current_pos_,str,l)==0) {
+        yaooc_base_parser_skip(this,l);
+        r->end_=this->current_pos_;
+        M(this,whitespace,&ws);
+      }
+      return r->end_!=NULL;
+    }
+
+    int str_choices(yaooc_token_t * r,...)
+    {
+      int ret=-1;
+      int cp=0;
+
+      const char* ptr;
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      while((ptr=va_arg(args,const char*)) != NULL) {
+        if(yaooc_base_parser_str(this,ptr,r)) {
+          ret=cp;
+          M(this,whitespace,&ws);
+          break;
+        }
+        cp++;
+      }
+      return ret;
+    }
+
+    bool digits(yaooc_token_t* r)
+    {
+      *r=yaooc_default_token(this);
+      int c=yaooc_base_parser_peek(this);
+      for(;c!=0 && isdigit(c);c=yaooc_base_parser_peek(this))
+        yaooc_base_parser_next_chr(this);
+      r->end_=this->current_pos_==r->beg_ ? NULL : this->current_pos_;
+      return r->end_!=NULL;
+    }
+
+    bool hexdigits(yaooc_token_t* r)
+    {
+      *r=yaooc_default_token(this);
+      while(*this->current_pos_!=0 && isxdigit(yaooc_base_parser_peek(this)))
+        yaooc_base_parser_next_chr(this);
+      r->end_=this->current_pos_==r->beg_ ? NULL : this->current_pos_;
+      return r->end_!=NULL;
+    }
+
+    bool integer(yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      RULE_START(this);
+      if(yaooc_base_parser_peek(this)=='+' || yaooc_base_parser_peek(this)=='-')
+        yaooc_base_parser_next_chr(this);
+      yaooc_token_t dr;
+      if(yaooc_base_parser_digits(this,&dr) && (yaooc_base_parser_peek(this)==0
+            || (yaooc_base_parser_peek(this) !='.' && !isalpha(yaooc_base_parser_peek(this))))) {
+        r->end_=dr.end_;
+        M(this,whitespace,&ws);
+        return RULE_SUCCESS(this);
+      }
+      return RULE_FAIL(this);
+    }
+
+    bool hexinteger(yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      RULE_START(this);
+      if(yaooc_base_parser_next_chr(this)=='0' && toupper(yaooc_base_parser_next_chr(this))=='X') {
+        yaooc_token_t dr;
+        if(yaooc_base_parser_hexdigits(this,&dr)) {
+          r->end_=dr.end_;
+          M(this,whitespace,&ws);
+        }
+      }
+      return r->end_ == NULL ? RULE_FAIL(this) : RULE_SUCCESS(this);
+    }
+
+    bool real(yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      bool has_decimal=false;
+      RULE_START(this);
+      if(yaooc_base_parser_peek(this)=='+' || yaooc_base_parser_peek(this)=='-')
+        yaooc_base_parser_next_chr(this);
+      yaooc_token_t whole;
+      M(this,digits,&whole);
+      yaooc_token_t fraction=yaooc_default_token(this);
+      if(yaooc_base_parser_peek(this)=='.') {
+        has_decimal=true;
+    //    fraction.beg_=this->current_pos_;
+        yaooc_base_parser_next_chr(this);
+        M(this,digits,&fraction);
+      }
+      if(whole.end_ || fraction.end_) {
+        if(toupper(yaooc_base_parser_peek(this))=='E') {
+          yaooc_base_parser_next_chr(this);
+          yaooc_token_t exp;
+          M(this,integer,&exp);
+          if(exp.end_) {
+            r->end_=exp.end_; // integer already consumed whitespace
+          }
+        } else {
+          /*
+            No exponent.  Must have whole and decimal or franction
+          */
+          if(((whole.end_ && has_decimal) || fraction.end_) &&
+                  (yaooc_base_parser_peek(this) != '.' && !isalpha(yaooc_base_parser_peek(this)))) {
+            r->end_=this->current_pos_;
+            M(this,whitespace,&ws);
+          }
+        }
+      }
+      return r->end_ == NULL ? RULE_FAIL(this) : RULE_SUCCESS(this);
+    }
+
+    bool ident(yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      int c=yaooc_base_parser_peek(this);
+      if(isalpha(c) || c =='_') {
+        do {
+          yaooc_base_parser_next_chr(this);
+          c=yaooc_base_parser_peek(this);
+        } while (c !=0 && (isalnum(c) || c == '_'));
+        r->end_=yaooc_base_parser_current_pos(this);
+        M(this,whitespace,&ws);
+      }
+      return r->end_!=NULL;
+    }
+
+    bool regex(regex_t* re,uint32_t match_opts,size_t n_ov,
+      regmatch_t* ov,yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      regmatch_t ov_temp;
+      regmatch_t* pov;
+      if(ov == NULL || n_ov == 0) {
+        pov=&ov_temp;
+        n_ov=1;
+      } else {
+        pov=ov;
+      }
+      int rc = regexec(re,this->current_pos_,n_ov,pov,match_opts);
+      if(rc == 0 && pov[0].rm_so == 0) {  // Must match from beginning of line
+        yaooc_base_parser_skip(this,pov[0].rm_eo);
+        r->end_=yaooc_base_parser_current_pos(this);
+        M(this,whitespace,&ws);
+      }
+      return r->end_!=NULL;
+    }
+
+    bool quoted_string(char quote_char,yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      bool escaped=false;
+      RULE_START(this);
+      int c=yaooc_base_parser_next_chr(this);
+      if(c==quote_char) {
+        r->beg_=yaooc_base_parser_current_pos(this);
+      do {
+          c=yaooc_base_parser_next_chr(this);
+          if(escaped) {
+            escaped=false;
+          } else if(c=='\\') {
+            escaped=true;
+          } else if(c==quote_char) {
+            r->end_=yaooc_base_parser_current_pos(this)-1;
+            M(this,whitespace,&ws);
+            break;
+          }
+        } while(c != 0);
+      }
+      return r->end_ == NULL ? RULE_FAIL(this) : RULE_SUCCESS(this);
+    }
+
+    bool single_quoted_string(yaooc_token_t* r)
+    {
+      return yaooc_base_parser_quoted_string(this,'\'',r);
+    }
+
+    bool double_quoted_string(yaooc_token_t* r)
+    {
+      return yaooc_base_parser_quoted_string(this,'"',r);
+    }
+
+    bool bare_string(yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      int c=yaooc_base_parser_peek(this);
+      if(!isspace(c)) {
+        for(;c!=0;c=yaooc_base_parser_peek(this)) {
+          if(isspace(c))
+            break;
+          yaooc_base_parser_next_chr(this);
+        }
+    //    while(*this->current_pos_!=0 && !isspace(*this->current_pos_)) this->current_pos_++;
+        r->end_=this->current_pos_;
+        M(this,whitespace,&ws);
+      }
+      return r->end_!=NULL;
+    }
+
+    bool string_until_chrs(const char* chrs,yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      size_t n=strcspn(this->current_pos_,chrs);
+      if(n>0) {
+        yaooc_base_parser_skip(this,n); //this->current_pos_+=n;
+        r->end_=yaooc_base_parser_current_pos(this);
+        M(this,whitespace,&ws);
+      }
+      return r->end_!=NULL;
+    }
+
+    bool string_while_chrs(const char* chrs,yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      size_t n=strspn(this->current_pos_,chrs);
+      *r=yaooc_default_token(this);
+      if(n>0) {
+        yaooc_base_parser_skip(this,n);
+        r->end_=yaooc_base_parser_current_pos(this);
+        M(this,whitespace,&ws);
+      }
+      return r->end_!=NULL;
+    }
+
+    bool string_until_eol(yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      yaooc_base_parser_string_until_chrs(this,"\r\n",r);
+      /* remove CR from terminal capture
+      while(ret.end_>ret.beg_) {
+        if(*ret.end_ != '\r')
+          break;
+        ret.end_--;
+      }*/
+      if(r->end_!=NULL) {
+        M(this,whitespace,&ws);
+        return true;
+      }
+      return false;
+    }
+
+    bool whitespace(yaooc_token_t* r)
+    {
+      *r=yaooc_default_token(this);
+      yaooc_token_t temp;
+      while(true) {
+        if(!yaooc_base_parser_space(this,&temp))
+          if(!yaooc_base_parser_crlf(this,&temp))
+          break;
+      }
+      r->end_=yaooc_base_parser_current_pos(this);
+      return r->beg_ != r->end_;
+    }
+
+    bool string_within_matching_chr(char lch,char rch,yaooc_token_t* r)
+    {
+      yaooc_token_t ws;
+      *r=yaooc_default_token(this);
+      int level=0;
+      RULE_START(this);
+      if(*this->current_pos_ == lch) {
+        char c=yaooc_base_parser_next_chr(this);
+        r->beg_ = this->current_pos_;
+        for(;c!= 0;c=yaooc_base_parser_next_chr(this)) {
+          if(c==lch) {
+            level++;
+          } else if(c==rch) {
+            if(--level==0) {
+              r->end_=yaooc_base_parser_current_pos(this)-1;
+              M(this,whitespace,&ws);
+              break;
+            }
+          }
+        }
+      }
+      return r->end_ == NULL ? RULE_FAIL(this) : RULE_SUCCESS(this);
+    }
+
+    bool result() const
+    {
+      return *this->current_pos_==0;
+    }
+
+  adjunct:
+    int next_chr()
+    {
+      int c=*this->current_pos_;
+      if(c=='\n') this->line_no_++;
+      if(c!=0) this->current_pos_++;
+      return c;
+    }
+
+    int prev_chr()
+    {
+      int c=0;
+      if(this->current_pos_ > this->parse_string_) {
+        c=*(this->current_pos_-1);
+      }
+      return c;
+    }
+
+    bool space(yaooc_token_t* r)
+    {
+      *r=yaooc_default_token(this);
+      for(;*this->current_pos_!=0;this->current_pos_++) {
+        if(*this->current_pos_ != ' ' && *this->current_pos_ != '\t')
+          break;
+      }
+      r->end_=this->current_pos_;
+      return r->end_!=r->beg_;
+    }
+
+    bool crlf(yaooc_token_t* r)
+    {
+      *r=yaooc_default_token(this);
+      for(;*this->current_pos_ != 0;this->current_pos_++) {
+        if(*this->current_pos_ != '\r') {
+          if(*this->current_pos_ == '\n')
+            this->line_no_++;
+          else
+            break;
+        }
+      }
+      r->end_=this->current_pos_;
+      return r->end_!=r->beg_;
+    }
+
+    bool shell_comment(yaooc_token_t* r)
+    {
+      *r=yaooc_default_token(this);
+      r->beg_=yaooc_base_parser_current_pos(this);
+      if(*this->current_pos_ =='#') {
+        int c;
+        for(c=yaooc_base_parser_peek(this);c != 0;c=yaooc_base_parser_peek(this)) {
+          if(c=='\r' || c=='\n') {
+            r->end_=yaooc_base_parser_current_pos(this);
+            break;
+          }
+          yaooc_base_parser_next_chr(this);
+        }
+      }
+      return r->end_!=NULL;
+    }
+
+    bool c_comment(yaooc_token_t* r)
+    {
+      *r=yaooc_default_token(this);
+      RULE_START(this);
+      if(yaooc_base_parser_next_chr(this) =='/' && yaooc_base_parser_next_chr(this) =='*') {
+        int c;
+        for(c=yaooc_base_parser_next_chr(this);c!=0;c=yaooc_base_parser_next_chr(this)) {
+          if(c == '*' && (c=yaooc_base_parser_next_chr(this)) == '/') {
+            r->end_=yaooc_base_parser_current_pos(this);
+            break;
+          }
+        }
+      }
+      return r->end_ == NULL ? RULE_FAIL(this) : RULE_SUCCESS(this);
+    }
+
+    bool cpp_comment(yaooc_token_t* r)
+    {
+      *r=yaooc_default_token(this);
+      RULE_START(this);
+      if(yaooc_base_parser_next_chr(this) =='/' && yaooc_base_parser_next_chr(this) =='/') {
+        int c;
+        for(c=yaooc_base_parser_peek(this);c != 0;c=yaooc_base_parser_peek(this)) {
+          if(c=='\r' || c=='\n') {
+            r->end_=yaooc_base_parser_current_pos(this);
+            break;
+          }
+          yaooc_base_parser_next_chr(this);
+        }
+      }
+      return r->end_ == NULL ? RULE_FAIL(this) : RULE_SUCCESS(this);
+    }
+
+
+};

@@ -1,0 +1,72 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+%header_directory yaooc
+%include <yaooc/object.yod>
+
+%header
+#include <yaooc/stream.h>
+%%
+
+%class yaooc_integer {
+
+  yaooc_integer_ctor_int(long long v)
+  {
+    M(this,set,v);
+  }
+
+  int operator<=>(lhs,rhs)
+  {
+    if(lhs->value_<rhs->value_)
+      return -1;
+    if(lhs->value_>rhs->value_)
+      return 1;
+    return 0;
+  }
+
+  operator<<(ostrm)
+  {
+    M(ostrm,printf,"%" PRId64,this->value_);
+  }
+
+  operator>>(istrm)
+  {
+    M(istrm,scanf,"%" SCNd64,&this->value_);
+  }
+
+  instance:
+    long long value_;
+
+  table:
+    void swap(pointer o)
+    {
+      yaooc_integer_t* other=o;
+      SWAP(long long,this->value_,other->value_);
+    }
+
+    void set(long long v)
+    {
+      this->value_=v;
+    }
+
+    long long get() const
+    {
+      return this->value_;
+    }
+
+
+};

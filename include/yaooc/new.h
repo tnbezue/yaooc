@@ -190,11 +190,16 @@ void __delete_list(pointer,...);
 void call_constructor(pointer,constructor,...);
 
 /*
-  Calls the specified class method.
+  Calls the specified class method using the pointer to the class table defined in this object
 */
 #define __M(ptr,method,...) (ptr)->class_table_->method(ptr, ## __VA_ARGS__)
 #define M(ptr,...) __M(ptr, __VA_ARGS__)
 
+/*
+  Calls the specifed class method using the specified class table
+*/
+#define __CTM(CT,ptr,method,...) CT.method(ptr, ## __VA_ARGS__)
+#define CTM(CT,...) __CTM(CT, __VA_ARGS__)
 
 pointer __assign_static(pointer,const_pointer,const type_info_t*);
 #define assign_static(P,CP,T)  __assign_static(P,CP,T ## _ti)

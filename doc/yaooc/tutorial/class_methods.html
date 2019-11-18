@@ -38,8 +38,8 @@
 <div style="overflow-y: scroll; height:900px">
 <h2>Class Methods</h2>
 <p>
-In this lesson the my_string class will be improved by adding two class methods. <font color="red">&quot;%class&quot;</font> will be used
-rather than <font color="red">&quot;%struct&quot;</font> to define a class.
+In this lesson the my_string class will be improved by adding two class methods. In order to have class methods,
+<font color="red">&quot;%class&quot;</font> will be used rather than <font color="red">&quot;%struct&quot;</font> to define a class.
 </p>
 <p>
 For the my_string class, a get and set method will be defined.  The get method returns a const pointer to the string and the set method sets the string.
@@ -52,14 +52,15 @@ For the my_string class, a get and set method will be defined.  The get method r
   table:
     const char* get() const // method name will be my_string_get
     {
-      return this->str;
+      return this-&gt;str;
     }
 
     void set(const char* s)
     {
       my_string_dtor(this);
-      this->str = s==NULL ? NULL : strdup(s);
+      this-&gtstr = s==NULL ? NULL : strdup(s);
     }
+  };
 </code></pre>
 <p>
 Methods and variables appearing after &quot;table:&quot; will be placed in the class table.  Items in class table are shared by all instances
@@ -79,6 +80,9 @@ To call a class table method, use the M macro (M for method). The syntax is M(pt
   M(msp,set,"This is a test");
   printf("%s\n",M(msp,get));
 </code></pre>
+<p>
+To see various uses of the M macro, see the test files in the tests directory.
+</p>
 <h3>Forward declaration of class</h3>
 <p>
 In C++, a class can have a forward declaration.
@@ -87,10 +91,10 @@ In C++, a class can have a forward declaration.
   class my_string_t;
 </code></pre>
 <p>
-In YAOOC, this is done by using the yaooc_class_forward macro.
+This can also be done in YAOOC.
 </p>
 <pre><code>
-  yaooc_class_forward(class_name);
+  %class my_string;
 </code></pre>
 
 </div>

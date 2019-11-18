@@ -36,7 +36,7 @@ yaooc_file_vector_t* yaooc_dir_entries(const char* dir)
 		yaooc_file_t temp; // Note, intentionally not initialized
 		while((entry = readdir(dp))) {
 			if(strcmp(entry->d_name,".") !=0 && strcmp(entry->d_name,"..") !=0)
-				temp.name_=entry->d_name; // Copy constructor for yaooc_file only copies this entry
+				temp.file_=entry->d_name; // Copy constructor for yaooc_file only copies this entry
 				M(files,push_back,&temp);
 		}
 		closedir(dp);
@@ -53,7 +53,7 @@ yaooc_file_vector_t* yaooc_dir_glob(const char* pat)
 	glob_t glob_result;
 	glob(pat,GLOB_TILDE,NULL,&glob_result);
 	for(unsigned int i=0;i<glob_result.gl_pathc;++i){
-		temp.name_=glob_result.gl_pathv[i];
+		temp.file_=glob_result.gl_pathv[i];
 		M(files,push_back,&temp);
 	}
 	globfree(&glob_result);
@@ -64,7 +64,7 @@ yaooc_file_vector_t* yaooc_dir_glob(const char* pat)
 
 	hFind = FindFirstFile(pat, &data);
 	while (hFind && bContinue) {
-		temp.name_=data.cFileName;
+		temp.file_=data.cFileName;
 		M(files,push_back,&temp);
 		bContinue = FindNextFile(hFind, &data);
 	}

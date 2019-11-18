@@ -1,0 +1,309 @@
+%include <yaooc/object.yod>
+%header_directory yaooc
+
+#include <stdlib.h>
+
+/*
+  Handles dynamically allocated objects.
+  It is meant to be used for polymorphic object pointers in a container (vector, map, etc)
+*/
+
+
+%header
+void dynamic_pointer_default_ctor(pointer);
+void dynamic_pointer_dtor(pointer);
+void dynamic_pointer_copy_ctor(pointer,const_pointer);
+void dynamic_pointer_assign(pointer,const_pointer);
+int dynamic_pointer_rich_compare(const_pointer,const_pointer);
+
+
+#define DYNAMIC_POINTER_DEFINITION(T,N) \
+typedef T ## _t* N ## _t; \
+typedef N ## _t* N ## _pointer; \
+typedef const N ## _t* N ## _const_pointer; \
+extern const type_info_t* const N ## _ti
+
+#define DYNAMIC_POINTER_IMPLEMENTATION(T,N) \
+  __DEFINE_TYPE_INFO__(N,dynamic_pointer_default_ctor,dynamic_pointer_dtor,dynamic_pointer_copy_ctor,dynamic_pointer_assign,dynamic_pointer_rich_compare,NULL,NULL,NULL,NULL)
+
+%%
+
+void dynamic_pointer_default_ctor(pointer p)
+{
+  (*(void**)p) = NULL;
+}
+void dynamic_pointer_dtor(pointer p)
+{
+  if((*(void**)p)) {
+    delete ((*(void**)p));
+    (*(void**)p)=NULL;
+  }
+}
+
+void dynamic_pointer_copy_ctor(pointer d,const_pointer s)
+{
+  if((*(void**)s))
+    (*(void**)d)=new_copy((*(void**)s));
+  else
+    (*(void**)d)=NULL;
+}
+
+void dynamic_pointer_assign(pointer d,const_pointer s)
+{
+  dynamic_pointer_dtor(d);
+  dynamic_pointer_copy_ctor(d,s);
+}
+
+int dynamic_pointer_rich_compare(const_pointer lhs,const_pointer rhs)
+{
+  return op_rich_compare(*(pointer**)lhs,*(pointer**)rhs);
+}
+
+%class yaooc_unique_pointer : yaooc_object {
+    yaooc_unique_pointer()
+    {
+      this->ptr_=NULL;
+    }
+    ~yaooc_unique_pointer()
+    {
+      if(this->ptr_)
+        delete(this->ptr_);
+      this->ptr_=NULL;
+    }
+
+    yaooc_unique_pointer(src) : yaooc_unique_pointer()
+    {
+      assign_static(this,src,yaooc_unique_pointer);
+    }
+
+    operator=(src)
+    {
+      if(this->ptr_ != src->ptr_) {
+        deletep(this,yaooc_unique_pointer);
+        this->ptr_=src->ptr_;
+        ((yaooc_unique_pointer_pointer)src)->ptr_=NULL;  // Yeah, I know
+      }
+    }
+
+    int operator<=>(lhs,rhs)
+    {
+      if(lhs->ptr_==rhs->ptr_)
+        return 0;
+      if(lhs->ptr_ != NULL) {
+        if(rhs->ptr_ != NULL) {
+          return op_rich_compare(lhs->ptr_,rhs->ptr_);
+        } else {
+          return 1;
+        }
+      }
+      // From first comparison, it's known that rhs->ptr_ is not NULL
+      return -1;
+    }
+
+    yaooc_unique_pointer_ctor_ptr(pointer value) : yaooc_unique_pointer()
+    {
+      M(this,reset,value);
+    }
+
+  instance:
+    void* ptr_;
+  table:
+    void swap(pointer o)
+    {
+      yaooc_unique_pointer_t* other=o;
+      SWAP(pointer,this->ptr_,other->ptr_);
+    }
+    pointer get() const
+    {
+      return this->ptr_;
+    }
+
+    pointer release()
+    {
+      pointer ret = this->ptr_;
+      this->ptr_=NULL;
+      return ret;
+    }
+
+    void reset(pointer ptr)
+    {
+      deletep(this,yaooc_unique_pointer);
+      this->ptr_=ptr;
+    }
+};
+
+%header
+#define UNIQUE_POINTER_DEFINITION(T,NAME) \
+yaooc_class_table(NAME) \
+{ \
+  yaooc_object_class_table_t; \
+  T ## _pointer (*get)(NAME ## _const_pointer); \
+  T ## _pointer (*release)(NAME ## _pointer); \
+  void (*reset)(NAME ## _pointer,T ## _pointer); \
+}; \
+yaooc_class_instance(NAME) \
+{ \
+  T ## _t* ptr_; \
+}; \
+yaooc_class(NAME); \
+void NAME ## _ctor_ptr(pointer,va_list)
+
+#define UNIQUE_POINTER_IMPLEMENTATION(T,NAME) \
+void NAME ## _ctor_ptr(pointer p,va_list args) \
+{ call_constructor(p,yaooc_unique_pointer_ctor_ptr,va_arg(args,pointer)); } \
+NAME ## _class_table_t NAME ## _class_table = \
+{ \
+  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table, \
+  .type_name_ = (const char*) # NAME "_t", \
+  .swap = (void(*) (pointer,pointer)) yaooc_unique_pointer_swap, \
+  .get = (T ## _pointer (*)(NAME ## _const_pointer))yaooc_unique_pointer_get, \
+  .reset = (void (*) (NAME ## _pointer,T ## _pointer)) yaooc_unique_pointer_reset, \
+  .release = (T ## _pointer (*)(NAME ## _pointer))yaooc_unique_pointer_release \
+}; \
+DEFINE_TYPE_INFO(NAME,N,N,N,N,N,N,N,Y,yaooc_unique_pointer)
+%%
+
+%header
+typedef struct yaooc_counter_s yaooc_counter_t;
+%%
+
+struct yaooc_counter_s {
+	void* ptr_;
+	size_t count_;
+};
+
+static void yaooc_counter_default_ctor(pointer p)
+{
+  yaooc_counter_t* this=p;
+	this->ptr_=NULL;
+	this->count_=1;
+}
+
+static void yaooc_counter_ctor_ptr(pointer p,va_list args)
+{
+  yaooc_counter_t* this=p;
+	this->ptr_=va_arg(args,pointer);
+	this->count_=1;
+}
+
+DEFINE_TYPE_INFO(yaooc_counter,Y,N,N,N,N,N,N,N,NULL);
+
+%class yaooc_shared_pointer : yaooc_object {
+
+  yaooc_shared_pointer()
+  {
+    this->counter_=NULL;
+  }
+
+  ~yaooc_shared_pointer()
+  {
+    M(this,release);
+  }
+
+  yaooc_shared_pointer(src)
+  {
+    call_default_ctor_static(this,yaooc_shared_pointer);
+    assign_static(this,src,yaooc_shared_pointer);
+  }
+
+  operator=(src)
+  {
+    if(this != src) {
+      M(this,release);
+      yaooc_shared_pointer_acquire(this,src->counter_);
+    }
+  }
+
+  int operator<=>(lhs,rhs)
+  {
+    return op_rich_compare(M(lhs,get),M(rhs,get));
+  }
+
+  yaooc_shared_pointer_ctor_ptr(pointer value)
+  {
+    call_default_ctor_static(this,yaooc_shared_pointer);
+    M(this,reset,value);
+  }
+table:
+
+  void swap(pointer o)
+  {
+    yaooc_shared_pointer_t* other=o;
+    SWAP(yaooc_counter_t*,this->counter_,other->counter_);
+  }
+
+  pointer get() const
+  {
+    return this->counter_ ? this->counter_->ptr_ : NULL;
+  }
+
+  pointer release()
+  {
+    pointer ret=M(this,get);
+    if(this->counter_) {
+      if(--this->counter_->count_ == 0) {
+        delete(this->counter_->ptr_);
+        delete(this->counter_);
+      }
+      this->counter_=NULL;
+    }
+    return ret;
+  }
+
+  void reset(pointer ptr)
+  {
+    M(this,release);
+    if(ptr != NULL)
+      this->counter_=new_ctor(yaooc_counter,yaooc_counter_ctor_ptr,ptr);
+  }
+
+  size_t count() const
+  {
+    return this->counter_ ? this->counter_->count_  : 0;
+  }
+instance:
+  yaooc_counter_t* counter_;
+adjunct:
+  void acquire(yaooc_counter_t* c)
+  {
+    this->counter_=c;
+    if(c)
+      ++c->count_;
+  }
+};
+
+%header
+/*
+  The following template implements same as above.  The values of get are
+  of the correct pointer type.
+*/
+#define SHARED_POINTER_DEFINITION(T,NAME) \
+yaooc_class_table(NAME) \
+{ \
+  yaooc_object_class_table_t; \
+	T ## _pointer (*get)(NAME ## _const_pointer); \
+	T ## _pointer	(*release)(NAME ## _pointer); \
+  void  (*reset)(NAME ## _pointer,T ## _pointer); \
+  size_t (*count)(NAME ## _const_pointer); \
+}; \
+yaooc_class_instance(NAME) { \
+	yaooc_counter_t* counter_; \
+}; \
+yaooc_class(NAME); \
+void NAME ## _ctor_ptr(pointer this,va_list args)
+
+#define SHARED_POINTER_IMPLEMENTATION(T,NAME) \
+void NAME ## _ctor_ptr(pointer this,va_list args) \
+	{ call_constructor(this,yaooc_shared_pointer_ctor_ptr,va_arg(args,pointer)); } \
+NAME ## _class_table_t NAME ## _class_table = {\
+  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table, \
+  .type_name_ = (const char*) # NAME "_t", \
+  .swap = (void (*) (pointer,pointer)) yaooc_shared_pointer_swap, \
+  .get = (T ## _pointer (*) (NAME ## _const_pointer)) yaooc_shared_pointer_get, \
+  .release = (T ## _pointer (*) (NAME ## _pointer)) yaooc_shared_pointer_release, \
+  .reset = (void (*) (NAME ## _pointer,T ## _pointer)) yaooc_shared_pointer_reset, \
+  .count = (size_t (*) (NAME ## _const_pointer)) yaooc_shared_pointer_count, \
+};\
+DEFINE_TYPE_INFO(NAME,N,N,N,N,N,N,N,Y,yaooc_shared_pointer)
+
+%%

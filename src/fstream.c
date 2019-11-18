@@ -1,158 +1,181 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include <yaooc/fstream.h>
-
-/*  Begin YAOOC PreProcessor generated content */
-
-
-/* yaooc_ifstream private members */
-
-/* yaooc_ifstream type info members */
-void yaooc_ifstream_default_ctor(pointer p)
+void yaooc_ifstream_ctor_fname_mode(pointer __pthis__,va_list __con_args__)
 {
-//  yaooc_ifstream_pointer this=p;
-	yaooc_base_stream_default_ctor(p);
+yaooc_ifstream_pointer this=__pthis__;
+const char* fname = va_arg(__con_args__,const char*);
+const char* mode = va_arg(__con_args__,const char*);
+
+call_parent_default_ctor_static(this,yaooc_ifstream);
+
+
+      M(this,open,fname,mode);
+    
 }
-
-void yaooc_ifstream_dtor(pointer p)
+void yaooc_ifstream_open(pointer __pthis__,const char* fname,const char* mode)
 {
-  yaooc_ifstream_pointer this=p;
-	M(this,close);
+yaooc_ifstream_pointer this=__pthis__;(void)this;
+#define super() yaooc_ifstream_parent_class_table->open(this,fname,mode)
+#define PM(method,...) CTM((*yaooc_ifstream_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      M(this,close);
+      this->handle_=fopen(fname,mode);
+    
+#undef PM
+#undef super
 }
-
-
-
-/* Constructors for yaooc_ifstream */
-void yaooc_ifstream_ctor_fname_mode(pointer p,va_list args)
+void yaooc_ifstream_close(pointer __pthis__)
 {
-	yaooc_ifstream_default_ctor(p);
-  yaooc_ifstream_pointer this=p;
-  const char* fname = va_arg(args,const char*);
-  const char* mode = va_arg(args,const char*);
-	M(this,open,fname,mode);
+yaooc_ifstream_pointer this=__pthis__;(void)this;
+#define super() yaooc_ifstream_parent_class_table->close(this)
+#define PM(method,...) CTM((*yaooc_ifstream_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->handle_) {
+        fclose(this->handle_);
+        this->handle_=NULL;
+      }
+    
+#undef PM
+#undef super
 }
-
-/* yaooc_ifstream protected members */
-
-/* Class table methods for yaooc_ifstream */
-
-void yaooc_ifstream_open(pointer p,const char* fname,const char* mode)
-{
-  yaooc_ifstream_pointer this=p;
-	M(this,close);
-	this->handle_=fopen(fname,mode);
-}
-
-void yaooc_ifstream_close(pointer p)
-{
-  yaooc_ifstream_pointer this=p;
-	if(this->handle_) {
-		fclose(this->handle_);
-		this->handle_=NULL;
-	}
-}
-
-/* Class table for yaooc_ifstream */
-yaooc_ifstream_class_table_t yaooc_ifstream_class_table =
-{
-  .eof = (bool (*) (const_pointer)) yaooc_istream_eof,
-  .seek = (bool (*) (pointer,size_t,int)) yaooc_istream_seek,
-  .tell = (size_t (*) (const_pointer)) yaooc_istream_tell,
-  .bool = (bool (*) (const_pointer)) yaooc_istream_bool,
-	.stream = (void (*) (pointer,...)) yaooc_ifstream_stream,
-  .peek = (int (*) (pointer)) yaooc_istream_peek,
-  .scanf = (int (*) (pointer,const char*,...)) yaooc_istream_scanf,
-  .vscanf = (int (*) (pointer,const char*,va_list)) yaooc_istream_vscanf,
-  .read = (size_t (*) (pointer,void*,size_t,size_t)) yaooc_istream_read,
-  .getstr = (char* (*) (pointer,char*,size_t)) yaooc_istream_getstr,
-  .open = (void (*) (pointer,const char*,const char*)) yaooc_ifstream_open,
-  .close = (void (*) (pointer)) yaooc_ifstream_close,
+yaooc_ifstream_class_table_t yaooc_ifstream_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_istream_class_table,
+.type_name_ = (const char*) "yaooc_ifstream_t",
+.swap = (void(*)(pointer,pointer)) yaooc_ifstream_swap,
+.eof = (bool(*)(const_pointer)) yaooc_ifstream_eof,
+.seek = (bool(*)(pointer,size_t,int)) yaooc_ifstream_seek,
+.tell = (size_t(*)(const_pointer)) yaooc_ifstream_tell,
+.good = (bool(*)(const_pointer)) yaooc_ifstream_good,
+.stream = (void(*)(pointer,...)) yaooc_ifstream_stream,
+.peek = (int(*)(pointer)) yaooc_ifstream_peek,
+.scanf = (int(*)(pointer,const char*,...)) yaooc_ifstream_scanf,
+.vscanf = (int(*)(pointer,const char*,va_list)) yaooc_ifstream_vscanf,
+.read = (size_t(*)(pointer,void*,size_t,size_t)) yaooc_ifstream_read,
+.getstr = (char*(*)(pointer,char*,size_t)) yaooc_ifstream_getstr,
+.open = (void(*)(pointer,const char*,const char*)) yaooc_ifstream_open,
+.close = (void(*)(pointer)) yaooc_ifstream_close,
 };
-
-DEFINE_TYPE_INFO(yaooc_ifstream,Y,Y,N,N,N,N,N,Y,yaooc_istream);
-
-
-/* yaooc_ofstream private members */
-
-/* yaooc_ofstream type info members */
-void yaooc_ofstream_default_ctor(pointer p)
+void yaooc_ifstream_default_ctor(pointer __pthis__)
 {
-	yaooc_base_stream_default_ctor(p);
+yaooc_ifstream_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_ifstream);
+
+
+
+      yaooc_base_stream_default_ctor(this);
+    
 }
-
-void yaooc_ofstream_dtor(pointer p)
+void yaooc_ifstream_dtor(pointer __pthis__)
 {
-  yaooc_ofstream_pointer this=p;
-	M(this,close);
+yaooc_ifstream_pointer this=__pthis__;(void)this;
+
+
+      M(this,close);
+    
 }
-
-
-
-/* Constructors for yaooc_ofstream */
-void yaooc_ofstream_ctor_fname_mode(pointer p,va_list args)
-{
-  yaooc_ofstream_pointer this=p;
-	yaooc_ofstream_default_ctor(p);
-  const char* fname = va_arg(args,const char*);
-  const char* mode = va_arg(args,const char*);
-	M(this,open,fname,mode);
-}
-
-
-
-/* yaooc_ofstream protected members */
-
-/* Class table methods for yaooc_ofstream */
-
-void yaooc_ofstream_open(pointer p,const char* fname,const char* mode)
-{
-	yaooc_ofstream_pointer this=p;
-	M(this,close);
-	this->handle_=fopen(fname,mode);
-}
-
-void yaooc_ofstream_close(pointer p)
-{
-	yaooc_ofstream_pointer this=p;
-	if(this->handle_) {
-		fclose(this->handle_);
-		this->handle_=NULL;
-	}
-}
-
-
-/* Class table for yaooc_ofstream */
-yaooc_ofstream_class_table_t yaooc_ofstream_class_table =
-{
-  .eof = (bool (*) (const_pointer)) yaooc_ostream_eof,
-  .seek = (bool (*) (pointer,size_t,int)) yaooc_ostream_seek,
-  .tell = (size_t (*) (const_pointer)) yaooc_ostream_tell,
-  .bool = (bool (*) (const_pointer)) yaooc_ostream_bool,
-	.stream = (void (*) (pointer,...)) yaooc_ofstream_stream,
-  .printf = (int (*) (pointer,const char*,...)) yaooc_ostream_printf,
-  .vprintf = (int (*) (pointer,const char*,va_list)) yaooc_ostream_vprintf,
-  .write = (size_t (*) (pointer,const void*,size_t,size_t)) yaooc_ostream_write,
-	.putstr = (int (*) (pointer,const char*)) yaooc_ostream_putstr,
-	.putchr = (int (*) (pointer,int)) yaooc_ostream_putchr,
-	.open = (void (*) (pointer,const char*,const char*)) yaooc_ofstream_open,
-  .close = (void (*) (pointer)) yaooc_ofstream_close,
+const type_info_t __yaooc_ifstream_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_ifstream_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_ifstream_default_ctor,
+.dtor_=yaooc_ifstream_dtor,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_ifstream_class_table,
+.parent_=&__yaooc_istream_ti
 };
+const type_info_t* const yaooc_ifstream_ti=&__yaooc_ifstream_ti;
+void yaooc_ofstream_ctor_fname_mode(pointer __pthis__,va_list __con_args__)
+{
+yaooc_ofstream_pointer this=__pthis__;
+const char* fname = va_arg(__con_args__,const char*);
+const char* mode = va_arg(__con_args__,const char*);
 
-DEFINE_TYPE_INFO(yaooc_ofstream,Y,Y,N,N,N,N,N,Y,yaooc_ostream);
+call_parent_default_ctor_static(this,yaooc_ofstream);
 
-/*  End YAOOC PreProcessor generated content */
+
+      M(this,open,fname,mode);
+    
+}
+void yaooc_ofstream_open(pointer __pthis__,const char* fname,const char* mode)
+{
+yaooc_ofstream_pointer this=__pthis__;(void)this;
+#define super() yaooc_ofstream_parent_class_table->open(this,fname,mode)
+#define PM(method,...) CTM((*yaooc_ofstream_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      M(this,close);
+      this->handle_=fopen(fname,mode);
+    
+#undef PM
+#undef super
+}
+void yaooc_ofstream_close(pointer __pthis__)
+{
+yaooc_ofstream_pointer this=__pthis__;(void)this;
+#define super() yaooc_ofstream_parent_class_table->close(this)
+#define PM(method,...) CTM((*yaooc_ofstream_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->handle_) {
+        fclose(this->handle_);
+        this->handle_=NULL;
+      }
+    
+#undef PM
+#undef super
+}
+yaooc_ofstream_class_table_t yaooc_ofstream_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_ostream_class_table,
+.type_name_ = (const char*) "yaooc_ofstream_t",
+.swap = (void(*)(pointer,pointer)) yaooc_ofstream_swap,
+.eof = (bool(*)(const_pointer)) yaooc_ofstream_eof,
+.seek = (bool(*)(pointer,size_t,int)) yaooc_ofstream_seek,
+.tell = (size_t(*)(const_pointer)) yaooc_ofstream_tell,
+.good = (bool(*)(const_pointer)) yaooc_ofstream_good,
+.stream = (void(*)(pointer,...)) yaooc_ofstream_stream,
+.printf = (int(*)(pointer,const char*,...)) yaooc_ofstream_printf,
+.vprintf = (int(*)(pointer,const char*,va_list)) yaooc_ofstream_vprintf,
+.write = (size_t(*)(pointer,const void*,size_t,size_t)) yaooc_ofstream_write,
+.putstr = (int(*)(pointer,const char*)) yaooc_ofstream_putstr,
+.putchr = (int(*)(pointer,int)) yaooc_ofstream_putchr,
+.open = (void(*)(pointer,const char*,const char*)) yaooc_ofstream_open,
+.close = (void(*)(pointer)) yaooc_ofstream_close,
+};
+void yaooc_ofstream_default_ctor(pointer __pthis__)
+{
+yaooc_ofstream_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_ofstream);
+
+
+
+      yaooc_base_stream_default_ctor(this);
+    
+}
+void yaooc_ofstream_dtor(pointer __pthis__)
+{
+yaooc_ofstream_pointer this=__pthis__;(void)this;
+
+
+      M(this,close);
+    
+}
+const type_info_t __yaooc_ofstream_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_ofstream_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_ofstream_default_ctor,
+.dtor_=yaooc_ofstream_dtor,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_ofstream_class_table,
+.parent_=&__yaooc_ostream_ti
+};
+const type_info_t* const yaooc_ofstream_ti=&__yaooc_ofstream_ti;

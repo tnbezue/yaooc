@@ -1,0 +1,57 @@
+%header_directory yaooc
+
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+%header
+#include <yaooc/new.h>
+void yaooc_pure_virtual(const char* method,const char* cls);
+%%
+#include <stdio.h>
+#include <string.h>
+
+%class yaooc_object {
+    /*
+      Define a default constructor, copy constructor, and assignment only because derived
+      classes might expect there to be one.  These methods do nothing.
+    */
+  table:
+    const class_table_t* parent_class_table_ = NULL;
+    const char* type_name_ = "yaooc_object_t";
+    void swap(pointer s) { }
+	adjunct:
+		bool isa(const char* s) const {
+      const yaooc_object_class_table_t* current_class_table=(yaooc_object_class_table_t*)(((yaooc_object_pointer)this)->class_table_);
+      while(current_class_table != NULL) {
+        if(strcmp(current_class_table->type_name_,s) == 0)
+          return true;
+        current_class_table=(const yaooc_object_class_table_t*)current_class_table->parent_class_table_;
+      }
+      return false;
+    }
+};
+
+%header
+#define TYPE(p) ((yaooc_object_pointer)(p))->class_table_->type_name_
+#define ISA(p,o) yaooc_object_isa(p,# o "_t")
+%%
+
+void yaooc_pure_virtual(const char* method,const char* cls)
+{
+  fprintf(stderr,"Pure virtual method %s for class %s called.\n",method,cls);
+  abort();
+}

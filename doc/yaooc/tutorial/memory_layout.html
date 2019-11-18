@@ -66,11 +66,13 @@ objects allocated.  This memory layout is shown below.
 </div>
 
 <p>
+The first entry is the type info table (contains pointers to constructor, destructor, copy constructor, etc) for the type. The second
+entry is the number of elements allocated.
 The overhead is 8 bytes for a 32 bit system and 16 bytes for a 64 bit system.  Note that this is per allocation -- not per element.
 If a single character is allocated, 9 (or 17) bytes will actually be allocated.  An array of 100,000 characters would require 100,008 (or 100,016) bytes.
 </p>
 <p>
-This memory allocation scheme allows the type info to be readily available for internal YAOOC methods that uses it. For example, the assign method
+This memory allocation scheme allows the type info to be readily available for internal YAOOC methods that use it. For example, the assign method
 can access the type info to apply the appropriate assignment method.  Likewise, the delete method can determine the destructor and number
 of elements to delete. User methods should not try to access the type info or element count.
 </p>

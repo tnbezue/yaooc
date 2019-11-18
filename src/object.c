@@ -1,59 +1,51 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include <yaooc/object.h>
 
+#include <stdio.h>
 #include <string.h>
 
-/* Private members for yaooc_object */
 
-/* Protected members for yaooc_object */
-bool yaooc_object_isa(const_pointer p,const char* s)
+bool yaooc_object_isa(const_pointer __pthis__,const char* s)
 {
-	const yaooc_object_class_table_t* current_class_table=(yaooc_object_class_table_t*)(((yaooc_object_pointer)p)->class_table_);
-	while(current_class_table != NULL) {
-		if(strcmp(current_class_table->type_name_,s) == 0)
-			return true;
-		current_class_table=(const yaooc_object_class_table_t*)current_class_table->parent_class_table_;
-	}
-	return false;
+yaooc_object_const_pointer this=__pthis__;(void)this;
+
+      const yaooc_object_class_table_t* current_class_table=(yaooc_object_class_table_t*)(((yaooc_object_pointer)this)->class_table_);
+      while(current_class_table != NULL) {
+        if(strcmp(current_class_table->type_name_,s) == 0)
+          return true;
+        current_class_table=(const yaooc_object_class_table_t*)current_class_table->parent_class_table_;
+      }
+      return false;
+    
 }
-
-/* Typeinfo for yaooc_object */
-
-/* Additional constructors for yaooc_object */
-
-/* Class table members for yaooc_object */
-void yaooc_object_swap(pointer d,pointer s)
+void yaooc_object_swap(pointer __pthis__,pointer s)
 {
+yaooc_object_pointer this=__pthis__;(void)this;
+ 
 }
-
-/* Instance members for yaooc_object */
-
-/* yaooc_object class table */
-yaooc_object_class_table_t yaooc_object_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) NULL,
-  .type_name_ = (const char*) "yaooc_object_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_object_swap,
+yaooc_object_class_table_t yaooc_object_class_table ={
+.parent_class_table_ = (const class_table_t*) NULL,
+.type_name_ = (const char*) "yaooc_object_t",
+.swap = (void(*)(pointer,pointer)) yaooc_object_swap,
 };
+const type_info_t __yaooc_object_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_object_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_object_class_table,
+.parent_=NULL
+};
+const type_info_t* const yaooc_object_ti=&__yaooc_object_ti;
 
+void yaooc_pure_virtual(const char* method,const char* cls)
+{
+  fprintf(stderr,"Pure virtual method %s for class %s called.\n",method,cls);
+  abort();
+}
 
-DEFINE_TYPE_INFO(yaooc_object,N,N,N,N,N,N,N,Y,NULL);
-
-void yaooc_do_nothing_default_ctor(pointer p) { }
-void yaooc_do_nothing_copy_ctor(pointer p,const_pointer s) { }

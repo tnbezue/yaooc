@@ -1,24 +1,9 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
+#ifndef __THREAD_INCLUDED__
+#define __THREAD_INCLUDED__
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
-#ifndef __YAOOC_THREAD_INCLUDED__
-#define __YAOOC_THREAD_INCLUDED__
 
 #include <yaooc/object.h>
+
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -39,27 +24,28 @@ extern "C" {
 #endif
 
 typedef void* (*yaooc_thread_method) (pointer,void*);
-/*  Begin YAOOC PreProcessor generated content */
 
 
-/*
-  Class definition for yaooc_thread
-*/
-yaooc_class_table(yaooc_thread)
-{
+typedef struct yaooc_exception_thread_jmpbuf_node_s yaooc_exception_thread_jmpbuf_node_t;
+
+yaooc_min_struct(yaooc_thread_start_info) {
+  void* object_;
+  void* data_;
+};
+yaooc_class_table(yaooc_thread) {
   yaooc_object_class_table_t;
   yaooc_internal_thread_t (*id)(const_pointer);
+  void (*cancel)(pointer);
   int (*join)(pointer);
-  int (*cancel)(pointer);
   int (*detach)(pointer);
   yaooc_thread_state_t (*state)(const_pointer);
   bool (*is_detached)(const_pointer);
   bool (*start)(pointer,void*);
 };
+#define yaooc_thread_parent_class_table ((yaooc_object_class_table_t*)(yaooc_thread_class_table.parent_class_table_))
 
-yaooc_class_instance(yaooc_thread)
-{
-  yaooc_thread_method method;
+yaooc_class_instance(yaooc_thread) {
+  yaooc_thread_method method_;
   yaooc_internal_thread_t thread_id_;
   yaooc_thread_state_t state_;
   bool is_detached_;
@@ -67,104 +53,41 @@ yaooc_class_instance(yaooc_thread)
 };
 
 yaooc_class(yaooc_thread);
-/* Prototypes for yaooc_thread type info */
+
 void yaooc_thread_default_ctor(pointer);
 void yaooc_thread_dtor(pointer);
-
-/* Constructors for yaooc_thread */
 void yaooc_thread_ctor_method(pointer,va_list);
-
-/* Prototypes for yaooc_thread class table*/
 #define yaooc_thread_swap yaooc_object_swap
 yaooc_internal_thread_t yaooc_thread_id(const_pointer);
+void yaooc_thread_cancel(pointer);
 int yaooc_thread_join(pointer);
-int yaooc_thread_cancel(pointer);
 int yaooc_thread_detach(pointer);
 yaooc_thread_state_t yaooc_thread_state(const_pointer);
 bool yaooc_thread_is_detached(const_pointer);
 bool yaooc_thread_start(pointer,void*);
-
-/* Prototypes for yaooc_thread class instance*/
-
-/* Prototypes for yaooc_thread class protected items*/
-
-
-/*
-  Class definition for yaooc_mutex
-*/
-yaooc_class_table(yaooc_mutex)
-{
+yaooc_class_table(yaooc_mutex) {
   yaooc_object_class_table_t;
   bool (*lock)(pointer);
   bool (*trylock)(pointer);
   bool (*unlock)(pointer);
 };
+#define yaooc_mutex_parent_class_table ((yaooc_object_class_table_t*)(yaooc_mutex_class_table.parent_class_table_))
 
-yaooc_class_instance(yaooc_mutex)
-{
+yaooc_class_instance(yaooc_mutex) {
   yaooc_internal_mutex_t mutex_;
 };
 
 yaooc_class(yaooc_mutex);
-/* Prototypes for yaooc_mutex type info */
+
 void yaooc_mutex_default_ctor(pointer);
 void yaooc_mutex_dtor(pointer);
-
-/* Constructors for yaooc_mutex */
-
-/* Prototypes for yaooc_mutex class table*/
 #define yaooc_mutex_swap yaooc_object_swap
 bool yaooc_mutex_lock(pointer);
 bool yaooc_mutex_trylock(pointer);
 bool yaooc_mutex_unlock(pointer);
 
-/* Prototypes for yaooc_mutex class instance*/
+#include <yaooc/string.h>
+int command_pipe(const char* command,const yaooc_string_t* std_in,yaooc_string_t* std_out,yaooc_string_t* std_err);
 
-/* Prototypes for yaooc_mutex class protected items*/
-
-/*  End YAOOC PreProcessor generated content */
-#if 0
-/*
-  Class definition for yaooc_condition_variable
-*/
-yaooc_class_table(yaooc_condition_variable)
-{
-  yaooc_mutex_class_table_t;
-  bool (*signal)(pointer);
-  bool (*broadcast)(pointer);
-  int (*wait)(pointer);
-  int (*timedwait)(pointer,double);
-};
-
-yaooc_class_instance(yaooc_condition_variable)
-{
-  yaooc_mutex_class_instance_t;
-  pthread_cond_t condition_variable_;
-};
-
-yaooc_class(yaooc_condition_variable);
-/* Prototypes for yaooc_condition_variable type info */
-void yaooc_condition_variable_default_ctor(pointer);
-void yaooc_condition_variable_dtor(pointer);
-
-/* Constructors for yaooc_condition_variable */
-
-/* Prototypes for yaooc_condition_variable class table*/
-#define yaooc_condition_variable_swap yaooc_mutex_swap
-#define yaooc_condition_variable_lock yaooc_mutex_lock
-#define yaooc_condition_variable_trylock yaooc_mutex_trylock
-#define yaooc_condition_variable_unlock yaooc_mutex_unlock
-bool yaooc_condition_variable_signal(pointer);
-bool yaooc_condition_variable_broadcast(pointer);
-int yaooc_condition_variable_wait(pointer);
-int yaooc_condition_variable_timedwait(pointer,double);
-
-/* Prototypes for yaooc_condition_variable class instance*/
-
-/* Prototypes for yaooc_condition_variable class protected items*/
-#endif
-#ifdef __cplusplus
-}
-#endif
 
 #endif

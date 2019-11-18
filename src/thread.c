@@ -1,46 +1,20 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include <yaooc/thread.h>
-#include <sys/time.h>
-#include <stdio.h>
+const min_type_info_t __yaooc_thread_start_info_ti = {
+.min_flag_=1,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_thread_start_info_t)
+};
+const type_info_t* const yaooc_thread_start_info_ti=(const type_info_t* const)&__yaooc_thread_start_info_ti;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct yaooc_exception_thread_jmpbuf_node_s yaooc_exception_thread_jmpbuf_node_t;
-
-typedef struct {
-  void* object_;
-  void* data_;
-} thread_start_info_t;
 void yaooc_exception_thread_list_remove_exception_thread(yaooc_internal_thread_t tid);
 
-/*  Begin YAOOC PreProcessor generated content */
-
-/* Private items for yaooc_thread */
 #if defined(_WIN32) && !defined(__YAOOC_USE_PTHREADS)
 static unsigned int __stdcall yaooc_thread_thread_entry(void *arg)
 {
-  thread_start_info_t* start_arg=arg;
+  yaooc_thread_start_info_t* start_arg=arg;
   yaooc_thread_pointer this=start_arg->object_;
   this->state_=THREAD_RUNNING;
-  this->method(this,start_arg->data_);
+  this->method_(this,start_arg->data_);
   FREE(arg);
   yaooc_exception_thread_list_remove_exception_thread(this->thread_id_);
   this->state_=THREAD_READY;
@@ -51,12 +25,12 @@ static unsigned int __stdcall yaooc_thread_thread_entry(void *arg)
 #else
 static void* yaooc_thread_thread_entry(void* arg)
 {
-  thread_start_info_t* start_arg=arg;
+  yaooc_thread_start_info_t* start_arg=arg;
   yaooc_thread_pointer this=start_arg->object_;
   void* ret=NULL;
   this->state_=THREAD_RUNNING;
   this->thread_id_=pthread_self();
-  ret=this->method(this,start_arg->data_);
+  ret=this->method_(this,start_arg->data_);
   FREE(arg);
   yaooc_exception_thread_list_remove_exception_thread(pthread_self());
   this->state_=THREAD_READY;
@@ -66,289 +40,371 @@ static void* yaooc_thread_thread_entry(void* arg)
   return ret;
 }
 #endif
-/* Protected items for yaooc_thread */
 
 
-/* Typeinfo for yaooc_thread */
-void yaooc_thread_default_ctor(pointer p)
+void yaooc_thread_ctor_method(pointer __pthis__,va_list __con_args__)
 {
-  yaooc_thread_pointer this=p;
-  this->thread_id_=0;
-  this->state_=THREAD_READY;
-  this->is_detached_=false;
-  this->request_exit_=false;
+yaooc_thread_pointer this=__pthis__;
+yaooc_thread_method method = va_arg(__con_args__,yaooc_thread_method);
+
+call_parent_default_ctor_static(this,yaooc_thread);
+
+
+      yaooc_thread_default_ctor(this);
+      ((yaooc_thread_pointer)this)->method_=method;
+    
 }
-
-void yaooc_thread_dtor(pointer p)
+yaooc_internal_thread_t yaooc_thread_id(const_pointer __pthis__)
 {
-  yaooc_thread_pointer this=p;
-  if(this->state_ == THREAD_RUNNING) {
-    yaooc_thread_cancel(this);
-    yaooc_thread_join(this);
+yaooc_thread_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_thread_parent_class_table->id(this)
+#define PM(method,...) CTM((*yaooc_thread_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return this->thread_id_;
+    
+#undef PM
+#undef super
+}
+void yaooc_thread_cancel(pointer __pthis__)
+{
+yaooc_thread_pointer this=__pthis__;(void)this;
+#define super() yaooc_thread_parent_class_table->cancel(this)
+#define PM(method,...) CTM((*yaooc_thread_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      this->request_exit_=true;
+    
+#undef PM
+#undef super
+}
+int yaooc_thread_join(pointer __pthis__)
+{
+yaooc_thread_pointer this=__pthis__;(void)this;
+#define super() yaooc_thread_parent_class_table->join(this)
+#define PM(method,...) CTM((*yaooc_thread_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      int ret=0;
+
+
+      if(this->thread_id_ != 0) {
 #ifdef _WIN32
-    CloseHandle((HANDLE)this->thread_id_);
-#endif
-  }
-}
-
-/* Constructors for yaooc_thread */
-void yaooc_thread_ctor_method(pointer p,va_list args)
-{
-  yaooc_thread_default_ctor(p);
-  ((yaooc_thread_pointer)p)->method=va_arg(args,yaooc_thread_method);
-}
-
-/* Class table methods for yaooc_thread */
-yaooc_internal_thread_t yaooc_thread_id(const_pointer p)
-{
-  yaooc_thread_const_pointer this=p;
-  return this->thread_id_;
-}
-
-int yaooc_thread_join(pointer p)
-{
-  yaooc_thread_pointer this=p;
-  int ret=0;
-//  printf("%d %d\n",this->state_,this->is_detached_);
-  if(this->state_ != THREAD_READY && !this->is_detached_) {
-#ifdef _WIN32
-    ret = WaitForSingleObject((HANDLE)this->thread_id_,INFINITE);
+        ret = WaitForSingleObject((HANDLE)this->thread_id_,INFINITE);
 #else
-    ret=pthread_join(this->thread_id_,NULL);
+        ret=pthread_join(this->thread_id_,NULL);
 #endif
-    this->state_=THREAD_READY;
-  }
-  return ret;
+        this->state_=THREAD_READY;
+        this->thread_id_=0;
+      }
+      return ret;
+    
+#undef PM
+#undef super
 }
-
-int yaooc_thread_cancel(pointer p)
+int yaooc_thread_detach(pointer __pthis__)
 {
-  yaooc_thread_pointer this=p;
-  int ret=0;
-  if(this->state_ == THREAD_RUNNING) {
-    this->request_exit_=true;
-  }
-  return ret;
-}
+yaooc_thread_pointer this=__pthis__;(void)this;
+#define super() yaooc_thread_parent_class_table->detach(this)
+#define PM(method,...) CTM((*yaooc_thread_parent_class_table),this,method,## __VA_ARGS__)
 
-int yaooc_thread_detach(pointer p)
-{
-  yaooc_thread_pointer this=p;
-  int ret=0;
-  if(!this->is_detached_) {
+
+      int ret=0;
+      if(!this->is_detached_) {
 #ifdef _WIN32
-    ret=CloseHandle((HANDLE)this->thread_id_);
-//    this->thread_id_=0;
+        ret=CloseHandle((HANDLE)this->thread_id_);
+
 #else
-    ret=pthread_detach(this->thread_id_);
+        ret=pthread_detach(this->thread_id_);
 #endif
-    this->is_detached_=true;
-  }
-  return ret;
+        this->is_detached_=true;
+      }
+      return ret;
+    
+#undef PM
+#undef super
 }
-
-yaooc_thread_state_t yaooc_thread_state(const_pointer p)
+yaooc_thread_state_t yaooc_thread_state(const_pointer __pthis__)
 {
-  yaooc_thread_const_pointer this=p;
-  return this->state_;
+yaooc_thread_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_thread_parent_class_table->state(this)
+#define PM(method,...) CTM((*yaooc_thread_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return this->state_;
+    
+#undef PM
+#undef super
 }
-
-bool yaooc_thread_is_detached(const_pointer p)
+bool yaooc_thread_is_detached(const_pointer __pthis__)
 {
-  yaooc_thread_const_pointer this=p;
-  return this->is_detached_;
+yaooc_thread_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_thread_parent_class_table->is_detached(this)
+#define PM(method,...) CTM((*yaooc_thread_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return this->is_detached_;
+    
+#undef PM
+#undef super
 }
-
-bool yaooc_thread_start(pointer p,void* data)
+bool yaooc_thread_start(pointer __pthis__,void* data)
 {
-  yaooc_thread_pointer this=p;
-  thread_start_info_t* ti=MALLOC(sizeof(thread_start_info_t));
-  ti->object_=p;
-  ti->data_=data;
-//  pthread_t id;
+yaooc_thread_pointer this=__pthis__;(void)this;
+#define super() yaooc_thread_parent_class_table->start(this,data)
+#define PM(method,...) CTM((*yaooc_thread_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_thread_start_info_t* ti=MALLOC(sizeof(yaooc_thread_start_info_t));
+      ti->object_=this;
+      ti->data_=data;
+
 #ifdef _WIN32
-  return (this->thread_id_=_beginthreadex(NULL,0,yaooc_thread_thread_entry,ti,0,NULL))!=0L;
+      return (this->thread_id_=_beginthreadex(NULL,0,yaooc_thread_thread_entry,ti,0,NULL))!=0L;
 #else
-  return pthread_create(&this->thread_id_,NULL,yaooc_thread_thread_entry,ti) == 0;
+      return pthread_create(&this->thread_id_,NULL,yaooc_thread_thread_entry,ti) == 0;
 #endif
+    
+#undef PM
+#undef super
 }
-
-/*
-void* yaooc_thread_method(pointer p)
+yaooc_thread_class_table_t yaooc_thread_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+.type_name_ = (const char*) "yaooc_thread_t",
+.swap = (void(*)(pointer,pointer)) yaooc_thread_swap,
+.id = (yaooc_internal_thread_t(*)(const_pointer)) yaooc_thread_id,
+.cancel = (void(*)(pointer)) yaooc_thread_cancel,
+.join = (int(*)(pointer)) yaooc_thread_join,
+.detach = (int(*)(pointer)) yaooc_thread_detach,
+.state = (yaooc_thread_state_t(*)(const_pointer)) yaooc_thread_state,
+.is_detached = (bool(*)(const_pointer)) yaooc_thread_is_detached,
+.start = (bool(*)(pointer,void*)) yaooc_thread_start,
+};
+void yaooc_thread_default_ctor(pointer __pthis__)
 {
+yaooc_thread_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_thread);
+
+
+
+      this->thread_id_=0;
+      this->state_=THREAD_READY;
+      this->is_detached_=false;
+      this->request_exit_=false;
+    
+}
+void yaooc_thread_dtor(pointer __pthis__)
+{
+yaooc_thread_pointer this=__pthis__;(void)this;
+
+
+      if(this->state_ == THREAD_RUNNING) {
+        yaooc_thread_cancel(this);
+        yaooc_thread_join(this);
+#ifdef _WIN32
+        CloseHandle((HANDLE)this->thread_id_);
+#endif
+      }
+    
+}
+const type_info_t __yaooc_thread_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_thread_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_thread_default_ctor,
+.dtor_=yaooc_thread_dtor,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_thread_class_table,
+.parent_=&__yaooc_object_ti
+};
+const type_info_t* const yaooc_thread_ti=&__yaooc_thread_ti;
+bool yaooc_mutex_lock(pointer __pthis__)
+{
+yaooc_mutex_pointer this=__pthis__;(void)this;
+#define super() yaooc_mutex_parent_class_table->lock(this)
+#define PM(method,...) CTM((*yaooc_mutex_parent_class_table),this,method,## __VA_ARGS__)
+
+
+#ifdef _WIN32
+      return WaitForSingleObject(this->mutex_,INFINITE) == WAIT_OBJECT_0;
+#else
+      return pthread_mutex_lock(&this->mutex_) == 0;
+#endif
+    
+#undef PM
+#undef super
+}
+bool yaooc_mutex_trylock(pointer __pthis__)
+{
+yaooc_mutex_pointer this=__pthis__;(void)this;
+#define super() yaooc_mutex_parent_class_table->trylock(this)
+#define PM(method,...) CTM((*yaooc_mutex_parent_class_table),this,method,## __VA_ARGS__)
+
+
+#if defined(_WIN32) && !defined(__YAOOC_USE_PTHREADS)
+      return yaooc_mutex_lock(this);
+#else
+      return pthread_mutex_trylock(&((yaooc_mutex_pointer)this)->mutex_) == 0;
+#endif
+    
+#undef PM
+#undef super
+}
+bool yaooc_mutex_unlock(pointer __pthis__)
+{
+yaooc_mutex_pointer this=__pthis__;(void)this;
+#define super() yaooc_mutex_parent_class_table->unlock(this)
+#define PM(method,...) CTM((*yaooc_mutex_parent_class_table),this,method,## __VA_ARGS__)
+
+
+#ifdef _WIN32
+      return ReleaseMutex(this->mutex_);
+#else
+      return pthread_mutex_unlock(&this->mutex_) == 0;
+#endif
+    
+#undef PM
+#undef super
+}
+yaooc_mutex_class_table_t yaooc_mutex_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+.type_name_ = (const char*) "yaooc_mutex_t",
+.swap = (void(*)(pointer,pointer)) yaooc_mutex_swap,
+.lock = (bool(*)(pointer)) yaooc_mutex_lock,
+.trylock = (bool(*)(pointer)) yaooc_mutex_trylock,
+.unlock = (bool(*)(pointer)) yaooc_mutex_unlock,
+};
+void yaooc_mutex_default_ctor(pointer __pthis__)
+{
+yaooc_mutex_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_mutex);
+
+
+
+#ifdef _WIN32
+      this->mutex_=CreateMutex(NULL,FALSE,NULL);
+#else
+      pthread_mutex_init(&this->mutex_,NULL);
+#endif
+    
+}
+void yaooc_mutex_dtor(pointer __pthis__)
+{
+yaooc_mutex_pointer this=__pthis__;(void)this;
+
+
+      yaooc_mutex_unlock(this);
+#ifdef _WIN32
+      CloseHandle((HANDLE)this->mutex_);
+#else
+      pthread_mutex_destroy(&this->mutex_);
+#endif
+    
+}
+const type_info_t __yaooc_mutex_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_mutex_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_mutex_default_ctor,
+.dtor_=yaooc_mutex_dtor,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_mutex_class_table,
+.parent_=&__yaooc_object_ti
+};
+const type_info_t* const yaooc_mutex_ti=&__yaooc_mutex_ti;
+
+#include <sys/stat.h>
+#include <string.h>
+
+typedef struct {
+  const char* pipename;
+  const yaooc_string_t *buffer;
+} thread_data_input;
+
+typedef struct {
+  const char* pipename;
+  yaooc_string_t *buffer;
+} thread_data_output;
+
+void* thread_writer(pointer p,void* data)
+{
+  thread_data_input* wd=data;
+  FILE* fh = fopen(wd->pipename,"w");
+  if(fh) {
+    fwrite(M(wd->buffer,c_str),1,M(wd->buffer,size),fh);
+    fclose(fh);
+  }
   return NULL;
 }
-*/
 
-/* Class table for yaooc_thread */
-yaooc_thread_class_table_t yaooc_thread_class_table =
+#define TEMP_BUF_SIZE 1024
+void* thread_reader(pointer p,void* data)
 {
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_thread_t",
-  .swap = (void (*) (pointer,pointer)) yaooc_thread_swap,
-  .id = (yaooc_internal_thread_t (*) (const_pointer)) yaooc_thread_id,
-  .join = (int (*) (pointer)) yaooc_thread_join,
-  .cancel = (int (*) (pointer)) yaooc_thread_cancel,
-  .detach = (int (*) (pointer)) yaooc_thread_detach,
-  .state = (yaooc_thread_state_t (*) (const_pointer p)) yaooc_thread_state,
-  .is_detached = (bool (*) (const_pointer)) yaooc_thread_is_detached,
-  .start = (bool (*) (pointer,void*)) yaooc_thread_start,
-};
-
-
-DEFINE_TYPE_INFO(yaooc_thread,Y,Y,N,N,N,N,N,Y,yaooc_object);
-/* Private items for yaooc_mutex */
-
-/* Protected items for yaooc_mutex */
-
-
-/* Typeinfo for yaooc_mutex */
-void yaooc_mutex_default_ctor(pointer p)
-{
-  yaooc_mutex_pointer this=p;
-//  this->mutex_=(pthread_mutex_t) PTHREAD_MUTEX_INITIALIZER;
-#ifdef _WIN32
-  this->mutex_=CreateMutex(NULL,FALSE,NULL);
-#else
-  pthread_mutex_init(&this->mutex_,NULL);
-#endif
-}
-
-void yaooc_mutex_dtor(pointer p)
-{
-  yaooc_mutex_pointer this=p;
-  yaooc_mutex_unlock(this);
-#ifdef _WIN32
-  CloseHandle((HANDLE)this->mutex_);
-#else
-  pthread_mutex_destroy(&this->mutex_);
-#endif
-}
-
-/* Constructors for yaooc_mutex */
-
-/* Class table methods for yaooc_mutex */
-bool yaooc_mutex_lock(pointer p)
-{
-  yaooc_mutex_pointer this=p;
-#ifdef _WIN32
-  return WaitForSingleObject(this->mutex_,INFINITE) == WAIT_OBJECT_0;
-#else
-  return pthread_mutex_lock(&this->mutex_) == 0;
-#endif
-}
-
-bool yaooc_mutex_trylock(pointer p)
-{
-#if defined(_WIN32) && !defined(__YAOOC_USE_PTHREADS)
-  return yaooc_mutex_lock(p);
-#else
-  return pthread_mutex_trylock(&((yaooc_mutex_pointer)p)->mutex_) == 0;
-#endif
-}
-
-bool yaooc_mutex_unlock(pointer p)
-{
-  yaooc_mutex_pointer this=p;
-#ifdef _WIN32
-  return ReleaseMutex(this->mutex_);
-#else
-  return pthread_mutex_unlock(&this->mutex_) == 0;
-#endif
-}
-
-/* Class table for yaooc_mutex */
-yaooc_mutex_class_table_t yaooc_mutex_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_mutex_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_mutex_swap,
-  .lock = (bool (*) (pointer p)) yaooc_mutex_lock,
-  .trylock = (bool (*) (pointer p)) yaooc_mutex_trylock,
-  .unlock = (bool (*) (pointer p)) yaooc_mutex_unlock,
-};
-
-
-DEFINE_TYPE_INFO(yaooc_mutex,Y,Y,N,N,N,N,N,Y,yaooc_object);
-/*  End YAOOC PreProcessor generated content */
-#if 0
-/* Private items for yaooc_condition_variable */
-
-/* Protected items for yaooc_condition_variable */
-
-
-/* Typeinfo for yaooc_condition_variable */
-void yaooc_condition_variable_default_ctor(pointer p)
-{
-  yaooc_condition_variable_pointer this=p;
-  yaooc_mutex_default_ctor(&this->mutex_);
-//  this->condition_variable_= (pthread_cond_t)PTHREAD_COND_INITIALIZER;
-  pthread_cond_init(&this->condition_variable_,NULL);
-}
-
-void yaooc_condition_variable_dtor(pointer p)
-{
-  yaooc_condition_variable_pointer this=p;
-  pthread_cond_destroy(&this->condition_variable_);
-}
-
-/* Constructors for yaooc_condition_variable */
-
-/* Class table methods for yaooc_condition_variable */
-bool yaooc_condition_variable_signal(pointer p)
-{
-  yaooc_condition_variable_pointer this=p;
-  return pthread_cond_signal(&this->condition_variable_);
-}
-
-bool yaooc_condition_variable_broadcast(pointer p)
-{
-  yaooc_condition_variable_pointer this=p;
-  return pthread_cond_broadcast(&this->condition_variable_);
-}
-
-int yaooc_condition_variable_wait(pointer p)
-{
-  yaooc_condition_variable_pointer this=p;
-  return pthread_cond_wait(&this->condition_variable_, &this->mutex_);
-}
-
-int yaooc_condition_variable_timedwait(pointer p,double delay)
-{
-  yaooc_condition_variable_pointer this=p;
-  long long tv_sec=delay;
-  long long tv_nsec=(delay-tv_sec)*1000000000;
-  struct timeval tv;
-  gettimeofday(&tv,NULL);
-  struct timespec ts;
-  ts.tv_nsec=tv.tv_usec*1000 + tv_nsec;
-  if(ts.tv_nsec>=1000000000) {
-    ts.tv_nsec-=1000000000;
-    tv_sec++;
+  thread_data_output *rd = data;
+  FILE* fh = fopen(rd->pipename,"r");
+  char* temp_buffer=MALLOC(TEMP_BUF_SIZE);
+  M(rd->buffer,clear);
+  if(fh) {
+    while(!feof(fh)) {
+      int nb = fread(temp_buffer,1,TEMP_BUF_SIZE,fh);
+      M(rd->buffer,appendn,temp_buffer,nb);
+    }
+    fclose(fh);
   }
-  ts.tv_sec=tv.tv_sec+tv_sec;
-  int rc= pthread_cond_timedwait(&this->condition_variable_, &this->mutex_,&ts);
+  FREE(temp_buffer);
+  return NULL;
+}
+
+
+
+
+int command_pipe(const char* command,const yaooc_string_t* std_in,yaooc_string_t* std_out,yaooc_string_t* std_err)
+{
+  yaooc_thread_t* writer=new_ctor(yaooc_thread,yaooc_thread_ctor_method,thread_writer);
+  yaooc_thread_t* reader=new_ctor(yaooc_thread,yaooc_thread_ctor_method,thread_reader);
+  yaooc_thread_t* errreader=new_ctor(yaooc_thread,yaooc_thread_ctor_method,thread_reader);
+
+  thread_data_input wd;
+  wd.pipename = "/tmp/pipein";
+  wd.buffer = std_in;
+  mkfifo(wd.pipename, 0600);
+
+  thread_data_output rd;
+  rd.pipename = "/tmp/pipeout";
+  rd.buffer = std_out;
+  mkfifo(rd.pipename, 0600);
+
+  thread_data_output err;
+  err.pipename = "/tmp/pipeerr";
+  err.buffer = std_err;
+  mkfifo(err.pipename, 0600);
+
+  M(writer,start,&wd);
+  M(reader,start,&rd);
+  M(errreader,start,&err);
+
+  char* temp_cmd = malloc(strlen(command)+64);
+  sprintf(temp_cmd,"%s < %s > %s 2> %s",command,wd.pipename,rd.pipename,err.pipename);
+  int rc = system(temp_cmd);
+  free(temp_cmd);
+  M(writer,join);
+  M(reader,join);
+  M(errreader,join);
+
+  unlink(wd.pipename);
+  unlink(rd.pipename);
+  unlink(err.pipename);
+  delete(writer);
+  delete(reader);
+  delete(errreader);
   return rc;
 }
 
-
-/* Class table for yaooc_condition_variable */
-yaooc_condition_variable_class_table_t yaooc_condition_variable_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_mutex_class_table,
-  .type_name_ = (const char*) "yaooc_condition_variable_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_condition_variable_swap,
-  .lock = (bool (*) (pointer p)) yaooc_condition_variable_lock,
-  .trylock = (bool (*) (pointer p)) yaooc_condition_variable_trylock,
-  .unlock = (bool (*) (pointer p)) yaooc_condition_variable_unlock,
-  .signal = (bool (*) (pointer p)) yaooc_condition_variable_signal,
-  .broadcast = (bool (*) (pointer p)) yaooc_condition_variable_broadcast,
-  .wait = (int (*) (pointer p)) yaooc_condition_variable_wait,
-  .timedwait = (int (*) (pointer p,double)) yaooc_condition_variable_timedwait,
-};
-
-DEFINE_TYPE_INFO(yaooc_condition_variable,Y,Y,N,N,N,N,N,Y,yaooc_mutex);
-#endif
-#ifdef __cplusplus
-}
-#endif

@@ -1,114 +1,120 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include <yaooc/real.h>
-#include <yaooc/stream.h>
-#include <stdio.h>
+
 #include <math.h>
 
-/*  Begin YAOOC PreProcessor generated content */
 
-
-/* yaooc_real private members */
-
-/* yaooc_real type info members */
-void yaooc_real_default_ctor(pointer p)
+void yaooc_real_ctor_real(pointer __pthis__,va_list __con_args__)
 {
-  yaooc_real_pointer this=p;
-  this->value_=0.0;
+yaooc_real_pointer this=__pthis__;
+double v = va_arg(__con_args__,double);
+
+call_parent_default_ctor_static(this,yaooc_real);
+this->value_=v;
+
+
+  
 }
-
-void yaooc_real_copy_ctor(pointer p,const_pointer s)
+void yaooc_real_swap(pointer __pthis__,pointer o)
 {
-  yaooc_real_pointer this=p;
-  yaooc_real_const_pointer src=s;
-  this->value_=src->value_;
+yaooc_real_pointer this=__pthis__;(void)this;
+#define super() yaooc_real_parent_class_table->swap(this,o)
+#define PM(method,...) CTM((*yaooc_real_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_real_pointer other=o;
+      SWAP(double,this->value_,other->value_);
+    
+#undef PM
+#undef super
 }
-
-void yaooc_real_assign(pointer p,const_pointer s)
+void yaooc_real_set(pointer __pthis__,double v)
 {
-  yaooc_real_pointer this=p;
-  yaooc_real_const_pointer src=s;
-  this->value_=src->value_;
+yaooc_real_pointer this=__pthis__;(void)this;
+#define super() yaooc_real_parent_class_table->set(this,v)
+#define PM(method,...) CTM((*yaooc_real_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      this->value_=v;
+    
+#undef PM
+#undef super
 }
-
-int double_rich_compare(const double* lhs,const double* rhs);
-
-int yaooc_real_rich_compare(const_pointer p1,const_pointer p2)
+double yaooc_real_get(const_pointer __pthis__)
 {
-  yaooc_real_const_pointer vp1=p1;
-  yaooc_real_const_pointer vp2=p2;
-  return double_rich_compare(&vp1->value_,&vp2->value_);
+yaooc_real_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_real_parent_class_table->get(this)
+#define PM(method,...) CTM((*yaooc_real_parent_class_table),this,method,## __VA_ARGS__)
+
+ return this->value_; 
+#undef PM
+#undef super
 }
-
-
-/* Constructors for yaooc_real */
-void yaooc_real_ctor_real(pointer p,va_list args)
-{
-  yaooc_real_pointer this=p;
-  this->value_ = va_arg(args,double);
-}
-
-/* yaooc_real protected members */
-
-/* Class table methods for yaooc_real */
-
-void yaooc_real_swap(pointer p,pointer o)
-{
-  yaooc_real_pointer this=p;
-  yaooc_real_pointer other=o;
-  SWAP(double,this->value_,other->value_);
-}
-
-void yaooc_real_set(pointer p,double value)
-{
-  yaooc_real_pointer this=p;
-  this->value_=value;
-}
-
-double yaooc_real_get(const_pointer p)
-{
-  return ((yaooc_real_const_pointer)p)->value_;
-}
-
-void yaooc_real_to_stream(const_pointer p,pointer s)
-{
-	yaooc_real_const_pointer this=p;
-	yaooc_ostream_pointer strm=s;
-	M(strm,printf,"%lf",this->value_);
-}
-
-void yaooc_real_from_stream(pointer p,pointer s)
-{
-	yaooc_real_pointer this=p;
-	yaooc_istream_pointer strm=s;
-	M(strm,scanf,"%lf",&this->value_);
-}
-
-/* Class table for yaooc_real */
-yaooc_real_class_table_t yaooc_real_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_real_t",
-  .swap = (void (*) (pointer,pointer)) yaooc_real_swap,
-  .set = (void (*) (pointer,double)) yaooc_real_set,
-  .get = (double (*) (const_pointer)) yaooc_real_get,
+yaooc_real_class_table_t yaooc_real_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+.type_name_ = (const char*) "yaooc_real_t",
+.swap = (void(*)(pointer,pointer)) yaooc_real_swap,
+.set = (void(*)(pointer,double)) yaooc_real_set,
+.get = (double(*)(const_pointer)) yaooc_real_get,
 };
+void yaooc_real_default_ctor(pointer __pthis__)
+{
+yaooc_real_pointer this=__pthis__;(void)this;
 
-DEFINE_TYPE_INFO(yaooc_real,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object);
 
-/*  End YAOOC PreProcessor generated content */
+call_parent_default_ctor_static(this,yaooc_real);
+this->value_=(double)0;
+
+}
+void yaooc_real_dtor(pointer __pthis__)
+{
+yaooc_real_pointer this=__pthis__;(void)this;
+
+
+}
+void yaooc_real_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_real_pointer this=__pthis__;(void)this;
+yaooc_real_const_pointer src=__psrc__;(void)src;
+
+
+call_default_ctor_static(this,yaooc_real);
+assign_static(this,src,yaooc_real);
+
+}
+void yaooc_real_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_real_pointer this=__pthis__;(void)this;
+yaooc_real_const_pointer src=__psrc__;(void)src;
+
+assign_static(this,src,yaooc_object);
+this->value_=src->value_;
+
+}
+int yaooc_real_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_real_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_real_const_pointer rhs=__prhs__;(void)rhs;
+
+    double diff=lhs->value_-rhs->value_;
+    if(fabs(diff) < 1e-8)
+      return 0;
+    if(diff < 0)
+      return -1;
+    return 1;
+  
+}
+const type_info_t __yaooc_real_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_real_t),
+.rich_compare_=yaooc_real_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_real_default_ctor,
+.dtor_=yaooc_real_dtor,
+.copy_ctor_=yaooc_real_copy_ctor,
+.assign_=yaooc_real_assign,
+.class_table_=(const class_table_t*) &yaooc_real_class_table,
+.parent_=&__yaooc_object_ti
+};
+const type_info_t* const yaooc_real_ti=&__yaooc_real_ti;

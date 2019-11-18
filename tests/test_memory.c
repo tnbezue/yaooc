@@ -121,9 +121,9 @@ void test_unique_pointer()
 	demo_t* d1=new(demo);  /* Don't delete because unique pointer will delete it */
 	d1->x=12;
 
-	yaooc_unique_ptr_pointer upDemo1=new_ctor(yaooc_unique_ptr,yaooc_unique_ptr_ctor_ptr,d1);
+	yaooc_unique_pointer_pointer upDemo1=new_ctor(yaooc_unique_pointer,yaooc_unique_pointer_ctor_ptr,d1);
   TEST("upDemo1 has d1 pointer",M(upDemo1,get)==d1);
-	yaooc_unique_ptr_pointer upDemo2=new(yaooc_unique_ptr);
+	yaooc_unique_pointer_pointer upDemo2=new(yaooc_unique_pointer);
   TEST("upDemo2 has null pointer",M(upDemo2,get)==NULL);
   assign(upDemo2,upDemo1);
   puts("assign upDemo1 to upDemo2");
@@ -149,8 +149,8 @@ void test_unique_pointer()
 /*
   Same as above but using template
 */
-UNIQUE_PTR_DEFINITION(demo,demo_unique_ptr);
-UNIQUE_PTR_IMPLEMENTATION(demo,demo_unique_ptr);
+UNIQUE_POINTER_DEFINITION(demo,demo_unique_ptr);
+UNIQUE_POINTER_IMPLEMENTATION(demo,demo_unique_ptr);
 
 void test_unique_pointer_tmpl()
 {
@@ -184,10 +184,10 @@ void test_unique_pointer_tmpl()
 void test_shared_pointer()
 {
 
-	yaooc_shared_ptr_pointer spDemo1=new_ctor(yaooc_shared_ptr,yaooc_shared_ptr_ctor_ptr,
+	yaooc_shared_pointer_pointer spDemo1=new_ctor(yaooc_shared_pointer,yaooc_shared_pointer_ctor_ptr,
         new_ctor(demo,demo_ctor_int_int,12,17));
 
-	yaooc_shared_ptr_pointer spDemo2=new(yaooc_shared_ptr);
+	yaooc_shared_pointer_pointer spDemo2=new(yaooc_shared_pointer);
 	TEST("spDemo1 is count is 1",M(spDemo1,count)==1);
 	TEST("spDemo2 is unique",M(spDemo2,count)==0);
   puts("assign(spDemo2,spDemo1)");
@@ -201,7 +201,7 @@ void test_shared_pointer()
 	demo_t* d3=M(spDemo2,get);
 	TEST("demo_t value via spDemo2 is 12",d3->x == 12);
 	TEST("spDemo1.get and spDemo2.get are the same",M(spDemo1,get) == M(spDemo2,get));
-  yaooc_shared_ptr_pointer spDemo3=new(yaooc_shared_ptr);
+  yaooc_shared_pointer_pointer spDemo3=new(yaooc_shared_pointer);
   assign(spDemo3,spDemo1);
   puts("spDemo3 assigned to spDemo1");
 	TEST("SpDemo1 has count is 3",M(spDemo1,count) == 3);
@@ -223,8 +223,8 @@ void test_shared_pointer()
 /*
   Same as above but using template
 */
-SHARED_PTR_DEFINITION(demo,demo_shared_ptr);
-SHARED_PTR_IMPLEMENTATION(demo,demo_shared_ptr);
+SHARED_POINTER_DEFINITION(demo,demo_shared_ptr);
+SHARED_POINTER_IMPLEMENTATION(demo,demo_shared_ptr);
 
 void test_shared_pointer_tmpl()
 {
@@ -279,8 +279,8 @@ void test_vector()
 
 #include "shape.inc"
 
-UNIQUE_PTR_DEFINITION(shape,shape_unique_ptr);
-UNIQUE_PTR_IMPLEMENTATION(shape,shape_unique_ptr);
+UNIQUE_POINTER_DEFINITION(shape,shape_unique_ptr);
+UNIQUE_POINTER_IMPLEMENTATION(shape,shape_unique_ptr);
 
 VECTOR_DEFINITION(shape_unique_ptr,shape_unique_ptr_vector);
 VECTOR_IMPLEMENTATION(shape_unique_ptr,shape_unique_ptr_vector);

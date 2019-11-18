@@ -1,193 +1,93 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #ifndef __STREAM_INCLUDED__
 #define __STREAM_INCLUDED__
 
-#include <stdio.h>
+
 #include <yaooc/object.h>
-#include <yaooc/exception.h>
-#include <yaooc/types.h>
 
-/*
-	In C, if yaooc_istream_pointer is a parameter in a method and yaooc_ifstream_pointer or yaooc_istringstream_pointer
-	is passed as an argument, this will generate waring messgage.  Therefore, a generic stream pointer (void*) is used.
-	Using the stream pointers defined below serves as a reminder a stream is expected as a argument.
-*/
-typedef pointer ostream_pointer;
-typedef pointer istream_pointer;
 
-/*  Begin YAOOC PreProcessor generated content */
+#include <stdio.h>
+void throw_stream_exception(pointer,const char*);
 
-/*
-  Class definition for yaooc_stream_exception
-*/
-yaooc_class_table(yaooc_stream_exception)
-{
-  yaooc_exception_class_table_t;
-};
-#define yaooc_stream_exception_parent_class_table ((yaooc_exception_class_table_t*)(yaooc_stream_exception_class_table.parent_class_table_))
-
-yaooc_class_instance(yaooc_stream_exception)
-{
-  yaooc_exception_class_instance_t;
-};
-
-yaooc_class(yaooc_stream_exception);
-
-/* Prototypes for yaooc_stream_exception type info */
-#define yaooc_stream_exception_default_ctor yaooc_exception_default_ctor
-#define yaooc_stream_exception_dtor yaooc_exception_dtor
-#define yaooc_stream_exception_copy_ctor yaooc_exception_copy_ctor
-#define yaooc_stream_exception_assign yaooc_exception_assign
-
-/* Prototypes for yaooc_stream_exception constructors */
-#define yaooc_stream_exception_ctor_v yaooc_exception_ctor_v
-
-/* Prototypes for yaooc_stream_exception class table */
-#define yaooc_stream_exception_swap yaooc_exception_swap
-#define yaooc_stream_exception_to_s yaooc_exception_to_s
-#define yaooc_stream_exception_what yaooc_exception_what
-
-/* Prototypes for yaooc_stream_exception protected members */
-
-/*
-  Class definition for yaooc_base_stream
-*/
-yaooc_class_table(yaooc_base_stream)
-{
+yaooc_class_table(yaooc_base_stream) {
+  yaooc_object_class_table_t;
   bool (*eof)(const_pointer);
   bool (*seek)(pointer,size_t,int);
   size_t (*tell)(const_pointer);
-  bool (*bool)(const_pointer);
+  bool (*good)(const_pointer);
 };
 #define yaooc_base_stream_parent_class_table ((yaooc_object_class_table_t*)(yaooc_base_stream_class_table.parent_class_table_))
 
-yaooc_class_instance(yaooc_base_stream)
-{
+yaooc_class_instance(yaooc_base_stream) {
   FILE* handle_;
 };
 
 yaooc_class(yaooc_base_stream);
 
-/* Prototypes for yaooc_base_stream type info */
 void yaooc_base_stream_default_ctor(pointer);
-
-/* Prototypes for yaooc_base_stream constructors */
-
-/* Prototypes for yaooc_base_stream class table */
 #define yaooc_base_stream_swap yaooc_object_swap
-#define yaooc_base_stream_to_s yaooc_object_to_s
 bool yaooc_base_stream_eof(const_pointer);
 bool yaooc_base_stream_seek(pointer,size_t,int);
 size_t yaooc_base_stream_tell(const_pointer);
-bool yaooc_base_stream_bool(const_pointer);
-
-/* Prototypes for yaooc_base_stream protected members */
+bool yaooc_base_stream_good(const_pointer);
 void yaooc_base_stream_set_handle(pointer,FILE*);
-
-
-/*
-  Class definition for yaooc_istream
-*/
-yaooc_class_table(yaooc_istream)
-{
+yaooc_class_table(yaooc_istream) {
   yaooc_base_stream_class_table_t;
-	void (*stream)(pointer,...);
-	int (*peek)(pointer);
-	int (*scanf)(pointer,const char*,...);
+  void (*stream)(pointer,...);
+  int (*peek)(pointer);
+  int (*scanf)(pointer,const char*,...);
   int (*vscanf)(pointer,const char*,va_list);
   size_t (*read)(pointer,void*,size_t,size_t);
   char* (*getstr)(pointer,char*,size_t);
 };
 #define yaooc_istream_parent_class_table ((yaooc_base_stream_class_table_t*)(yaooc_istream_class_table.parent_class_table_))
 
-yaooc_class_instance(yaooc_istream)
-{
+yaooc_class_instance(yaooc_istream) {
   yaooc_base_stream_class_instance_t;
 };
 
 yaooc_class(yaooc_istream);
 
-/* Prototypes for yaooc_istream type info */
 void yaooc_istream_default_ctor(pointer);
-
-/* Prototypes for yaooc_istream constructors */
-
-/* Prototypes for yaooc_istream class table */
 #define yaooc_istream_swap yaooc_base_stream_swap
-#define yaooc_istream_to_s yaooc_base_stream_to_s
 #define yaooc_istream_eof yaooc_base_stream_eof
 #define yaooc_istream_seek yaooc_base_stream_seek
 #define yaooc_istream_tell yaooc_base_stream_tell
-#define yaooc_istream_bool yaooc_base_stream_bool
+#define yaooc_istream_good yaooc_base_stream_good
 void yaooc_istream_stream(pointer,...);
 int yaooc_istream_peek(pointer);
 int yaooc_istream_scanf(pointer,const char*,...);
 int yaooc_istream_vscanf(pointer,const char*,va_list);
 size_t yaooc_istream_read(pointer,void*,size_t,size_t);
 char* yaooc_istream_getstr(pointer,char*,size_t);
-
-/* Prototypes for yaooc_istream protected members */
-
-/*
-  Class definition for yaooc_ostream
-*/
-yaooc_class_table(yaooc_ostream)
-{
+yaooc_class_table(yaooc_ostream) {
   yaooc_base_stream_class_table_t;
-	void (*stream)(pointer,...);
-	int (*printf)(pointer,const char*,...);
+  void (*stream)(pointer,...);
+  int (*printf)(pointer,const char*,...);
   int (*vprintf)(pointer,const char*,va_list);
   size_t (*write)(pointer,const void*,size_t,size_t);
-	int (*putstr)(pointer,const char*);
-	int (*putchr)(pointer,int);
+  int (*putstr)(pointer,const char*);
+  int (*putchr)(pointer,int);
 };
 #define yaooc_ostream_parent_class_table ((yaooc_base_stream_class_table_t*)(yaooc_ostream_class_table.parent_class_table_))
 
-yaooc_class_instance(yaooc_ostream)
-{
+yaooc_class_instance(yaooc_ostream) {
   yaooc_base_stream_class_instance_t;
 };
 
 yaooc_class(yaooc_ostream);
 
-/* Prototypes for yaooc_ostream type info */
 void yaooc_ostream_default_ctor(pointer);
-
-/* Prototypes for yaooc_ostream constructors */
-
-/* Prototypes for yaooc_ostream class table */
-void yaooc_ostream_stream(pointer,...);
 #define yaooc_ostream_swap yaooc_base_stream_swap
-#define yaooc_ostream_to_s yaooc_base_stream_to_s
 #define yaooc_ostream_eof yaooc_base_stream_eof
 #define yaooc_ostream_seek yaooc_base_stream_seek
 #define yaooc_ostream_tell yaooc_base_stream_tell
-#define yaooc_ostream_bool yaooc_base_stream_bool
+#define yaooc_ostream_good yaooc_base_stream_good
+void yaooc_ostream_stream(pointer,...);
 int yaooc_ostream_printf(pointer,const char*,...);
 int yaooc_ostream_vprintf(pointer,const char*,va_list);
 size_t yaooc_ostream_write(pointer,const void*,size_t,size_t);
 int yaooc_ostream_putstr(pointer,const char*);
 int yaooc_ostream_putchr(pointer,int);
-
-/* Prototypes for yaooc_ostream protected members */
-
-/*  End YAOOC PreProcessor generated content */
 
 extern yaooc_istream_pointer cin;
 extern yaooc_ostream_pointer cout;
@@ -231,5 +131,6 @@ extern yaooc_ostream_pointer cerr;
 #define endl O_CHR('\n')
 #endif
 #define ends O_CHR(0)
+
 
 #endif

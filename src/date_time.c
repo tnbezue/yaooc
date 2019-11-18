@@ -1,323 +1,360 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+#include <yaooc/date_time.h>
 
 #include <time.h>
-#include <yaooc/date_time.h>
 #include <yaooc/sstream.h>
 #include <string.h>
 
-/*  Begin YAOOC PreProcessor generated content */
 
-
-/* yaooc_date_time private members */
-
-/* yaooc_date_time type info members */
-void yaooc_date_time_default_ctor(pointer p)
+void yaooc_date_time_ctor_int(pointer __pthis__,va_list __con_args__)
 {
-  yaooc_date_time_pointer this=p;
-	this->time_=time(NULL);
+yaooc_date_time_pointer this=__pthis__;
+time_t t = va_arg(__con_args__,time_t);
+
+call_parent_default_ctor_static(this,yaooc_date_time);
+
+
+      M(this,set,t);
+    
 }
-
-void yaooc_date_time_copy_ctor(pointer p,const_pointer s)
+void yaooc_date_time_ctor_ymdhms(pointer __pthis__,va_list __con_args__)
 {
-  yaooc_date_time_pointer this=p;
-  yaooc_date_time_const_pointer src=s;
-	this->time_=src->time_;
+yaooc_date_time_pointer this=__pthis__;
+int y = va_arg(__con_args__,int);
+int mon = va_arg(__con_args__,int);
+int d = va_arg(__con_args__,int);
+int h = va_arg(__con_args__,int);
+int min = va_arg(__con_args__,int);
+int s = va_arg(__con_args__,int);
+
+call_parent_default_ctor_static(this,yaooc_date_time);
+
+
+      M(this,set_ymdhms,y,mon,d,h,min,s);
+    
 }
-
-int yaooc_date_time_rich_compare(const_pointer p1,const_pointer p2)
+void yaooc_date_time_ctor_ymd(pointer __pthis__,va_list __con_args__)
 {
-  yaooc_date_time_const_pointer vp1=p1;
-  yaooc_date_time_const_pointer vp2=p2;
-  return vp1->time_-vp2->time_ ;
+yaooc_date_time_pointer this=__pthis__;
+int y = va_arg(__con_args__,int);
+int mon = va_arg(__con_args__,int);
+int d = va_arg(__con_args__,int);
 
+call_constructor(this,yaooc_date_time_ctor_ymdhms,y,mon,d,0,0,0);
+
+
+    
 }
-void yaooc_date_time_to_stream(const_pointer p,pointer s)
+void yaooc_date_time_ctor_hms(pointer __pthis__,va_list __con_args__)
 {
-  yaooc_date_time_const_pointer this=p;
-  yaooc_ostream_pointer strm=s;
-	struct tm* tm=localtime(&this->time_);
-	char dstr[64];
-	strftime(dstr,64,"%c",tm);
-	M(strm,printf,"%s",dstr);
+yaooc_date_time_pointer this=__pthis__;
+int h = va_arg(__con_args__,int);
+int min = va_arg(__con_args__,int);
+int s = va_arg(__con_args__,int);
+
+call_parent_default_ctor_static(this,yaooc_date_time);
+
+
+      M(this,set_hms,h,min,s);
+    
 }
-
-static const char* short_day_of_week[]= { "sun","mon","tue","wed","thu","fri","sat"};
-static const char* long_day_of_week[]= { "sunday","monday","tuesday","wednesday","thursday","friday","saturday" };
-static const char* short_month[]={"jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"};
-static const char* long_month[]={"january","february","march","april","may","june","july","august","september","october","november","december"};
-static int day_of_week(const char* str)
+void yaooc_date_time_ctor_tm(pointer __pthis__,va_list __con_args__)
 {
-	int i;
-	for(i=0;i<7;i++)
-		if(strcasecmp(str,short_day_of_week[i])==0)
-			return i;
-	for(i=0;i<7;i++)
-		if(strcasecmp(str,long_day_of_week[i])==0)
-			return i;
-	return -1;
+yaooc_date_time_pointer this=__pthis__;
+const struct tm* tm = va_arg(__con_args__,const struct tm*);
+
+call_parent_default_ctor_static(this,yaooc_date_time);
+
+
+      struct tm tm2;
+      memcpy(&tm2,tm,sizeof(struct tm));
+      this->time_=mktime(&tm2);
+    
 }
-
-static int month_of_year(const char* str)
+void yaooc_date_time_ctor_ccs(pointer __pthis__,va_list __con_args__)
 {
-	int i;
-	for(i=0;i<12;i++)
-		if(strcasecmp(str,short_month[i])==0)
-			return i;
-	for(i=0;i<12;i++)
-		if(strcasecmp(str,long_month[i])==0)
-			return i;
-	return -1;
+yaooc_date_time_pointer this=__pthis__;
+const char* str = va_arg(__con_args__,const char*);
+
+call_parent_default_ctor_static(this,yaooc_date_time);
+
+
+    
 }
-
-/* Trys to read date as if strftime had used "%a %b %d %H:%M:%S %Y" */
-static bool read_abdHMSY(yaooc_istream_pointer strm,struct tm* tm)
+void yaooc_date_time_swap(pointer __pthis__,pointer p)
 {
-	char mon[16],dow[16];
-	int n=M(strm,scanf,"%15s %15s %d %d:%d:%d %d",dow,mon,&tm->tm_mday,&tm->tm_hour,&tm->tm_min,&tm->tm_sec,&tm->tm_year);
-	if(n==7) {
-		if(day_of_week(dow)>=0) {
-			if((tm->tm_mon=month_of_year(mon)) >= 0) {
-				tm->tm_year -= 1900;
-				return true;
-			}
-		}
-	}
-	return false;
+yaooc_date_time_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->swap(this,p)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_date_time_pointer other=p;
+      SWAP(time_t,this->time_,other->time_);
+    
+#undef PM
+#undef super
 }
-
-static bool read_date_only(yaooc_istream_pointer strm,struct tm* tm)
+void yaooc_date_time_set(pointer __pthis__,time_t t)
 {
-	long pos=M(strm,tell);
-	int n=M(strm,scanf,"%d-%d-%d",&tm->tm_year,&tm->tm_mon,&tm->tm_mday);
-	if(n!=3) {
-		M(strm,seek,pos,SEEK_SET);
-		n=M(strm,scanf,"%d/%d/%d",&tm->tm_mon,&tm->tm_mday,&tm->tm_year);
-	}
-	if(n==3) {
-		if(tm->tm_year > 1900)
-			tm->tm_year -= 1900;
-		tm->tm_mon--;
-		return true;
-	}
-	return false;
+yaooc_date_time_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->set(this,t)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      this->time_=t;
+    
+#undef PM
+#undef super
 }
-
-static bool read_time_only(yaooc_istream_pointer strm,struct tm* tm)
+void yaooc_date_time_set_ymdhms(pointer __pthis__,int y,int mon,int d,int h,int min,int s)
 {
-	char ampm[4];
-	int n=M(strm,scanf,"%d:%d:%d",&tm->tm_hour,&tm->tm_min,&tm->tm_sec);
-	if(n==3) {
-		/* Valid time.  Check if AM/PM specified */
-		long_t pos=M(strm,tell);
-		n=M(strm,scanf,"%3s",ampm);
-		if(n==1 && (strcasecmp(ampm,"am")==0 || strcasecmp(ampm,"pm") ==0)) {
-			if(strcasecmp(ampm,"pm") == 0 && tm->tm_hour < 12)
-				tm->tm_hour+=12;
-		} else {
-			M(strm,seek,pos,SEEK_SET);
-		}
-		return true;
-	}
-	return false;
+yaooc_date_time_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->set_ymdhms(this,y,mon,d,h,min,s)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      struct tm tm;
+      memset(&tm,0,sizeof(struct tm));
+      tm.tm_year = y-1900;
+      tm.tm_mon = mon-1;
+      tm.tm_mday = d;
+      tm.tm_hour = h;
+      tm.tm_min = min;
+      tm.tm_sec = s;
+      this->time_=mktime(&tm);
+    
+#undef PM
+#undef super
 }
-
-void yaooc_date_time_from_stream(pointer p,pointer s)
+void yaooc_date_time_set_ymd(pointer __pthis__,int y,int mon,int d,int h,int min,int s)
 {
-  yaooc_date_time_pointer this=p;
-  yaooc_istream_pointer strm=s;
-	ulong_t pos=M(strm,tell); /* Hold string pos in case read fails */
-	struct tm tm,tm_now;
-	bool success=false;
-	/*
-		Try various format types
-	*/
-//	int year,day,hour,min,sec;
-	memset(&tm,0,sizeof(struct tm));
-	if(!(success=read_abdHMSY(strm,&tm))) {
-	memset(&tm,0,sizeof(struct tm));
-		M(strm,seek,pos,SEEK_SET);
-		if(!(success=(read_date_only(strm,&tm) && read_time_only(strm,&tm)))) {
-			memset(&tm,0,sizeof(struct tm));
-			M(strm,seek,pos,SEEK_SET);
-			if(!(success=read_date_only(strm,&tm))) {
-				memset(&tm,0,sizeof(struct tm));
-				M(strm,seek,pos,SEEK_SET);
-				if((success=read_time_only(strm,&tm))) {
-					time_t now=time(NULL);
-					memcpy(&tm_now,localtime(&now),sizeof(struct tm));
-					tm.tm_year=tm_now.tm_year;
-					tm.tm_mon=tm_now.tm_mon;
-					tm.tm_mday=tm_now.tm_mday;
-				}
-			}
-		}
-	}
-	if(success) {
-		tm.tm_isdst=-1;
-		this->time_=mktime(&tm);
-	} else {
-		M(strm,seek,pos,SEEK_SET);
-	}
+yaooc_date_time_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->set_ymd(this,y,mon,d,h,min,s)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      M(this,set_ymdhms,y,mon,d,0,0,0);
+    
+#undef PM
+#undef super
 }
-
-
-/* Constructors for yaooc_date_time */
-void yaooc_date_time_ctor_int(pointer p,va_list args)
+void yaooc_date_time_set_hms(pointer __pthis__,int h,int min,int s)
 {
-  yaooc_date_time_pointer this=p;
-  this->time_ = va_arg(args,int);
+yaooc_date_time_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->set_hms(this,h,min,s)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      struct tm tm;
+      time_t t=time(NULL);
+      localtime_r(&t,&tm);
+      tm.tm_hour=h;
+      tm.tm_min=min;
+      tm.tm_sec=s;
+      this->time_=mktime(&tm);
+    
+#undef PM
+#undef super
 }
-
-void yaooc_date_time_ctor_ymdhms(pointer p,va_list args)
+time_t yaooc_date_time_get(const_pointer __pthis__)
 {
-  yaooc_date_time_pointer this=p;
-	struct tm tm;
-	time_t now=time(NULL);
-	memcpy(&tm,localtime(&now),sizeof(struct tm));
-	tm.tm_isdst=-1;
-  tm.tm_year = va_arg(args,int)-1900;
-  tm.tm_mon = va_arg(args,int)-1;
-  tm.tm_mday = va_arg(args,int);
-  tm.tm_hour = va_arg(args,int);
-  tm.tm_min = va_arg(args,int);
-  tm.tm_sec = va_arg(args,int);
-	this->time_=mktime(&tm);
+yaooc_date_time_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->get(this)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+ return this->time_; 
+#undef PM
+#undef super
 }
-
-void yaooc_date_time_ctor_tm(pointer p,va_list args)
+int yaooc_date_time_month(const_pointer __pthis__)
 {
-  yaooc_date_time_pointer this=p;
-	struct tm tm;
-  memcpy(&tm,va_arg(args,const struct tm*),sizeof(struct tm));
-	this->time_=mktime(&tm);
+yaooc_date_time_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->month(this)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return localtime(&this->time_)->tm_mon+1;
+    
+#undef PM
+#undef super
 }
-
-void yaooc_date_time_ctor_ccs(pointer p,va_list args)
+int yaooc_date_time_day(const_pointer __pthis__)
 {
-//  yaooc_date_time_pointer this=p;
-  const char* str = va_arg(args,const char*);
-	yaooc_istringstream_t* is=new_ctor(yaooc_istringstream,yaooc_istringstream_ctor_ccs,str);
-	yaooc_date_time_from_stream(p,is);
-	delete(is);
+yaooc_date_time_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->day(this)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return localtime(&this->time_)->tm_mday;
+    
+#undef PM
+#undef super
 }
-
-
-
-/* yaooc_date_time protected members */
-
-/* Class table methods for yaooc_date_time */
-void yaooc_date_time_swap(pointer p,pointer o)
+int yaooc_date_time_year(const_pointer __pthis__)
 {
-  yaooc_date_time_pointer this=p;
-	yaooc_date_time_pointer other=o;
-	SWAP(time_t,this->time_,other->time_);
+yaooc_date_time_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->year(this)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return localtime(&this->time_)->tm_year+1900;
+    
+#undef PM
+#undef super
 }
-
-void yaooc_date_time_set(pointer p,time_t t)
+int yaooc_date_time_hour(const_pointer __pthis__)
 {
-  yaooc_date_time_pointer this=p;
-	this->time_=t;
+yaooc_date_time_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->hour(this)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return localtime(&this->time_)->tm_hour;
+    
+#undef PM
+#undef super
 }
-
-time_t yaooc_date_time_get(const_pointer p)
+int yaooc_date_time_minute(const_pointer __pthis__)
 {
-  yaooc_date_time_const_pointer this=p;
-	return this->time_;
+yaooc_date_time_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->minute(this)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return localtime(&this->time_)->tm_min;
+    
+#undef PM
+#undef super
 }
-
-int yaooc_date_time_month(const_pointer p)
+int yaooc_date_time_second(const_pointer __pthis__)
 {
-  yaooc_date_time_const_pointer this=p;
-	return localtime(&this->time_)->tm_mon;
+yaooc_date_time_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->second(this)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return localtime(&this->time_)->tm_sec;
+    
+#undef PM
+#undef super
 }
-
-int yaooc_date_time_day(const_pointer p)
+int yaooc_date_time_day_of_week(const_pointer __pthis__)
 {
-  yaooc_date_time_const_pointer this=p;
-	return localtime(&this->time_)->tm_mday;
+yaooc_date_time_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->day_of_week(this)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return localtime(&this->time_)->tm_wday;
+    
+#undef PM
+#undef super
 }
-
-int yaooc_date_time_year(const_pointer p)
+int yaooc_date_time_day_of_year(const_pointer __pthis__)
 {
-  yaooc_date_time_const_pointer this=p;
-	return localtime(&this->time_)->tm_year;
+yaooc_date_time_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->day_of_year(this)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return localtime(&this->time_)->tm_yday;
+    
+#undef PM
+#undef super
 }
-
-int yaooc_date_time_hour(const_pointer p)
+char* yaooc_date_time_strftime(pointer __pthis__,const char* fmt)
 {
-  yaooc_date_time_const_pointer this=p;
-	return localtime(&this->time_)->tm_hour;
+yaooc_date_time_pointer this=__pthis__;(void)this;
+#define super() yaooc_date_time_parent_class_table->strftime(this,fmt)
+#define PM(method,...) CTM((*yaooc_date_time_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      char* buf=new_array(char,64);
+      strftime(buf,64,fmt,localtime(&this->time_));
+      return buf;
+    
+#undef PM
+#undef super
 }
-
-int yaooc_date_time_minute(const_pointer p)
-{
-  yaooc_date_time_const_pointer this=p;
-	return localtime(&this->time_)->tm_min;
-}
-
-int yaooc_date_time_second(const_pointer p)
-{
-  yaooc_date_time_const_pointer this=p;
-	return localtime(&this->time_)->tm_sec;
-}
-
-int yaooc_date_time_day_of_week(const_pointer p)
-{
-  yaooc_date_time_const_pointer this=p;
-	return localtime(&this->time_)->tm_wday;
-}
-
-int yaooc_date_time_day_of_year(const_pointer p)
-{
-  yaooc_date_time_const_pointer this=p;
-	return localtime(&this->time_)->tm_yday;
-}
-
-char* yaooc_date_time_strftime(const_pointer p,const char* fmt)
-{
-  yaooc_date_time_const_pointer this=p;
-	if(fmt==NULL || strlen(fmt)==0)
-		fmt="%c";
-	char* temp=new_array(char,64);
-	strftime(temp,64,fmt,localtime(&this->time_));
-  return temp;
-}
-
-
-/* Class table for yaooc_date_time */
-yaooc_date_time_class_table_t yaooc_date_time_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_date_time_t",
-  .swap = (void (*) (pointer,pointer)) yaooc_date_time_swap,
-  .set = (void (*) (pointer,time_t)) yaooc_date_time_set,
-  .get = (time_t (*) (const_pointer)) yaooc_date_time_get,
-  .month = (int (*) (const_pointer)) yaooc_date_time_month,
-  .day = (int (*) (const_pointer)) yaooc_date_time_day,
-  .year = (int (*) (const_pointer)) yaooc_date_time_year,
-  .hour = (int (*) (const_pointer)) yaooc_date_time_hour,
-  .minute = (int (*) (const_pointer)) yaooc_date_time_minute,
-  .second = (int (*) (const_pointer)) yaooc_date_time_second,
-  .day_of_week = (int (*) (const_pointer)) yaooc_date_time_day_of_week,
-  .day_of_year = (int (*) (const_pointer)) yaooc_date_time_day_of_year,
-  .strftime = (char* (*) (const_pointer,const char*)) yaooc_date_time_strftime,
+yaooc_date_time_class_table_t yaooc_date_time_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+.type_name_ = (const char*) "yaooc_date_time_t",
+.swap = (void(*)(pointer,pointer)) yaooc_date_time_swap,
+.set = (void(*)(pointer,time_t)) yaooc_date_time_set,
+.set_ymdhms = (void(*)(pointer,int,int,int,int,int,int)) yaooc_date_time_set_ymdhms,
+.set_ymd = (void(*)(pointer,int,int,int,int,int,int)) yaooc_date_time_set_ymd,
+.set_hms = (void(*)(pointer,int,int,int)) yaooc_date_time_set_hms,
+.get = (time_t(*)(const_pointer)) yaooc_date_time_get,
+.month = (int(*)(const_pointer)) yaooc_date_time_month,
+.day = (int(*)(const_pointer)) yaooc_date_time_day,
+.year = (int(*)(const_pointer)) yaooc_date_time_year,
+.hour = (int(*)(const_pointer)) yaooc_date_time_hour,
+.minute = (int(*)(const_pointer)) yaooc_date_time_minute,
+.second = (int(*)(const_pointer)) yaooc_date_time_second,
+.day_of_week = (int(*)(const_pointer)) yaooc_date_time_day_of_week,
+.day_of_year = (int(*)(const_pointer)) yaooc_date_time_day_of_year,
+.strftime = (char*(*)(pointer,const char*)) yaooc_date_time_strftime,
 };
+void yaooc_date_time_default_ctor(pointer __pthis__)
+{
+yaooc_date_time_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_date_time);
 
-DEFINE_TYPE_INFO(yaooc_date_time,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object);
 
-/*  End YAOOC PreProcessor generated content */
+
+      this->time_=time(NULL);
+    
+}
+void yaooc_date_time_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_date_time_pointer this=__pthis__;(void)this;
+yaooc_date_time_const_pointer src=__psrc__;(void)src;
+
+
+call_default_ctor_static(this,yaooc_date_time);
+assign_static(this,src,yaooc_date_time);
+
+}
+void yaooc_date_time_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_date_time_pointer this=__pthis__;(void)this;
+yaooc_date_time_const_pointer src=__psrc__;(void)src;
+
+
+      this->time_=src->time_;
+    
+}
+int yaooc_date_time_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_date_time_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_date_time_const_pointer rhs=__prhs__;(void)rhs;
+
+      return lhs->time_ - rhs->time_;
+    
+}
+void yaooc_date_time_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__)
+{
+yaooc_date_time_const_pointer this=__pthis__;(void)this;
+yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
+
+
+      struct tm* tm=localtime(&this->time_);
+      char dstr[64];
+      strftime(dstr,64,"%c",tm);
+      M(ostrm,printf,"%s",dstr);
+    
+}
+const type_info_t __yaooc_date_time_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_date_time_t),
+.rich_compare_=yaooc_date_time_rich_compare,
+.to_stream_=yaooc_date_time_to_stream,
+.from_stream_=NULL,
+.default_ctor_=yaooc_date_time_default_ctor,
+.dtor_=NULL,
+.copy_ctor_=yaooc_date_time_copy_ctor,
+.assign_=yaooc_date_time_assign,
+.class_table_=(const class_table_t*) &yaooc_date_time_class_table,
+.parent_=&__yaooc_object_ti
+};
+const type_info_t* const yaooc_date_time_ti=&__yaooc_date_time_ti;

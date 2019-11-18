@@ -1,0 +1,229 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+%header_directory yaooc
+%include <yaooc/object.yod>
+
+%header
+#include <yaooc/stream.h>
+#include <fcntl.h>
+#ifdef _WIN32
+typedef short nlink_t;
+#endif
+%%
+
+#include <string.h>
+#include <sys/stat.h>
+
+%class yaooc_file : yaooc_object {
+
+    operator=(src)
+    {
+      yaooc_file_dtor(this);
+      this->file_ = src->file_ ? STRDUP(src->file_) : NULL;
+    }
+
+    yaooc_file_ctor_name(const char* fname) : yaooc_object(),file_(STRDUP(fname))
+    {
+    }
+
+
+  instance:
+    char* file_;
+
+  table:
+    void swap(pointer o)
+    {
+      yaooc_file_pointer other=o;
+      SWAP(char*,this->file_,other->file_);
+    }
+
+    bool exists() const
+    {
+      if(this->file_)
+        return access(this->file_,0);
+      return false;
+    }
+
+    dev_t dev() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_dev;
+      }
+      return 0;
+    }
+
+    mode_t mode() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_mode;
+      }
+      return 0;
+    }
+
+    time_t atime() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_atime;
+      }
+      return 0;
+    }
+
+    time_t mtime() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_mtime;
+      }
+      return 0;
+    }
+
+    time_t ctime() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_ctime;
+      }
+      return 0;
+    }
+
+    uid_t uid() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_uid;
+      }
+      return 0;
+    }
+
+    gid_t gid() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_gid;
+      }
+      return 0;
+    }
+
+    nlink_t nlink() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_nlink;
+      }
+      return 0;
+    }
+
+    size_t size() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_size;
+      }
+      return 0;
+    }
+
+    bool isdir() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISDIR(st.st_mode);
+      }
+      return false;
+    }
+
+    bool ischr() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISCHR(st.st_mode);
+      }
+      return false;
+    }
+
+    bool isblk() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISBLK(st.st_mode);
+      }
+      return false;
+    }
+
+    bool isreg() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISREG(st.st_mode);
+      }
+      return false;
+    }
+
+    bool isfile() const
+    {
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISFIFO(st.st_mode);
+      }
+      return false;
+    }
+
+    bool islink() const
+    {
+#ifdef WIN32_
+      return false;
+#else
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISLNK(st.st_mode);
+      }
+      return false;
+#endif
+    }
+
+    bool issock() const
+    {
+#ifdef WIN32_
+      return false;
+#else
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_mode & __S_IFSOCK;
+      }
+      return false;
+#endif
+    }
+};

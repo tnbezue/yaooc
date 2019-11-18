@@ -44,7 +44,7 @@ void test_construtor()
 	TEST("Capacity is 32",M(s3,capacity) == 32);
 	TEST("matched original",strncmp(M(s3,c_str),temp,30) == 0);
 
-	yaooc_string_t* s4=new_ctor(yaooc_string,yaooc_string_ctor_n_chr,10,'c');
+	yaooc_string_t* s4=new_ctor(yaooc_string,yaooc_string_ctor_chr_n,'c',10);
 	printf("%" PRIULONG " %" PRIULONG " %s\n",M(s4,size),M(s4,capacity),M(s4,c_str));
 	TEST("Size is 10",M(s4,size) == 10);
 	TEST("Capacity is 16",M(s4,capacity) == 16);
@@ -463,13 +463,13 @@ void test_gsub()
 	TEST("'is' repaced with 'was'",strcmp(M(str,c_str),"Thwas was a test")==0);
 
 	M(str,set,"This<this will>is<be>a<replaced>test");
-	M(str,gsub_,"/<.*?>/"," ");
-	puts(M(str,c_str));
+	M(str,gsub_,"/<[^>]*>/"," ");
+//	puts(M(str,c_str));
 	TEST("Replace things in < > with a single space",strcmp(M(str,c_str),"This is a test")==0);
 	M(str,set,"aaaaa");
 	M(str,gsub_,"a","ab");
 	TEST("replace 'a' with 'ab'",strcmp(M(str,c_str),"ababababab")==0);
-	puts(M(str,c_str));
+//	puts(M(str,c_str));
 	delete(str);
 }
 
@@ -481,7 +481,7 @@ void test_start_end()
   TEST("Starts with entire string",M(str,starts_with,"This is a test"));
   TEST("Does not start with \"this\"",!M(str,starts_with,"this"));
   TEST("Does not start with a longer string",!M(str,starts_with,"This is a test "));
-  TEST("Does not start with a zero length string",!M(str,starts_with,""));
+  TEST("Starts with a zero length string",M(str,starts_with,""));
 	TESTCASE("Ends with");
   TEST("Ends with \"test\"",M(str,ends_with,"test"));
   TEST("Ends with entire string",M(str,ends_with,"This is a test"));
@@ -493,16 +493,19 @@ void test_start_end()
 
 void test_vector()
 {
+  TESTCASE("String Vector");
   yaooc_string_t temp;
   newp(&temp,yaooc_string);
   yaooc_string_vector_t* sv=new(yaooc_string_vector);
   M(&temp,set,"testing");
-  M(&temp,append,"and more testing to make length long");
+  M(&temp,append," and more testing to make length long");
   int i;
   for(i=0;i<255;i++)
     M(sv,push_back,&temp);
-  TEST("String vector size is 256",M(sv,size)==255);
-  STREAM(cout,O_OBJ(yaooc_string,*M(sv,at,254)));
+  TEST("Adding a string 255 times. String vector size is 256",M(sv,size)==255);
+//  STREAM(cout,O_OBJ(yaooc_string,*M(sv,at,254)));
+  TEST("Item at 254 is 'testing and more testing to make length long'",
+      strcmp(M(M(sv,at,254),c_str),"testing and more testing to make length long")==0);
   delete(sv);
   deletep(&temp,yaooc_string);
 }

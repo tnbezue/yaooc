@@ -1,0 +1,93 @@
+%include <yaooc/object.yod>
+
+%header
+#include <stdio.h>
+%%
+
+const char* numbers[]={ "zero", "one","two","three","four","five","six","seven","eight","nine","ten",
+	"eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"};
+const char* tens[] = { "", "", "twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"};
+
+%class demo {
+    demo()
+    {
+      this->x=demo_counter++;
+      this->str=demo_make_string_from_number(this);
+    }
+
+    ~demo()
+    {
+      if(this->str)
+        delete(this->str);
+      this->str=NULL;
+    }
+
+    demo_ctor_int(int x)
+    {
+      this->x=x;
+      this->str=demo_make_string_from_number(this);
+    }
+
+    operator=(src)
+    {
+      this->x=src->x;
+      if(this->str)
+        delete(this->str);
+      this->str=src->str?yaooc_strdup(src->str):NULL;
+    }
+
+    intoperator<=>(lhs,rhs)
+    {
+      return lhs->x - rhs->x;
+    }
+  table:
+    void swap(pointer s)
+    {
+      demo_pointer other=s;
+      SWAP(char*,this->str,other->str)
+      SWAP(int,this->x,other->x)
+    }
+
+    void setx(int val)
+    {
+      this->x=val;
+      if(this->str)
+        delete(this->str);
+      this->str=demo_make_string_from_number(this);
+    }
+
+    void say()
+    {
+      printf("X is: %d In words: %s\n",((demo_const_pointer)this)->x,((demo_const_pointer)this)->str);
+    }
+
+  instance:
+    char *str;
+    int x;
+
+  private:
+    int counter=0;
+
+    char* make_string_from_number()
+    {
+      int x = this->x;
+      char* ptr=new_array(char,64);
+      char* sign="";
+      if(x < 0) {
+        sign="negative";
+        x=-x;
+      }
+      if(x < 20) {
+        sprintf(ptr,"%s %s",sign,numbers[x]);
+      } else if (x < 100 ){
+        const char* ones="";
+        div_t y = div(x,10);
+        if(y.rem != 0)
+          ones=numbers[y.rem];
+        sprintf(ptr,"%s %s %s",sign,tens[y.quot],ones);
+      } else {
+        sprintf(ptr,"%d",x);
+      }
+      return ptr;
+    }
+};

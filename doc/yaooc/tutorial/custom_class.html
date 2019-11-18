@@ -45,8 +45,8 @@ This is meant to show the features of YAOOC rather than good programming practic
 The simplest class can be defined as follows:
 </p>
 <pre><code>
-  #include <yaooc/new.h>
-  #include <stdio.h>
+  #include &lt;yaooc/new.h&gt;
+  #include &lt;stdio.h&gt;
 
   %struct my_string {
     instance:
@@ -56,122 +56,50 @@ The simplest class can be defined as follows:
   int main(int argc,char* argv[])
   {
     my_string_t* ms = new(my_string);
-    ms->str=strdup("This is a test of my_string");
+    ms-&gt;str=strdup("This is a test of my_string");
     /* Do some other stuff with my_string */
-    free(my->str);
     delete(ms);
   }
 </code></pre>
 <p>
-"%struct" specifies the beginning of the class definition. Variable declared following "instance:" will be members
-of the object.
+"%struct" specifies the beginning of the class definition. Variables declared following "instance:" will be members
+of the object.<br>
+The above &quot;%struct&quot; section translates into the following C code.
+</p>
+<pre><code>
+  struct my_string_s {
+    char *str;
+  };
+  typedef struct my_string_s my_string_t;
+  typedef my_string_t* my_string_pointer;
+  typedef const my_string_t* my_string_const_pointer;
+</code></pre>
+<p>
+Note that the actual type created is the class name (my_string) appended with "_t".
+</p>
+<p>
+Full disclosure, more than the above code is created by &quot;%struct&quot; definition.  The addition
+code created is covered in the next few lessons.
 </p>
 <p>
 Of cource the C compiler cannot directly compile the above.  The YAOOCPP preprocessor (yaoocpp) is used to translate
-the above into a C header and source file. The will b
+the above into a C header and source file.  The compilation is handled in 2 steps.
 </p>
 <pre><code>
   yaoocpp my_string.yoc
-  gcc -I/usr/local/include -o my_string my_string.c -Wall
+  gcc -fms-extensions -I/usr/local/include -o my_string my_string.c -Wall
 </code></pre>
 <p>
-Let's make my_string a bit more robust by adding default constructor, destructor, copy_constructor, and assignment (operator= in C++).
+You can add the following to your makefiles to translate YOC files into C header and source files.
 </p>
 <pre><code>
-  #include <yaooc/new.h>
-  #include <stdio.h>
-  %struct my_string {
-      // Default constructor -- method name will be my_string_default_ctor
-      my_string()
-      {
-        // "this" is a my_string pointer to this instance of my_string
-        // It is automatically added as first argument.
-        this->str=NULL;
-      }
-      // Destructor  -- method name will be my_string_dtor
-      ~my_string()
-      {
-        if(this->str)
-          free(this->str);
-      }
-      // Assignment  -- method name will be my_string_assign
-      // src is a const pointer to another my_string instance
-      operator=(src)
-      {
-        my_string_dtor(this);  // can call destructor directly.  Note that "this" has to be included as first argument
-        this->str = src->str ? strdup(src->str) : NULL;
-      }
-      // Copy constructor -- method name will be my_string_copy_ctor
-      my_string(src) : my_string()  // default constructor used as initializer
-      {
-        my_string_assign(this,src);
-      }
-      // Used for compareing my_string object
-      // Returns &lt;0 for lhs&ltrhs; 0 if lhs=rhs; &gt;0 if lhs&gt;rhs
-      int operator<=>(lhs,rhs)
-      {
-        // lhs and rhs are const pointers to my_string instances
-        if(lhs->str == NULL) {
-          if(rhs->str == NULL)
-            return 0; /* both NULL, equal */
-          else
-            return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
-        } else if(rhs->str == NULL)
-          return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
-        return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
-      }
-    instance:
-      char* str;
-  };
-
-  int main(int argc,char* argv[])
-  {
-    my_string_t* ms1 = new(my_string);
-    ms1->str=strdup("This is a test of my_string");
-    my_string_t* ms2 = new_copy(ms1);  // Create ms2 by copying ms1
-    /* Do some other stuff with my_string objects*/
-    my_string_t* ms3 = new(my_string);
-    assign(ms3,ms2);  // Assignment, in C++ ms3=ms2
-    /* Do some more stuff with my_string objects*/
-    if(op_lt(ms3,ms2))
-      print("'%s' is less than '%s'",ms3->str,ms2->str);
-    delete(ms1);
-    delete(ms2);
-    delete(ms3);
-  }
+  %.c %.h:%.yoc
+    yaoocpp $<
 </code></pre>
 <p>
-Note that the constructor, destructor, copy constructor, and assignment must appear before "instance:".
-</p>
-<h3>Important Requirement</h3>
-<p>
-Before continuing with the my_string class, one important requirement for custom classes -- class instances must be movable.  For example:
-</p>
-<pre><code>
-  %struct circular_buffer {
-    char* beg;
-    char* end;
-    char buffer[32];
-  };
-</code></pre>
-<p>
-In the above example, if beg and end are pointers to locations within buffer, then the pointers would be invalidated if the object is
-moved to a different memory location. Thus it is an immovable object and should not be used in YAOOC.
+More on yaoocpp later.
 </p>
 <p>
-If the class was defined as:
-</p>
-<pre><code>
-  %struct circular_buffer {
-    char* beg;
-    char* end;
-    char* buffer;
-  };
-</code></pre>
-<p>
-If beg and end are pointers to memory within memory pointed to by buffer, then moving the object will not invalidate the pointers.
-This it a movable object and can be used in YAOOC.
-</p>
 </div>
 </div>
 </div>

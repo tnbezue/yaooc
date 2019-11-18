@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<!--
+  Copyright (C) 2016-2019  by Terry N Bezue
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<html>
+<head>
+<title>Default Constructor and Destructor</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Default Constructor and Destructor</h2>
+<p>
+Let's make my_string a bit more robust by adding default constructor and destructor.
+</p>
+<pre><code>
+  %struct my_string {
+      // Default constructor -- method name will be my_string_default_ctor
+      my_string()
+      {
+        // "this" is a my_string pointer to this instance of my_string
+        // It is automatically added as first argument.
+        this-&gt;str=NULL;
+      }
+      // Destructor  -- method name will be my_string_dtor
+      ~my_string()
+      {
+        if(this-&gt;str)
+          free(this-&gt;str);
+      }
+    instance:
+      char* str;
+  };
+
+</code></pre>
+<h3>Default Constructor</h3>
+<p>
+The default constructor is called by the new method after allocating memory for the object. If the default constructor is not specified or it is specified as &quot;my_string()=default;&quot; yaoocpp
+will create a default constructor.  In fact, the above default constructor is exactly the
+default constructor that would be created by yaoocpp.<br>
+In a later lesson, the rules yaoocpp uses to create a default constructor will be explained further.<br>
+To keep yaoocpp from creating a default constructor, use &quot;my_string()=delete;&quot;
+</p>
+<h3>Destructor</h3>
+<p>
+The destructor is called by the delete method prior to freeing memory allocated. If the destructor is not specified or is specified as &quot;~my_string()=default;&quot;, then yaoocpp
+will create a destructor (in this case, the one shown above).  To avoid the creation of a destructor, use &quot;~my_string()=delete;&quot;.
+</p>
+<h3>Important Requirement</h3>
+<p>
+Before continuing with the my_string class, one important requirement for custom classes -- class instances must be movable (objects within containers may be moved).  For example:
+</p>
+<pre><code>
+  %struct circular_buffer {
+    instance:
+    char* beg;
+    char* end;
+    char buffer[32];
+  };
+</code></pre>
+<p>
+In the above example, if beg and end are pointers to locations within buffer, then the pointers would be invalidated if the object is
+moved to a different memory location. Thus it is an immovable object and should not be used in YAOOC.
+</p>
+<p>
+If the class was defined as:
+</p>
+<pre><code>
+  %struct circular_buffer {
+    instance:
+    char* beg;
+    char* end;
+    char* buffer;
+  };
+</code></pre>
+<p>
+If beg and end are pointers to memory within memory pointed to by buffer, then moving the object will not invalidate the pointers.
+This it a movable object and can be used in YAOOC.
+</p>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,22 +1,14 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include <yaooc/memory.h>
+
 #include <stdlib.h>
+
+
+
+
+
+
+
+
 
 void dynamic_pointer_default_ctor(pointer p)
 {
@@ -50,254 +42,340 @@ int dynamic_pointer_rich_compare(const_pointer p1,const_pointer p2)
 }
 
 
-/* Private members for yaooc_unique_ptr */
-
-/* Protected members for yaooc_unique_ptr */
-
-/* Typeinfo for yaooc_unique_ptr */
-void yaooc_unique_ptr_default_ctor(pointer p)
+void yaooc_unique_pointer_ctor_ptr(pointer __pthis__,va_list __con_args__)
 {
-  yaooc_unique_ptr_pointer this=p;
-  this->ptr_=NULL;
-}
+yaooc_unique_pointer_pointer this=__pthis__;
+pointer value = va_arg(__con_args__,pointer);
 
-void yaooc_unique_ptr_dtor(pointer p)
+call_default_ctor_static(this,yaooc_unique_pointer);
+
+
+      M(this,reset,value);
+    
+}
+void yaooc_unique_pointer_swap(pointer __pthis__,pointer o)
 {
-  yaooc_unique_ptr_pointer this=p;
-  if(this->ptr_)
-    delete(this->ptr_);
-  this->ptr_=NULL;
-}
+yaooc_unique_pointer_pointer this=__pthis__;(void)this;
+#define super() yaooc_unique_pointer_parent_class_table->swap(this,o)
+#define PM(method,...) CTM((*yaooc_unique_pointer_parent_class_table),this,method,## __VA_ARGS__)
 
-void yaooc_unique_ptr_copy_ctor(pointer d,const_pointer s)
+
+      yaooc_unique_pointer_t* other=o;
+      SWAP(pointer,this->ptr_,other->ptr_);
+    
+#undef PM
+#undef super
+}
+pointer yaooc_unique_pointer_get(const_pointer __pthis__)
 {
-  yaooc_unique_ptr_default_ctor(d);
-  yaooc_unique_ptr_assign(d,s);
-}
+yaooc_unique_pointer_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_unique_pointer_parent_class_table->get(this)
+#define PM(method,...) CTM((*yaooc_unique_pointer_parent_class_table),this,method,## __VA_ARGS__)
 
-void yaooc_unique_ptr_assign(pointer d,const_pointer s)
+
+      return this->ptr_;
+    
+#undef PM
+#undef super
+}
+pointer yaooc_unique_pointer_release(pointer __pthis__)
 {
-  yaooc_unique_ptr_pointer this=d;
-  yaooc_unique_ptr_pointer src=(yaooc_unique_ptr_pointer)s;
-  if(this->ptr_ != src->ptr_) {
-    yaooc_unique_ptr_dtor(this);
-    this->ptr_=src->ptr_;
-    src->ptr_=NULL;
-  }
-}
+yaooc_unique_pointer_pointer this=__pthis__;(void)this;
+#define super() yaooc_unique_pointer_parent_class_table->release(this)
+#define PM(method,...) CTM((*yaooc_unique_pointer_parent_class_table),this,method,## __VA_ARGS__)
 
-static int yaooc_memory_pointer_compare(const_pointer p1,const_pointer p2)
+
+      pointer ret = this->ptr_;
+      this->ptr_=NULL;
+      return ret;
+    
+#undef PM
+#undef super
+}
+void yaooc_unique_pointer_reset(pointer __pthis__,pointer ptr)
 {
+yaooc_unique_pointer_pointer this=__pthis__;(void)this;
+#define super() yaooc_unique_pointer_parent_class_table->reset(this,ptr)
+#define PM(method,...) CTM((*yaooc_unique_pointer_parent_class_table),this,method,## __VA_ARGS__)
 
-  if(p1==p2)
-    return 0;
-  if(p1 != NULL) {
-    if(p2 != NULL) {
-      return op_rich_compare(p1,p2);
-    } else {
-      return 1;
-    }
-  }
-  return -1;
+
+      deletep(this,yaooc_unique_pointer);
+      this->ptr_=ptr;
+    
+#undef PM
+#undef super
 }
-
-int yaooc_unique_ptr_rich_compare(const_pointer p1,const_pointer p2)
-{
-  return yaooc_memory_pointer_compare(((yaooc_unique_ptr_const_pointer)p1)->ptr_,((yaooc_unique_ptr_const_pointer)p2)->ptr_);
-}
-
-/* Additional constructors for yaooc_unique_ptr */
-
-void yaooc_unique_ptr_ctor_ptr(pointer p,va_list args)
-{
-  yaooc_unique_ptr_default_ctor(p);
-  yaooc_unique_ptr_reset(p,va_arg(args,pointer));
-}
-
-/* Class table members for yaooc_unique_ptr */
-void yaooc_unique_ptr_swap(pointer p,pointer ptr)
-{
-  yaooc_unique_ptr_pointer this=p;
-  yaooc_unique_ptr_pointer other=ptr;
-  SWAP(pointer,this->ptr_,other->ptr_);
-}
-
-
-pointer yaooc_unique_ptr_get(const_pointer p)
-{
-  yaooc_unique_ptr_const_pointer this=p;
-  return this->ptr_;
-}
-
-pointer yaooc_unique_ptr_release(pointer p)
-{
-  yaooc_unique_ptr_pointer this=p;
-  pointer ret = this->ptr_;
-  this->ptr_=NULL;
-  return ret;
-}
-
-void yaooc_unique_ptr_reset(pointer p,pointer ptr)
-{
-  yaooc_unique_ptr_dtor(p);
-  ((yaooc_unique_ptr_pointer)p)->ptr_=ptr;
-}
-
-
-/* Instance members for yaooc_unique_ptr */
-
-yaooc_unique_ptr_class_table_t yaooc_unique_ptr_class_table = {
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_unique_ptr_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_unique_ptr_swap,
-  .get = (pointer (*) (const_pointer p)) yaooc_unique_ptr_get,
-  .release = (pointer (*) (pointer p)) yaooc_unique_ptr_release,
-  .reset = (void (*) (pointer p,pointer)) yaooc_unique_ptr_reset,
+yaooc_unique_pointer_class_table_t yaooc_unique_pointer_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+.type_name_ = (const char*) "yaooc_unique_pointer_t",
+.swap = (void(*)(pointer,pointer)) yaooc_unique_pointer_swap,
+.get = (pointer(*)(const_pointer)) yaooc_unique_pointer_get,
+.release = (pointer(*)(pointer)) yaooc_unique_pointer_release,
+.reset = (void(*)(pointer,pointer)) yaooc_unique_pointer_reset,
 };
+void yaooc_unique_pointer_default_ctor(pointer __pthis__)
+{
+yaooc_unique_pointer_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_unique_pointer);
 
-DEFINE_TYPE_INFO(yaooc_unique_ptr,Y,Y,Y,Y,Y,N,N,Y,yaooc_object);
-/* Private members for yaooc_shared_ptr */
 
-/* Protected members for yaooc_shared_ptr */
 
-/* Typeinfo for yaooc_shared_ptr */
+      this->ptr_=NULL;
+    
+}
+void yaooc_unique_pointer_dtor(pointer __pthis__)
+{
+yaooc_unique_pointer_pointer this=__pthis__;(void)this;
+
+
+      if(this->ptr_)
+        delete(this->ptr_);
+      this->ptr_=NULL;
+    
+}
+void yaooc_unique_pointer_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_unique_pointer_pointer this=__pthis__;(void)this;
+yaooc_unique_pointer_const_pointer src=__psrc__;(void)src;
+
+call_default_ctor_static(this,yaooc_unique_pointer);
+
+
+      assign_static(this,src,yaooc_unique_pointer);
+    
+}
+void yaooc_unique_pointer_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_unique_pointer_pointer this=__pthis__;(void)this;
+yaooc_unique_pointer_const_pointer src=__psrc__;(void)src;
+
+
+      if(this->ptr_ != src->ptr_) {
+        deletep(this,yaooc_unique_pointer);
+        this->ptr_=src->ptr_;
+        ((yaooc_unique_pointer_pointer)src)->ptr_=NULL;
+      }
+    
+}
+int yaooc_unique_pointer_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_unique_pointer_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_unique_pointer_const_pointer rhs=__prhs__;(void)rhs;
+
+      if(lhs->ptr_==rhs->ptr_)
+        return 0;
+      if(lhs->ptr_ != NULL) {
+        if(rhs->ptr_ != NULL) {
+          return op_rich_compare(lhs->ptr_,rhs->ptr_);
+        } else {
+          return 1;
+        }
+      }
+
+      return -1;
+    
+}
+const type_info_t __yaooc_unique_pointer_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_unique_pointer_t),
+.rich_compare_=yaooc_unique_pointer_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_unique_pointer_default_ctor,
+.dtor_=yaooc_unique_pointer_dtor,
+.copy_ctor_=yaooc_unique_pointer_copy_ctor,
+.assign_=yaooc_unique_pointer_assign,
+.class_table_=(const class_table_t*) &yaooc_unique_pointer_class_table,
+.parent_=&__yaooc_object_ti
+};
+const type_info_t* const yaooc_unique_pointer_ti=&__yaooc_unique_pointer_ti;
+
 struct yaooc_counter_s {
-	void* ptr_;
-	size_t count_;
+ void* ptr_;
+ size_t count_;
 };
 
 static void yaooc_counter_default_ctor(pointer p)
 {
   yaooc_counter_t* this=p;
-	this->ptr_=NULL;
-	this->count_=1;
+ this->ptr_=NULL;
+ this->count_=1;
 }
 
 static void yaooc_counter_ctor_ptr(pointer p,va_list args)
 {
   yaooc_counter_t* this=p;
-	this->ptr_=va_arg(args,pointer);
-	this->count_=1;
+ this->ptr_=va_arg(args,pointer);
+ this->count_=1;
 }
 
 DEFINE_TYPE_INFO(yaooc_counter,Y,N,N,N,N,N,N,N,NULL);
 
-void yaooc_shared_ptr_acquire(pointer p,yaooc_counter_t* c)
+
+void yaooc_shared_pointer_acquire(pointer __pthis__,yaooc_counter_t* c)
 {
-	((yaooc_shared_ptr_pointer)p)->counter_=c;
-	if(c) ++c->count_;
-}
+yaooc_shared_pointer_pointer this=__pthis__;(void)this;
 
-void yaooc_shared_ptr_default_ctor(pointer p)
+    this->counter_=c;
+    if(c)
+      ++c->count_;
+  
+}
+void yaooc_shared_pointer_ctor_ptr(pointer __pthis__,va_list __con_args__)
 {
-  yaooc_shared_ptr_pointer this=p;
-  this->counter_=NULL;
-}
+yaooc_shared_pointer_pointer this=__pthis__;
+pointer value = va_arg(__con_args__,pointer);
 
-void yaooc_shared_ptr_dtor(pointer p)
+call_parent_default_ctor_static(this,yaooc_shared_pointer);
+
+
+    call_default_ctor_static(this,yaooc_shared_pointer);
+    M(this,reset,value);
+  
+}
+void yaooc_shared_pointer_swap(pointer __pthis__,pointer o)
 {
-  yaooc_shared_ptr_release(p);
-}
+yaooc_shared_pointer_pointer this=__pthis__;(void)this;
+#define super() yaooc_shared_pointer_parent_class_table->swap(this,o)
+#define PM(method,...) CTM((*yaooc_shared_pointer_parent_class_table),this,method,## __VA_ARGS__)
 
-void yaooc_shared_ptr_copy_ctor(pointer d,const_pointer s)
+
+    yaooc_shared_pointer_t* other=o;
+    SWAP(yaooc_counter_t*,this->counter_,other->counter_);
+  
+#undef PM
+#undef super
+}
+pointer yaooc_shared_pointer_get(const_pointer __pthis__)
 {
-  yaooc_shared_ptr_default_ctor(d);
-  yaooc_shared_ptr_assign(d,s);
-}
+yaooc_shared_pointer_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_shared_pointer_parent_class_table->get(this)
+#define PM(method,...) CTM((*yaooc_shared_pointer_parent_class_table),this,method,## __VA_ARGS__)
 
-void yaooc_shared_ptr_assign(pointer d,const_pointer s)
+
+    return this->counter_ ? this->counter_->ptr_ : NULL;
+  
+#undef PM
+#undef super
+}
+pointer yaooc_shared_pointer_release(pointer __pthis__)
 {
-	if(s != d) {
-		yaooc_shared_ptr_release(d);
-		yaooc_shared_ptr_acquire(d,((yaooc_shared_ptr_const_pointer)s)->counter_);
-	}
-}
+yaooc_shared_pointer_pointer this=__pthis__;(void)this;
+#define super() yaooc_shared_pointer_parent_class_table->release(this)
+#define PM(method,...) CTM((*yaooc_shared_pointer_parent_class_table),this,method,## __VA_ARGS__)
 
-int yaooc_shared_ptr_rich_compare(const_pointer p1,const_pointer p2)
+
+    pointer ret=M(this,get);
+    if(this->counter_) {
+      if(--this->counter_->count_ == 0) {
+        delete(this->counter_->ptr_);
+        delete(this->counter_);
+      }
+      this->counter_=NULL;
+    }
+    return ret;
+  
+#undef PM
+#undef super
+}
+void yaooc_shared_pointer_reset(pointer __pthis__,pointer ptr)
 {
-  return yaooc_memory_pointer_compare(yaooc_shared_ptr_get(p1),yaooc_shared_ptr_get(p2));
-}
+yaooc_shared_pointer_pointer this=__pthis__;(void)this;
+#define super() yaooc_shared_pointer_parent_class_table->reset(this,ptr)
+#define PM(method,...) CTM((*yaooc_shared_pointer_parent_class_table),this,method,## __VA_ARGS__)
 
-/* Additional constructors for yaooc_shared_ptr */
-void yaooc_shared_ptr_ctor_ptr(pointer p,va_list args)
+
+    M(this,release);
+    if(ptr != NULL)
+      this->counter_=new_ctor(yaooc_counter,yaooc_counter_ctor_ptr,ptr);
+  
+#undef PM
+#undef super
+}
+size_t yaooc_shared_pointer_count(const_pointer __pthis__)
 {
-  yaooc_shared_ptr_default_ctor(p);
-  yaooc_shared_ptr_reset(p,va_arg(args,pointer));
+yaooc_shared_pointer_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_shared_pointer_parent_class_table->count(this)
+#define PM(method,...) CTM((*yaooc_shared_pointer_parent_class_table),this,method,## __VA_ARGS__)
 
+
+    return this->counter_ ? this->counter_->count_ : 0;
+  
+#undef PM
+#undef super
 }
-
-/* Class table members for yaooc_shared_ptr */
-void yaooc_shared_ptr_swap(pointer p,pointer ptr)
-{
-  yaooc_shared_ptr_pointer this=p;
-  yaooc_shared_ptr_pointer other=ptr;
-  SWAP(yaooc_counter_t*,this->counter_,other->counter_);
-}
-
-pointer yaooc_shared_ptr_get(const_pointer p)
-{
-  yaooc_shared_ptr_const_pointer this=p;
-  return this->counter_ ? this->counter_->ptr_ : NULL;
-}
-
-/*
-const_pointer yaooc_shared_ptr_cget(const_pointer p)
-{
-  yaooc_shared_ptr_const_pointer this=p;
-   ret;
-
-  return ret;
-}
-*/
-pointer yaooc_shared_ptr_release(pointer p)
-{
-  yaooc_shared_ptr_pointer this=p;
-  pointer ret = yaooc_shared_ptr_get(p);
-	if(this->counter_) {
-		if(--this->counter_->count_ == 0) {
-      delete(this->counter_->ptr_);  /* counter would have been null if ptr was null */
-			delete(this->counter_);
-		}
-		this->counter_=NULL;
-	}
-
-  return ret;
-}
-
-void yaooc_shared_ptr_reset(pointer p,pointer ptr)
-{
-  yaooc_shared_ptr_pointer this=p;
-  yaooc_shared_ptr_release(this);
-  if(ptr != NULL)
-    this->counter_=new_ctor(yaooc_counter,yaooc_counter_ctor_ptr,ptr);
-}
-/*
-bool yaooc_shared_ptr_unique(const_pointer p)
-{
-  yaooc_shared_ptr_const_pointer this=p;
-  bool ret;
-
-  return ret;
-}
-*/
-size_t yaooc_shared_ptr_count(const_pointer p)
-{
-  yaooc_shared_ptr_const_pointer this=p;
-  return this->counter_ ? this->counter_->count_  : 0;
-}
-
-
-/* Instance members for yaooc_shared_ptr */
-
-yaooc_shared_ptr_class_table_t yaooc_shared_ptr_class_table = {
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_shared_ptr_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_shared_ptr_swap,
-  .get = (pointer (*) (const_pointer p)) yaooc_shared_ptr_get,
-  .release = (pointer (*) (pointer p)) yaooc_shared_ptr_release,
-  .reset = (void (*) (pointer p,pointer)) yaooc_shared_ptr_reset,
-  .count = (size_t (*) (const_pointer p)) yaooc_shared_ptr_count,
+yaooc_shared_pointer_class_table_t yaooc_shared_pointer_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+.type_name_ = (const char*) "yaooc_shared_pointer_t",
+.swap = (void(*)(pointer,pointer)) yaooc_shared_pointer_swap,
+.get = (pointer(*)(const_pointer)) yaooc_shared_pointer_get,
+.release = (pointer(*)(pointer)) yaooc_shared_pointer_release,
+.reset = (void(*)(pointer,pointer)) yaooc_shared_pointer_reset,
+.count = (size_t(*)(const_pointer)) yaooc_shared_pointer_count,
 };
+void yaooc_shared_pointer_default_ctor(pointer __pthis__)
+{
+yaooc_shared_pointer_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_shared_pointer);
 
-DEFINE_TYPE_INFO(yaooc_shared_ptr,Y,Y,Y,Y,Y,N,N,Y,yaooc_object);
 
+
+    this->counter_=NULL;
+  
+}
+void yaooc_shared_pointer_dtor(pointer __pthis__)
+{
+yaooc_shared_pointer_pointer this=__pthis__;(void)this;
+
+
+    M(this,release);
+  
+}
+void yaooc_shared_pointer_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_shared_pointer_pointer this=__pthis__;(void)this;
+yaooc_shared_pointer_const_pointer src=__psrc__;(void)src;
+
+call_parent_default_ctor_static(this,yaooc_shared_pointer);
+
+
+    call_default_ctor_static(this,yaooc_shared_pointer);
+    assign_static(this,src,yaooc_shared_pointer);
+  
+}
+void yaooc_shared_pointer_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_shared_pointer_pointer this=__pthis__;(void)this;
+yaooc_shared_pointer_const_pointer src=__psrc__;(void)src;
+
+
+    if(this != src) {
+      M(this,release);
+      yaooc_shared_pointer_acquire(this,src->counter_);
+    }
+  
+}
+int yaooc_shared_pointer_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_shared_pointer_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_shared_pointer_const_pointer rhs=__prhs__;(void)rhs;
+
+    return op_rich_compare(M(lhs,get),M(rhs,get));
+  
+}
+const type_info_t __yaooc_shared_pointer_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_shared_pointer_t),
+.rich_compare_=yaooc_shared_pointer_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_shared_pointer_default_ctor,
+.dtor_=yaooc_shared_pointer_dtor,
+.copy_ctor_=yaooc_shared_pointer_copy_ctor,
+.assign_=yaooc_shared_pointer_assign,
+.class_table_=(const class_table_t*) &yaooc_shared_pointer_class_table,
+.parent_=&__yaooc_object_ti
+};
+const type_info_t* const yaooc_shared_pointer_ti=&__yaooc_shared_pointer_ti;

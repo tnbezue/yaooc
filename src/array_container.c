@@ -1,324 +1,411 @@
-/* Begin YAOOCPP output */
-
 #include <yaooc/array_container.h>
 
-
-#include <yaooc/algorithm.h>
-#include <yaooc/stream.h>
 #include <string.h>
 
-/* Private variables implementation for yaooc_array_container */
 
-/* Private methods prototypes for yaooc_array_container */
-static void yaooc_array_container_destroy_elements(pointer p);
-
-/* Type Info implemmentation for yaooc_array_container */
-void yaooc_array_container_default_ctor(pointer p)
+static void yaooc_array_container_destroy_elements(pointer);
+static void yaooc_array_container_destroy_elements(pointer __pthis__)
 {
-	THROW(new_ctor(yaooc_exception,yaooc_exception_ctor_v,"Cannot create an array without type info"));
-}
+yaooc_array_container_pointer this=__pthis__;(void)this;
 
-void yaooc_array_container_dtor(pointer p)
+      __deletep_array(this->array_,this->type_info_,this->size_);
+      this->size_=0;
+    
+}
+iterator yaooc_array_container_insert_space(pointer __pthis__,const_iterator pos,size_t n)
 {
-  yaooc_array_container_pointer this=p;
-	yaooc_array_container_destroy_elements(this);
-/*	yaooc_array_container_clear(this);
-//	M(this,clear);*/
-  if(this->array_)
-     FREE(this->array_);
-  this->array_ = NULL;
-  this->size_=0;
-  this->capacity_=0;
-}
+yaooc_array_container_pointer this=__pthis__;(void)this;
 
-void yaooc_array_container_copy_ctor(pointer p,const_pointer s)
+      size_t index=INDEX(this,pos);
+      debug(DEBUG_ARRAY_CONTAINER) {
+        debug_printf("this: %p pos: index: %zu n: %zu  this_array: %p  this_size: %zu this_cap: %zu\n",
+              this,index,n,BEGIN(this),SIZE(this),CAPACITY(this));
+      }
+      M(this,increase_capacity,n);
+      yaooc_private_iterator ret = AT(this,index);
+      memmove(ret+n*TYPE_SIZE(this),ret,(this->size_-index)*TYPE_SIZE(this));
+      this->size_+=n;
+      return ret;
+    
+}
+iterator yaooc_array_container_erase_space(pointer __pthis__,const_iterator pos,size_t n)
 {
-  yaooc_array_container_const_pointer src=s;
-  call_constructor(p,yaooc_array_container_ctor_ti,src->type_info_);
-  yaooc_array_container_assign(p,s);
-}
+yaooc_array_container_pointer this=__pthis__;(void)this;
 
-void yaooc_array_container_assign(pointer p,const_pointer s)
+      yaooc_private_iterator ret=(yaooc_private_iterator)pos;
+      size_t index=INDEX(this,pos);
+      memmove(ret,ret+n*TYPE_SIZE(this),(SIZE(this)-index-n)*TYPE_SIZE(this));
+      this->size_-=n;
+      return ret;
+    
+}
+iterator yaooc_array_container_replace_space(pointer __pthis__,const_iterator first,const_iterator last,size_t count)
 {
-	yaooc_array_container_clear(p);
-	yaooc_array_container_reserve(p,SIZE(s));
-	yaooc_array_container_insert_range(p,BEGIN(p),BEGIN(s),END(s));
-}
+yaooc_array_container_pointer this=__pthis__;(void)this;
 
-int yaooc_array_container_rich_compare(const_pointer p1,const_pointer p2)
+      size_t index=INDEX(this,first);
+      size_t n = DISTANCE(TYPE_INFO(this),first,last);
+      if(n < count) {
+        yaooc_array_container_insert_space(this,AT(this,index+n),count-n);
+      } else if(n > count) {
+        yaooc_array_container_erase_space(this,AT(this,index+count),n-count);
+      }
+      return AT(this,index);
+    
+}
+iterator yaooc_array_container_find(pointer __pthis__,const_pointer value)
 {
-  yaooc_array_container_const_pointer lhs=p1;
-  yaooc_array_container_const_pointer rhs=p2;
-  size_t n=M(lhs,size)<M(rhs,size) ? M(lhs,size) : M(rhs,size);
-  size_t i;
-  rich_compare rich_cmp=get_rich_compare(TYPE_INFO(lhs));
-  if(rich_cmp) {
-    for(i=0;i<n;i++) {
-      int rc = rich_cmp(AT(lhs,i),AT(rhs,i));
-      if(rc < 0)
-         return -1;
-      if(rc > 0)
-        return 1;
-    }
-  }
-  // Everything equal so far, use sizes for comparison
-  return (int)(M(lhs,size) - M(rhs,size));
-}
+yaooc_array_container_pointer this=__pthis__;(void)this;
 
-void yaooc_array_container_to_stream(const_pointer p,ostream_pointer o){
-  yaooc_array_container_const_pointer this=p;
-  yaooc_ostream_pointer ostrm=o;
-	yaooc_private_const_iterator i;
-	size_t type_size=TYPE_SIZE(this);
-	for(i=M(this,cbegin);i!=M(this,cend);i+=type_size) {
-		STREAM(ostrm,__S_OBJ(TYPE_INFO(this)),i);
-	}
+      return __yaooc_find(TYPE_INFO(this),BEGIN(this),END(this),value);
+    
 }
-
-/* Constructors implementation for yaooc_array_container */
-void yaooc_array_container_ctor_ti(pointer p,va_list args)
+iterator yaooc_array_container_insert(pointer __pthis__,const_iterator pos,const_pointer value)
 {
-  yaooc_array_container_pointer this=p;
-  this->array_ = NULL;
-  this->type_info_ = va_arg(args, const type_info_t*);
-  this->size_=0;
-  this->capacity_=0;
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+      return yaooc_array_container_insertn(this,pos,1,value);
+    
 }
-
-
-/* Private methods implementation for yaooc_array_container */
-static void yaooc_array_container_destroy_elements(pointer p)
+iterator yaooc_array_container_insertn(pointer __pthis__,const_iterator pos,size_t n,const_pointer val)
 {
-  yaooc_array_container_pointer this=p;
-	__deletep_array(this->array_,this->type_info_,this->size_);
-	this->size_=0;
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+      yaooc_private_iterator ret=yaooc_array_container_insert_space(this,pos,n);
+      __newp_array_copy_static(ret,TYPE_INFO(this),val,n);
+      return ret;
+    
 }
-/* Protected implementation for yaooc_array_container */
-iterator yaooc_array_container_insert_space(pointer p,const_iterator pos,size_t n)
+iterator yaooc_array_container_insert_range(pointer __pthis__,const_iterator pos,const_iterator f,const_iterator l)
 {
-  yaooc_array_container_pointer this=p;
-  size_t index=INDEX(this,pos);  /* Save index because increase capacity may move array */
-  debug(DEBUG_ARRAY_CONTAINER) {
-    debug_printf("this: %p pos: index: %zu n: %zu  this_array: %p  this_size: %zu this_cap: %zu\n",
-          p,index,n,BEGIN(p),SIZE(p),CAPACITY(p));
-  }
-  M(this,increase_capacity,n);
-  yaooc_private_iterator ret = AT(p,index);
-  memmove(ret+n*TYPE_SIZE(p),ret,(this->size_-index)*TYPE_SIZE(p));
-  this->size_+=n;
-  return ret;
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+      size_t n=DISTANCE(TYPE_INFO(this),f,l);
+      yaooc_private_iterator dpos=yaooc_array_container_insert_space(this,pos,n);
+      __newp_array_copy_range_static(dpos,TYPE_INFO(this),f,n);
+      return dpos;
+    
 }
-
-iterator yaooc_array_container_erase_space(pointer p,const_iterator pos,size_t n)
+iterator yaooc_array_container_erase(pointer __pthis__,const_iterator pos)
 {
-  yaooc_array_container_pointer this=p;
-  yaooc_private_iterator ret=(yaooc_private_iterator)pos;
-  size_t index=INDEX(p,pos);
-  memmove(ret,ret+n*TYPE_SIZE(p),(SIZE(p)-index-n)*TYPE_SIZE(p));
-  this->size_-=n;
-  return ret;
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+      return yaooc_array_container_erase_range(this,pos,((yaooc_private_const_iterator)pos)+yaooc_sizeof(TYPE_INFO(this)));
+    
 }
-
-iterator yaooc_array_container_replace_space(pointer p,const_iterator f,const_iterator l,size_t count)
+iterator yaooc_array_container_erase_range(pointer __pthis__,const_iterator f,const_iterator l)
 {
-  yaooc_array_container_pointer this=p;
-  size_t index=INDEX(p,f);
-  size_t n = DISTANCE(TYPE_INFO(p),f,l);
-  if(n < count ) {
-    yaooc_array_container_insert_space(this,AT(p,index+n),count-n);
-  } else if(n > count) {
-    yaooc_array_container_erase_space(this,AT(p,index+count),n-count);
-  }
-  return AT(this,index);
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+      iterator ret=(iterator)f;
+      size_t n=DISTANCE(TYPE_INFO(this),f,l);
+      __deletep_array(ret,TYPE_INFO(this),n);
+      return yaooc_array_container_erase_space(this,f,n);
+    
 }
-
-iterator yaooc_array_container_find(pointer p,const_pointer value)
+size_t yaooc_array_container_erase_value(pointer __pthis__,const_pointer value)
 {
-	return __yaooc_find(TYPE_INFO(p),BEGIN(p),END(p),value);
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+      size_t ret=0;
+      yaooc_private_iterator pos=END(this)-TYPE_SIZE(this);
+      rich_compare rich_cmp = get_rich_compare(this->type_info_);
+      while(pos >= BEGIN(this) && SIZE(this)>0) {
+        if(__op_eq__(pos,value,rich_cmp)) {
+          __deletep_array(pos,this->type_info_,1);
+          yaooc_array_container_erase_space(this,pos,1);
+          ret++;
+        }
+        pos-=TYPE_SIZE(this);
+      }
+      return ret;
+    
 }
-
-iterator yaooc_array_container_insert(pointer p,const_iterator pos,const_pointer value)
+iterator yaooc_array_container_at(const_pointer __pthis__,size_t i)
 {
-  return yaooc_array_container_insertn(p,pos,1,value);
+yaooc_array_container_const_pointer this=__pthis__;(void)this;
+
+      return AT(this,i);
+    
 }
-
-iterator yaooc_array_container_insertn(pointer p,const_iterator pos,size_t n,const_pointer val)
+void yaooc_array_container_shrink_to_fit(pointer __pthis__)
 {
-  yaooc_private_iterator ret=yaooc_array_container_insert_space(p,pos,n);
-  __newp_array_copy_static(ret,TYPE_INFO(p),val,n);
-  return ret;
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+
+      if(this->capacity_ > YAOOC_ARRAY_CONTAINER_INITIAL_CAPACITY && this->size_ < this->capacity_) {
+        size_t new_cap = YAOOC_ARRAY_CONTAINER_INITIAL_CAPACITY;
+        while(new_cap < this->size_) new_cap <<= 1;
+        if(new_cap != this->capacity_) {
+          this->array_=REALLOC(this->array_,M(this,size_needed,this->capacity_=new_cap));
+        }
+      }
+    
 }
-
-iterator yaooc_array_container_insert_range(pointer p,const_iterator pos,const_iterator f,const_iterator l)
+void yaooc_array_container_reserve(pointer __pthis__,size_t n)
 {
-  size_t n=DISTANCE(TYPE_INFO(p),f,l);
-  yaooc_private_iterator dpos=yaooc_array_container_insert_space(p,pos,n);
-  __newp_array_copy_range_static(dpos,TYPE_INFO(p),f,n);
-  return dpos;
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+      if(n > this->capacity_)
+        M(this,increase_capacity,n-this->capacity_);
+    
 }
-
-iterator yaooc_array_container_erase(pointer p,const_iterator pos)
+void yaooc_array_container_resize(pointer __pthis__,size_t n)
 {
-	return yaooc_array_container_erase_range(p,pos,((yaooc_private_const_iterator)pos)+yaooc_sizeof(TYPE_INFO(p)));
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+      pointer temp=__new_array(TYPE_INFO(this),1);
+      yaooc_array_container_resize_value(this,n,temp);
+      delete(temp);
+    
 }
-
-iterator yaooc_array_container_erase_range(pointer p,const_iterator f,const_iterator l)
+void yaooc_array_container_resize_value(pointer __pthis__,size_t n,const_pointer value)
 {
-  iterator ret=(iterator)f;
-  size_t n=DISTANCE(TYPE_INFO(p),f,l);
-  __deletep_array(ret,TYPE_INFO(p),n);
-  return yaooc_array_container_erase_space(p,f,n);
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+      if(n<SIZE(this)) {
+        yaooc_array_container_erase_range(this,AT(this,n),END(this));
+      } else if(n > SIZE(this)){
+        yaooc_array_container_insertn(this,END(this),n-SIZE(this),value);
+      }
+    
 }
-
-size_t yaooc_array_container_erase_value(pointer p,const_pointer value)
+void yaooc_array_container_clear(pointer __pthis__)
 {
-  yaooc_array_container_pointer this=p;
-  size_t ret=0;
-  yaooc_private_iterator pos=END(this)-TYPE_SIZE(this);
-  rich_compare rich_cmp = get_rich_compare(this->type_info_);
-  while(pos >= BEGIN(this) && SIZE(this)>0) {
-    if(__op_eq__(pos,value,rich_cmp)) {
-      __deletep_array(pos,this->type_info_,1);
-      yaooc_array_container_erase_space(this,pos,1);
-      ret++;
-    }
-    pos-=TYPE_SIZE(this);
-  }
-  return ret;
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+      yaooc_array_container_destroy_elements(this);
+    
 }
-
-iterator yaooc_array_container_at(const_pointer p,size_t i)
+void yaooc_array_container_ctor_ti(pointer __pthis__,va_list __con_args__)
 {
-  return AT(p,i);
+yaooc_array_container_pointer this=__pthis__;
+const type_info_t* ti = va_arg(__con_args__,const type_info_t*);
+
+call_parent_default_ctor_static(this,yaooc_array_container);
+
+
+      this->array_ = NULL;
+      this->type_info_ = ti;
+      this->size_=0;
+      this->capacity_=0;
+    
 }
-
-void yaooc_array_container_shrink_to_fit(pointer p)
+void yaooc_array_container_swap(pointer __pthis__,pointer s)
 {
-  yaooc_array_container_pointer this=p;
-  // Don't shrink to less than INITIAL_CAPACITY
-  if(this->capacity_ > YAOOC_ARRAY_CONTAINER_INITIAL_CAPACITY && this->size_ < this->capacity_) {
-		size_t new_cap = YAOOC_ARRAY_CONTAINER_INITIAL_CAPACITY;
-		while(new_cap < this->size_) new_cap <<= 1;
-		if(new_cap != this->capacity_) {
-			this->array_=REALLOC(this->array_,M(this,size_needed,this->capacity_=new_cap));
-		}
-  }
+yaooc_array_container_pointer this=__pthis__;(void)this;
+#define super() yaooc_array_container_parent_class_table->swap(this,s)
+#define PM(method,...) CTM((*yaooc_array_container_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_array_container_pointer other=s;
+      SWAP(char*,this->array_,other->array_);
+      SWAP(size_t,this->size_,other->size_);
+      SWAP(size_t,this->capacity_,other->capacity_);
+    
+#undef PM
+#undef super
 }
-
-void yaooc_array_container_reserve(pointer p,size_t n)
+bool yaooc_array_container_increase_capacity(pointer __pthis__,size_t n)
 {
-  yaooc_array_container_pointer this=p;
-  if(n > this->capacity_)
-    M(this,increase_capacity,n-this->capacity_);
+yaooc_array_container_pointer this=__pthis__;(void)this;
+#define super() yaooc_array_container_parent_class_table->increase_capacity(this,n)
+#define PM(method,...) CTM((*yaooc_array_container_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      size_t capacity_needed = this->size_+n;
+      bool ret=false;
+      if(capacity_needed > this->capacity_ || this->array_==NULL) {
+        this->capacity_=YAOOC_ARRAY_CONTAINER_INITIAL_CAPACITY;
+        while(capacity_needed > this->capacity_) this->capacity_ <<= 1;
+        this->array_=REALLOC(this->array_,M(this,size_needed,this->capacity_));
+        ret=true;
+      }
+      return ret;
+    
+#undef PM
+#undef super
 }
-
-void yaooc_array_container_resize(pointer p,size_t n)
+size_t yaooc_array_container_size_needed(const_pointer __pthis__,size_t n)
 {
-  pointer temp=__new_array(TYPE_INFO(p),1);
-  yaooc_array_container_resize_value(p,n,temp);
-  delete(temp);
+yaooc_array_container_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_array_container_parent_class_table->size_needed(this,n)
+#define PM(method,...) CTM((*yaooc_array_container_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return n*TYPE_SIZE(this);
+    
+#undef PM
+#undef super
 }
-
-void yaooc_array_container_resize_value(pointer p,size_t n,const_pointer value)
+size_t yaooc_array_container_size(const_pointer __pthis__)
 {
-  if(n<SIZE(p)) {
-    yaooc_array_container_erase_range(p,AT(p,n),END(p));
-  } else if(n > SIZE(p)){
-    yaooc_array_container_insertn(p,END(p),n-SIZE(p),value);
-  }
+yaooc_array_container_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_array_container_parent_class_table->size(this)
+#define PM(method,...) CTM((*yaooc_array_container_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return SIZE(this);
+    
+#undef PM
+#undef super
 }
-
-void yaooc_array_container_clear(pointer p)
+size_t yaooc_array_container_capacity(const_pointer __pthis__)
 {
-//  yaooc_array_container_pointer this=p;
-	yaooc_array_container_destroy_elements(p);
+yaooc_array_container_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_array_container_parent_class_table->capacity(this)
+#define PM(method,...) CTM((*yaooc_array_container_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return CAPACITY(this);
+    
+#undef PM
+#undef super
 }
-
-
-/* Table implementation for yaooc_array_container */
-void yaooc_array_container_swap(pointer p,pointer p2)
+bool yaooc_array_container_empty(const_pointer __pthis__)
 {
-  yaooc_array_container_pointer this=p;
-  yaooc_array_container_pointer other=p2;
-  SWAP(char*,this->array_,other->array_);
-  SWAP(size_t,this->size_,other->size_);
-  SWAP(size_t,this->capacity_,other->capacity_);
+yaooc_array_container_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_array_container_parent_class_table->empty(this)
+#define PM(method,...) CTM((*yaooc_array_container_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return SIZE(this)==0;
+    
+#undef PM
+#undef super
 }
-
-bool yaooc_array_container_increase_capacity(pointer p,size_t n)
+iterator yaooc_array_container_begin(pointer __pthis__)
 {
-  yaooc_array_container_pointer this=p;
-  size_t capacity_needed = this->size_+n;
-  bool ret=false;
-  if(capacity_needed > this->capacity_ || this->array_==NULL) {
-    this->capacity_=YAOOC_ARRAY_CONTAINER_INITIAL_CAPACITY;
-    while(capacity_needed > this->capacity_) this->capacity_ <<= 1;
-    this->array_=REALLOC(this->array_,M(this,size_needed,this->capacity_));
-    ret=true;
-  }
-  return ret;
+yaooc_array_container_pointer this=__pthis__;(void)this;
+#define super() yaooc_array_container_parent_class_table->begin(this)
+#define PM(method,...) CTM((*yaooc_array_container_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return BEGIN(this);
+    
+#undef PM
+#undef super
 }
-
-size_t yaooc_array_container_size_needed(const_pointer p,size_t n)
+iterator yaooc_array_container_end(pointer __pthis__)
 {
-  return n*TYPE_SIZE(p);
+yaooc_array_container_pointer this=__pthis__;(void)this;
+#define super() yaooc_array_container_parent_class_table->end(this)
+#define PM(method,...) CTM((*yaooc_array_container_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return END(this);
+    
+#undef PM
+#undef super
 }
-
-size_t yaooc_array_container_size(const_pointer p)
-{
-	return SIZE(p);
-}
-
-size_t yaooc_array_container_capacity(const_pointer p)
-{
-	return CAPACITY(p);
-}
-
-bool yaooc_array_container_empty(const_pointer p)
-{
-  return SIZE(p)==0;
-}
-
-iterator yaooc_array_container_begin(pointer p)
-{
-  return BEGIN(p);
-}
-
-iterator yaooc_array_container_end(pointer p)
-{
-	return END(p);
-}
-
-const_iterator yaooc_array_container_cbegin(const_pointer p)
-{
-	return (const_iterator)BEGIN(p);
-}
-
-const_iterator yaooc_array_container_cend(const_pointer p)
-{
-	return (const_iterator)END(p);
-}
-
-
-/* Class table definition for yaooc_array_container */
-yaooc_array_container_class_table_t yaooc_array_container_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_array_container_t",
-  .swap = (void(*)(pointer, pointer)) yaooc_array_container_swap,
-  .increase_capacity = (bool(*)(pointer, size_t)) yaooc_array_container_increase_capacity,
-  .size_needed = (size_t(*)(const_pointer, size_t)) yaooc_array_container_size_needed,
-  .size = (size_t(*)(const_pointer)) yaooc_array_container_size,
-  .capacity = (size_t(*)(const_pointer)) yaooc_array_container_capacity,
-  .empty = (bool(*)(const_pointer)) yaooc_array_container_empty,
-  .begin = (iterator(*)(pointer)) yaooc_array_container_begin,
-  .end = (iterator(*)(pointer)) yaooc_array_container_end,
-  .cbegin = (const_iterator(*)(const_pointer)) yaooc_array_container_cbegin,
-  .cend = (const_iterator(*)(const_pointer)) yaooc_array_container_cend,
+yaooc_array_container_class_table_t yaooc_array_container_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+.type_name_ = (const char*) "yaooc_array_container_t",
+.swap = (void(*)(pointer,pointer)) yaooc_array_container_swap,
+.increase_capacity = (bool(*)(pointer,size_t)) yaooc_array_container_increase_capacity,
+.size_needed = (size_t(*)(const_pointer,size_t)) yaooc_array_container_size_needed,
+.size = (size_t(*)(const_pointer)) yaooc_array_container_size,
+.capacity = (size_t(*)(const_pointer)) yaooc_array_container_capacity,
+.empty = (bool(*)(const_pointer)) yaooc_array_container_empty,
+.begin = (iterator(*)(pointer)) yaooc_array_container_begin,
+.end = (iterator(*)(pointer)) yaooc_array_container_end,
+.cbegin = (const_iterator(*)(const_pointer)) yaooc_array_container_cbegin,
+.cend = (const_iterator(*)(const_pointer)) yaooc_array_container_cend,
 };
+void yaooc_array_container_default_ctor(pointer __pthis__)
+{
+yaooc_array_container_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_array_container);
 
-/* Type info structure for yaooc_array_container */
-DEFINE_TYPE_INFO(yaooc_array_container,Y,Y,Y,Y,Y,Y,N,Y,yaooc_object);
 
-/* End YAOOCPP output */
 
+      throw_yaooc_array_container_exception(this,"Default constructor for yaooc_array_container called.\n"
+        "Object type contained in array must be specified");
+    
+}
+void yaooc_array_container_dtor(pointer __pthis__)
+{
+yaooc_array_container_pointer this=__pthis__;(void)this;
+
+
+      yaooc_array_container_destroy_elements(this);
+      if(this->array_)
+         FREE(this->array_);
+      this->array_ = NULL;
+      this->size_=0;
+      this->capacity_=0;
+    
+}
+void yaooc_array_container_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_array_container_pointer this=__pthis__;(void)this;
+yaooc_array_container_const_pointer src=__psrc__;(void)src;
+
+call_constructor(this,yaooc_array_container_ctor_ti,src->type_info_);
+
+
+      yaooc_array_container_assign(this,src);
+    
+}
+void yaooc_array_container_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_array_container_pointer this=__pthis__;(void)this;
+yaooc_array_container_const_pointer src=__psrc__;(void)src;
+
+
+      yaooc_array_container_clear(this);
+      yaooc_array_container_reserve(this,SIZE(src));
+      yaooc_array_container_insert_range(this,BEGIN(this),BEGIN(src),END(src));
+
+    
+}
+int yaooc_array_container_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_array_container_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_array_container_const_pointer rhs=__prhs__;(void)rhs;
+
+      size_t n=M(lhs,size)<M(rhs,size) ? M(lhs,size) : M(rhs,size);
+      size_t i;
+      rich_compare rich_cmp=get_rich_compare(TYPE_INFO(lhs));
+      if(rich_cmp) {
+        for(i=0;i<n;i++) {
+          int rc = rich_cmp(AT(lhs,i),AT(rhs,i));
+          if(rc < 0)
+             return -1;
+          if(rc > 0)
+            return 1;
+        }
+      }
+
+      return (int)(M(lhs,size) - M(rhs,size));
+    
+}
+void yaooc_array_container_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__)
+{
+yaooc_array_container_const_pointer this=__pthis__;(void)this;
+yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
+
+      yaooc_private_const_iterator i;
+      to_stream to_stream_method=get_to_stream(TYPE_INFO(this));
+      if(to_stream_method != NULL) {
+        size_t type_size=TYPE_SIZE(this);
+        for(i=M(this,cbegin);i!=M(this,cend);i+=type_size)
+          to_stream_method(i,ostrm);
+      }
+    
+}
+const type_info_t __yaooc_array_container_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_array_container_t),
+.rich_compare_=yaooc_array_container_rich_compare,
+.to_stream_=yaooc_array_container_to_stream,
+.from_stream_=NULL,
+.default_ctor_=yaooc_array_container_default_ctor,
+.dtor_=yaooc_array_container_dtor,
+.copy_ctor_=yaooc_array_container_copy_ctor,
+.assign_=yaooc_array_container_assign,
+.class_table_=(const class_table_t*) &yaooc_array_container_class_table,
+.parent_=&__yaooc_object_ti
+};
+const type_info_t* const yaooc_array_container_ti=&__yaooc_array_container_ti;

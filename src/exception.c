@@ -1,136 +1,144 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include <yaooc/exception.h>
 
-#if defined(_WIN32) && !defined(__YAOOC_USE_PTRHEADS)
-#include <windows.h>
-#else
-#include <pthread.h>
-#endif
+#include <yaooc/garbage_bag.h>
 #include <stdio.h>
 #include <string.h>
-#include <yaooc/pointer_bag.h>
-/*  Begin YAOOC PreProcessor generated content */
+#if defined(_WIN32) && !defined(__YAOOC_USE_PTRHEADS)
+#include <windows.h>
+typedef uintptr_t yaooc_exception_thread_t;
+#define yaooc_current_thread_id() (uintptr_t)GetCurrentThread()
+#else
+#include <pthread.h>
+typedef pthread_t yaooc_exception_thread_t;
+#define yaooc_current_thread_id() pthread_self()
+#endif
 
-/* Private items for yaooc_exception */
 
-/* Protected items for yaooc_exception */
-
-/* Typeinfo for yaooc_exception */
-void yaooc_exception_default_ctor(pointer p)
+void yaooc_exception_ctor_v(pointer __pthis__,va_list __con_args__)
 {
-	yaooc_exception_pointer this=p;
-	this->what_=NULL;
+yaooc_exception_pointer this=__pthis__;
+const char* fmt = va_arg(__con_args__,const char*);
+#define args __con_args__
+call_parent_default_ctor_static(this,yaooc_exception);
+
+
+      va_list args2;
+      va_copy(args2,args);
+      int size_needed=vsnprintf(NULL,0,fmt,args2);
+      va_end(args2);
+      if(size_needed > 0) {
+        this->what_=MALLOC(++size_needed);
+        vsnprintf(this->what_,size_needed,fmt,args);
+      }
+    
 }
-
-void yaooc_exception_dtor(pointer p)
+const char* yaooc_exception_what(const_pointer __pthis__)
 {
-	yaooc_exception_pointer this=p;
-	if(this->what_)
-		FREE(this->what_);
+yaooc_exception_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_exception_parent_class_table->what(this)
+#define PM(method,...) CTM((*yaooc_exception_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return this->what_;
+    
+#undef PM
+#undef super
 }
-
-void yaooc_exception_copy_ctor(pointer p,const_pointer s)
-{
-	yaooc_exception_default_ctor(p);
-	yaooc_exception_assign(p,s);
-}
-
-void yaooc_exception_assign(pointer p,const_pointer s)
-{
-	yaooc_exception_pointer this=p;
-	yaooc_exception_const_pointer src=p;
-	yaooc_exception_dtor(p);
-	this->what_ = src->what_ ? strdup(src->what_) : NULL; // Don't use STRDUP -- see destructor
-}
-
-void yaooc_exception_ctor_v(pointer p,va_list args)
-{
-	yaooc_exception_pointer this=p;
-	const char* fmt=va_arg(args,const char*);
-  va_list args2;
-  va_copy(args2,args);
-	int size_needed=vsnprintf(NULL,0,fmt,args2);
-  va_end(args2);
-	if(size_needed > 0) {
-		this->what_=MALLOC(++size_needed);
-		vsnprintf(this->what_,size_needed,fmt,args);
-	}
-}
-
-/* Class table members for yaooc_exception */
-void yaooc_exception_swap(pointer p,pointer o)
-{
-	yaooc_exception_pointer this=p;
-	yaooc_exception_pointer other=o;
-	SWAP(char *,this->what_,other->what_);
-}
-
-const char* yaooc_exception_what(const_pointer p)
-{
-  return ((yaooc_exception_const_pointer)p)->what_;
-}
-
-/* Class table for yaooc_exception */
-yaooc_exception_class_table_t yaooc_exception_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_exception_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_exception_swap,
-  .what = (const char* (*) (const_pointer p)) yaooc_exception_what,
+yaooc_exception_class_table_t yaooc_exception_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+.type_name_ = (const char*) "yaooc_exception_t",
+.swap = (void(*)(pointer,pointer)) yaooc_exception_swap,
+.what = (const char*(*)(const_pointer)) yaooc_exception_what,
 };
+void yaooc_exception_default_ctor(pointer __pthis__)
+{
+yaooc_exception_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_exception);
 
 
-DEFINE_TYPE_INFO(yaooc_exception,Y,Y,Y,Y,N,N,N,Y,yaooc_object);
-/*  End YAOOC PreProcessor generated content */
+
+      this->what_=NULL;
+    
+}
+void yaooc_exception_dtor(pointer __pthis__)
+{
+yaooc_exception_pointer this=__pthis__;(void)this;
+
+
+      if(this->what_)
+        FREE(this->what_);
+    
+}
+void yaooc_exception_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_exception_pointer this=__pthis__;(void)this;
+yaooc_exception_const_pointer src=__psrc__;(void)src;
+
+call_parent_default_ctor_static(this,yaooc_exception);
+
+
+      yaooc_exception_default_ctor(this);
+      yaooc_exception_assign(this,src);
+    
+}
+void yaooc_exception_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_exception_pointer this=__pthis__;(void)this;
+yaooc_exception_const_pointer src=__psrc__;(void)src;
+
+
+      yaooc_exception_dtor(this);
+      this->what_ = src->what_ ? STRDUP(src->what_) : NULL;
+    
+}
+const type_info_t __yaooc_exception_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_exception_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_exception_default_ctor,
+.dtor_=yaooc_exception_dtor,
+.copy_ctor_=yaooc_exception_copy_ctor,
+.assign_=yaooc_exception_assign,
+.class_table_=(const class_table_t*) &yaooc_exception_class_table,
+.parent_=&__yaooc_object_ti
+};
+const type_info_t* const yaooc_exception_ti=&__yaooc_exception_ti;
 
 typedef struct yaooc_jmpbuf_s yaooc_jmpbuf_t;
 struct yaooc_jmpbuf_s {
   jmp_buf jb_;
   yaooc_exception_t* exception_thrown_;
-  yaooc_pointer_bag_t* pb_;
+  yaooc_garbage_bag_t* pb_;
   yaooc_jmpbuf_t* prev_;
 };
 typedef struct yaooc_exception_thread_jmpbuf_node_s yaooc_exception_thread_jmpbuf_node_t;
 struct yaooc_exception_thread_jmpbuf_node_s {
   yaooc_exception_thread_jmpbuf_node_t* next_;
-  yaooc_internal_thread_t tid_;
+  yaooc_exception_thread_t tid_;
   yaooc_jmpbuf_t* current_jmpbuf_;
 };
 
 
 #if defined(_WIN32) && !defined(__YAOOC_USE_PTHREADS)
-static CRITICAL_SECTION exception_mutex; // = PTHREAD_MUTEX_INITIALIZER;
+static CRITICAL_SECTION exception_mutex;
 void init_exceptions() { InitializeCriticalSection(&exception_mutex); }
 #else
-static pthread_mutex_t exception_mutex  = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t exception_mutex = PTHREAD_MUTEX_INITIALIZER;
 void init_exceptions() { }
 #endif
 
-void yaooc_exception_remove_jmpbuf(yaooc_internal_thread_t);
-void yaooc_exception_thread_list_remove_exception_thread(yaooc_internal_thread_t);
+void yaooc_exception_remove_jmpbuf(yaooc_exception_thread_t);
+void yaooc_exception_thread_list_remove_exception_thread(yaooc_exception_thread_t);
 
 static void yaooc_exception_terminate(yaooc_exception_pointer e);
 static void yaooc_jmpbuf_destroy(yaooc_jmpbuf_t*);
 yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_head=NULL;
 yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_tail=NULL;
 
-yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_internal_thread_t tid)
+yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_exception_thread_t tid)
 {
   yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_head;
   while(current != NULL) {
@@ -141,11 +149,11 @@ yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_list_find_jm
   return NULL;
 }
 
-/*
-  Make sure to call find before calling this function.  It does not check if one exists
-  before creating a new one.
-*/
-yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_node_create_thread_list(yaooc_internal_thread_t tid)
+
+
+
+
+yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_node_create_thread_list(yaooc_exception_thread_t tid)
 {
 #if defined(_WIN32) && !defined(_YAOOC_USE_PTHREADS)
   EnterCriticalSection(&exception_mutex);
@@ -156,7 +164,7 @@ yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_node_create_thread_
   current->tid_=tid;
   current->next_=NULL;
   current->current_jmpbuf_=NULL;
-//  current->exception_thread_=yaooc_exception_thread_create();
+
   if(yaooc_exception_thread_jmpbuf_head==NULL) {
     yaooc_exception_thread_jmpbuf_head=yaooc_exception_thread_jmpbuf_tail=current;
   } else {
@@ -171,27 +179,16 @@ yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_node_create_thread_
   return current;
 }
 
-/*
 
-*/
-yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_find_or_create_exception_thread(yaooc_internal_thread_t tid)
+
+
+yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_find_or_create_exception_thread(yaooc_exception_thread_t tid)
 {
   yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(tid);
   return current ? current : yaooc_exception_thread_node_create_thread_list(tid);
 }
-/*
-void yaooc_exception_thread_list_remove_all()
-{
-  yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_head;
-  yaooc_exception_thread_jmpbuf_node_t* temp;
-  while(current != NULL) {
-    temp=current->next_;
-    current=temp;
-  }
-  yaooc_exception_thread_jmpbuf_head=yaooc_exception_thread_jmpbuf_tail=NULL;
-}
-*/
-void yaooc_exception_thread_list_remove_exception_thread(yaooc_internal_thread_t tid)
+# 226 "exception.yoc"
+void yaooc_exception_thread_list_remove_exception_thread(yaooc_exception_thread_t tid)
 {
   yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_head;
   yaooc_exception_thread_jmpbuf_node_t* previous=NULL;
@@ -204,14 +201,14 @@ void yaooc_exception_thread_list_remove_exception_thread(yaooc_internal_thread_t
 #endif
       if(previous) {
         previous->next_=current->next_;
-        if(current->next_ ==NULL) { /* removing last item in list */
+        if(current->next_ ==NULL) {
           yaooc_exception_thread_jmpbuf_tail=previous;
         }
       } else {
-        /* Remove first item in list */
+
         yaooc_exception_thread_jmpbuf_head=current->next_;
         if(current->next_ == NULL) {
-          /* only one item in list */
+
           yaooc_exception_thread_jmpbuf_head=yaooc_exception_thread_jmpbuf_tail=NULL;
         }
       }
@@ -220,7 +217,7 @@ void yaooc_exception_thread_list_remove_exception_thread(yaooc_internal_thread_t
 #else
       pthread_mutex_unlock(&exception_mutex);
 #endif
-//      yaooc_exception_thread_destroy(current->exception_thread_);
+
       FREE(current);
       break;
     }
@@ -230,34 +227,21 @@ void yaooc_exception_thread_list_remove_exception_thread(yaooc_internal_thread_t
 }
 
 yaooc_jmpbuf_t* yaooc_current_jmpbuf();
-
-/*
-void yaooc_jmpbuf_dump(* et)
-{
-  printf("Current jmpbuf: %p\n",et->current_jmpbuf_);
-  if(et->current_jmpbuf_) {
-    printf("Exception: %p\n"
-        "Pointer bag size: %zu\n"
-        "Previous: %p\n",et->current_jmpbuf_->exception_thrown_,
-        M(et->current_jmpbuf_->pb_,size),et->current_jmpbuf_->prev_);
-  }
-}
-*/
-
+# 279 "exception.yoc"
 jmp_buf* yaooc_jmpbuf_new()
 {
   yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_find_or_create_exception_thread(yaooc_current_thread_id());
   yaooc_jmpbuf_t* prev=node->current_jmpbuf_;
   node->current_jmpbuf_=(yaooc_jmpbuf_t*)MALLOC(sizeof(yaooc_jmpbuf_t));
   node->current_jmpbuf_->exception_thrown_=NULL;
-  node->current_jmpbuf_->pb_=new(yaooc_pointer_bag);
+  node->current_jmpbuf_->pb_=new(yaooc_garbage_bag);
   node->current_jmpbuf_->prev_=prev;
   return &(node->current_jmpbuf_->jb_);
 }
 
-/*
-  Moves to previous jumbuf when no exception occurred or after successfully handling an exception
-*/
+
+
+
 void __yaooc_exception_handled__()
 {
   yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_current_thread_id());
@@ -266,10 +250,10 @@ void __yaooc_exception_handled__()
   yaooc_jmpbuf_destroy(temp);
 }
 
-/*
-  Called by ETRY macro.  The exception has not been handled.  Move to the level of exceptions.
-  Copies file and line number information to next environment
-*/
+
+
+
+
 
 static void yaooc_jmpbuf_destroy(yaooc_jmpbuf_t* jb)
 {
@@ -289,16 +273,16 @@ static void yaooc_exception_terminate(yaooc_exception_pointer e)
   exit(0);
 }
 
-/*
-  Throw and exception
-*/
+
+
+
 void __throw__(pointer e)
 {
   yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_current_thread_id());
-  if(node != NULL) { // && node->current_jmpbuf_ != NULL) {
-    /*
-      Traverse upward until a jmpbuf found that has not had an exception thrown
-    */
+  if(node != NULL) {
+
+
+
     while(node->current_jmpbuf_ != NULL && node->current_jmpbuf_->exception_thrown_ != NULL) {
       yaooc_jmpbuf_t* temp=node->current_jmpbuf_;
       node->current_jmpbuf_=temp->prev_;
@@ -306,14 +290,14 @@ void __throw__(pointer e)
     }
   }
   if(node ==NULL || node->current_jmpbuf_ == NULL)
-    yaooc_exception_terminate(e); /* Will not return */
+    yaooc_exception_terminate(e);
   node->current_jmpbuf_->exception_thrown_=e;
   longjmp(node->current_jmpbuf_->jb_,1);
 }
 
-/*
-  Reached an ETRY without an exception being handled.  Rethrow the last exception
-*/
+
+
+
 void __rethrow_last_exception__()
 {
   yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_current_thread_id());
@@ -329,16 +313,16 @@ bool __catch__(const char* etype)
 {
   return yaooc_object_isa(yaooc_exception_current_exception_thrown(),etype);
 }
-/*
-  Called from CATCH and ETRY macros -- node and node->current_jmpbuf_ should never be NULL
-*/
+
+
+
 yaooc_jmpbuf_t* yaooc_current_jmpbuf()
 {
   yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_current_thread_id());
   return node->current_jmpbuf_;
 }
 
-pointer yaooc_exception_pointer_bag_save(pointer p)
+pointer yaooc_exception_garbage_bag_save(pointer p)
 {
   yaooc_jmpbuf_t* cjb=yaooc_current_jmpbuf();
   if(cjb)
@@ -346,7 +330,7 @@ pointer yaooc_exception_pointer_bag_save(pointer p)
   return p;
 }
 
-pointer yaooc_exception_pointer_bag_save_static_array(pointer p,const type_info_t* ti,size_t n)
+pointer yaooc_exception_garbage_bag_save_static_array(pointer p,const type_info_t* ti,size_t n)
 {
   yaooc_jmpbuf_t* cjb=yaooc_current_jmpbuf();
   if(cjb)
@@ -354,24 +338,83 @@ pointer yaooc_exception_pointer_bag_save_static_array(pointer p,const type_info_
   return p;
 }
 
-void yaooc_exception_pointer_bag_clear(pointer p)
+void yaooc_exception_garbage_bag_clear(pointer p)
 {
   yaooc_jmpbuf_t* cjb=yaooc_current_jmpbuf();
   if(cjb)
     M(cjb->pb_,clear);
 }
 
-void yaooc_exception_pointer_bag_delete(pointer p)
+void yaooc_exception_garbage_bag_delete(pointer p)
 {
   yaooc_jmpbuf_t* cjb=yaooc_current_jmpbuf();
   if(cjb)
     M(cjb->pb_,del_all);
 }
 
-/*
-  Called from CATCH block so current jmpbuf and exception will not be NULL.
-*/
+
+
+
 yaooc_exception_pointer yaooc_exception_current_exception_thrown()
 {
   return yaooc_current_jmpbuf()->exception_thrown_;
 }
+
+
+yaooc_stream_exception_class_table_t yaooc_stream_exception_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
+.type_name_ = (const char*) "yaooc_stream_exception_t",
+.swap = (void(*)(pointer,pointer)) yaooc_stream_exception_swap,
+.what = (const char*(*)(const_pointer)) yaooc_stream_exception_what,
+};
+const type_info_t __yaooc_stream_exception_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_stream_exception_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_stream_exception_class_table,
+.parent_=&__yaooc_exception_ti
+};
+const type_info_t* const yaooc_stream_exception_ti=&__yaooc_stream_exception_ti;
+
+void throw_stream_exception(pointer p,const char* what)
+{
+  THROW(new_ctor(yaooc_stream_exception,yaooc_stream_exception_ctor_v,"No %s method for %s type",
+        what,((yaooc_object_class_table_t*)(((yaooc_object_pointer)p)->class_table_))->type_name_));
+}
+
+
+yaooc_array_container_exception_class_table_t yaooc_array_container_exception_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
+.type_name_ = (const char*) "yaooc_array_container_exception_t",
+.swap = (void(*)(pointer,pointer)) yaooc_array_container_exception_swap,
+.what = (const char*(*)(const_pointer)) yaooc_array_container_exception_what,
+};
+const type_info_t __yaooc_array_container_exception_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_array_container_exception_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_array_container_exception_class_table,
+.parent_=&__yaooc_exception_ti
+};
+const type_info_t* const yaooc_array_container_exception_ti=&__yaooc_array_container_exception_ti;
+
+void throw_yaooc_array_container_exception(pointer p,const char* what)
+{
+  THROW(new_ctor(yaooc_array_container_exception,yaooc_array_container_exception_ctor_v,"%s",
+        what,((yaooc_object_class_table_t*)(((yaooc_object_pointer)p)->class_table_))->type_name_));
+}
+

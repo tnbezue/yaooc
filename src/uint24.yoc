@@ -1,0 +1,82 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+%header_directory yaooc
+%header
+#include <yaooc/new.h>
+#include <yaooc/stream.h>
+typedef uint8_t uint8_bytes_t[3];
+%%
+
+#include <string.h>
+typedef union {
+  struct {
+#   if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+      uint8_t not_used;
+      uint8_t tbi[3];
+#   else
+      uint8_t tbi[3];
+      uint8_t not_used;
+#   endif
+  };
+  uint32_t ui32;
+} uint32_uint24_conversion_t;
+
+
+%struct yaooc_uint24 {
+    yaooc_uint24() = delete;
+    ~yaooc_uint24() = delete;
+    yaooc_uint24(src) = delete;
+    operator=(src) = delete;
+    int operator<=>(lhs,rhs)
+    {
+      return yaooc_uint24_to_uint32(lhs) - yaooc_uint24_to_uint32(rhs);
+    }
+
+    operator<<(ostrm)
+    {
+      M(ostrm,printf,"%u",yaooc_uint24_to_uint32(this));
+    }
+
+    operator>>(istrm)
+    {
+      uint32_t ui32;
+      M(istrm,scanf,"%u",&ui32);
+      yaooc_uint24_from_uint32(this,ui32);
+    }
+
+  instance:
+    uint8_bytes_t bytes_;
+  adjunct:
+    uint32_t to_uint32() const
+    {
+      uint32_uint24_conversion_t temp;
+      temp.ui32=0;
+      memcpy(temp.tbi,this->bytes_,3);
+      return temp.ui32;
+    }
+
+    void from_uint32(uint32_t ui)
+    {
+      memcpy(this->bytes_,((const uint32_uint24_conversion_t*)&ui)->tbi,3);
+    }
+};
+
+%header
+/* Useful macros */
+#define tbi_lt_cmp(p1,p2) yaooc_uint24_to_uint32((p1) < yaooc_uint24_to_uint32(p2))
+#define uint32_to_yaooc_uint24 yaooc_uint24_from_uint32
+%%

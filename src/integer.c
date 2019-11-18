@@ -1,196 +1,133 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include <yaooc/integer.h>
-#include <yaooc/stream.h>
-
-#include <stdio.h>
-
-/*  Begin YAOOC PreProcessor generated content */
-
-
-/* yaooc_integer private members */
-
-/* yaooc_integer type info members */
-void yaooc_integer_default_ctor(pointer p)
+void yaooc_integer_ctor_int(pointer __pthis__,va_list __con_args__)
 {
-  yaooc_integer_pointer this=p;
-  this->value_=0;
+yaooc_integer_pointer this=__pthis__;
+long long v = va_arg(__con_args__,long long);
+
+call_parent_default_ctor_static(this,yaooc_integer);
+
+
+    M(this,set,v);
+  
 }
-
-void yaooc_integer_copy_ctor(pointer p,const_pointer s)
+void yaooc_integer_swap(pointer __pthis__,pointer o)
 {
-  yaooc_integer_pointer this=p;
-  yaooc_integer_const_pointer src=s;
-  this->value_=src->value_;
+yaooc_integer_pointer this=__pthis__;(void)this;
+#define super() yaooc_integer_parent_class_table->swap(this,o)
+#define PM(method,...) CTM((*yaooc_integer_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_integer_t* other=o;
+      SWAP(long long,this->value_,other->value_);
+    
+#undef PM
+#undef super
 }
-
-void yaooc_integer_assign(pointer p,const_pointer s)
+void yaooc_integer_set(pointer __pthis__,long long v)
 {
-  yaooc_integer_pointer this=p;
-  yaooc_integer_const_pointer src=s;
-  this->value_=src->value_;
+yaooc_integer_pointer this=__pthis__;(void)this;
+#define super() yaooc_integer_parent_class_table->set(this,v)
+#define PM(method,...) CTM((*yaooc_integer_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      this->value_=v;
+    
+#undef PM
+#undef super
 }
-
-int yaooc_integer_rich_compare(const_pointer p1,const_pointer p2)
+long long yaooc_integer_get(const_pointer __pthis__)
 {
-  yaooc_integer_const_pointer vp1=p1;
-  yaooc_integer_const_pointer vp2=p2;
-  return vp1->value_-vp2->value_;
+yaooc_integer_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_integer_parent_class_table->get(this)
+#define PM(method,...) CTM((*yaooc_integer_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return this->value_;
+    
+#undef PM
+#undef super
 }
-
-
-/* Constructors for yaooc_integer */
-void yaooc_integer_ctor_int(pointer p,va_list args)
-{
-  yaooc_integer_pointer this=p;
-  this->value_ = va_arg(args,long long);
-}
-
-/* yaooc_integer protected members */
-
-/* Class table methods for yaooc_integer */
-void yaooc_integer_swap(pointer p,pointer o)
-{
-  yaooc_integer_pointer this=p;
-  yaooc_integer_pointer other=o;
-  SWAP(long long,this->value_,other->value_);
-}
-
-void yaooc_integer_set(pointer p,long long value)
-{
-  yaooc_integer_pointer this=p;
-  this->value_=value;
-}
-
-long long yaooc_integer_get(const_pointer p)
-{
-  return ((yaooc_integer_const_pointer)p)->value_;
-}
-
-void yaooc_integer_to_stream(const_pointer p,ostream_pointer s)
-{
-	yaooc_integer_const_pointer this=p;
-	yaooc_ostream_pointer strm=s;
-	M(strm,printf,"%ld",this->value_);
-}
-
-void yaooc_integer_from_stream(pointer p,istream_pointer s)
-{
-	yaooc_integer_pointer this=p;
-	yaooc_istream_pointer strm=s;
-	M(strm,scanf,"%ld",&this->value_);
-}
-
-/* Class table for yaooc_integer */
-yaooc_integer_class_table_t yaooc_integer_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_integer_t",
-  .swap = (void (*) (pointer,pointer)) yaooc_integer_swap,
-  .set = (void (*) (pointer,long long)) yaooc_integer_set,
-  .get = (long long(*) (const_pointer)) yaooc_integer_get,
+yaooc_integer_class_table_t yaooc_integer_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+.type_name_ = (const char*) "yaooc_integer_t",
+.swap = (void(*)(pointer,pointer)) yaooc_integer_swap,
+.set = (void(*)(pointer,long long)) yaooc_integer_set,
+.get = (long long(*)(const_pointer)) yaooc_integer_get,
 };
-
-DEFINE_TYPE_INFO(yaooc_integer,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object);
-
-/* yaooc_unsigned_integer private members */
-
-/* yaooc_unsigned_integer type info members */
-void yaooc_unsigned_integer_default_ctor(pointer p)
+void yaooc_integer_default_ctor(pointer __pthis__)
 {
-	yaooc_unsigned_integer_pointer this=p;
-	this->value_=0;
+yaooc_integer_pointer this=__pthis__;(void)this;
+
+
+call_parent_default_ctor_static(this,yaooc_integer);
+this->value_=(long long)0;
+
 }
-
-void yaooc_unsigned_integer_copy_ctor(pointer p,const_pointer s)
+void yaooc_integer_dtor(pointer __pthis__)
 {
-	yaooc_unsigned_integer_pointer this=p;
-	yaooc_unsigned_integer_const_pointer src=s;
-	this->value_=src->value_;
+yaooc_integer_pointer this=__pthis__;(void)this;
+
+
 }
-
-void yaooc_unsigned_integer_assign(pointer p,const_pointer s)
+void yaooc_integer_copy_ctor(pointer __pthis__,const_pointer __psrc__)
 {
-	yaooc_unsigned_integer_pointer this=p;
-	yaooc_unsigned_integer_const_pointer src=s;
-	this->value_=src->value_;
+yaooc_integer_pointer this=__pthis__;(void)this;
+yaooc_integer_const_pointer src=__psrc__;(void)src;
+
+
+call_default_ctor_static(this,yaooc_integer);
+assign_static(this,src,yaooc_integer);
+
 }
-
-int yaooc_unsigned_integer_rich_compare(const_pointer p1,const_pointer p2)
+void yaooc_integer_assign(pointer __pthis__,const_pointer __psrc__)
 {
-	yaooc_unsigned_integer_const_pointer vp1=p1;
-	yaooc_unsigned_integer_const_pointer vp2=p2;
-	return (int)(vp1->value_-vp2->value_);
+yaooc_integer_pointer this=__pthis__;(void)this;
+yaooc_integer_const_pointer src=__psrc__;(void)src;
+
+assign_static(this,src,yaooc_object);
+this->value_=src->value_;
+
 }
-
-
-/* Constructors for yaooc_unsigned_integer */
-void yaooc_unsigned_integer_ctor_unsigned_int(pointer p,va_list args)
+int yaooc_integer_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 {
-	yaooc_unsigned_integer_pointer this=p;
-	this->value_ = va_arg(args,unsigned long long);
+yaooc_integer_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_integer_const_pointer rhs=__prhs__;(void)rhs;
+
+    if(lhs->value_<rhs->value_)
+      return -1;
+    if(lhs->value_>rhs->value_)
+      return 1;
+    return 0;
+  
 }
-
-/* yaooc_unsigned_integer protected members */
-
-/* Class table methods for yaooc_unsigned_integer */
-void yaooc_unsigned_integer_swap(pointer p,pointer o)
+void yaooc_integer_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__)
 {
-	yaooc_unsigned_integer_pointer this=p;
-	yaooc_unsigned_integer_pointer other=o;
-	SWAP(unsigned long long,this->value_,other->value_);
+yaooc_integer_const_pointer this=__pthis__;(void)this;
+yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
+
+    M(ostrm,printf,"%" PRId64,this->value_);
+  
 }
-
-void yaooc_unsigned_integer_set(pointer p,unsigned long long value)
+void yaooc_integer_from_stream(pointer __pthis__,ostream_pointer __pstrm__)
 {
-	yaooc_unsigned_integer_pointer this=p;
-	this->value_=value;
+yaooc_integer_pointer this=__pthis__;(void)this;
+yaooc_istream_pointer istrm=__pstrm__;(void)istrm;
+
+    M(istrm,scanf,"%" SCNd64,&this->value_);
+  
 }
-
-unsigned long long yaooc_unsigned_integer_get(const_pointer p)
-{
-	return ((yaooc_unsigned_integer_const_pointer)p)->value_;
-}
-
-void yaooc_unsigned_integer_to_stream(const_pointer p,ostream_pointer s)
-{
-	yaooc_unsigned_integer_const_pointer this=p;
-	yaooc_ostream_pointer strm=s;
-	M(strm,printf,"%lu",this->value_);
-}
-
-void yaooc_unsigned_integer_from_stream(pointer p,istream_pointer s)
-{
-	yaooc_unsigned_integer_pointer this=p;
-	yaooc_istream_pointer strm=s;
-	M(strm,scanf,"%lu",&this->value_);
-}
-
-/* Class table for yaooc_integer */
-yaooc_unsigned_integer_class_table_t yaooc_unsigned_integer_class_table =
-{
-	.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-	.type_name_ = (const char*) "yaooc_unsigned_integer_t",
-	.swap = (void (*) (pointer,pointer)) yaooc_unsigned_integer_swap,
-	.set = (void (*) (pointer,unsigned long long)) yaooc_unsigned_integer_set,
-	.get = (unsigned long long(*) (const_pointer)) yaooc_unsigned_integer_get,
+const type_info_t __yaooc_integer_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_integer_t),
+.rich_compare_=yaooc_integer_rich_compare,
+.to_stream_=yaooc_integer_to_stream,
+.from_stream_=yaooc_integer_from_stream,
+.default_ctor_=yaooc_integer_default_ctor,
+.dtor_=yaooc_integer_dtor,
+.copy_ctor_=yaooc_integer_copy_ctor,
+.assign_=yaooc_integer_assign,
+.class_table_=(const class_table_t*) &yaooc_integer_class_table,
+.parent_=&__yaooc_object_ti
 };
-
-DEFINE_TYPE_INFO(yaooc_unsigned_integer,Y,N,Y,Y,Y,Y,Y,Y,yaooc_object);
-
-/*  End YAOOC PreProcessor generated content */
+const type_info_t* const yaooc_integer_ti=&__yaooc_integer_ti;

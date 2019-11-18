@@ -38,16 +38,19 @@
 <div style="overflow-y: scroll; height:900px">
 <h2>Inheritance</h2>
 <p>
-For a yaooc_struct, inheritance as follows:
+For a &quot;%struct&quot;, inheritance is implemented as follows:
 </p>
 <pre><code>
-  %class class_name : parent_name {
+  %struct class_name : parent_name {
     ...
   };
 </code></pre>
 <p>
-For &quot;%class&quot;, a parent is required.  If not specified, the parent will be &quot;yaooc_object&quot;.
-&quot;%struct&quot; does not require a parent.  &quot;yaooc_object&quot; is defined as follows.
+A &quot;%struct&quot; inherits all instance entries of the parent.
+</p>
+<p>
+For &quot;%class&quot;, a parent is required (&quot;%struct&quot; does not require a parent).
+If not specified, the parent will be &quot;yaooc_object&quot;.  &quot;yaooc_object&quot; is defined as follows.
 </p>
 <pre><code>
   %class yaooc_object {
@@ -57,11 +60,8 @@ For &quot;%class&quot;, a parent is required.  If not specified, the parent will
 </code></pre>
 
 <p>
-Although possible, generally, a struct should not have a class as a parent and a class should not have a struct as a parent.
-</p>
-<p>
-A class inherits all instance and table members.  Table members can be overriden.  An overridden should method should have
-the same name and argument types.
+A class inherits all instance and table members.  Table members can be overriden -- instance members can not.
+An overridden method should have the same return type, name, and argument types.
 </p>
 <p>
 For the my_string class, the swap method will be overridden with the following:
@@ -75,46 +75,57 @@ For the my_string class, the swap method will be overridden with the following:
       void swap(pointer o)
       {
         my_string_pointer other=o;  // pointer is a generic pointer, must use my_string_pointer
-        char* temp=this->str;
-        this->str=other->str;
-        other->str=temp;
+        char* temp=this-&gt;str;
+        this-&gt;str=other-&gt;str;
+        other-&gt;str=temp;
       }
   };
 </code></pre>
 <p>
-When a class is inherited from another, the behavior of the type info methods is as follows.
+Note the the swap method uses a generic pointer (void *) as an argument.  A pointer of the appropriate type must be defined.
+</p>
+<p>
+Although possible (if you understand the inter workings of YAOOC),
+a struct should not have a class as a parent and a class should not have a struct as a parent.
+</p>
+<h3>Calling Parent Method</h3>
+<p>
+For methods defined in the table section of a class, two macros are defined to allow a parent method to be called.<br>
+The &quot;super()&quot; macro is used to call the parent method of the same name and arguments.  For example, in the &quot;swap&quot; method
+for my_string, &quot;super()&quot; would call the yaooc_object &quot;swap&quot; method.<br>
+The &quot;PM&quot; (parent method) macro is used to call any other parent method. It's syntax is &quot;PM(method,args)&quot;
+</p>
+<h3></h3>
+<p>
+When a class is inherited from another class, the behaviour of default constructor, destructor, etc is as follows.
 </p>
 <h3>Default Constructor</h3>
 <p>
-Any parent constructor can be used as an initializer.  If not specified, the parent default constructor is used. If a default constructor is not specified and
-the class has instance variables defined, a default constructor is automatically generated.
-</p>
+If a default contructor is defined, YAOOC uses it.  If a default constructor is not defined, YAOOC will traverse
+the inheritance tree (parent, grand parent, etc) until a default constructor is found.  If not found, no action
+is taken.
 </p>
 <h3>Destructor</h3>
 <p>
-When an object is deleted, every destructor in reverse order of inheritance (the child destructor, the parent destructor, the parents' parent destructor, etc) will be called
+When an object is deleted, each destructor in reverse order of inheritance (the child destructor, the parent destructor, the grandparent destructor, etc) will be called
 until the root class is reached.  The destrutor should only destory the portion of the object that was
 initialized at the current level of inheritance.  The ancestors will destroy their portions.
 </p>
 <h3>Copy Constructor</h3>
 <p>
-Any constructor for the current class or parent class can be specified as an initializer.  If no initilizers are specified, the current class default constructor is called.
-As with default constructor, if the copy constructor is not defined and instance variables are defined, a copy constructor is automatically generated.
+Like the default constructor, YAOOC will traverse the inheritance tree until a defined copy constructor is found. If not found, then the instance is copied (using memcpy).
 </p>
 <h3>Assignment</h3>
 <p>
-Normally, the assignment method calls the parent assignment method and then assigns variables defined in this instance.
+Like the copy constructor, YAOOC will traverse the inheritance tree until a defined assignment method is found. If not found, then the instance is copied (using memcpy).
 </p>
 <h3>Rich compare</h3>
 <p>
+YAOOC will traverse the inheritance tree until a rich compare method is found.  If none is found, then it would be as if 0 were returned.
 </p>
 <h3>To/From stream</h3>
 <p>
-</p>
-
-<h3>Calling Parent Method</h3>
-<p>
-The parent method,
+Like rich compare, YAOOC traverses the inheritance tree until a to/from stream method is found.  If none found, then an exception is thrown.
 </p>
 
 </div>

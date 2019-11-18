@@ -1,22 +1,6 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
+#ifndef __ALGORITHM_INCLUDED__
+#define __ALGORITHM_INCLUDED__
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
-#ifndef __YAOOC_ALGORITHM_INCLUDED__
-#define __YAOOC_ALGORITHM_INCLUDED__
 
 #include <yaooc/new.h>
 
@@ -63,8 +47,8 @@ iterator __yaooc_remove_copy_if(const type_info_t*,const_iterator,const_iterator
 #define yaooc_remove_copy_if(T,F,L,D,FUN) __yaooc_remove_copy_if(T ## _ti,F,L,D,FUN)
 
 typedef struct {
-	const_iterator first;
-	const_iterator second;
+ const_iterator first;
+ const_iterator second;
 } yaooc_iterator_pair_t;
 
 yaooc_iterator_pair_t __yaooc_mismatch(const type_info_t*,const_iterator,const_iterator,const_iterator,const_iterator);
@@ -78,5 +62,7 @@ const_iterator __yaooc_find_first_of(const type_info_t*,const_iterator,const_ite
 
 const_iterator __yaooc_search(const type_info_t*,const_iterator,const_iterator,const_iterator,const_iterator);
 #define yaooc_search(T,F,L,SF,SL) __yaooc_search(T ## _ti,F,L,SF,SL)
+
+
 
 #endif

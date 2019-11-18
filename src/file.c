@@ -1,260 +1,397 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-/* Begin YAOOCPP output */
-
 #include <yaooc/file.h>
+
 #include <string.h>
 #include <sys/stat.h>
 
-/* Private variables implementation for yaooc_file */
 
-/* Private methods prototypes for yaooc_file */
-static void yaooc_file_stat(const_pointer);
-
-/* Type Info implemmentation for yaooc_file */
-void yaooc_file_default_ctor(pointer p)
+void yaooc_file_ctor_name(pointer __pthis__,va_list __con_args__)
 {
-  yaooc_file_pointer this=p;
-  this->stat_ = NULL;
-  this->name_ = NULL;
-	this->stat_result_=-2;
+yaooc_file_pointer this=__pthis__;
+const char* fname = va_arg(__con_args__,const char*);
+
+call_parent_default_ctor_static(this,yaooc_file);
+this->file_=STRDUP(fname);
+
+
+    
 }
-
-void yaooc_file_dtor(pointer p)
+void yaooc_file_swap(pointer __pthis__,pointer o)
 {
-  yaooc_file_pointer this=p;
-  if(this->name_) {
-		FREE(this->name_);
-		this->name_ = NULL;
-	}
-	if(this->stat_) {
-		FREE(this->stat_);
-		this->stat_=NULL;
-		this->stat_result_=-2;
-	}
+yaooc_file_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->swap(this,o)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_file_pointer other=o;
+      SWAP(char*,this->file_,other->file_);
+    
+#undef PM
+#undef super
 }
-
-void yaooc_file_copy_ctor(pointer p,const_pointer s)
+bool yaooc_file_exists(const_pointer __pthis__)
 {
-  yaooc_file_default_ctor(p);
-  yaooc_file_assign(p,s);
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->exists(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_)
+        return access(this->file_,0);
+      return false;
+    
+#undef PM
+#undef super
 }
-
-void yaooc_file_assign(pointer p,const_pointer s)
+dev_t yaooc_file_dev(const_pointer __pthis__)
 {
-  yaooc_file_pointer this=p;
-  yaooc_file_const_pointer src=s;
-  this->name_=src->name_ ? strdup(src->name_) : NULL;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->dev(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_dev;
+      }
+      return 0;
+    
+#undef PM
+#undef super
 }
-
-/* Constructors implementation for yaooc_file */
-void yaooc_file_ctor_name(pointer p,va_list args)
+mode_t yaooc_file_mode(const_pointer __pthis__)
 {
-  yaooc_file_pointer this=p;
-	this->name_=strdup(va_arg(args, const char*));
-	this->stat_=NULL;
-	this->stat_result_=-2;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->mode(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_mode;
+      }
+      return 0;
+    
+#undef PM
+#undef super
 }
-
-
-/* Private methods implementation for yaooc_file */
-static void yaooc_file_stat(const_pointer p)
+time_t yaooc_file_atime(const_pointer __pthis__)
 {
-  yaooc_file_pointer this=(pointer)p;
-	if(this->stat_result_ == -2 && this->name_ != NULL) {
-		this->stat_=malloc(sizeof(struct stat));
-		this->stat_result_ = stat(this->name_,this->stat_);
-	}
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->atime(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_atime;
+      }
+      return 0;
+    
+#undef PM
+#undef super
 }
-/* Protected implementation for yaooc_file */
-
-/* Table implementation for yaooc_file */
-
-void yaooc_file_swap(pointer p,pointer o)
+time_t yaooc_file_mtime(const_pointer __pthis__)
 {
-  yaooc_file_pointer this=p;
-  yaooc_file_pointer other=o;
-	SWAP(struct stat*,this->stat_,other->stat_);
-	SWAP(char*,this->name_,other->name_);
-	SWAP(int,this->stat_result_,other->stat_result_);
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->mtime(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_mtime;
+      }
+      return 0;
+    
+#undef PM
+#undef super
 }
-
-bool yaooc_file_exists(const_pointer p)
+time_t yaooc_file_ctime(const_pointer __pthis__)
 {
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-	return this->stat_result_==0;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->ctime(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_ctime;
+      }
+      return 0;
+    
+#undef PM
+#undef super
 }
-
-dev_t yaooc_file_dev(const_pointer p)
+uid_t yaooc_file_uid(const_pointer __pthis__)
 {
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-  return this->stat_result_ == 0 ? this->stat_->st_dev : 0;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->uid(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_uid;
+      }
+      return 0;
+    
+#undef PM
+#undef super
 }
-
-mode_t yaooc_file_mode(const_pointer p)
+gid_t yaooc_file_gid(const_pointer __pthis__)
 {
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-  return this->stat_result_ == 0 ? this->stat_->st_mode : 0;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->gid(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_gid;
+      }
+      return 0;
+    
+#undef PM
+#undef super
 }
-
-time_t yaooc_file_atime(const_pointer p)
+nlink_t yaooc_file_nlink(const_pointer __pthis__)
 {
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-  return this->stat_result_ == 0 ? this->stat_->st_atime : 0;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->nlink(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_nlink;
+      }
+      return 0;
+    
+#undef PM
+#undef super
 }
-
-time_t yaooc_file_mtime(const_pointer p)
+size_t yaooc_file_size(const_pointer __pthis__)
 {
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-  return this->stat_result_ == 0 ? this->stat_->st_mtime : 0;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->size(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_size;
+      }
+      return 0;
+    
+#undef PM
+#undef super
 }
-
-time_t yaooc_file_ctime(const_pointer p)
+bool yaooc_file_isdir(const_pointer __pthis__)
 {
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-  return this->stat_result_ == 0 ? this->stat_->st_ctime : 0;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->isdir(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISDIR(st.st_mode);
+      }
+      return false;
+    
+#undef PM
+#undef super
 }
-
-uid_t yaooc_file_uid(const_pointer p)
+bool yaooc_file_ischr(const_pointer __pthis__)
 {
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-  return this->stat_result_ == 0 ? this->stat_->st_uid : 0;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->ischr(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISCHR(st.st_mode);
+      }
+      return false;
+    
+#undef PM
+#undef super
 }
-
-const char* yaooc_file_name(const_pointer p)
+bool yaooc_file_isblk(const_pointer __pthis__)
 {
-  yaooc_file_const_pointer this=p;
-  return this->name_;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->isblk(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISBLK(st.st_mode);
+      }
+      return false;
+    
+#undef PM
+#undef super
 }
-
-gid_t yaooc_file_gid(const_pointer p)
+bool yaooc_file_isreg(const_pointer __pthis__)
 {
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-  return this->stat_result_ == 0 ? this->stat_->st_gid : 0;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->isreg(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISREG(st.st_mode);
+      }
+      return false;
+    
+#undef PM
+#undef super
 }
-
-nlink_t yaooc_file_nlink(const_pointer p)
+bool yaooc_file_isfile(const_pointer __pthis__)
 {
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-  return this->stat_result_ == 0 ? this->stat_->st_nlink : 0;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->isfile(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISFIFO(st.st_mode);
+      }
+      return false;
+    
+#undef PM
+#undef super
 }
-
-off_t yaooc_file_size(const_pointer p)
+bool yaooc_file_islink(const_pointer __pthis__)
 {
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-  return this->stat_result_ == 0 ? this->stat_->st_size : 0;
-}
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->islink(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
 
-bool yaooc_file_isdir(const_pointer p)
-{
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-	return this->stat_result_ == 0 ? S_ISDIR(this->stat_->st_mode) : false;
-}
 
-bool yaooc_file_ischr(const_pointer p)
-{
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-	return this->stat_result_ == 0 ? S_ISCHR(this->stat_->st_mode) : false;
-}
-
-bool yaooc_file_isblk(const_pointer p)
-{
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-	return this->stat_result_ == 0 ? S_ISBLK(this->stat_->st_mode) : false;
-}
-
-bool yaooc_file_isreg(const_pointer p)
-{
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-	return this->stat_result_ == 0 ? S_ISREG(this->stat_->st_mode) : false;
-}
-
-bool yaooc_file_isfifo(const_pointer p)
-{
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-	return this->stat_result_ == 0 ? S_ISFIFO(this->stat_->st_mode) : false;
-}
-
-bool yaooc_file_islink(const_pointer p)
-{
-#ifdef _WIN32
-  return false;
+#ifdef WIN32_
+      return false;
 #else
-  yaooc_file_const_pointer this=p;
-	yaooc_file_stat(this);
-	return this->stat_result_ == 0 ? S_ISLNK(this->stat_->st_mode) : false;
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return S_ISLNK(st.st_mode);
+      }
+      return false;
 #endif
+    
+#undef PM
+#undef super
 }
-
-bool yaooc_file_issock(const_pointer p)
+bool yaooc_file_issock(const_pointer __pthis__)
 {
-#ifdef _WIN32
-  return false;
+yaooc_file_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_file_parent_class_table->issock(this)
+#define PM(method,...) CTM((*yaooc_file_parent_class_table),this,method,## __VA_ARGS__)
+
+
+#ifdef WIN32_
+      return false;
 #else
-  yaooc_file_const_pointer this=p;
-  yaooc_file_stat(this);
-  return this->stat_result_ == 0 ? this->stat_->st_mode & __S_IFSOCK : false;
+      if(this->file_) {
+        struct stat st;
+        if(stat(this->file_,&st) == 0)
+          return st.st_mode & __S_IFSOCK;
+      }
+      return false;
 #endif
+    
+#undef PM
+#undef super
 }
-
-
-/* Class table definition for yaooc_file */
-yaooc_file_class_table_t yaooc_file_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_file_t",
-  .swap = (void(*)(pointer, pointer)) yaooc_file_swap,
-	.exists = (bool(*)(const_pointer)) yaooc_file_exists,
-  .dev = (dev_t(*)(const_pointer)) yaooc_file_dev,
-  .mode = (mode_t(*)(const_pointer)) yaooc_file_mode,
-  .atime = (time_t(*)(const_pointer)) yaooc_file_atime,
-  .mtime = (time_t(*)(const_pointer)) yaooc_file_mtime,
-  .ctime = (time_t(*)(const_pointer)) yaooc_file_ctime,
-  .uid = (uid_t(*)(const_pointer)) yaooc_file_uid,
-  .name = (const char*(*)(const_pointer)) yaooc_file_name,
-  .gid = (gid_t(*)(const_pointer)) yaooc_file_gid,
-  .nlink = (nlink_t(*)(const_pointer)) yaooc_file_nlink,
-  .size = (off_t(*)(const_pointer)) yaooc_file_size,
-  .isdir = (bool(*)(const_pointer)) yaooc_file_isdir,
-  .ischr = (bool(*)(const_pointer)) yaooc_file_ischr,
-  .isblk = (bool(*)(const_pointer)) yaooc_file_isblk,
-  .isreg = (bool(*)(const_pointer)) yaooc_file_isreg,
-  .isfifo = (bool(*)(const_pointer)) yaooc_file_isfifo,
-  .islink = (bool(*)(const_pointer)) yaooc_file_islink,
-  .issock = (bool(*)(const_pointer)) yaooc_file_issock,
+yaooc_file_class_table_t yaooc_file_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
+.type_name_ = (const char*) "yaooc_file_t",
+.swap = (void(*)(pointer,pointer)) yaooc_file_swap,
+.exists = (bool(*)(const_pointer)) yaooc_file_exists,
+.dev = (dev_t(*)(const_pointer)) yaooc_file_dev,
+.mode = (mode_t(*)(const_pointer)) yaooc_file_mode,
+.atime = (time_t(*)(const_pointer)) yaooc_file_atime,
+.mtime = (time_t(*)(const_pointer)) yaooc_file_mtime,
+.ctime = (time_t(*)(const_pointer)) yaooc_file_ctime,
+.uid = (uid_t(*)(const_pointer)) yaooc_file_uid,
+.gid = (gid_t(*)(const_pointer)) yaooc_file_gid,
+.nlink = (nlink_t(*)(const_pointer)) yaooc_file_nlink,
+.size = (size_t(*)(const_pointer)) yaooc_file_size,
+.isdir = (bool(*)(const_pointer)) yaooc_file_isdir,
+.ischr = (bool(*)(const_pointer)) yaooc_file_ischr,
+.isblk = (bool(*)(const_pointer)) yaooc_file_isblk,
+.isreg = (bool(*)(const_pointer)) yaooc_file_isreg,
+.isfile = (bool(*)(const_pointer)) yaooc_file_isfile,
+.islink = (bool(*)(const_pointer)) yaooc_file_islink,
+.issock = (bool(*)(const_pointer)) yaooc_file_issock,
 };
+void yaooc_file_default_ctor(pointer __pthis__)
+{
+yaooc_file_pointer this=__pthis__;(void)this;
 
-/* Type info structure for yaooc_file */
-DEFINE_TYPE_INFO(yaooc_file,Y,Y,Y,Y,N,N,N,Y,yaooc_object);
 
-/* End YAOOCPP output */
+call_parent_default_ctor_static(this,yaooc_file);
+this->file_=NULL;
 
+}
+void yaooc_file_dtor(pointer __pthis__)
+{
+yaooc_file_pointer this=__pthis__;(void)this;
+
+if(this->file_!=NULL) delete(this->file_);
+
+}
+void yaooc_file_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_file_pointer this=__pthis__;(void)this;
+yaooc_file_const_pointer src=__psrc__;(void)src;
+
+
+call_default_ctor_static(this,yaooc_file);
+assign_static(this,src,yaooc_file);
+
+}
+void yaooc_file_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_file_pointer this=__pthis__;(void)this;
+yaooc_file_const_pointer src=__psrc__;(void)src;
+
+
+      yaooc_file_dtor(this);
+      this->file_ = src->file_ ? STRDUP(src->file_) : NULL;
+    
+}
+const type_info_t __yaooc_file_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_file_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_file_default_ctor,
+.dtor_=yaooc_file_dtor,
+.copy_ctor_=yaooc_file_copy_ctor,
+.assign_=yaooc_file_assign,
+.class_table_=(const class_table_t*) &yaooc_file_class_table,
+.parent_=&__yaooc_object_ti
+};
+const type_info_t* const yaooc_file_ti=&__yaooc_file_ti;

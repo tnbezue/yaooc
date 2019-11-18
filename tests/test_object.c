@@ -22,7 +22,7 @@
 #include <stddef.h>
 #include <yaooc/object.h>
 #include "test_harness.h"
-#include "demo_def.inc"
+#include "demo_def.h"
 
 char dummy[sizeof(demo_t)];
 

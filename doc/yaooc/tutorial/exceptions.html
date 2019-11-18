@@ -82,18 +82,45 @@ is printed to stderr and the program is terminated.
 All exceptions should be a descendant of yaooc_exception.  The class definition of yaooc_exception is:
 </p>
 <pre><code>
-  class yaooc_exception : yaooc_object
-  {
-      yaooc_exception();
-      yaooc_exception_ctor_v(const char* fmt,...);
-      ~yaooc_exception();
-      yaooc_exception(yaooc_exception);
-      operator=();
-    table:
-      const char* what() const;
-    instance:
-      char* what_;
-  };
+%class yaooc_exception : yaooc_object
+{
+    yaooc_exception() : what_(NULL) { }
+
+    yaooc_exception_ctor_v(const char*fmt,... args)
+    {
+      va_list args2;
+      va_copy(args2,args);
+      int size_needed=vsnprintf(NULL,0,fmt,args2);
+      va_end(args2);
+      if(size_needed > 0) {
+        this->what_=MALLOC(++size_needed);
+        vsnprintf(this->what_,size_needed,fmt,args);
+      }
+    }
+
+    ~yaooc_exception()
+    {
+      if(this->what_)
+        FREE(this->what_);
+    }
+
+    yaooc_exception(src) : yaooc_exception()
+    {
+      yaooc_exception_assign(this,src);
+    }
+
+    operator=(src)
+    {
+      yaooc_exception_dtor(this);
+      this->what_ = src->what_ ? STRDUP(src->what_) : NULL;
+    }
+
+  table:
+    const char* what() const { return this-&gt;what_; }
+
+  instance:
+    char* what_;
+};
 </code></pre>
 <p>
 The constructor yaooc_exception_ctor_v creates an exception using printf syntax.  For example,

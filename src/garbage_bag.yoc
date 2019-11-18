@@ -1,0 +1,139 @@
+%include <yaooc/array_container.yod>
+%header_directory yaooc
+
+typedef yaooc_garbage_bag_item_t* yaooc_garbage_bag_iterator;
+typedef const yaooc_garbage_bag_item_t* yaooc_garbage_bag_const_iterator;
+
+%struct yaooc_garbage_bag_item {
+    yaooc_garbage_bag_item()
+    {
+      this->pointer_=NULL; this->ti_=NULL; this->count_=0;
+    }
+
+    ~yaooc_garbage_bag_item()
+    {
+      if(this->pointer_) {
+        if(this->ti_) // Static object
+          delete_array(this->pointer_);
+        else
+          __deletep_array(this->pointer_,this->ti_,this->count_);
+      }
+    }
+
+    yaooc_garbage_bag_item(src) = delete;
+    operator=(src) = delete;
+
+  instance:
+    void* pointer_;
+    const type_info_t* ti_; // For static objects need type information, NULL if dynamic object
+    unsigned count_;  // For static objects need the count
+};
+
+%class yaooc_garbage_bag : yaooc_array_container
+{
+    yaooc_garbage_bag() : yaooc_array_container_ctor_ti(yaooc_garbage_bag_item_ti)
+    {
+    }
+
+    ~yaooc_garbage_bag()
+    {
+      yaooc_garbage_bag_del_all(this);
+    }
+
+  table:
+    pointer add(pointer obj)
+    {
+      // Should not already be in bag if dynamically allocated, but check anyway to avoid double deletion
+      // May throw exception in future releases
+      if(yaooc_garbage_bag_find_item(this,obj)==M(this,cend)) {
+        yaooc_garbage_bag_item_t item={obj,NULL,0};
+        yaooc_array_container_insert(this,M(this,cend),&item);
+      }
+      return obj;
+    }
+
+    pointer add_static(pointer v,const type_info_t* ti,size_t n)
+    {
+      yaooc_garbage_bag_iterator pitem=yaooc_garbage_bag_find_item(this,v);
+      if(pitem==M(this,end)) {
+        yaooc_garbage_bag_item_t item={v,ti,n};
+        yaooc_array_container_insert(this,M(this,cend),&item);
+      }
+      return v;
+    }
+
+    void del(const_pointer ptr)
+    {
+      yaooc_garbage_bag_iterator i=yaooc_garbage_bag_find_item(this,ptr);
+      if(i!=M(this,end))
+        yaooc_array_container_erase(this,i);
+    }
+
+    /* This deletes objects before clearing */
+    void del_all()
+    {
+      yaooc_garbage_bag_iterator i;
+      for(i=M(this,begin);i!=M(this,end);i++) {
+        if(i->ti_ == NULL)
+          delete_array(i->pointer_);
+        else
+          __deletep_array(i->pointer_,i->ti_,i->count_);
+      }
+      this->size_=0;
+    }
+
+    pointer remove(pointer v)
+    {
+      void* ret=NULL;
+      yaooc_garbage_bag_iterator i=yaooc_garbage_bag_find_item(this,v);
+      if(i!=M(this,end)) {
+        ret=i->pointer_;
+        yaooc_array_container_erase(this,i);
+      }
+      return ret;
+    }
+
+    /* Clear remove all pointer without deleteing */
+    void clear()
+    {
+      yaooc_array_container_clear(this);
+    }
+
+  private:
+
+    yaooc_garbage_bag_iterator find_item(const_pointer v)
+    {
+      yaooc_garbage_bag_const_iterator i=M(this,cbegin);
+      for(;i!=M(this,cend);i++) {
+        if(i->pointer_==v)
+          break;
+      }
+      return (yaooc_garbage_bag_iterator) i;
+    }
+
+};
+
+%header
+#define gb_init()         yaooc_garbage_bag_pointer local_pb=__new_array(yaooc_garbage_bag_ti,1)
+
+#define gb_save(P)        yaooc_garbage_bag_add(local_pb,P)
+#define gb_new(T)         gb_save(new(T))
+#define gb_new_array(T,N) gb_save(new_array(T,N))
+#define gb_new_copy(P)    gb_save(new_copy(P))
+#define gb_new_array_copy(P,N)    gb_save(new_array_copy(P,N))
+#define gb_new_ctor(T,CON,...)     gb_save(new_ctor(T,CON,## __VA_ARGS__))
+#define gb_new_array_ctor(T,N,...)     gb_save(new_array_ctor(T,N,CON,## __VA_ARGS__))
+
+#define gb_save_static(P,T)       yaooc_garbage_bag_add_static(local_pb,P,T ## _ti,1)
+#define gb_save_array_static(P,T,N)       yaooc_garbage_bag_add_static(local_pb,P,T ## _ti,N)
+#define gb_newp(P,T)  gb_save_static(newp(P,T),T)
+#define gb_newp_array(P,T,N)     gb_save_array_static(newp_array(P,T,N),T,N)
+#define gb_newp_copy_static(P,T,CP)      yaooc_garbage_bag_newp_array_copy_static(local_pb,P,T ## _ti,1)
+#define gb_newp_array_copy_static(P,T,CP,N)      gb_save_array_static(newp_array_copy_static(P,T,CP,N),T,N)
+//#define gb_newp_array_copy_static(P,T,CP,N)      yaooc_garbage_bag_newp_array_copy_static(local_pb,P,T ## _ti,N)
+#define gb_newp_ctor(P,T,CON,...)      yaooc_garbage_bag_newp_array_ctor(local_pb,P,T,1,CON,## __VA_ARGG__)
+#define gb_newp_array_ctor(P,T,N,CON,...)      yaooc_garbage_bag_newp_array_ctor(local_pb,P,T,N,CON,## __VA_ARGG__)
+
+#define gb_delete()  yaooc_garbage_bag_del_all(local_pb)
+#define gb_exit()   delete(local_pb)
+%%

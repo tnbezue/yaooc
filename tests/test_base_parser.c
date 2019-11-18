@@ -25,10 +25,10 @@ bool do_crlf=false;
 bool do_c_comment=false;
 bool do_cpp_comment=false;
 bool do_shell_comment=false;
-bool test_yaooc_base_parser_whitespace(pointer p,yaooc_terminal_t* r)
+bool test_yaooc_base_parser_whitespace(pointer p,yaooc_token_t* r)
 {
-  *r=default_terminal(p);
-  yaooc_terminal_t temp;
+  *r=yaooc_default_token(p);
+  yaooc_token_t temp;
   while(true) {
     if(!yaooc_base_parser_space(p,&temp))
       if(!(do_crlf && yaooc_base_parser_crlf(p,&temp)))
@@ -67,10 +67,10 @@ void test_whitespace()
 {
   TESTCASE("Whitespace");
   // Never do this in production application
-  bool (*old_ws)(pointer, yaooc_terminal_t*)=yaooc_base_parser_class_table.whitespace;
+  bool (*old_ws)(pointer, yaooc_token_t*)=yaooc_base_parser_class_table.whitespace;
   yaooc_base_parser_class_table.whitespace=test_yaooc_base_parser_whitespace;
 
-  yaooc_terminal_t ws;
+  yaooc_token_t ws;
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="   \r\n   /* C comment */ \r\n  // cpp comment \r\n  # shell comment\r\n";
   M(bp,set_parse_string,str);
@@ -87,7 +87,6 @@ void test_whitespace()
   do_cpp_comment=true;
   M(bp,whitespace,&ws);
   TEST("Offset is 47",bp->current_pos_-str == 47);
-  printf("%" PRIULONG " X%s\n",bp->current_pos_-str,bp->current_pos_);
   do_shell_comment=true;
   M(bp,whitespace,&ws);
   TEST("Offset is 64",bp->current_pos_-str == 64);
@@ -106,16 +105,16 @@ void test_chr()
   TESTCASE("Single Character");
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="a test";
-  yaooc_terminal_t r;
+  yaooc_token_t r;
   M(bp,set_parse_string,str);
   TEST("Matches 'a'",M(bp,chr,'a',&r));
   TEST("Offset is 2",bp->current_pos_-str == 2);
   TEST("Does not matches 'b'",!M(bp,chr,'b',&r));
   TEST("Offset is 2",bp->current_pos_-str == 2);
 
-  TEST("Matches one of \"stu\"",M(bp,chr_choices,"stu"));
+  TEST("Matches one of \"stu\"",M(bp,chr_choices,"stu",&r));
   TEST("Offset is 3",bp->current_pos_-str == 3);
-  TEST("Does not match one of \"stu\"",M(bp,chr_choices,"stu"));
+  TEST("Does not match one of \"stu\"",M(bp,chr_choices,"stu",&r));
   TEST("Offset is 3",bp->current_pos_-str == 3);
   delete(bp);
 }
@@ -126,16 +125,15 @@ void test_str()
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="this is some test";
   M(bp,set_parse_string,str);
-  yaooc_terminal_t r;
+  yaooc_token_t r;
   TEST("Matches \"this\"",M(bp,str,"this",&r));
-  printf("%" PRIULONG " X%s\n",bp->current_pos_-str,bp->current_pos_);
   TEST("Offset is 5",bp->current_pos_-str == 5);
   TEST("Does not match \"this\"",!M(bp,str,"this",&r));
   TEST("Offset is 5",bp->current_pos_-str == 5);
 
-  TEST("Matches item 1 of \"this\",\"is\",\"a\",\"test\"",M(bp,str_choices,"this","is","a","test",NULL)==1);
+  TEST("Matches item 1 of \"this\",\"is\",\"a\",\"test\"",M(bp,str_choices,&r,"this","is","a","test",NULL)==1);
   TEST("Offset is 8",bp->current_pos_-str == 8);
-  TEST("Does not match any of \"this\",\"is\",\"a\",\"test\"",M(bp,str_choices,"this","is","a","test",NULL)==-1);
+  TEST("Does not match any of \"this\",\"is\",\"a\",\"test\"",M(bp,str_choices,&r,"this","is","a","test",NULL)==-1);
   TEST("Offset is 8",bp->current_pos_-str == 8);
   delete(bp);
 }
@@ -148,36 +146,36 @@ void test_integer()
   char* ts;
   M(bp,set_parse_string,str);
 
-  yaooc_terminal_t r;
+  yaooc_token_t r;
   M(bp,integer,&r);
   TEST("12 is integer",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is 12",strcmp(ts,"12")==0);
   if(ts) delete(ts);
   TEST("Offset is 3",bp->current_pos_-str==3);
   M(bp,integer,&r);
   TEST("12. is not an integer",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   bp->current_pos_+=4;
   TEST("Offset is 7",bp->current_pos_-str==7);
   M(bp,integer,&r);
   TEST("12e3 is not integer",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   bp->current_pos_+=5;
   TEST("Offset is 12",bp->current_pos_-str==12);
   M(bp,integer,&r);
   TEST("+324 is an integer",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is +324",strcmp(ts,"+324")==0);
   if(ts) delete(ts);
   TEST("Offset is 17",bp->current_pos_-str==17);
   M(bp,integer,&r);
   TEST("-0002 is an integer",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is -0002",strcmp(ts,"-0002")==0);
   if(ts) delete(ts);
 
@@ -192,62 +190,62 @@ void test_hexinteger()
   char* ts;
   M(bp,set_parse_string,str);
 
-  yaooc_terminal_t r;
+  yaooc_token_t r;
   M(bp,hexinteger,&r);
   TEST("12 is not a hexinteger",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   bp->current_pos_+=3;
   M(bp,hexinteger,&r);
   TEST("0X12 is a hexinteger",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is 0X12",ts == NULL ? false : strcmp(ts,"0X12")==0);
   if(ts) delete(ts);
   TEST("Offset is 8",bp->current_pos_-str==8);
   M(bp,hexinteger,&r);
   TEST("0X12. is not hexinteger",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   bp->current_pos_+=6;
   TEST("Offset is 14",bp->current_pos_-str==14);
   M(bp,hexinteger,&r);
   TEST("0x12e3 is hexinteger",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts == NULL ? false : strcmp(ts,"0x12e3")==0);
   if(ts) delete(ts);
   TEST("Offset is 21",bp->current_pos_-str==21);
   M(bp,hexinteger,&r);
   TEST("+0x324 is not ahexinteger",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   bp->current_pos_+=7;
   TEST("Offset is 28",bp->current_pos_-str==28);
   M(bp,hexinteger,&r);
   TEST("-0x0002 is not a hexinteger",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   bp->current_pos_+=8;
   TEST("Offset is 36",bp->current_pos_-str==36);
   M(bp,hexinteger,&r);
   TEST("0x is not a hexinteger",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   bp->current_pos_+=3;
   TEST("Offset is 39",bp->current_pos_-str==39);
   M(bp,hexinteger,&r);
   TEST("0x1 is hexinteger",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts == NULL ? false : strcmp(ts,"0x1")==0);
   if(ts) delete(ts);
   TEST("Offset is 43",bp->current_pos_-str==43);
   M(bp,hexinteger,&r);
   TEST("0x-3 is not a hexinteger",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   delete(bp);
@@ -261,68 +259,68 @@ void test_real()
   char* ts;
   M(bp,set_parse_string,str);
 
-  yaooc_terminal_t r;
+  yaooc_token_t r;
   M(bp,real,&r);
   TEST("12 is not a real",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   bp->current_pos_+=3;
   TEST("Offset is 3",bp->current_pos_-str==3);
   M(bp,real,&r);
   TEST("12. is a real",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is 12.",strcmp(ts,"12.")==0);
   if(ts) delete(ts);
   M(bp,real,&r);
   TEST("12e3 is a real",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is 12e3",strcmp(ts,"12e3")==0);
   if(ts) delete(ts);
   M(bp,real,&r);
   TEST("+324 is not a real",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is 12.",ts==NULL);
   if(ts) delete(ts);
   bp->current_pos_+=5;
   M(bp,real,&r);
   TEST(".002 is a real",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is .002",strcmp(ts,".002")==0);
   if(ts) delete(ts);
   M(bp,real,&r);
   TEST("-.02 is a real",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is -.02",strcmp(ts,"-.02")==0);
   if(ts) delete(ts);
   TEST("Offset is 27",bp->current_pos_-str==27);
   M(bp,real,&r);
   TEST("-1.3 is a real",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is -1.3",strcmp(ts,"-1.3")==0);
   if(ts) delete(ts);
   TEST("Offset is 32",bp->current_pos_-str==32);
   M(bp,real,&r);
   TEST("+3e-3 is a real",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is +3e-3",strcmp(ts,"+3e-3")==0);
   if(ts) delete(ts);
   TEST("Offset is 38",bp->current_pos_-str==38);
   M(bp,real,&r);
   TEST("+3.e-3 is a real",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is +3.e-3",strcmp(ts,"+3.e-3")==0);
   if(ts) delete(ts);
   TEST("Offset is 45",bp->current_pos_-str==45);
   M(bp,real,&r);
   TEST("-3.2e4 is a real",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is -3.2e4",strcmp(ts,"-3.2e4")==0);
   if(ts) delete(ts);
   TEST("Offset is 52",bp->current_pos_-str==52);
   M(bp,real,&r);
   TEST("-3e3x is not a real",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   delete(bp);
@@ -336,48 +334,48 @@ void test_ident()
   char* ts;
   M(bp,set_parse_string,str);
 
-  yaooc_terminal_t r;
+  yaooc_token_t r;
   M(bp,ident,&r);
   TEST("a is an ident",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is a",strcmp(ts,"a")==0);
   if(ts) delete(ts);
   TEST("Offset is 2",bp->current_pos_-str==2);
   M(bp,ident,&r);
   TEST("3a is not an ident",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   bp->current_pos_+=3;
   TEST("Offset is 5",bp->current_pos_-str==5);
   M(bp,ident,&r);
   TEST("a3a is an ident",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is a3a",strcmp(ts,"a3a")==0);
   if(ts) delete(ts);
   TEST("Offset is 9",bp->current_pos_-str==9);
   M(bp,ident,&r);
   TEST("_ident7 is an ident",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is _ident7",strcmp(ts,"_ident7")==0);
   if(ts) delete(ts);
   TEST("Offset is 17",bp->current_pos_-str==17);
   M(bp,ident,&r);
   TEST("a is an ident",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is a",strcmp(ts,"a")==0);
   if(ts) delete(ts);
   TEST("Offset is 18",bp->current_pos_-str==18);
   M(bp,ident,&r);
   TEST("-7 is not an ident",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   bp->current_pos_+=3;
   TEST("Offset is 21",bp->current_pos_-str==21);
   M(bp,ident,&r);
   TEST("m_m is an ident",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is m_m",strcmp(ts,"m_m")==0);
   if(ts) delete(ts);
   delete(bp);
@@ -391,18 +389,26 @@ void test_regex()
   char* ts;
   M(bp,set_parse_string,str);
 
-  yaooc_terminal_t r;
-  M(bp,regex,"yaooc.*\\s",0,0,&r);
+  regex_t re;
+  regmatch_t ov;
+  yaooc_token_t r;
+
+  if(regcomp(&re,"yaooc.*\\s",REG_EXTENDED) != 0)
+    puts("regcomp failed");
+  M(bp,regex,&re,0,1,&ov,&r);
   TEST("Match found",r.end_!=NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Matched text is",strcmp(ts,"yaooc_test"));
   if(ts) delete(ts);
+
+
   TEST("Offset is 12",bp->current_pos_-str==12);
-  M(bp,regex,"yaooc.*\\s",0,0,&r);
+  M(bp,regex,&re,0,1,&ov,&r);
   TEST("Match failed",r.end_==NULL);
-  ts=yaooc_terminal_raw_text(&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Matched text is NULL",ts==NULL);
   TEST("Offset is 12",bp->current_pos_-str==12);
+  regfree(&re);
   delete(bp);
 }
 
@@ -415,10 +421,10 @@ void test_qouted_string()
   char* ts;
   M(bp,set_parse_string,str);
 //  puts(str);
-  yaooc_terminal_t r;
+  yaooc_token_t r;
   M(bp,double_quoted_string,&r);
   TEST("Found valid quoted string",r.end_!=NULL);
-  ts=yaooc_terminal_text(&r);
+  ts=yaooc_token_text(&r);
 //  printf("%" PRIULONG " X%sX\n",strlen(ts),ts);
   TEST("Match string is \"quoted string\"",strcmp(ts,"quoted string")==0);
   TEST("Offset is 18",bp->current_pos_-str==18);
@@ -426,7 +432,7 @@ void test_qouted_string()
   M(bp,double_quoted_string,&r);
   TEST("Found valid quoted string",r.end_!=NULL);
 //  printf("%" PRIULONG " X%sX\n",strlen(ts),ts);
-  ts=yaooc_terminal_text(&r);
+  ts=yaooc_token_text(&r);
 //  printf("%" PRIULONG " Y%sY\n",strlen(ts),ts);
   char *ns="This is \a \b \f \r \n \t \v \"inside\" \\ \t test";
 //  printf("%" PRIULONG " Z%sZ\n",strlen(ns),ns);
@@ -447,9 +453,9 @@ void test_string_until_chrs()
   const char* str="abcdefghijklmnopqrstuvwxyz5173904268";
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   M(bp,set_parse_string,str);
-  yaooc_terminal_t r;
+  yaooc_token_t r;
   M(bp,string_until_chrs,"0123456789",&r);
-  char* ts=yaooc_terminal_raw_text(&r);
+  char* ts=yaooc_token_raw_text(&r);
   TEST("Matched alpha string",strcmp(ts,"abcdefghijklmnopqrstuvwxyz")==0);
   if(ts)
     delete(ts);
@@ -464,9 +470,9 @@ void test_string_while_chrs()
   const char* str="abcdefghijklmnopqrstuvwxyz5173904268";
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   M(bp,set_parse_string,str);
-  yaooc_terminal_t r;
+  yaooc_token_t r;
   M(bp,string_while_chrs,"prwanzbkjtxmohygdcqufvslie",&r);
-  char* ts=yaooc_terminal_raw_text(&r);
+  char* ts=yaooc_token_raw_text(&r);
   TEST("Matched alpha string",strcmp(ts,"abcdefghijklmnopqrstuvwxyz")==0);
   if(ts)
     delete(ts);
@@ -475,40 +481,40 @@ void test_string_while_chrs()
   delete(bp);
 }
 
-void test_string_until_matching_chr()
+void test_string_within_matching_chr()
 {
   TESTCASE("Until matching char");
   yaooc_base_parser_pointer bp=new(yaooc_base_parser);
   const char* str="{} ( parens ) {  { (within braces) } }   [ { [ inside square brackets ] }  ] [  [ unmatched ] ";
-  yaooc_terminal_t r;
+  yaooc_token_t r;
   char* ts;
   M(bp,set_parse_string,str);
 //  TEST("Found open paren",M(bp,chr,'(',&r));
 //  TEST("Offset is 2",bp->current_pos_-str==2);
-  TEST("Found empty braces",M(bp,string_until_matching_chr,'{','}',&r));
-  ts=yaooc_terminal_raw_text(&r);
+  TEST("Found empty braces",M(bp,string_within_matching_chr,'{','}',&r));
+  ts=yaooc_token_raw_text(&r);
   TEST("String is zero length",*ts == 0);
   if(ts) delete(ts);
-  M(bp,string_until_matching_chr,'(',')',&r);
-  ts=yaooc_terminal_raw_text(&r);
+  M(bp,string_within_matching_chr,'(',')',&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is \" parens \"",strcmp(ts," parens ")==0);
   if(ts) delete(ts);
   TEST("Offset is 11",bp->current_pos_-str==14);
 //  TEST("Found open bracket",M(bp,chr,'{',&r));
-  M(bp,string_until_matching_chr,'{','}',&r);
-  ts=yaooc_terminal_raw_text(&r);
+  M(bp,string_within_matching_chr,'{','}',&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is \"  { (within braces) } \"",strcmp(ts,"  { (within braces) } ")==0);
   if(ts) delete(ts);
   TEST("Offset is 38",bp->current_pos_-str==41);
 //  TEST("Found open bracket",M(bp,chr,'[',&r));
-  M(bp,string_until_matching_chr,'[',']',&r);
-  ts=yaooc_terminal_raw_text(&r);
+  M(bp,string_within_matching_chr,'[',']',&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is \" { [ inside square brackets ] }  \"",strcmp(ts," { [ inside square brackets ] }  ")==0);
   if(ts) delete(ts);
   TEST("Offset is 74",bp->current_pos_-str==77);
 //  TEST("Found open bracket",M(bp,chr,'[',&r));
-  M(bp,string_until_matching_chr,'[',']',&r);
-  ts=yaooc_terminal_raw_text(&r);
+  M(bp,string_within_matching_chr,'[',']',&r);
+  ts=yaooc_token_raw_text(&r);
   TEST("Captured string is NULL",ts==NULL);
   if(ts) delete(ts);
   delete(bp);
@@ -528,7 +534,7 @@ test_function tests[] =
   test_qouted_string,
   test_string_until_chrs,
   test_string_while_chrs,
-  test_string_until_matching_chr
+  test_string_within_matching_chr
 };
 
 STD_MAIN(tests)

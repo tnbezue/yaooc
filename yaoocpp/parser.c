@@ -1,21 +1,15 @@
-/* Begin YAOOCPP output */
-//#define __DEBUG__
-
 #include "parser.h"
-#include <string.h>
-#include <yaooc/pointer_bag.h>
-#include <yaooc/regex.h>
-#include <yaooc/algorithm.h>
-#include <fcntl.h>
 
-#define CLASS(term) M(this,str,"class",&term)
-#define STRUCT(term) M(this,str,"struct",&term)
-#define UNION(term) M(this,str,"union",&term)
-#define TABLE(term) M(this,str,"table",&term)
-#define INSTANCE(term) M(this,str,"instance",&term)
-#define PROTECTED(term) M(this,str,"protected",&term)
-#define PRIVATE(term) M(this,str,"private",&term)
-#define STATIC(term) M(this,str,"static",&term)
+
+#define CLASS(term) YAOOC_PARSER_TRY_RULE(this,M(this,chr,'%',&term) && M(this,str,"class",&term))
+#define STRUCT(term) YAOOC_PARSER_TRY_RULE(this,M(this,chr,'%',&term) && M(this,str,"struct",&term))
+#define UNION(term) YAOOC_PARSER_TRY_RULE(this,M(this,chr,'%',&term) && M(this,str,"union",&term))
+#define MIXIN(term) YAOOC_PARSER_TRY_RULE(this,M(this,chr,'%',&term) && M(this,str,"mixin",&term))
+#define TABLE(term) (M(this,str,"table",&term) && M(this,chr,':',&term))
+#define INSTANCE(term) (M(this,str,"instance",&term) && M(this,chr,':',&term))
+#define ADJUNCT(term) (M(this,str,"adjunct",&term) && M(this,chr,':',&term))
+#define PRIVATE(term) (M(this,str,"private",&term) && M(this,chr,':',&term))
+
 #define __CONST__(term) M(this,str,"const",&term)
 #define OPERATOR(term) M(this,str,"operator",&term)
 #define COMMA(term) M(this,chr,',',&term)
@@ -30,1086 +24,1133 @@
 #define RBRACKET(term) M(this,chr,']',&term)
 #define STAR(term) M(this,chr,'*',&term)
 
-extern yaooc_string_t include_directories;
-extern yaooc_string_t defines;
-extern yaooc_string_t header_extra;
-extern yaooc_string_t source_extra;
-extern yaooc_string_vector_t include_files;
-#define yaoocpp_find_element(vec,vp) yaooc_find(yaoocpp_element_pointer,M(vec,begin),M(vec,end),&vp)
+#define IS_DELETE(t) (strncmp(t.beg_,"delete",6)==0)
+#define IS_DEFAULT(t) (strncmp(t.beg_,"default",7)==0)
 
-/* Private variables implementation for yaoocpp_parser_exception */
-const char* yaoocpp_parser_current_file=NULL;
+char yaoocpp_parser_current_file[PATH_MAX];
+char yaoocpp_parser_file_being_parsed[PATH_MAX];
 bool yaoocpp_parser_is_top_level=false;
-yaooc_string_t yaoocpp_parser_buffer = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+yaooc_string_t yaoocpp_header_prefix = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+extern yaooc_string_t defines;
+extern yaooc_string_vector_t include_directories;
 
-/* Private methods prototypes for yaoocpp_parser_exception */
 
-/* Type Info implemmentation for yaoocpp_parser_exception */
 
-/* Constructors implementation for yaoocpp_parser_exception */
+static int header_count=0;
+static int source_count=0;
 
-/* Private methods implementation for yaoocpp_parser_exception */
 
-/* Protected implementation for yaoocpp_parser_exception */
 
-/* Table implementation for yaoocpp_parser_exception */
 
-/* Class table definition for yaoocpp_parser_exception */
-yaoocpp_parser_exception_class_table_t yaoocpp_parser_exception_class_table =
+
+#define LINE_LENGTH 1024
+static yaooc_string_t* preprocess(const char* file)
 {
-  .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .type_name_ = (const char*) "yaoocpp_parser_exception_t",
-  .swap = (void(*)(pointer, pointer)) yaoocpp_parser_exception_swap,
-  .what = (const char*(*)(const_pointer)) yaoocpp_parser_exception_what,
-};
+  gb_init();
+  yaooc_string_t* contents=new(yaooc_string);
+  regex_t re_cpp_line,re_yaoocpp_line,re_yaoocpp_include;
+  if(regcomp(&re_cpp_line,"^\\s*#\\s*(.)",REG_EXTENDED) == 0 &&
+        regcomp(&re_yaoocpp_line,"^\\s*%\\s*(if|define|endif)\\s+",REG_EXTENDED) == 0 &&
+        regcomp(&re_yaoocpp_include,"^\\s*%\\s*(include)\\s+([<\"])([^\\.]+)\\.(yod|yoc)([>\"])",REG_EXTENDED) == 0) {
+    regmatch_t ov[7];
+    yaooc_ifstream_t input;
+    newp(&input,yaooc_ifstream);
+    M(&input,open,file,"r");
+    if(M(&input,good)) {
 
-/* Type info structure for yaoocpp_parser_exception */
-DEFINE_TYPE_INFO(yaoocpp_parser_exception,N,N,N,N,N,N,N,Y,yaooc_exception);
+      yaooc_string_t output;
+      newp(&output,yaooc_string);
+      M(&output,append,"# 1 \"");
+      M(&output,append,file);
+      M(&output,append,"\"\n");
+      char* line = gb_new_array(char,LINE_LENGTH);
+      while(!M(&input,eof)) {
+        *line=0;
+        M(&input,getstr,line,LINE_LENGTH);
+        if(regexec(&re_cpp_line,line,7,ov,0) == 0) {
+          M(&output,append,"%X#");
+          M(&output,append,line+ov[1].rm_so);
+        } else if(regexec(&re_yaoocpp_line,line,7,ov,0) == 0) {
+          M(&output,append,"#");
+          M(&output,append,line+ov[1].rm_so);
+        } else if(regexec(&re_yaoocpp_include,line,7,ov,0) == 0) {
+          M(&output,append,"#");
+          M(&output,append,line+ov[1].rm_so);
+          M(&output,append,"%header\n%X#include ");
+          M(&output,appendn,line+ov[2].rm_so,ov[2].rm_eo-ov[2].rm_so);
+          M(&output,appendn,line+ov[3].rm_so,ov[3].rm_eo-ov[3].rm_so);
+          M(&output,append,".h");
+          M(&output,appendn,line+ov[5].rm_so,ov[5].rm_eo-ov[5].rm_so);
+          M(&output,append,"\n%%\n");
+        } else
+          M(&output,append,line);
+      }
+      M(&input,close);
 
-/* Private variables implementation for yaoocpp_parser */
 
-/* Private methods prototypes for yaoocpp_parser */
-static void yaoocpp_parser_preprocess(pointer);
-static yaoocpp_container_const_pointer yaoocpp_parser_find_class(pointer, const char*);
-static void yaoocpp_parser_extract_section(pointer,const char*,const char*,const char*,yaooc_string_t*);
-static void yaoocpp_parser_find_yaooc_includes(pointer,const char*,yaooc_string_vector_t*);
-static bool yaoocpp_parser_line_directive(pointer,yaooc_terminal_t*);
-static bool yaoocpp_parser_containers(pointer);
-static bool yaoocpp_parser_name_parent(pointer);
-static bool yaoocpp_parser_contents(pointer);
-static bool yaoocpp_parser_type_info(pointer);
-static bool yaoocpp_parser_default_constructor(pointer);
-static bool yaoocpp_parser_destructor(pointer);
-static bool yaoocpp_parser_copy_constructor(pointer);
-static bool yaoocpp_parser_assignment(pointer);
-static bool yaoocpp_parser_rich_compare(pointer);
-static bool yaoocpp_parser_to_stream(pointer);
-static bool yaoocpp_parser_from_stream(pointer);
-static bool yaoocpp_parser_arguments(pointer,yaoocpp_argument_vector_t**);
-static bool yaoocpp_parser_argument(pointer,yaoocpp_argument_t**);
-static bool yaoocpp_parser_va_argument(pointer,yaoocpp_argument_t**);
-static bool yaoocpp_parser_constructor(pointer);
-static bool yaoocpp_parser_method(pointer,yaoocpp_method_t**);
-static bool yaoocpp_parser_method_with_implementation_method(pointer,yaoocpp_method_t**);
-static bool yaoocpp_parser_method_base(pointer,yaoocpp_method_t**);
-static bool yaoocpp_parser_variable_with_default_value(pointer,yaoocpp_variable_t**);
-static bool yaoocpp_parser_variable(pointer,yaoocpp_variable_t**);
-static bool yaoocpp_parser_variable_base(pointer,yaoocpp_variable_t**);
-static bool yaoocpp_parser_type_variable(pointer,yaoocpp_variable_t**);
-static bool yaoocpp_parser_type_only(pointer,yaoocpp_type_t**);
-static bool yaoocpp_parser_table(pointer);
-static bool yaoocpp_parser_instance(pointer);
-static bool yaoocpp_parser_protected(pointer);
-static bool yaoocpp_parser_private(pointer);
-static bool yaoocpp_parser_static(pointer);
-static bool yaoocpp_parser_table_struct_not_allowed(pointer);
+      yaooc_string_t cpp_command;
+      gb_newp(&cpp_command,yaooc_string);
+      M(&cpp_command,set,"cpp  -nostdinc -fdirectives-only");
+      if(M(&defines,size)>0) {
+        M(&cpp_command,append," ");
+        M(&cpp_command,append,M(&defines,c_str));
+      }
+      yaooc_string_vector_const_iterator id;
+      CFOR_EACH(id,&include_directories) {
+        M(&cpp_command,append," -I");
+        M(&cpp_command,append,M(id,c_str));
+      }
+      yaooc_string_t* se=new(yaooc_string);
+      int rc = command_pipe(M(&cpp_command,c_str),&output,contents,se);
+      deletep(&cpp_command,yaooc_string);
+      M(&output,set,M(contents,c_str));
+      if(rc == 0) {
+        rc = command_pipe("cpp -nostdinc -fpreprocessed",&output,contents,se);
 
-/* Type Info implemmentation for yaoocpp_parser */
-void yaoocpp_parser_default_ctor(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  yaooc_base_parser_default_ctor(this);
-  this->classes_ = NULL;
-  this->current_class_=NULL;
-  newp(&this->header_text_,yaooc_string);
-  newp(&this->source_text_,yaooc_string);
-  newp(&this->include_files_,yaooc_string_vector);
-}
-
-void yaoocpp_parser_dtor(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  if(this->classes_)
-     delete(this->classes_);
-  this->classes_ = NULL;
-  deletep(&this->header_text_,yaooc_string);
-  deletep(&this->source_text_,yaooc_string);
-  deletep(&this->include_files_,yaooc_string_vector);
-}
-
-/* Constructors implementation for yaoocpp_parser */
-
-/* Private methods implementation for yaoocpp_parser */
-bool yaoocpp_parser_line_directive(pointer p,yaooc_terminal_t* ws)
-{
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  RULE_START(p);
-  *ws=(yaooc_terminal_t) { NULL, NULL };
-  yaooc_terminal_t r,l;
-//        && YAOOC_PARSER_OPTIONAL(M(this,integer,&r) && YAOOC_PARSER_OPTIONAL(M(this,integer,&r) && YAOOC_PARSER_OPTIONAL(M(this,integer,&r))) {
-  if(M(this,chr,'#',&r) && M(this,integer,&l)) {
-    this->line_no_=atoi(l.beg_)-1;
-    if(*this->current_pos_=='"') { // This should always be true -- but just in case
-      // Find end of file name
-      this->current_pos_++;
-      const char* ptr=this->current_pos_;
-      for(;*this->current_pos_!='"';this->current_pos_++);
-      yaoocpp_parser_is_top_level=strncmp(yaoocpp_parser_current_file,ptr,this->current_pos_-ptr)==0;
-      for(;*this->current_pos_ != 0;this->current_pos_++)
-        if(*this->current_pos_ == '\r' || *this->current_pos_ == '\n')
-          break;
+      } else {
+        puts("Error in 1st pass of CPP");
+        puts(M(se,c_str));
+        exit(99);
+      }
+      deletep(&output,yaooc_string);
+      delete(se);
+      M(contents,gsub_,"\n%X#","\n#");
+    } else {
+      puts("File not found");
     }
-    ws->end_=this->current_pos_;
-    ret=true;
+    deletep(&input,yaooc_ifstream);
+    regfree(&re_yaoocpp_line);
+    regfree(&re_cpp_line);
+    regfree(&re_yaoocpp_include);
+  } else {
+    printf("Failed compiling CPP line\n");
+    exit(3);
   }
-  if(ret) {
-    RULE_SUCCESS(p);
-    ws->end_=this->current_pos_;
-  }
-  else
-    RULE_FAIL(p);
-  return ret;
+  gb_exit();
+  return contents;
 }
 
-#define BUF_SIZE 1024
-static void yaoocpp_parser_preprocess(pointer p)
-{
-//  yaoocpp_parser_pointer this=p;
 
-  // Generate preprocessor command line
-  yaooc_string_t cpp = YAOOC_STRING_STATIC_DEFAULT_CTOR;
-  M(&cpp,set,"/usr/bin/cpp -nostdinc");
-  M(&cpp,append,M(&defines,c_str));
-//    M(&cpp,append," ");
-  M(&cpp,append,M(&include_directories,c_str));
-  const char* temp=getenv("YAOOCPP_FLAGS");
-  if(temp) {
-    M(&cpp,append," ");
-    M(&cpp,append,temp);
-  }
-  temp=getenv("YAOOCPP_INCLUDE_PATH");
-  if(temp) {
-    M(&cpp,append," -I");
-    M(&cpp,append,temp);
-  }
-  M(&cpp,append," ");
-  M(&cpp,append,yaoocpp_parser_current_file);
-  M(&cpp,append," 2>&1");
-  FILE* pipe=popen(M(&cpp,c_str),"r");
-  if(pipe) {
-    char temp[BUF_SIZE];
-    newp(&yaoocpp_parser_buffer,yaooc_string);
-    while(!feof(pipe)) {
-      size_t n=fread(temp,1,BUF_SIZE-1,pipe);
-//      temp[n]=0;
-      M(&yaoocpp_parser_buffer,appendn,temp,n);
-    }
-    int rc=pclose(pipe);
-    //STREAM(cout,O_OBJ(yaooc_string,yaoocpp_parser_buffer));
-    if(rc!=0) {
-      STREAM(cerr,O_OBJ(yaooc_string,yaoocpp_parser_buffer));
-      THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-          "Preprocessor error (error code %d).  Review above ouput",rc-255));
-    }
-    deletep(&cpp,yaooc_string);
-  }
-}
-
-static yaoocpp_container_const_pointer yaoocpp_parser_find_class(pointer p,const char* name)
+bool yaoocpp_parser_line_directive(pointer __pthis__)
 {
-  yaoocpp_parser_pointer this=p;
-	yaoocpp_container_pointer_vector_const_iterator i;
-	CFOR_EACH(i,this->classes_) {
-		if(strcmp(name,M(&(*i)->name_,c_str))==0)
-			break;
-	}
-	if(i != M(this->classes_,end))
-		return *i;
-  return NULL;
-}
+yaoocpp_parser_pointer this=__pthis__;(void)this;
 
-static void yaoocpp_parser_extract_section(pointer p,const char* str,const char* beg,const char* end,yaooc_string_t* content_extracted)
-{
-//  yaoocpp_parser_pointer this=p;
-  regex_t re_beg;
-  regex_t re_end;
-  int rc=0;
-  if(regcomp(&re_beg,beg,REG_EXTENDED|REG_NEWLINE)==0) {
-    if(regcomp(&re_end,end,REG_EXTENDED|REG_NEWLINE)==0) {
-      size_t beg_pos=0;
-      regmatch_t ov;
-      do {
-        if((rc=yaooc_regex_regexec(&re_beg,str,beg_pos,1,&ov,0))==0) {
-          beg_pos=ov.rm_eo;
-          if((rc=yaooc_regex_regexec(&re_end,str,beg_pos,1,&ov,0))==0) {
-            M(content_extracted,appendn,str+beg_pos,ov.rm_so-beg_pos);
-            beg_pos=ov.rm_eo;
+      RULE_START(this);
+      if(*this->current_pos_ == '#') {
+        this->current_pos_+=2;
+        yaooc_token_t temp;
+        if(M(this,digits,&temp)) {
+          this->line_no_=atoi(temp.beg_)-1;
+          this->current_pos_++;
+          if(*this->current_pos_ == '"') {
+            this->current_pos_++;
+            const char* pos=this->current_pos_;
+            for(;*this->current_pos_!='"' && *this->current_pos_!=0;this->current_pos_++);
+            if(*this->current_pos_ != 0) {
+              strncpy(yaoocpp_parser_file_being_parsed,pos,this->current_pos_-pos);
+              yaoocpp_parser_file_being_parsed[this->current_pos_-pos]=0;
+              yaoocpp_parser_is_top_level=strcmp(yaoocpp_parser_current_file,yaoocpp_parser_file_being_parsed) == 0;
+              for(;*this->current_pos_!='\n' && *this->current_pos_!=0;this->current_pos_++);
+              yaooc_base_parser_whitespace(this,&temp);
+              return RULE_SUCCESS(this);
+            }
           }
         }
-      } while(rc==0);
-      regfree(&re_end);
-    } else {
-      fprintf(stderr,"End regex \"%s\" failed\n",end);
-      exit(1);
-    }
-    regfree(&re_beg);
-  } else {
-    fprintf(stderr,"Begin regex \"%s\" failed\n",beg);
-    exit(1);
-  }
-}
-
-#define re_match(re) (yaooc_regex_regexec(&re,line,0,0,NULL,0) == 0)
-static void yaoocpp_parser_find_yaooc_includes(pointer p,const char* str,yaooc_string_vector_t*includes)
-{
-//  yaoocpp_parser_pointer this=p;
-  regex_t re_yaooc_include_beg;
-  regex_t re_yaooc_include_end;
-  regmatch_t ov;
-  if(regcomp(&re_yaooc_include_beg,"#\\s*include\\s*[\"<]",REG_EXTENDED|REG_NEWLINE)!=0) {
-    puts("regcomp 1 failed");
-    exit(1);
-  }
-
-  if(regcomp(&re_yaooc_include_end,"\\.yaooc[\">]",REG_EXTENDED|REG_NEWLINE)!=0) {
-    puts("regcomp 2 failed");
-    exit(1);
-  }
-  int ofs=0;
-  int rc=0;
-  yaooc_string_t inc_file;
-  newp(&inc_file,yaooc_string);
-  do {
-    rc=yaooc_regex_regexec(&re_yaooc_include_beg,str,ofs,1,&ov,0);
-    if(rc==0) {
-      ofs=ov.rm_eo;
-      rc=yaooc_regex_regexec(&re_yaooc_include_end,str,ofs,1,&ov,0);
-      if(rc == 0) {
-        M(&inc_file,setn,str+ofs,ov.rm_so-ofs);
-        M(includes,push_back,&inc_file);
-        ofs=ov.rm_eo;
       }
-    }
-  } while(rc==0);
-  deletep(&inc_file,yaooc_string);
-  regfree(&re_yaooc_include_beg);
-  regfree(&re_yaooc_include_end);
+      return RULE_FAIL(this);
+    
 }
-
-static bool yaoocpp_parser_containers(pointer p)
+bool yaoocpp_parser_header_directory(pointer __pthis__)
 {
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  yaooc_terminal_t r;
-  while(true) {
-    if(CLASS(r)) {
-      this->current_class_=new(yaoocpp_class);
-      ret=true;
-    } else if(STRUCT(r)) {
-      this->current_class_=new(yaoocpp_struct);
-      ret=true;
-    } else if(UNION(r)) {
-      this->current_class_=new(yaoocpp_union);
-      ret=true;
-    } else
-      break;
-    this->current_class_->defined_in_top_level_file_=yaoocpp_parser_is_top_level;
-    yaoocpp_parser_name_parent(p);
-    if(yaoocpp_parser_contents(this)) {
-      M(this->classes_,push_back,&this->current_class_);
-      delete(this->current_class_);
-    }
-  }
-  // should be at end of file
-  if(*this->current_pos_!=0) {
-    THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-        "Error processing %s near line %d\n",yaoocpp_parser_current_file,this->line_no_));
-  }
-  return ret;
-}
+yaoocpp_parser_pointer this=__pthis__;(void)this;
 
-static bool yaoocpp_parser_name_parent(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  yaooc_terminal_t r,name,parent;
-  if(M(this,ident,&name)) {
-    char* parent_name=NULL;
-    M(&this->current_class_->name_,setn,name.beg_,name.end_-name.beg_);
-    if(strncmp(name.beg_,"yaooc_object",name.end_-name.beg_)!=0) { // no parent for base object
-      if(COLON(r)) {
-        if(M(this,ident,&parent)) {
-          parent_name=yaooc_terminal_raw_text(&parent);
-        }
-      }
-      if(parent_name==NULL && !ISA(this->current_class_,yaoocpp_struct)) {
-        parent_name=yaooc_strdup("yaooc_object");
-      }
-      if(parent_name != NULL) {  // If NULL, then it must be a struct.  OK not to have a parent
-        this->current_class_->parent_=yaoocpp_parser_find_class(p,parent_name);
-        if(this->current_class_->parent_ == NULL) {
-          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-              "Parent class %s for class %s has not been defined.",
-              parent_name,M(&this->current_class_->name_,c_str)));
-        }
-      }
-      M(this->current_class_,inherit);
-      if(parent_name)
-        delete(parent_name);
-    }
-    ret=true;
-  }
-  return ret;
-}
+      RULE_START(this);
+      yaooc_token_t temp,dirname;
+      if(M(this,chr,'%',&temp)) {
 
-static bool yaoocpp_parser_contents(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  yaooc_terminal_t r;
-  if(LBRACE(r)) {
-    while(true) {
-      if(!yaoocpp_parser_type_info(p))
-        if(!yaoocpp_parser_constructor(p))
-          break;
-    }
-    while(true) {
-      if(!((ISA(this->current_class_,yaoocpp_struct) && yaoocpp_parser_table_struct_not_allowed(p))
-              || yaoocpp_parser_table(p)))
-        if(!yaoocpp_parser_instance(p))
-          if(!yaoocpp_parser_protected(p))
-            if(!yaoocpp_parser_private(p))
-              if(!yaoocpp_parser_static(p))
-                break;
-    }
-    if(RBRACE(r) && SEMICOLON(r))
-      ret=true;
-  }
-  return ret;
-}
 
-static bool yaoocpp_parser_type_info(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  (void)this;
-  bool ret=true;
-  if(!yaoocpp_parser_default_constructor(p))
-    if(!yaoocpp_parser_destructor(p))
-      if(!yaoocpp_parser_copy_constructor(p))
-        if(!yaoocpp_parser_assignment(p))
-          if(!yaoocpp_parser_rich_compare(p))
-            if(!yaoocpp_parser_to_stream(p))
-              if(!yaoocpp_parser_from_stream(p))
-                ret=false;
-  return ret;
-}
-
-static bool yaoocpp_parser_default_constructor(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  RULE_START(p);
-  yaooc_terminal_t r;
-  if(M(this,str,M(&this->current_class_->name_,c_str),&r) && LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
-    M(&this->current_class_->default_ctor_implementation_,setn,r.beg_,r.end_-r.beg_);
-    RULE_SUCCESS(p);
-    return true;
-  }
-  RULE_FAIL(p);
-  return false;
-}
-
-static bool yaoocpp_parser_destructor(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  yaooc_terminal_t r;
-  M(this,rule_start);
-  if(M(this,chr,'~',&r) && M(this,str,M(&this->current_class_->name_,c_str),&r) &&
-            LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
-    M(&this->current_class_->dtor_implementation_,setn,r.beg_,r.end_-r.beg_);
-    RULE_SUCCESS(p);
-    return true;
-  }
-  RULE_FAIL(p);
-  return false;
-}
-
-static bool yaoocpp_parser_copy_constructor(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  yaooc_terminal_t r;
-  M(this,rule_start);
-  if(M(this,str,M(&this->current_class_->name_,c_str),&r) && LPAREN(r)
-        && M(this,str,M(&this->current_class_->name_,c_str),&r) &&
-        STAR(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
-    M(&this->current_class_->copy_ctor_implementation_,setn,r.beg_,r.end_-r.beg_);
-    RULE_SUCCESS(p);
-    return true;
-  }
-  RULE_FAIL(p);
-  return false;
-}
-
-static bool yaoocpp_parser_assignment(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  yaooc_terminal_t r;
-  M(this,rule_start);
-  if(M(this,str,"operator",&r) && EQUAL(r) && LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
-    M(&this->current_class_->assign_implementation_,setn,r.beg_,r.end_-r.beg_);
-    RULE_SUCCESS(p);
-    return true;
-  }
-  RULE_FAIL(p);
-  return false;
-}
-
-static bool yaoocpp_parser_rich_compare(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  yaooc_terminal_t r;
-  M(this,rule_start);
-  if(M(this,str,"operator",&r) && M(this,str,"<=>",&r) && LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
-    M(&this->current_class_->rich_cmp_implementation_,setn,r.beg_,r.end_-r.beg_);
-    RULE_SUCCESS(p);
-    return true;
-  }
-  RULE_FAIL(p);
-  return false;
-}
-
-static bool yaoocpp_parser_to_stream(pointer p)
-{
-  yaooc_terminal_t r;
-  yaoocpp_parser_pointer this=p;
-  M(this,rule_start);
-  if(M(this,str,"operator",&r) && M(this,str,"<<",&r) && LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
-    M(&this->current_class_->to_stream_implementation_,setn,r.beg_,r.end_-r.beg_);
-    RULE_SUCCESS(p);
-    return true;
-  }
-  RULE_FAIL(p);
-  return false;
-}
-
-static bool yaoocpp_parser_from_stream(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  yaooc_terminal_t r;
-  M(this,rule_start);
-  if(M(this,str,"operator",&r) && M(this,str,">>",&r) && LPAREN(r) && RPAREN(r) && M(this,string_until_matching_chr,'{','}',&r)) {
-    M(&this->current_class_->from_stream_implementation_,setn,r.beg_,r.end_-r.beg_);
-    RULE_SUCCESS(p);
-    return true;
-  }
-  RULE_FAIL(p);
-  return false;
-}
-
-static bool yaoocpp_parser_arguments(pointer p,yaoocpp_argument_vector_t** args)
-{
-  pb_init();
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  yaooc_terminal_t r;
-  *args=new(yaoocpp_argument_vector);
-  yaoocpp_argument_t* arg;
-  /* One are more argumetns seperated by comma.  Last argument can be va_arg (...) */
-  if(yaoocpp_parser_argument(this,&arg)) {
-    M(*args,push_back,arg);
-    delete(arg);
-    ret=true;
-    while(YAOOC_PARSER_TRY_RULE(p,COMMA(r) && yaoocpp_parser_argument(this,&arg))) {
-      M(*args,push_back,arg);
-      delete(arg);
-    }
-    if(YAOOC_PARSER_TRY_RULE(p,COMMA(r) && yaoocpp_parser_va_argument(this,&arg))) {
-      M(*args,push_back,arg);
-      delete(arg);
-    }
-  } else {
-    /* Or single va_arg (...) */
-    if(yaoocpp_parser_va_argument(this,&arg)) {
-      M(*args,push_back,arg);
-      delete(arg);
-      ret = true;
-    }
-  }
-  pb_exit();
-  return ret;
-}
-
-static bool yaoocpp_parser_argument(pointer p,yaoocpp_argument_t** arg)
-{
-  pb_init();
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  yaoocpp_variable_t* var;
-  if(yaoocpp_parser_variable_base(this,&var)) {
-    *arg=new(yaoocpp_argument);
-    assign_static(&(*arg)->type_,&var->type_,yaooc_string);
-    assign_static(&(*arg)->name_,&var->name_,yaooc_string);
-    assign_static(&(*arg)->array_size_,&var->array_size_,yaooc_string);
-    (*arg)->is_array_=var->is_array_;
-    delete(var);
-    ret=true;
-  }
-  pb_exit();
-  return ret;
-}
-
-static bool yaoocpp_parser_va_argument(pointer p,yaoocpp_argument_t** arg)
-{
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  yaooc_terminal_t r;
-  if(M(this,str,"...",&r)) {
-    *arg=new(yaoocpp_argument);
-    M(&(*arg)->type_,set,"...");
-    ret=true;
-  }
-  return ret;
-}
-
-static bool yaoocpp_parser_constructor(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  pb_init();
-  RULE_START(p);
-  yaoocpp_constructor_t* con=pb_new(yaoocpp_constructor);
-  yaooc_terminal_t r,name,imp_con={NULL,NULL};
-  yaoocpp_argument_vector_t* args;
-  if(M(this,ident,&name) && LPAREN(r) && yaoocpp_parser_arguments(this,&args) && RPAREN(r)) {
-    size_t class_name_len=M(&this->current_class_->name_,size);
-    if(class_name_len < name.end_-name.beg_ &&
-            strncmp(M(&this->current_class_->name_,c_str),name.beg_,class_name_len) ==0) {
-      M(&con->name_,setn,name.beg_,name.end_-name.beg_);
-      yaoocpp_argument_vector_const_iterator i;
-      CFOR_EACH(i,args)
-        M(&con->arguments_,push_back,i);
-      delete(args);
-      if(EQUAL(r)) {
-        if(M(this,ident,&imp_con)) {
-          M(&con->implementation_method_,setn,imp_con.beg_,imp_con.end_-imp_con.beg_);
-          ret=true;
-        } else
-          ret = false;
-      } else if(M(this,string_until_matching_chr,'{','}',&r)) {
-        M(&con->implementation_,setn,r.beg_,r.end_-r.beg_);
-        ret = true;
-      } else {
-        ret = false;
-      }
-    }
-  }
-  if(ret) {
-    RULE_SUCCESS(p);
-    M(&this->current_class_->constructors_,push_back,(yaoocpp_element_t **)&con);
-  } else {
-    RULE_FAIL(p);
-  }
-  pb_exit();
-  return ret;
-}
-
-static bool yaoocpp_parser_table(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  pb_init();
-  yaooc_terminal_t r;
-  if(TABLE(r) && COLON(r)) {
-    while(true) {
-#define container ((yaoocpp_container_with_class_table_t*)(this->current_class_))->table_
-      yaoocpp_method_t* proc;
-      if(yaoocpp_parser_method_with_implementation_method(p,&proc)) {
-        debug_printf("Table: Got method %s\n",M(&proc->name_,c_str));
-        yaoocpp_method_t** orig=yaoocpp_find_element(&container,proc);
-        /* If already defined, override existing element */
-        if(orig == M(&container,end)) {
-          M(&container,push_back,(yaoocpp_element_t**)&proc);
-        } else {
-          assign_static(&(*orig)->implementation_method_,&proc->implementation_method_,yaooc_string);
-          assign_static(&(*orig)->implementation_,&proc->implementation_,yaooc_string);
-          (*orig)->state_=OVERRIDDEN;
-        }
-        delete(proc);
-      } else {
-        yaoocpp_variable_t* var;
-        if(yaoocpp_parser_variable_with_default_value(p,&var)) {
-          debug_printf("Table: Got var %s\n",M(&var->name_,c_str));
-          /* If already defined, replace default value */
-          yaoocpp_variable_t** orig=yaoocpp_find_element(&container,var);
-          if(orig == M(&container,end)) {
-            M(&container,push_back,(yaoocpp_element_t**)&var);
+        int saved_line_no=this->line_no_;
+        if(M(this,str,"header_directory",&temp)) {
+          if(saved_line_no == this->line_no_) {
+            if(M(this,double_quoted_string,&dirname) || M(this,bare_string,&dirname)) {
+              M(&yaoocpp_header_prefix,setn,dirname.beg_,dirname.end_-dirname.beg_);
+              M(&yaoocpp_header_prefix,rtrim_);
+              return RULE_SUCCESS(this);
+            }
           } else {
-            assign_static(&(*orig)->default_value_,&var->default_value_,yaooc_string);
+            printf("No directory specifed for header directory at line number %d\n",saved_line_no);
+          }
+        }
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_header(pointer __pthis__,yaoocpp_section_t** section)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      RULE_START(this);
+      yaooc_token_t temp;
+      if(M(this,chr,'%',&temp) && M(this,str,"header",&temp)) {
+        int saved_line_no = this->line_no_;
+        const char* start_pos=yaooc_base_parser_current_pos(this);
+        while(!M(this,str,"%%",&temp) && *this->current_pos_ != 0) {
+          M(this,string_until_eol,&temp);
+        }
+        if(temp.end_ == NULL) {
+          printf("Unterminated header declaration starting near %d\n",saved_line_no);
+          exit(5);
+        }
+
+          yaoocpp_header_t* hs= new(yaoocpp_header);
+          char name[16];
+          sprintf(name,"header_%03d",header_count++);
+          M(&hs->name_,set,name);
+          M(&hs->content_,setn,start_pos,temp.beg_-start_pos);
+          hs->defined_in_top_level_file_=true;
+          *section = (yaoocpp_section_t*)hs;
+
+        return RULE_SUCCESS(this);
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_source(pointer __pthis__,yaoocpp_section_t** section)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      regex_t re;
+
+      if(regcomp(&re,"%\\s*(class|struct|union|header|mixin|header_directory)\\s+",REG_EXTENDED)==0) {
+        regmatch_t ov[3];
+        const char* ptr;
+        if(regexec(&re,this->current_pos_,3,ov,0)==0) {
+          ptr=this->current_pos_+ov[0].rm_so;
+        } else {
+          ptr=this->current_pos_+strlen(this->current_pos_);
+        }
+        yaoocpp_source_t* ss = new(yaoocpp_source);
+        char name[16];
+        sprintf(name,"source_%03d",source_count++);
+        M(&ss->name_,set,name);
+        size_t n = ptr-this->current_pos_;
+        M(&ss->content_,setn,this->current_pos_,n);
+        ss->defined_in_top_level_file_=true;
+        *section = (yaoocpp_section_t*)ss;
+        yaooc_base_parser_skip(this,n);
+        regfree(&re);
+      } else {
+        printf("Regex compilation failed failed");
+        exit(-1);
+      }
+      return true;
+    
+}
+bool yaoocpp_parser_class_forward(pointer __pthis__,yaoocpp_section_t** section)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      RULE_START(this);
+      yaooc_token_t t,name;
+      if((CLASS(t) || STRUCT(t) || UNION(t)) && M(this,ident,&name) && SEMICOLON(t)) {
+        yaoocpp_header_t* hs= new(yaoocpp_header);
+        char hname[16];
+        sprintf(hname,"header_%03d",header_count++);
+        M(&hs->name_,set,hname);
+        M(&hs->content_,set,"yaooc_class_forward(");
+        M(&hs->content_,appendn,name.beg_,name.end_-name.beg_);
+        M(&hs->content_,append,");\n");
+        hs->defined_in_top_level_file_=true;
+        *section = (yaoocpp_section_t*)hs;
+        return RULE_SUCCESS(this);
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_class_definition(pointer __pthis__,yaoocpp_section_t** section)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaooc_token_t temp;
+      RULE_START(this);
+      *section = NULL;
+      bool is_struct = false;
+      if(CLASS(temp))
+        *section=(yaoocpp_section_t*)new(yaoocpp_class);
+      else if(UNION(temp))
+        *section=(yaoocpp_section_t*)new(yaoocpp_union);
+      else if(STRUCT(temp)) {
+        *section=(yaoocpp_section_t*)new(yaoocpp_struct);
+        is_struct = true;
+      }
+      if(*section != NULL) {
+        ((yaoocpp_struct_t*)*section)->defined_in_top_level_file_=yaoocpp_parser_is_top_level;
+        yaooc_token_t class_name;
+        M(this,ident,&class_name);
+        M(&(*section)->name_,setn,class_name.beg_,class_name.end_-class_name.beg_);
+        if(strncmp(class_name.beg_,"yaooc_object",class_name.end_-class_name.beg_) != 0) {
+
+          char* parent_name=NULL;
+          if(!yaoocpp_parser_get_parent_name(this,&parent_name) && !is_struct)
+            parent_name=yaooc_strdup("yaooc_object");
+          if(parent_name != NULL ) {
+            if(!yaoocpp_parser_set_parent(this,parent_name,&((yaoocpp_struct_t*)*section)->parent_)) {
+              printf("Parent class '%s' for '%.*s' not defined\n",parent_name,(int)(class_name.end_-class_name.beg_),class_name.beg_);
+              exit(6);
+            }
+          if(is_struct)
+            yaoocpp_struct_inherit(*section);
+          else
+            yaoocpp_class_inherit(*section);
+          }
+        }
+        if(LBRACE(temp)) {
+          while(true) {
+            if(!yaoocpp_parser_type_info(this,(yaoocpp_struct_t*)*section))
+              if(!yaoocpp_parser_constructor(this,(yaoocpp_struct_t*)*section))
+                break;
+          }
+          while(true) {
+            if(TABLE(temp)) {
+              if(is_struct) {
+                printf("Table not allowed for struct %.*s",(int)(class_name.end_-class_name.beg_),class_name.beg_);
+                exit(7);
+              }
+              yaoocpp_parser_sub_section(this,&((yaoocpp_class_t*)*section)->table_,true);
+            } else if(INSTANCE(temp)) {
+              yaoocpp_parser_sub_section(this,&((yaoocpp_struct_t*)*section)->instance_,false);
+            } else if(ADJUNCT(temp)) {
+              yaoocpp_parser_sub_section(this,&((yaoocpp_struct_t*)*section)->adjunct_,true);
+            } else if(PRIVATE(temp)) {
+              yaoocpp_parser_sub_section(this,&((yaoocpp_struct_t*)*section)->private_,true);
+            } else
+              break;
+          }
+        }
+        if(RBRACE(temp) && SEMICOLON(temp)) {
+          if(((yaoocpp_struct_t*)*section)->defined_in_top_level_file_) {
+            M(((yaoocpp_struct_t*)*section),resolve_outstanding_components);
+            M(*section,add_mixins,&this->mixins_);
+          }
+          return RULE_SUCCESS(this);
+        }
+        else {
+          printf("Error processing %s near line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
+          exit(7);
+        }
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_sub_section(pointer __pthis__,yaoocpp_item_pointer_vector_t* list,bool include_value)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaoocpp_variable_t* var;
+      yaoocpp_method_t* method;
+      while(true) {
+        if(yaoocpp_parser_variable(this,&var,include_value)) {
+          yaoocpp_variable_pointer* existing_var = yaooc_find(yaoocpp_item_pointer,M(list,cbegin),M(list,cend),(pointer)&var);
+          if(existing_var == M(list,cend)) {
+            M(list,push_back,(pointer)&var);
+            existing_var=M(list,begin);
+          } else {
+            if((*existing_var)->generation_!=INHERITED) {
+
+              printf("Duplicate variable specified on or before line number %d\n",this->line_no_);
+              printf("X%sX X%sX\n",M(&(*existing_var)->name_,c_str),M(&var->name_,c_str));
+              exit(3);
+            }
+            (*existing_var)->generation_=OVERRIDDEN;
+            assign_static(&((*existing_var)->value_),&var->value_,yaooc_string);
           }
           delete(var);
+        } else if(yaoocpp_parser_method(this,&method)) {
+          yaoocpp_method_t** existing_method = yaooc_find(yaoocpp_item_pointer,M(list,begin),M(list,end),(pointer)&var);
+          if(existing_method == M(list,cend))
+            M(list,push_back,(pointer)&method);
+          else {
+            if((*existing_method)->generation_!=INHERITED) {
+
+              printf("Duplicate method specified on or before line number %d\n",this->line_no_);
+              exit(3);
+            }
+            assign_static(*existing_method,method,yaoocpp_method);
+            (*existing_method)->generation_=OVERRIDDEN;
+
+          }
+          delete(method);
         } else
           break;
       }
-#undef container
-    }
-    ret=true;
-  }
-  pb_exit();
-  return ret;
+      return true;
+    
 }
-
-static bool yaoocpp_parser_instance(pointer p)
+bool yaoocpp_parser_variable(pointer __pthis__,yaoocpp_variable_t** var,bool include_value)
 {
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  pb_init();
-  yaooc_terminal_t r;
-  if(INSTANCE(r) && COLON(r)) {
-#define container this->current_class_->instance_
-    while(true) {
-      yaoocpp_variable_t* var;
-      if(yaoocpp_parser_variable(p,&var)) {
-        debug_printf("Instance: Got var %s\n",M(&var->name_,c_str));
-        /* Variables can't be redefined in instance definition */
-        if(yaoocpp_find_element(&container,var) != M(&container,end)) {
-          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-                "Redefining instance variable %s on or before line %d",
-                M(&var->name_,c_str),this->line_no_));
-        }
-        M(&container,push_back,(yaoocpp_element_t**)&var);
-        delete(var);
-      } else {
-        yaoocpp_method_t* proc;
-        if(yaoocpp_parser_method(p,&proc)) {
-          debug_printf("Instance: Got method %s\n",M(&proc->name_,c_str));
-          /* Methods can't be overridden in instance definition */
-          if(yaoocpp_find_element(&container,proc) != M(&container,end)) {
-            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-                  "Redefining instance method %s on or before line %d",
-                  M(&proc->name_,c_str),this->line_no_));
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      RULE_START(this);
+      yaooc_token_t t,val;
+      yaoocpp_argument_t* arg;
+      *var=NULL;
+      if(yaoocpp_parser_argument(this,&arg)) {
+        *var = new(yaoocpp_variable);
+        assign_static(*var,arg,yaoocpp_argument);
+        delete(arg);
+        int saved_line_no=this->line_no_;
+        if(YAOOC_PARSER_TRY_RULE(this,EQUAL(t) && M(this,string_until_chrs,";",&val) && SEMICOLON(t))) {
+          if(!include_value) {
+            printf("Unexpected default value near line number %d\n",saved_line_no);
+            exit(17);
           }
-          M(&container,push_back,(yaoocpp_element_t**)&proc);
-          delete(proc);
+          M(&(*var)->value_,setn,val.beg_,val.end_-val.beg_);
+          return RULE_SUCCESS(this);
+        } else if(SEMICOLON(t)) {
+
+          M(&(*var)->value_,set,"0");
+          return RULE_SUCCESS(this);
+        }
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_method(pointer __pthis__,yaoocpp_method_t** method)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      RULE_START(this);
+      yaooc_token_t t,implementation;
+      yaoocpp_argument_t* arg;
+      if(yaoocpp_parser_argument(this,&arg) && LPAREN(t)) {
+        *method = new(yaoocpp_method);
+        M(&(*method)->type_,set,M(&arg->type_,c_str));
+        M(&(*method)->name_,set,M(&arg->name_,c_str));
+        delete(arg);
+        yaoocpp_parser_arguments(this,&(*method)->arguments_);
+        if(RPAREN(t)) {
+          if(__CONST__(t))
+            (*method)->is_const_=true;
+          if(M(this,string_within_matching_chr,'{','}',&implementation)) {
+            M((*method),set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
+            return RULE_SUCCESS(this);
+          } else if (EQUAL(t) && (M(this,ident,&implementation) || M(this,str,"0",&implementation)) && SEMICOLON(t)) {
+            M((*method),set_implemented_as,implementation.beg_,implementation.end_-implementation.beg_);
+            return RULE_SUCCESS(this);
+          } else {
+            printf("Error processing implementation for method %s\n",M(&(*method)->name_,c_str));
+          }
+        }
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_get_parent_name(pointer __pthis__,char** name)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaooc_token_t temp;
+      if(COLON(temp)) {
+        if(!M(this,ident,&temp)) {
+          printf("Expecting parent name after ':' near line %d",this->line_no_);
+          exit(8);
+        }
+        *name=yaooc_token_raw_text(&temp);
+        return true;
+      }
+      return false;
+    
+}
+bool yaoocpp_parser_set_parent(pointer __pthis__,const char* parent_name,const yaoocpp_struct_t** parent)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+
+      yaoocpp_item_pointer_vector_const_iterator i;
+      CFOR_EACH(i,&this->sections_) {
+        if(strcmp(M(&(*i)->name_,c_str),parent_name)==0) {
+          *parent=(yaoocpp_struct_t*)*i;
+          return true;
+        }
+      }
+      return false;
+    
+}
+bool yaoocpp_parser_type_info(pointer __pthis__,yaoocpp_struct_t* section)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      bool ret=true;
+      if(!yaoocpp_parser_default_constructor(this,section,true))
+        if(!yaoocpp_parser_destructor(this,section))
+          if(!yaoocpp_parser_copy_constructor(this,section,true))
+            if(!yaoocpp_parser_assignment(this,section))
+              if(!yaoocpp_parser_rich_compare(this,section))
+                if(!yaoocpp_parser_to_stream(this,section))
+                  if(!yaoocpp_parser_from_stream(this,section))
+                    if(!yaoocpp_parser_include(this,section))
+                      ret=false;
+      return ret;
+    
+}
+bool yaoocpp_parser_constructor_initializers(pointer __pthis__,yaoocpp_item_pointer_vector_t* list)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaooc_token_t t,id,value;
+      gb_init();
+      do {
+        int saved_line_no = this->line_no_;
+        if(M(this,ident,&id)) {
+          saved_line_no = this->line_no_;
+          if(M(this,string_within_matching_chr,'(',')',&value)) {
+            char* id_text=gb_save(yaooc_token_raw_text(&id));
+            char* value_text=gb_save(yaooc_token_raw_text(&value));
+            yaoocpp_constructor_initializer_t* temp=gb_new_ctor(yaoocpp_constructor_initializer,
+                  yaoocpp_constructor_initializer_ctor_id_value,id_text,value_text);
+            M(list,push_back,(pointer)&temp);
+          } else {
+            printf("Error processing constructor initializers near line %d\n",saved_line_no);
+            exit(9);
+          }
         } else {
-          yaoocpp_type_t* type;
-          if(yaoocpp_parser_type_only(p,&type)) {
-            /* Can only have one type only entry */
-            if(yaoocpp_find_element(&container,type) != M(&container,end)) {
-              THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-                    "Only one %s type allowed as type only entry on or before line %d",
-                    M(&proc->name_,c_str),this->line_no_));
+          printf("Error processing constructor initializers near line %d\n",saved_line_no);
+          exit(10);
+        }
+      } while(COMMA(t));
+      gb_exit();
+      return true;
+    
+}
+bool yaoocpp_parser_default_constructor(pointer __pthis__,yaoocpp_struct_t* section,bool allow_initializers)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaooc_token_t t,implementation;
+      const char* class_name=M(&section->name_,c_str);
+      RULE_START(this);
+      bool has_initializers=false;
+      if(M(this,str,class_name,&t) && LPAREN(t) && RPAREN(t)) {
+        M(&section->default_ctor_.name_,set,class_name);
+
+        if(COLON(t)) {
+          has_initializers=true;
+          yaoocpp_parser_constructor_initializers(this,&section->default_ctor_.initializers_);
+        }
+        if(has_initializers && !allow_initializers) {
+          printf("Constructor initializers not allowed here.  Near line %d\n",this->line_no_);
+          exit(77);
+        }
+        if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
+
+          M(&section->default_ctor_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
+          return RULE_SUCCESS(this);
+        } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
+          if(has_initializers) {
+            printf("Error processing default constructor for class %s\n"
+                   "Cannot specify construction initializers and implementation method",class_name);
+            exit(1);
+          }
+          if(IS_DELETE(implementation)) {
+            section->default_ctor_.form_=DELETE;
+          } else if(IS_DEFAULT(implementation)) {
+            section->default_ctor_.form_=DEFAULT;
+          } else {
+            M(&section->default_ctor_,set_implemented_as,implementation.beg_,implementation.end_-implementation.beg_);
+          }
+          return RULE_SUCCESS(this);
+        } else {
+          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
+          exit(1);
+        }
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_destructor(pointer __pthis__,yaoocpp_struct_t* section)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaooc_token_t t,implementation;
+      const char* class_name=M(&section->name_,c_str);
+      RULE_START(this);
+      if(M(this,chr,'~',&t) && M(this,str,class_name,&t) && LPAREN(t) && RPAREN(t)) {
+        M(&section->dtor_.name_,set,class_name);
+
+        if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
+
+          M(&section->dtor_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
+          return RULE_SUCCESS(this);
+        } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
+
+          if(IS_DELETE(implementation)) {
+            section->dtor_.form_=DELETE;
+          } else if(IS_DEFAULT(implementation)) {
+            section->dtor_.form_=DEFAULT;
+          } else {
+            M(&section->dtor_,set_implemented_as,implementation.beg_,implementation.end_-implementation.beg_);
+          }
+          return RULE_SUCCESS(this);
+        } else {
+          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
+          exit(1);
+        }
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_copy_constructor(pointer __pthis__,yaoocpp_struct_t* section,bool allow_initializers)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaooc_token_t t,src_name,implementation;
+      const char* class_name=M(&section->name_,c_str);
+      RULE_START(this);
+      bool has_initializers=false;
+      if(M(this,str,class_name,&t) && LPAREN(t) && M(this,ident,&src_name) && RPAREN(t)) {
+        M(&section->copy_ctor_.name_,set,class_name);
+
+        M(&section->copy_ctor_,set_source_name,src_name.beg_,src_name.end_-src_name.beg_);
+        if(COLON(t)) {
+          has_initializers=true;
+          yaoocpp_parser_constructor_initializers(this,&section->copy_ctor_.initializers_);
+        }
+        if(has_initializers && !allow_initializers) {
+          printf("Constructor initializers not allowed here.  Near line %d\n",this->line_no_);
+          exit(77);
+        }
+        if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
+
+          M(&section->copy_ctor_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
+          return RULE_SUCCESS(this);
+        } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
+          if(has_initializers) {
+            printf("Error processing copy constructor for class %s\n"
+                   "Cannot specify construction initializers and implementation method",class_name);
+            exit(1);
+          }
+
+          if(IS_DELETE(implementation)) {
+            section->copy_ctor_.form_=DELETE;
+          } else if(IS_DEFAULT(implementation)) {
+            section->copy_ctor_.form_=DEFAULT;
+          } else {
+            M(&section->copy_ctor_,set_implemented_as,implementation.beg_,implementation.end_-implementation.beg_);
+          }
+          return RULE_SUCCESS(this);
+        } else {
+          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
+          exit(1);
+        }
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_assignment(pointer __pthis__,yaoocpp_struct_t* section)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaooc_token_t t,src_name,implementation;
+      RULE_START(this);
+      if(M(this,str,"operator",&t) && EQUAL(t) && LPAREN(t) && M(this,ident,&src_name) && RPAREN(t)) {
+        M(&section->assign_.name_,set,M(&section->name_,c_str));
+        M(&section->assign_,set_source_name,src_name.beg_,src_name.end_-src_name.beg_);
+        if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
+
+          M(&section->assign_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
+          return RULE_SUCCESS(this);
+        } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
+
+          if(IS_DELETE(implementation)) {
+            section->assign_.form_=DELETE;
+          } else if(IS_DEFAULT(implementation)) {
+            section->assign_.form_=DEFAULT;
+          } else {
+            M(&section->assign_,set_implemented_as,implementation.beg_,implementation.end_-implementation.beg_);
+          }
+          return RULE_SUCCESS(this);
+        } else {
+          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
+          exit(1);
+        }
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_rich_compare(pointer __pthis__,yaoocpp_struct_t* section)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaooc_token_t t,lhs_name,rhs_name,implementation;
+      RULE_START(this);
+      if(M(this,str,"int",&t) && OPERATOR(t) && M(this,str,"<=>",&t) && LPAREN(t) &&
+            M(this,ident,&lhs_name) && COMMA(t) && M(this,ident,&rhs_name) && RPAREN(t)) {
+        M(&section->rich_compare_.name_,set,M(&section->name_,c_str));
+        M(&section->rich_compare_,set_lhs_name,lhs_name.beg_,lhs_name.end_-lhs_name.beg_);
+        M(&section->rich_compare_,set_rhs_name,rhs_name.beg_,rhs_name.end_-rhs_name.beg_);
+        if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
+
+          M(&section->rich_compare_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
+          return RULE_SUCCESS(this);
+        } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
+          if(IS_DELETE(implementation)) {
+            section->rich_compare_.form_=DELETE;
+          } else if(IS_DEFAULT(implementation)) {
+            section->rich_compare_.form_=DEFAULT;
+          } else {
+            M(&section->rich_compare_,set_implemented_as,implementation.beg_,implementation.end_-implementation.beg_);
+          }
+          return RULE_SUCCESS(this);
+        } else {
+          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
+          exit(1);
+        }
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_to_stream(pointer __pthis__,yaoocpp_struct_t* section)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaooc_token_t t,strm_name,implementation;
+      RULE_START(this);
+      if(M(this,str,"operator",&t) && M(this,str,"<<",&t) && LPAREN(t) && M(this,ident,&strm_name) && RPAREN(t)) {
+        M(&section->to_stream_.name_,set,M(&section->name_,c_str));
+
+        M(&section->to_stream_,set_stream_name,strm_name.beg_,strm_name.end_-strm_name.beg_);
+        if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
+
+          M(&section->to_stream_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
+          return RULE_SUCCESS(this);
+        } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
+
+          return RULE_SUCCESS(this);
+        } else {
+          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
+          exit(1);
+        }
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_from_stream(pointer __pthis__,yaoocpp_struct_t* section)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaooc_token_t t,strm_name,implementation;
+      RULE_START(this);
+      if(M(this,str,"operator",&t) && M(this,str,">>",&t) && LPAREN(t) && M(this,ident,&strm_name) && RPAREN(t)) {
+        M(&section->from_stream_.name_,set,M(&section->name_,c_str));
+
+        M(&section->from_stream_,set_stream_name,strm_name.beg_,strm_name.end_-strm_name.beg_);
+        if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
+
+          M(&section->from_stream_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
+          return RULE_SUCCESS(this);
+        } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
+
+          return RULE_SUCCESS(this);
+        } else {
+          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
+          exit(1);
+        }
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_include(pointer __pthis__,yaoocpp_struct_t* section)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      RULE_START(this);
+      yaooc_token_t t,id;
+      if(M(this,str,"include",&t)) {
+#define mixin_vector &((yaoocpp_struct_pointer)section)->mixins_
+        do {
+          int saved_line_no=this->line_no_;
+          if(M(this,ident,&id)) {
+            yaooc_string_t temp = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+            M(&temp,setn,id.beg_,id.end_-id.beg_);
+            if(yaooc_find(yaooc_string,M(mixin_vector,begin),M(mixin_vector,end),&temp) != M(mixin_vector,end))
+            {
+              printf("Duplicate mixin specified on or before line %d\n",saved_line_no);
+              exit(30);
             }
-            M(&container,push_back,(yaoocpp_element_t**)&type);
-            delete(type);
+            M(mixin_vector,push_back,&temp);
+            deletep(&temp,yaooc_string);
+          } else {
+            printf("Error including mixins on or before line %d\n",saved_line_no);
+            exit(31);
+          }
+        } while(COMMA(t));
+        if(SEMICOLON(t)) {
+          return RULE_SUCCESS(this);
+        }
+#undef mixin_vector
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_va_argument(pointer __pthis__,yaoocpp_argument_t** arg)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      RULE_START(this);
+      yaooc_token_t t;
+      if(M(this,str,"...",&t)) {
+        *arg=new(yaoocpp_argument);
+        M(&(*arg)->type_,setn,t.beg_,t.end_-t.beg_);
+        if(M(this,ident,&t)) {
+          M(&(*arg)->name_,setn,t.beg_,t.end_-t.beg_);
+        } else {
+          M(&(*arg)->name_,set,"args");
+        }
+        return RULE_SUCCESS(this);
+      }
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_argument(pointer __pthis__,yaoocpp_argument_t** arg)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      RULE_START(this);
+      yaooc_token_t t;
+      *arg = NULL;
+      if(M(this,ident,&t)) {
+        *arg = new(yaoocpp_argument);
+        M(&(*arg)->type_,setn,t.beg_,t.end_-t.beg_);
+        while(true) {
+          if(M(this,ident,&t)) {
+            if(M(&(*arg)->name_,size)>0) {
+              M(&(*arg)->type_,append," ");
+              M(&(*arg)->type_,append,M(&(*arg)->name_,c_str));
+            }
+            M(&(*arg)->name_,setn,t.beg_,t.end_-t.beg_);
+          } else if(STAR(t)) {
+            if(M(&(*arg)->name_,size)>0) {
+              M(&(*arg)->type_,append," ");
+              M(&(*arg)->type_,append,M(&(*arg)->name_,c_str));
+              M(&(*arg)->name_,clear);
+            }
+            M(&(*arg)->type_,append,"*");
           } else
             break;
         }
-      }
-    }
-#undef container
-    ret=true;
-  }
-  pb_exit();
-  return ret;
-}
+        if(M(&(*arg)->name_,size) > 0) {
 
-static bool yaoocpp_parser_protected(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  pb_init();
-  yaooc_terminal_t r;
-  if(PROTECTED(r) && COLON(r)) {
-#define container this->current_class_->protected_
-    while(true) {
-      yaoocpp_method_t* proc;
-      if(yaoocpp_parser_method_with_implementation_method(p,&proc)) {
-        debug_printf("Protected: Got method %s\n",M(&proc->name_,c_str));
-        /* Methods can't be overridden in protected definition */
-        if(yaoocpp_find_element(&container,proc) != M(&container,end)) {
-          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-                "Redefining protected method %s on or before line %d",
-                M(&proc->name_,c_str),this->line_no_));
-        }
-        M(&container,push_back,(yaoocpp_element_t**)&proc);
-        delete(proc);
-      } else {
-        yaoocpp_variable_t* var;
-        if(yaoocpp_parser_variable_with_default_value(p,&var)) {
-          debug_printf("Protected: Got var %s\n",M(&var->name_,c_str));
-          /* Variables can't be redefined in instance definition */
-          if(yaoocpp_find_element(&container,var) != M(&container,end)) {
-            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-                  "Redefining protected variable %s on or before line %d",
-                  M(&var->name_,c_str),this->line_no_));
+          while(M(this,string_within_matching_chr,'[',']',&t)) {
+            M(&(*arg)->array_def_,append,"[");
+            M(&(*arg)->array_def_,appendn,t.beg_,t.end_-t.beg_);
+            M(&(*arg)->array_def_,append,"]");
           }
-          M(&container,push_back,(yaoocpp_element_t**)&var);
-          delete(var);
+          return M(&(*arg)->name_,size) > 0 ? RULE_SUCCESS(this) : RULE_FAIL(this);
+        }
+      }
+      if(*arg != NULL)
+        delete(*arg);
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_arguments(pointer __pthis__,yaoocpp_item_pointer_vector_t* args)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      yaooc_token_t t;
+      bool ret=false;
+      do {
+        yaoocpp_argument_t* arg;
+        if(yaoocpp_parser_argument(this,&arg)) {
+          M(args,push_back,(pointer)&arg);
+          delete(arg);
+        } else if(yaoocpp_parser_va_argument(this,&arg)) {
+          M(args,push_back,(pointer)&arg);
+          delete(arg);
         } else
           break;
-      }
-    }
-#undef container
-    ret=true;
-  }
-  pb_exit();
-  return ret;
-}
-
-static bool yaoocpp_parser_private(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  pb_init();
-  yaooc_terminal_t r;
-  if(PRIVATE(r) && COLON(r)) {
-#define container this->current_class_->private_
-    while(true) {
-      yaoocpp_method_t* proc;
-      if(yaoocpp_parser_method_with_implementation_method(p,&proc)) {
-        debug_printf("Private: Got method %s\n",M(&proc->name_,c_str));
-        /* Methods can't be overridden in private definition */
-        if(yaoocpp_find_element(&container,proc) != M(&container,end)) {
-          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-                "Redefining private method %s on or before line %d",
-                M(&proc->name_,c_str),this->line_no_));
-        }
-        M(&container,push_back,(yaoocpp_element_t**)&proc);
-        delete(proc);
-      } else {
-        yaoocpp_variable_t* var;
-        if(yaoocpp_parser_variable_with_default_value(p,&var)) {
-          debug_printf("Private: Got var %s\n",M(&var->name_,c_str));
-          /* Variables can't be redefined in private definition */
-          if(yaoocpp_find_element(&container,var) != M(&container,end)) {
-            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-                  "Redefining private variable %s on or before line %d",
-                  M(&var->name_,c_str),this->line_no_));
-          }
-          M(&container,push_back,(yaoocpp_element_t**)&var);
-          delete(var);
-        } else
-          break;
-      }
-    }
-#undef container
-    ret=true;
-  }
-  pb_exit();
-  return ret;
-}
-
-static bool yaoocpp_parser_static(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  pb_init();
-  yaooc_terminal_t r;
-  if(STATIC(r) && COLON(r)) {
-#define container this->current_class_->static_
-    while(true) {
-      yaoocpp_method_t* proc;
-      if(yaoocpp_parser_method_with_implementation_method(p,&proc)) {
-        debug_printf("Static: Got method %s\n",M(&proc->name_,c_str));
-        /* Methods can't be overridden in private definition */
-        if(yaoocpp_find_element(&container,proc) != M(&container,end)) {
-          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-                "Redefining static method %s on or before line %d",
-                M(&proc->name_,c_str),this->line_no_));
-        }
-        M(&container,push_back,(yaoocpp_element_t**)&proc);
-        delete(proc);
-      } else {
-        yaoocpp_variable_t* var;
-        if(yaoocpp_parser_variable_with_default_value(p,&var)) {
-          debug_printf("Static: Got var %s\n",M(&var->name_,c_str));
-          /* Variables can't be redefined in private definition */
-          if(yaoocpp_find_element(&container,var) != M(&container,end)) {
-            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-                  "Redefining static variable %s on or before line %d",
-                  M(&var->name_,c_str),this->line_no_));
-          }
-          M(&container,push_back,(yaoocpp_element_t**)&var);
-          delete(var);
-        } else
-          break;
-      }
-    }
-#undef container
-    ret=true;
-  }
-  pb_exit();
-  return ret;
-}
-
-static bool yaoocpp_parser_table_struct_not_allowed(pointer p)
-{
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  yaooc_terminal_t r;
-  if(YAOOC_PARSER_TRY_RULE(p,TABLE(r) && COLON(r))) {
-     THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-        "Table section not allowd in struct declaration"));
-  }
-  return ret;
-}
-
-static bool yaoocpp_parser_method_with_implementation_method(pointer p,yaoocpp_method_t** meth)
-{
-  yaoocpp_parser_pointer this=p;
-
-  pb_init();
-  RULE_START(p);
-  yaooc_terminal_t r;
-  bool ret=yaoocpp_parser_method_base(this,meth);
-  if(ret) {
-    if(EQUAL(r)) {
-      if(M(this,ident,&r) && SEMICOLON(r)) {
-        M(&(*meth)->implementation_method_,setn,r.beg_,r.end_-r.beg_);
         ret=true;
-      }
-    } else if(M(this,string_until_matching_chr,'{','}',&r)) {
-      M(&(*meth)->implementation_,setn,r.beg_,r.end_-r.beg_);
-      ret = true;
-    } else
-      ret = false;
-  }
-  if(ret)
-    RULE_SUCCESS(p);
-  else
-    RULE_FAIL(p);
-  pb_exit();
-  return ret;
+      } while(COMMA(t));
+      return ret;
+    
 }
-
-static bool yaoocpp_parser_method(pointer p,yaoocpp_method_t** meth)
+bool yaoocpp_parser_constructor(pointer __pthis__,yaoocpp_struct_t* section)
 {
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  yaooc_terminal_t r;
-  if(YAOOC_PARSER_TRY_RULE(p,yaoocpp_parser_method_base(this,meth) && M(this,string_until_matching_chr,'{','}',&r))) {
-    ret=true;
-  }
-  return ret;
-}
+yaoocpp_parser_pointer this=__pthis__;(void)this;
 
-static bool yaoocpp_parser_method_base(pointer p,yaoocpp_method_t** meth)
-{
-  yaoocpp_parser_pointer this=p;
-  pb_init();
-  RULE_START(p);
-  yaoocpp_variable_t* var=NULL;
-  yaoocpp_argument_vector_t* args;
-  yaooc_terminal_t r,is_const;
-  bool ret=false;
-  if(yaoocpp_parser_type_variable(p,&var)) {
-    if(LPAREN(r) && YAOOC_PARSER_OPTIONAL(yaoocpp_parser_arguments(p,&args)) && RPAREN(r) &&
-          YAOOC_PARSER_OPTIONAL(__CONST__(is_const))) {
-      *meth=new(yaoocpp_method);
-      assign_static(&(*meth)->return_type_,&var->type_,yaooc_string);
-      assign_static(&(*meth)->name_,&var->name_,yaooc_string);
-      delete(var);
-      yaoocpp_argument_vector_const_iterator i;
-      CFOR_EACH(i,args)
-        M(&(*meth)->arguments_,push_back,i);
-      (*meth)->is_const_=is_const.end_!=NULL;
-      delete(args);
-      ret=true;
-    } else
-      delete(var);
-  }
-  pb_exit();
-  if(ret)
-    RULE_SUCCESS(p);
-  else
-    RULE_FAIL(p);
-  return ret;
-}
+      gb_init();
+      RULE_START(this);
+      bool has_initializers=false;
+      yaooc_token_t t,con_name,implementation;
+      int saved_line_no=this->line_no_;
+      if(M(this,ident,&con_name) && LPAREN(t)) {
+        size_t l = yaooc_token_len(con_name);
+        if(l > M(&section->name_,size) && strncmp(con_name.beg_,M(&section->name_,c_str),M(&section->name_,size))==0) {
 
-static bool yaoocpp_parser_variable_with_default_value(pointer p,yaoocpp_variable_t** var)
-{
-  yaoocpp_parser_pointer this=p;
-  RULE_START(p);
-  bool ret=yaoocpp_parser_variable_base(this,var);
-  if(ret) {
-    yaooc_terminal_t r;
-    if(EQUAL(r)) {
-      if(M(this,string_until_chrs,";",&r)) {
-        M(&(*var)->default_value_,setn,r.beg_,r.end_-r.beg_);
-      }
-    }
-    if(!SEMICOLON(r)) {
-      ret=false;
-    }
-  }
-  if(ret)
-    RULE_SUCCESS(p);
-  else
-    RULE_FAIL(p);
-  return ret;
-}
+          yaoocpp_constructor_t* con=gb_new(yaoocpp_constructor);
+          M(&con->name_,setn,con_name.beg_,l);
+          if(yaooc_find(yaoocpp_item_pointer,M(&section->constructors_,cbegin),M(&section->constructors_,cend),(pointer)&con)
+                != M(&section->constructors_,cend)) {
+            printf("Duplicate constructor %s specified on line number %d\n",M(&con->name_,c_str),saved_line_no);
+            exit(12);
+          }
+          if(yaoocpp_parser_arguments(this,&con->arguments_)) {
+            if(RPAREN(t)) {
+              if(COLON(t)) {
+                has_initializers=true;
+                yaoocpp_parser_constructor_initializers(this,&con->initializers_);
+              }
+              if(M(this,string_within_matching_chr,'{','}',&implementation)) {
+                M(con,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
+              } else if (EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
+                if(has_initializers) {
+                  printf("Error processing constructor %.*s\n"
+                         "Cannot specify construction initializers and implementation method.",
+                         (int)(con_name.end_-con_name.beg_),con_name.beg_);
+                  exit(1);
+                }
+                M(con,set_implemented_as,implementation.beg_,implementation.end_-implementation.beg_);
+              } else {
+                printf("Error processing imlementation for constructor %.*s\n",(int)l,con_name.beg_);
+                exit(3);
+              }
+              M(&section->constructors_,push_back,(pointer)&con);
+              delete(con);
+              return RULE_SUCCESS(this);
+            }
+            printf("Error parsing constructor at line number %d\n",saved_line_no);
+            exit(33);
+          } else {
 
-static bool yaoocpp_parser_variable(pointer p,yaoocpp_variable_t** var)
-{
-  yaoocpp_parser_pointer this=p;
-  yaooc_terminal_t r;
-  bool ret=YAOOC_PARSER_TRY_RULE(p,yaoocpp_parser_variable_base(p,var) && SEMICOLON(r));
-  return ret;
-}
-
-static bool yaoocpp_parser_variable_base(pointer p,yaoocpp_variable_t** var)
-{
-  yaoocpp_parser_pointer this=p;
-  RULE_START(p);
-  bool ret=yaoocpp_parser_type_variable(p,var);
-  if(ret) {
-    yaooc_terminal_t r;
-    yaooc_terminal_t dv;
-    if(LBRACKET(r)) {
-      if(M(this,string_until_matching_chr,'[',']',&dv)) {  // RBRACKET consumed in this call
-        M(&(*var)->array_size_,setn,dv.beg_,dv.end_-dv.beg_);
-        (*var)->is_array_=true;
-      } else {
-        delete(*var);
-        ret=false;
-      }
-    }
-  }
-  if(ret)
-    RULE_SUCCESS(p);
-  else
-    RULE_FAIL(p);
-  return ret;
-}
-
-static bool yaoocpp_parser_type_variable(pointer p,yaoocpp_variable_t** var)
-{
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  RULE_START(p);
-  yaooc_terminal_t r;
-  if(M(this,ident,&r)) {
-    *var=new(yaoocpp_variable);
-    M(&(*var)->type_,setn,r.beg_,r.end_-r.beg_);
-    while(true) {
-      if(M(this,ident,&r)) {
-        if(M(&(*var)->name_,size)>0) {
-          M(&(*var)->type_,append," ");
-          M(&(*var)->type_,append,M(&(*var)->name_,c_str));
+            printf("Constructors must have at least 1 argument.\n"
+                  "Constructor %.*s has zero arguments.\n",(int)l,con_name.beg_);
+            exit(22);
+          }
         }
-        M(&(*var)->name_,setn,r.beg_,r.end_-r.beg_);
-      } else if(STAR(r)) {
-        if(M(&(*var)->name_,size)>0) {
-          M(&(*var)->type_,append," ");
-          M(&(*var)->type_,append,M(&(*var)->name_,c_str));
-          M(&(*var)->name_,clear);
+      }
+      gb_exit();
+      return RULE_FAIL(this);
+    
+}
+bool yaoocpp_parser_mixin(pointer __pthis__,yaoocpp_mixin_t** mixin)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+      RULE_START(this);
+      yaooc_token_t t,mixin_name;
+      if(MIXIN(t)) {
+        M(this,ident,&mixin_name);
+        *mixin = new(yaoocpp_mixin);
+        (*mixin)->defined_in_top_level_file_=yaoocpp_parser_is_top_level;
+        M(&(*mixin)->name_,setn,mixin_name.beg_,mixin_name.end_-mixin_name.beg_);
+        if(LBRACE(t)) {
+          while(true) {
+            if(!yaoocpp_parser_default_constructor(this,(yaoocpp_struct_t*)*mixin,false))
+              if(!yaoocpp_parser_destructor(this,(yaoocpp_struct_t*)*mixin))
+                if(!yaoocpp_parser_copy_constructor(this,(yaoocpp_struct_t*)*mixin,false))
+                  if(!yaoocpp_parser_assignment(this,(yaoocpp_struct_t*)*mixin))
+                    break;
+          }
+          while(true) {
+            if(TABLE(t)) {
+              yaoocpp_parser_sub_section(this,&(*mixin)->table_,true);
+            } else if(INSTANCE(t)) {
+              yaoocpp_parser_sub_section(this,&(*mixin)->instance_,false);
+            } else if(ADJUNCT(t)) {
+              yaoocpp_parser_sub_section(this,&(*mixin)->adjunct_,true);
+            } else if(PRIVATE(t)) {
+              yaoocpp_parser_sub_section(this,&(*mixin)->private_,true);
+            } else
+              break;
+          }
         }
-        M(&(*var)->type_,append,"*");
-      } else
-        break;
-    }
-    if(M(&(*var)->name_,size)>0)
-      ret=true;
-    else
-      delete(*var);
-  }
-  if(ret)
-    RULE_SUCCESS(p);
-  else
-    RULE_FAIL(p);
-  return ret;
+        if(RBRACE(t) && SEMICOLON(t)) {
+          return RULE_SUCCESS(this);
+        }
+        else {
+          printf("Error processing %s near line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
+          exit(7);
+        }
+      }
+      return RULE_FAIL(this);
+    
 }
-
-static bool yaoocpp_parser_type_only(pointer p,yaoocpp_type_t** type)
+bool yaoocpp_parser_whitespace(pointer __pthis__,yaooc_token_t* r)
 {
-  yaoocpp_parser_pointer this=p;
-  bool ret=false;
-  yaooc_terminal_t t;
-  yaooc_terminal_t r;
-  if(YAOOC_PARSER_TRY_RULE(this,M(this,ident,&t) && SEMICOLON(r))) {
-    *type=new(yaoocpp_type);
-    M(&(*type)->name_,setn,t.beg_,t.end_-t.beg_);
-    ret=true;
-  }
-  return ret;
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+#define super() yaoocpp_parser_parent_class_table->whitespace(this,r)
+#define PM(method,...) CTM((*yaoocpp_parser_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      *r = yaooc_default_token(this);
+      yaooc_token_t temp;
+      bool rc=false;
+      while(true) {
+        rc = yaooc_base_parser_whitespace(this,&temp);
+        if(!rc) {
+          rc=yaoocpp_parser_line_directive(this);
+          if(!rc)
+            break;
+        }
+      }
+      r->end_=yaooc_base_parser_current_pos(this);
+      return r->beg_ != r->end_;
+    
+#undef PM
+#undef super
 }
-
-
-/* Protected implementation for yaoocpp_parser */
-
-/* Table implementation for yaoocpp_parser */
-
-bool yaoocpp_parser_whitespace(pointer p,yaooc_terminal_t* ws)
+void yaoocpp_parser_parse_file(pointer __pthis__,const char* fname)
 {
-  *ws=default_terminal(p);
-  yaooc_terminal_t temp;
-  while(true) {
-    if(!yaooc_base_parser_space(p,&temp))
-      if(!yaooc_base_parser_crlf(p,&temp))
-        if(!yaoocpp_parser_line_directive(p,&temp))
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+#define super() yaoocpp_parser_parent_class_table->parse_file(this,fname)
+#define PM(method,...) CTM((*yaoocpp_parser_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      strcpy(yaoocpp_parser_current_file,fname);
+      yaooc_string_t* result = preprocess(fname);
+
+      M(this,set_parse_string,M(result,c_str));
+      yaooc_token_t r;
+      M(this,whitespace,&r);
+      yaoocpp_section_t* current_section;
+      yaoocpp_mixin_t* mixin;
+      while(true) {
+        if(yaoocpp_parser_class_forward(this,&current_section)) {
+          M(&this->sections_,push_back,(pointer)&current_section);
+          delete(current_section);
+        } else if(yaoocpp_parser_class_definition(this,&current_section)) {
+          M(&this->sections_,push_back,(pointer)&current_section);
+          delete(current_section);
+        } else if(yaoocpp_parser_header_directory(this)) {
+
+
+        } else if(yaoocpp_parser_header(this,(pointer)&current_section)) {
+          M(&this->sections_,push_back,(pointer)&current_section);
+          delete(current_section);
+        } else if(yaoocpp_parser_mixin(this,&mixin)) {
+          M(&this->mixins_,push_back,(pointer)&mixin);
+          delete(mixin);
+
+
+        } else if(*this->current_pos_ != 0) {
+          yaoocpp_parser_source(this,&current_section);
+          M(&this->sections_,push_back,(pointer)&current_section);
+          delete(current_section);
+        } else {
           break;
-  }
-  ws->end_=yaooc_base_parser_current_pos(p);
-  return ws->beg_ != ws->end_;
-
+        }
+      }
+      delete(result);
+    
+#undef PM
+#undef super
 }
-
-void yaoocpp_parser_parse_file(pointer p,const char* file)
-{
-  yaooc_terminal_t ws;
-  yaoocpp_parser_pointer this=p;
-  yaoocpp_parser_current_file=file;
-  yaoocpp_parser_preprocess(this);
-  this->current_pos_=M(&yaoocpp_parser_buffer,c_str);
-  this->classes_=new(yaoocpp_element_pointer_vector);
-//  M(this,set_whitespace_types,CRLF|CUSTOM_WHITESPACE);
-  M(this,whitespace,&ws);
-  yaoocpp_parser_containers(this);
-  if(M(this,result)) {
-    int handle=open(file,O_RDONLY);
-    if(handle>=0) {
-      size_t size=lseek(handle,0,SEEK_END);
-      lseek(handle,0,SEEK_SET);
-      char*buffer = malloc(size+1);
-      read(handle,buffer,size);
-      close(handle);
-      buffer[size]=0;
-      yaoocpp_parser_extract_section(this,buffer,"^\\s*#\\s*if.*//\\s*HEADER\\s*$","^\\s*#\\s*endif.*//\\s*HEADER\\s*$",&this->header_text_);
-      yaoocpp_parser_extract_section(this,buffer,"^\\s*#\\s*if.*//\\s*SOURCE\\s*$","^\\s*#\\s*endif.*//\\s*SOURCE\\s*$",&this->source_text_);
-      yaoocpp_parser_find_yaooc_includes(this,buffer,&this->include_files_);
-      free(buffer);
-    }
-  }
-  deletep(&yaoocpp_parser_buffer,yaooc_string);
-}
-
-
-/* Class table definition for yaoocpp_parser */
-yaoocpp_parser_class_table_t yaoocpp_parser_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_base_parser_class_table,
-  .type_name_ = (const char*) "yaoocpp_parser_t",
-  .swap = (void(*)(pointer, pointer)) yaoocpp_parser_swap,
-  .set_parse_string = (void(*)(pointer, const char*)) yaoocpp_parser_set_parse_string,
-  .rule_start = (void(*)(pointer)) yaoocpp_parser_rule_start,
-  .rule_success = (bool(*)(pointer)) yaoocpp_parser_rule_success,
-  .rule_fail = (bool(*)(pointer)) yaoocpp_parser_rule_fail,
-  .eos = (bool(*)(pointer)) yaoocpp_parser_eos,
-  .string_until_chrs = (bool(*)(pointer, const char*, yaooc_terminal_t*)) yaoocpp_parser_string_until_chrs,
-  .string_while_chrs = (bool(*)(pointer, const char*, yaooc_terminal_t*)) yaoocpp_parser_string_while_chrs,
-  .string_until_eol = (bool(*)(pointer, yaooc_terminal_t*)) yaoocpp_parser_string_until_eol,
-  .whitespace = (bool(*)(pointer,yaooc_terminal_t*)) yaoocpp_parser_whitespace,
-  .chr = (bool(*)(pointer, char, yaooc_terminal_t*)) yaoocpp_parser_chr,
-  .chr_choices = (int(*)(pointer, const char*)) yaoocpp_parser_chr_choices,
-  .str = (bool(*)(pointer, const char*, yaooc_terminal_t*)) yaoocpp_parser_str,
-  .str_choices = (int(*)(pointer, ...)) yaoocpp_parser_str_choices,
-  .digits = (bool(*)(pointer, yaooc_terminal_t*)) yaoocpp_parser_digits,
-  .hexdigits = (bool(*)(pointer, yaooc_terminal_t*)) yaoocpp_parser_hexdigits,
-  .integer = (bool(*)(pointer, yaooc_terminal_t*)) yaoocpp_parser_integer,
-  .hexinteger = (bool(*)(pointer, yaooc_terminal_t*)) yaoocpp_parser_hexinteger,
-  .real = (bool(*)(pointer, yaooc_terminal_t*)) yaoocpp_parser_real,
-  .ident = (bool(*)(pointer, yaooc_terminal_t*)) yaoocpp_parser_ident,
-  .regex = (bool(*)(pointer, const char*, uint32_t, uint32_t, yaooc_terminal_t*)) yaoocpp_parser_regex,
-  .quoted_string = (bool(*)(pointer, char, yaooc_terminal_t*)) yaoocpp_parser_quoted_string,
-  .single_quoted_string = (bool(*)(pointer, yaooc_terminal_t*)) yaoocpp_parser_single_quoted_string,
-  .double_quoted_string = (bool(*)(pointer, yaooc_terminal_t*)) yaoocpp_parser_double_quoted_string,
-  .bare_string = (bool(*)(pointer, yaooc_terminal_t*)) yaoocpp_parser_bare_string,
-  .string_until_matching_chr = (bool(*)(pointer, char, char, yaooc_terminal_t*)) yaoocpp_parser_string_until_matching_chr,
-  .result = (bool(*)(const_pointer)) yaoocpp_parser_result,
-  .parse_file = (void(*)(pointer, const char*)) yaoocpp_parser_parse_file,
+yaoocpp_parser_class_table_t yaoocpp_parser_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_base_parser_class_table,
+.type_name_ = (const char*) "yaoocpp_parser_t",
+.swap = (void(*)(pointer,pointer)) yaoocpp_parser_swap,
+.set_parse_string = (void(*)(pointer,const char*)) yaoocpp_parser_set_parse_string,
+.rule_start = (void(*)(pointer)) yaoocpp_parser_rule_start,
+.rule_success = (bool(*)(pointer)) yaoocpp_parser_rule_success,
+.rule_fail = (bool(*)(pointer)) yaoocpp_parser_rule_fail,
+.eos = (bool(*)(pointer)) yaoocpp_parser_eos,
+.chr = (bool(*)(pointer,char,yaooc_token_t*)) yaoocpp_parser_chr,
+.chr_choices = (int(*)(pointer,const char*,yaooc_token_t*)) yaoocpp_parser_chr_choices,
+.str = (bool(*)(pointer,const char*,yaooc_token_t*)) yaoocpp_parser_str,
+.str_choices = (int(*)(pointer,yaooc_token_t*,...)) yaoocpp_parser_str_choices,
+.digits = (bool(*)(pointer,yaooc_token_t*)) yaoocpp_parser_digits,
+.hexdigits = (bool(*)(pointer,yaooc_token_t*)) yaoocpp_parser_hexdigits,
+.integer = (bool(*)(pointer,yaooc_token_t*)) yaoocpp_parser_integer,
+.hexinteger = (bool(*)(pointer,yaooc_token_t*)) yaoocpp_parser_hexinteger,
+.real = (bool(*)(pointer,yaooc_token_t*)) yaoocpp_parser_real,
+.ident = (bool(*)(pointer,yaooc_token_t*)) yaoocpp_parser_ident,
+.regex = (bool(*)(pointer,regex_t*,uint32_t,size_t,regmatch_t*,yaooc_token_t*)) yaoocpp_parser_regex,
+.quoted_string = (bool(*)(pointer,char,yaooc_token_t*)) yaoocpp_parser_quoted_string,
+.single_quoted_string = (bool(*)(pointer,yaooc_token_t*)) yaoocpp_parser_single_quoted_string,
+.double_quoted_string = (bool(*)(pointer,yaooc_token_t*)) yaoocpp_parser_double_quoted_string,
+.bare_string = (bool(*)(pointer,yaooc_token_t*)) yaoocpp_parser_bare_string,
+.string_until_chrs = (bool(*)(pointer,const char*,yaooc_token_t*)) yaoocpp_parser_string_until_chrs,
+.string_while_chrs = (bool(*)(pointer,const char*,yaooc_token_t*)) yaoocpp_parser_string_while_chrs,
+.string_until_eol = (bool(*)(pointer,yaooc_token_t*)) yaoocpp_parser_string_until_eol,
+.whitespace = (bool(*)(pointer,yaooc_token_t*)) yaoocpp_parser_whitespace,
+.string_within_matching_chr = (bool(*)(pointer,char,char,yaooc_token_t*)) yaoocpp_parser_string_within_matching_chr,
+.result = (bool(*)(const_pointer)) yaoocpp_parser_result,
+.parse_file = (void(*)(pointer,const char*)) yaoocpp_parser_parse_file,
 };
+void yaoocpp_parser_default_ctor(pointer __pthis__)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaoocpp_parser);
 
-/* Type info structure for yaoocpp_parser */
-DEFINE_TYPE_INFO(yaoocpp_parser,Y,Y,N,N,N,N,N,Y,yaooc_base_parser);
 
-/* End YAOOCPP output */
+
+      yaooc_base_parser_default_ctor(this);
+      newp(&this->sections_,yaoocpp_item_pointer_vector);
+      newp(&this->mixins_,yaoocpp_item_pointer_vector);
+    
+}
+void yaoocpp_parser_dtor(pointer __pthis__)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+
+
+      deletep(&this->sections_,yaoocpp_item_pointer_vector);
+      deletep(&this->mixins_,yaoocpp_item_pointer_vector);
+    
+}
+void yaoocpp_parser_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+yaoocpp_parser_const_pointer src=__psrc__;(void)src;
+
+
+call_default_ctor_static(this,yaoocpp_parser);
+assign_static(this,src,yaoocpp_parser);
+
+}
+void yaoocpp_parser_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaoocpp_parser_pointer this=__pthis__;(void)this;
+yaoocpp_parser_const_pointer src=__psrc__;(void)src;
+
+assign_static(this,src,yaooc_base_parser);
+assign_static(&this->sections_,&src->sections_,yaoocpp_item_pointer_vector);
+assign_static(&this->mixins_,&src->mixins_,yaoocpp_item_pointer_vector);
+
+}
+const type_info_t __yaoocpp_parser_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaoocpp_parser_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaoocpp_parser_default_ctor,
+.dtor_=yaoocpp_parser_dtor,
+.copy_ctor_=yaoocpp_parser_copy_ctor,
+.assign_=yaoocpp_parser_assign,
+.class_table_=(const class_table_t*) &yaoocpp_parser_class_table,
+.parent_=&__yaooc_base_parser_ti
+};
+const type_info_t* const yaoocpp_parser_ti=&__yaoocpp_parser_ti;
+yaoocpp_parser_exception_class_table_t yaoocpp_parser_exception_class_table ={
+.parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
+.type_name_ = (const char*) "yaoocpp_parser_exception_t",
+.swap = (void(*)(pointer,pointer)) yaoocpp_parser_exception_swap,
+.what = (const char*(*)(const_pointer)) yaoocpp_parser_exception_what,
+};
+const type_info_t __yaoocpp_parser_exception_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaoocpp_parser_exception_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaoocpp_parser_exception_class_table,
+.parent_=&__yaooc_exception_ti
+};
+const type_info_t* const yaoocpp_parser_exception_ti=&__yaoocpp_parser_exception_ti;

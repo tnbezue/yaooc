@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!--
+  Copyright (C) 2016-2019  by Terry N Bezue
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<html>
+<head>
+<title>Copy Constructor and Assignment</title>
+<meta name="generator" content="Bluefish 2.2.10" >
+<meta name="copyright" content="">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link href="yaooc.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="yaooc.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<script>menu();</script>
+<div id="content" class="content">
+<div style="overflow-y: scroll; height:900px">
+<h2>Copy Constructor and Assignment</h2>
+<p>
+Let's continue to improve my_string by adding a copy constructor and assignment (operator= in C++).
+</p>
+<pre><code>
+  %struct my_string {
+      ...
+      // Copy constructor -- method name will be my_string_copy_ctor
+      my_string(src) : my_string()  // default constructor used as initializer
+      {
+        my_string_assign(this,src);
+      }
+
+      // Assignment  -- method name will be my_string_assign
+      // src is a const pointer to another my_string instance
+      operator=(src)
+      {
+        my_string_dtor(this);  // can call destructor directly.  Note that "this" has to be included as first argument
+        this->str = src->str ? strdup(src->str) : NULL;
+      }
+      ...
+    instance:
+      char* str;
+  };
+</code></pre>
+<h3>Copy Constructor</h3>
+<p>
+The copy constructor is called when the new_copy method is used. The "src" variable is a my_string_const_pointer that points to
+the object being copied. If not specified (or &quot;my_string(src)=default;&quot;), you guessed it, yaoocpp will create
+a copy constructor -- in this case, the one specified above.<br>
+To disable the creation of a copy constructor, use &quot;my_string(src)=delete;&quot;.
+</p>
+<h3>Assignment</h3>
+<p>
+The assignment method is used to assign one object to another.  However, the traditional &quot;=&quot; operator should not be used.
+In YAOOC, use the &quot;assign&quot; method.
+<p>
+<pre><code>
+  my_string_t* ms1=new(my_string);
+  my_string_t* ms2=new(my_string);
+  ...
+  ms2=ms1; // While valid C code, most likely not what was intended
+  assign(ms2,ms1); // Assigns ms1 to ms2 using assign method
+</code></pre>
+<p>
+If not specified (or &quot;operator=(src)=default;&quot; specified), yaoocpp will create it.  However, in this case, the above
+assignment method is <font color="red">NOT</font> the one that would have been created. More on this later.
+</p>
+
+
+</div>
+</div>
+</div>
+</body>
+</html>
