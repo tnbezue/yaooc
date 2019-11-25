@@ -1,953 +1,967 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
-#include <string.h>
-#include <stdio.h>
-#include <inttypes.h>
-#include <math.h>
 #include <yaooc/json.h>
-
-static const char* yaooc_json_type_strings[] =
-  {
-    "JSON_UNDEFINED" , "JSON_NULL", "JSON_BOOL" , "JSON_INTEGER" , "JSON_REAL" ,
-    "JSON_STRING", "JSON_ARRAY", "JSON_OBJECT"
-  };
-/*  Begin YAOOC PreProcessor generated content */
-
-/* Private items for yaooc_json_exception */
-
-/* Protected items for yaooc_json_exception */
-
-
-/* Typeinfo for yaooc_json_exception */
-
-/* Constructors for yaooc_json_exception */
-
-/* Class table methods for yaooc_json_exception */
-
-/* Class table for yaooc_json_exception */
-yaooc_json_exception_class_table_t yaooc_json_exception_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .type_name_ = (const char*) "yaooc_json_exception_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_json_exception_swap,
-  .what = (const char* (*) (const_pointer p)) yaooc_json_exception_what,
+yaooc_json_exception_class_table_t yaooc_json_exception_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_exception_class_table,
+.type_name_ = (const char*)"yaooc_json_exception_t",
+.swap = (void(*)(pointer,pointer)) yaooc_json_exception_swap,
+.what = (const char*(*)(const_pointer)) yaooc_json_exception_what,
 };
-
-
-DEFINE_TYPE_INFO(yaooc_json_exception,N,N,N,N,N,N,N,Y,yaooc_exception);
-
-
-/* Private items for yaooc_json_value */
-
-/* Protected items for yaooc_json_value */
-
-
-/* Typeinfo for yaooc_json_value */
-void yaooc_json_value_default_ctor(pointer p)
-{
-  yaooc_json_value_pointer this=p;
-  this->type_=JSON_UNDEFINED;
-  this->real_=0; /* Set other union members to zero as well */
-}
-
-void yaooc_json_value_dtor(pointer p)
-{
-  yaooc_json_value_pointer this=p;
-  M(this,virtual_dtor);
-}
-
-void yaooc_json_value_copy_ctor(pointer d,const_pointer s)
-{
-  yaooc_json_value_default_ctor(d);
-  yaooc_json_value_const_pointer src=s;
-  src->class_table_->virtual_copy_ctor(d,s);
-//  M(dst,virtual_copy_ctor,s);
-}
-
-void yaooc_json_value_assign(pointer d,const_pointer s)
-{
-//  yaooc_json_value_pointer dst=d;
-  yaooc_json_value_const_pointer src=s;
-//  M(dst,virtual_assign,s);
-  src->class_table_->virtual_assign(d,s);
-}
-
-int yaooc_json_value_rich_compare(const_pointer p1,const_pointer p2)
-{
-  yaooc_json_value_const_pointer vp1=p1;
-  yaooc_json_value_const_pointer vp2=p2;
-  if(vp1->type_ != vp2->type_) {
-		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
-				"Attempt compare different json types: %s and %s",
-				yaooc_json_type_strings[vp1->type_],yaooc_json_type_strings[vp2->type_]));
-  }
-  return M(vp1,virtual_rich_compare,vp2);
-}
-
-void yaooc_json_value_to_stream(const_pointer p,pointer s)
-{
-	yaooc_json_value_const_pointer this=p;
-	M(this,print,s);
-}
-/* Constructors for yaooc_json_value */
-
-/* Class table methods for yaooc_json_value */
-void yaooc_json_value_virtual_dtor(pointer p)
-{
-}
-
-void yaooc_json_value_virtual_copy_ctor(pointer p,const_pointer s)
-{
-  yaooc_json_value_pointer this=p;
-  yaooc_json_value_const_pointer src=p;
-  THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
-				"copy ctor %s to %s\n",yaooc_json_type_strings[src->type_],
-    yaooc_json_type_strings[this->type_]));
-}
-
-/*
-*/
-void yaooc_json_value_virtual_assign(pointer p,const_pointer s)
-{
-  yaooc_json_value_pointer this=p;
-  yaooc_json_value_const_pointer src=s;
-	THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
-				"Trying to assign %d to %d\n",src->type_,this->type_));
-}
-
-int yaooc_json_value_virtual_rich_compare(const_pointer p,const_pointer o)
-{
-  return 0;
-}
-
-yaooc_json_type_t yaooc_json_value_type(const_pointer p)
-{
-  return ((yaooc_json_value_const_pointer)p)->type_;
-}
-
-void yaooc_json_value_print(const_pointer p,ostream_pointer s)
-{
-}
-
-
-/* Class table for yaooc_json_value */
-yaooc_json_value_class_table_t yaooc_json_value_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_json_value_t",
-  .swap = (void (*) (pointer,pointer)) yaooc_json_value_swap,
-  .virtual_dtor = (void (*) (pointer)) yaooc_json_value_virtual_dtor,
-  .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_value_virtual_copy_ctor,
-  .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_value_virtual_assign,
-  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_value_virtual_rich_compare,
-  .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
-  .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_value_print,
+const type_info_t __yaooc_json_exception_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_json_exception_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_json_exception_class_table,
+.parent_=&__yaooc_exception_ti
 };
-
-
-DEFINE_TYPE_INFO(yaooc_json_value,Y,Y,Y,Y,Y,N,N,Y,yaooc_object);
-/* Private items for yaooc_json_null */
-
-/* Protected items for yaooc_json_null */
-
-
-/* Typeinfo for yaooc_json_null */
-void yaooc_json_null_default_ctor(pointer p)
+const type_info_t* const yaooc_json_exception_ti=&__yaooc_json_exception_ti;
+void yaooc_json_value_default_ctor(pointer __pthis__)
 {
-  yaooc_json_null_pointer this=p;
-  yaooc_json_value_default_ctor(p);
-  this->type_=JSON_NULL;
+yaooc_json_value_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_json_value);
+
+
+
+    this->type_=JSON_UNDEFINED;
+    this->real_=0;
+  
 }
-/*
-void yaooc_json_null_copy_ctor(pointer d,const_pointer s)
+void yaooc_json_value_dtor(pointer __pthis__)
 {
-  yaooc_json_null_pointer dst=d;
-  yaooc_json_value_default_ctor(d);
-  dst->type_=JSON_NULL;
-}
-*/
-/* Constructors for yaooc_json_null */
+yaooc_json_value_pointer this=__pthis__;(void)this;
 
-/* Class table methods for yaooc_json_null */
-void yaooc_json_null_virtual_dtor(pointer p)
-{
-}
 
-void yaooc_json_null_virtual_copy_ctor(pointer p,const_pointer s)
-{
-  yaooc_json_null_pointer dst=p;
-  dst->type_=JSON_NULL;
+    if(this->type_ != JSON_UNDEFINED)
+      M(this,virtual_dtor);
+  
 }
-
-void yaooc_json_null_virtual_assign(pointer p,const_pointer s)
+void yaooc_json_value_copy_ctor(pointer __pthis__,const_pointer __psrc__)
 {
-  yaooc_json_null_pointer this=p;
-  if(this->type_==JSON_UNDEFINED || this->type_==JSON_NULL) {
-    this->class_table_=&yaooc_json_null_class_table;
+yaooc_json_value_pointer this=__pthis__;(void)this;
+yaooc_json_value_const_pointer src=__psrc__;(void)src;
+
+
+call_default_ctor_static(this,yaooc_json_value);
+assign_static(this,src,yaooc_json_value);
+
+}
+void yaooc_json_value_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_json_value_pointer this=__pthis__;(void)this;
+yaooc_json_value_const_pointer src=__psrc__;(void)src;
+
+
+    if(this->type_ == JSON_UNDEFINED) {
+
+      switch(src->type_) {
+        case JSON_UNDEFINED:
+          break;
+
+        case JSON_NULL:
+          this->type_=JSON_NULL;
+          break;
+
+        case JSON_BOOL:
+          this->type_=JSON_BOOL;
+          this->bool_=src->bool_;
+          break;
+
+        case JSON_INTEGER:
+          this->type_=JSON_INTEGER;
+          this->int_=src->int_;
+          break;
+
+        case JSON_REAL:
+          this->type_=JSON_REAL;
+          this->real_=src->real_;
+          break;
+
+        case JSON_STRING:
+          this->type_=JSON_STRING;
+          this->string_=src->string_ ? STRDUP(src->string_) : NULL;
+          break;
+
+        case JSON_ARRAY:
+          this->type_=JSON_ARRAY;
+          this->array_=new(yaooc_json_value_array);
+          assign_static(this->array_,src->array_,yaooc_json_value_array);
+          break;
+
+        case JSON_OBJECT:
+          this->type_=JSON_OBJECT;
+          this->array_=new(yaooc_json_string_value_map);
+          assign_static(this->object_,src->object_,yaooc_json_string_value_map);
+          break;
+      }
+    } else {
+      M(this,virtual_assign,src);
+    }
+  
+}
+int yaooc_json_value_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_json_value_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_json_value_const_pointer rhs=__prhs__;(void)rhs;
+
+    if(lhs->type_ == JSON_UNDEFINED) {
+      if(rhs->type_ == JSON_UNDEFINED)
+        return 0;
+      return -1;
+    }
+    return M(lhs,virtual_rich_compare,rhs);
+  
+}
+void yaooc_json_value_virtual_dtor(pointer __pthis__)
+{
+yaooc_json_value_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_value_parent_class_table->virtual_dtor(this)
+#define PM(method,...) CTM((*yaooc_json_value_parent_class_table),this,method,## __VA_ARGS__)
+
+
+    
+#undef PM
+#undef super
+}
+void yaooc_json_value_virtual_assign(pointer __pthis__,const_pointer src)
+{
+yaooc_json_value_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_value_parent_class_table->virtual_assign(this,src)
+#define PM(method,...) CTM((*yaooc_json_value_parent_class_table),this,method,## __VA_ARGS__)
+
+
+    
+#undef PM
+#undef super
+}
+int yaooc_json_value_virtual_rich_compare(const_pointer __pthis__,const_pointer other)
+{
+yaooc_json_value_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_value_parent_class_table->virtual_rich_compare(this,other)
+#define PM(method,...) CTM((*yaooc_json_value_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return 0;
+    
+#undef PM
+#undef super
+}
+yaooc_json_value_class_table_t yaooc_json_value_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_json_value_t",
+.swap = (void(*)(pointer,pointer)) yaooc_json_value_swap,
+.virtual_dtor = (void(*)(pointer)) yaooc_json_value_virtual_dtor,
+.virtual_assign = (void(*)(pointer,const_pointer)) yaooc_json_value_virtual_assign,
+.virtual_rich_compare = (int(*)(const_pointer,const_pointer)) yaooc_json_value_virtual_rich_compare,
+};
+const type_info_t __yaooc_json_value_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_json_value_t),
+.rich_compare_=yaooc_json_value_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=yaooc_json_value_dtor,
+.copy_ctor_=yaooc_json_value_copy_ctor,
+.assign_=yaooc_json_value_assign,
+.class_table_=(const class_table_t*) &yaooc_json_value_class_table,
+.parent_=&__yaooc_object_ti
+};
+const type_info_t* const yaooc_json_value_ti=&__yaooc_json_value_ti;
+void yaooc_json_null_default_ctor(pointer __pthis__)
+{
+yaooc_json_null_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_json_null);
+
+
+
     this->type_=JSON_NULL;
-  } else {
-    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
-				"Attempt to assign JSON_NULL to %s",yaooc_json_type_strings[this->type_]));
-  }
+  
 }
-
-int yaooc_json_null_virtual_rich_compare(const_pointer p,const_pointer o)
+void yaooc_json_null_assign(pointer __pthis__,const_pointer __psrc__)
 {
-  return 0;
+yaooc_json_null_pointer this=__pthis__;(void)this;
+yaooc_json_null_const_pointer src=__psrc__;(void)src;
+
+
+
+    if(src->type_!=JSON_NULL)
+      THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json null to json null"));
+  
 }
-
-void yaooc_json_null_print(const_pointer p,ostream_pointer s)
+int yaooc_json_null_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 {
-	yaooc_ostream_pointer strm=s;
-  M(strm,printf,"null");
-}
+yaooc_json_null_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_json_null_const_pointer rhs=__prhs__;(void)rhs;
 
 
-/* Class table for yaooc_json_null */
-yaooc_json_null_class_table_t yaooc_json_null_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .type_name_ = (const char*) "yaooc_json_null_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_json_null_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaooc_json_null_virtual_dtor,
-  .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_null_virtual_copy_ctor,
-  .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_null_virtual_assign,
-  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_null_virtual_rich_compare,
-  .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
-  .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_null_print,
-};
-
-
-DEFINE_TYPE_INFO(yaooc_json_null,Y,N,N,N,N,N,N,Y,yaooc_json_value);
-/* Private items for yaooc_json_bool */
-
-/* Protected items for yaooc_json_bool */
-
-
-/* Typeinfo for yaooc_json_bool */
-void yaooc_json_bool_default_ctor(pointer p)
-{
-  yaooc_json_bool_pointer this=p;
-  yaooc_json_value_default_ctor(p);
-  this->type_=JSON_BOOL;
-  this->bool_=false;
-}
-/*
-void yaooc_json_bool_copy_ctor(pointer d,const_pointer s)
-{
-  yaooc_json_bool_pointer dst=d;
-  yaooc_json_bool_const_pointer src=s;
-  dst->bool_=src->bool_;
-}
-*/
-/* Constructors for yaooc_json_bool */
-void yaooc_json_bool_ctor_bool(pointer p,va_list args)
-{
-  yaooc_json_bool_pointer this=p;
-  this->type_=JSON_BOOL;
-  this->bool_=va_arg(args,int);
-}
-
-/* Class table methods for yaooc_json_bool */
-void yaooc_json_bool_virtual_dtor(pointer p)
-{
-}
-
-void yaooc_json_bool_virtual_copy_ctor(pointer p,const_pointer s)
-{
-  yaooc_json_bool_pointer this=p;
-  yaooc_json_bool_const_pointer src=s;
-  this->type_=JSON_BOOL;
-  this->bool_=src->bool_;
-}
-
-void yaooc_json_bool_virtual_assign(pointer p,const_pointer s)
-{
-  yaooc_json_bool_pointer this=p;
-  yaooc_json_bool_const_pointer src=s;
-  if(this->type_==JSON_UNDEFINED || this->type_==JSON_BOOL) {
-    this->class_table_=&yaooc_json_bool_class_table;
-    this->type_=JSON_BOOL;
-    this->bool_=src->bool_;
-  } else {
-		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
-					"Attempt to assign JSON_BOOL to %s",yaooc_json_type_strings[this->type_]));
-  }
-}
-
-int yaooc_json_bool_virtual_rich_compare(const_pointer p,const_pointer p2)
-{
-  if(((yaooc_json_bool_const_pointer)p)->bool_ < ((yaooc_json_bool_const_pointer)p2)->bool_)
-    return -1;
-  if(((yaooc_json_bool_const_pointer)p)->bool_ > ((yaooc_json_bool_const_pointer)p2)->bool_)
-    return 1;
-  return 0;
-}
-
-void yaooc_json_bool_print(const_pointer p,ostream_pointer s)
-{
-  yaooc_json_bool_const_pointer this=p;
-	yaooc_ostream_pointer strm=s;
-  M(strm,printf,"%s",(this->bool_ ? "true" : "false"));
-}
-
-void yaooc_json_bool_set(pointer p,bool value)
-{
-  yaooc_json_bool_pointer this=p;
-  this->bool_=value;
-}
-
-bool yaooc_json_bool_get(const_pointer p)
-{
-  yaooc_json_bool_const_pointer this=p;
-  return this->bool_;
-}
-
-
-/* Class table for yaooc_json_bool */
-yaooc_json_bool_class_table_t yaooc_json_bool_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .type_name_ = (const char*) "yaooc_json_bool_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_json_bool_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaooc_json_bool_virtual_dtor,
-  .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_bool_virtual_copy_ctor,
-  .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_bool_virtual_assign,
-  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_bool_virtual_rich_compare,
-  .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
-  .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_bool_print,
-  .set = (void (*) (pointer p,bool)) yaooc_json_bool_set,
-  .get = (bool (*) (const_pointer p)) yaooc_json_bool_get,
-};
-
-
-DEFINE_TYPE_INFO(yaooc_json_bool,Y,N,N,N,N,N,N,Y,yaooc_json_value);
-/* Private items for yaooc_json_integer */
-
-/* Protected items for yaooc_json_integer */
-
-
-/* Typeinfo for yaooc_json_integer */
-void yaooc_json_integer_default_ctor(pointer p)
-{
-  yaooc_json_integer_pointer this=p;
-  this->type_=JSON_INTEGER;
-  this->int_=0;
-}
-/*
-void yaooc_json_integer_copy_ctor(pointer d,const_pointer s)
-{
-  yaooc_json_integer_pointer dst=d;
-  yaooc_json_integer_const_pointer src=s;
-}
-*/
-/* Constructors for yaooc_json_integer */
-void yaooc_json_integer_ctor_int(pointer p,va_list args)
-{
-  yaooc_json_integer_pointer this=p;
-  this->type_=JSON_INTEGER;
-  this->int_ = va_arg(args,int);
-}
-
-/* Class table methods for yaooc_json_integer */
-void yaooc_json_integer_virtual_dtor(pointer p)
-{
-}
-
-void yaooc_json_integer_virtual_copy_ctor(pointer p,const_pointer s)
-{
-  yaooc_json_integer_pointer this=p;
-  this->type_=JSON_INTEGER;
-  this->int_=((yaooc_json_integer_const_pointer)s)->int_;
-}
-
-void yaooc_json_integer_virtual_assign(pointer p,const_pointer s)
-{
-  yaooc_json_integer_pointer this=p;
-//  yaooc_json_integer_const_pointer src=s;
-  if(this->type_==JSON_UNDEFINED || this->type_==JSON_INTEGER) {
-    this->class_table_=&yaooc_json_integer_class_table;
-    this->type_=JSON_INTEGER;
-    this->int_=((yaooc_json_integer_const_pointer)s)->int_;
-  } else {
-		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
-					"Attempt to assign JSON_INTEGER to %s",yaooc_json_type_strings[this->type_]));
-  }
-}
-
-int yaooc_json_integer_virtual_rich_compare(const_pointer p,const_pointer o)
-{
-  return ((yaooc_json_integer_const_pointer)p)->int_ - ((yaooc_json_integer_const_pointer)o)->int_;
-}
-
-void yaooc_json_integer_print(const_pointer p,ostream_pointer s)
-{
-  yaooc_json_integer_const_pointer this=p;
-	yaooc_ostream_pointer strm=s;
-	M(strm,printf,"%" PRId64,this->int_);
-}
-
-void yaooc_json_integer_set(pointer p,int64_t value)
-{
-  yaooc_json_integer_pointer this=p;
-  this->int_=value;
-}
-
-int64_t yaooc_json_integer_get(const_pointer p)
-{
-  yaooc_json_integer_const_pointer this=p;
-  return this->int_;
-}
-
-
-/* Class table for yaooc_json_integer */
-yaooc_json_integer_class_table_t yaooc_json_integer_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .type_name_ = (const char*) "yaooc_json_integer_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_json_integer_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaooc_json_integer_virtual_dtor,
-  .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_integer_virtual_copy_ctor,
-  .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_integer_virtual_assign,
-  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_integer_virtual_rich_compare,
-  .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
-  .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_integer_print,
-  .set = (void (*) (pointer p,int64_t)) yaooc_json_integer_set,
-  .get = (int64_t (*) (const_pointer p)) yaooc_json_integer_get,
-};
-
-
-DEFINE_TYPE_INFO(yaooc_json_integer,Y,N,N,N,N,N,N,Y,yaooc_json_value);
-/* Private items for yaooc_json_real */
-
-/* Protected items for yaooc_json_real */
-
-
-/* Typeinfo for yaooc_json_real */
-void yaooc_json_real_default_ctor(pointer p)
-{
-  yaooc_json_real_pointer this=p;
-  this->type_=JSON_REAL;
-  this->real_=0;
-}
-/*
-void yaooc_json_real_copy_ctor(pointer d,const_pointer s)
-{
-  yaooc_json_real_pointer dst=d;
-  yaooc_json_real_const_pointer src=s;
-}
-*/
-/* Constructors for yaooc_json_real */
-void yaooc_json_real_ctor_real(pointer p,va_list args)
-{
-  yaooc_json_real_pointer this=p;
-  this->type_=JSON_REAL;
-  this->real_ = va_arg(args,double);
-}
-
-/* Class table methods for yaooc_json_real */
-void yaooc_json_real_virtual_dtor(pointer p)
-{
-}
-
-void yaooc_json_real_virtual_copy_ctor(pointer p,const_pointer s)
-{
-  yaooc_json_real_pointer this=p;
-  this->type_=JSON_REAL;
-  this->real_=((yaooc_json_real_const_pointer)s)->real_;
-}
-
-void yaooc_json_real_virtual_assign(pointer p,const_pointer s)
-{
-  yaooc_json_real_pointer this=p;
-  if(this->type_==JSON_UNDEFINED || this->type_==JSON_REAL) {
-    this->class_table_=&yaooc_json_real_class_table;
-    this->type_=JSON_REAL;
-    this->real_=((yaooc_json_real_const_pointer)s)->real_;
-  } else {
-		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
-					"Attempt to assign JSON_REAL to %s",yaooc_json_type_strings[this->type_]));
-  }
-}
-
-int yaooc_json_real_virtual_rich_compare(const_pointer p,const_pointer o)
-{
-  if(fabs(((yaooc_json_real_const_pointer)p)->real_ < ((yaooc_json_real_const_pointer)o)->real_) < 1e-8)
+    if(lhs->type_==JSON_NULL) {
+      if(rhs->type_==JSON_NULL)
+        return 0;
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1;
+    } else if(rhs->type_==JSON_NULL) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1;
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to JSON_NULL"));
     return 0;
-  if(((yaooc_json_real_const_pointer)p)->real_ < ((yaooc_json_real_const_pointer)o)->real_)
-    return -1;
-  return 1;
+  
 }
-
-void yaooc_json_real_print(const_pointer p,ostream_pointer s)
+void yaooc_json_null_virtual_dtor(pointer __pthis__)
 {
-  yaooc_json_real_const_pointer this=p;
-	yaooc_ostream_pointer strm=s;
-	M(strm,printf,"%lg",this->real_);
+yaooc_json_null_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_null_parent_class_table->virtual_dtor(this)
+#define PM(method,...) CTM((*yaooc_json_null_parent_class_table),this,method,## __VA_ARGS__)
+
+
+    
+#undef PM
+#undef super
 }
-
-void yaooc_json_real_set(pointer p,double value)
+void yaooc_json_null_virtual_assign(pointer __pthis__,const_pointer src)
 {
-  yaooc_json_real_pointer this=p;
-  this->real_=value;
+yaooc_json_null_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_null_parent_class_table->virtual_assign(this,src)
+#define PM(method,...) CTM((*yaooc_json_null_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_json_null_assign(this,src);
+    
+#undef PM
+#undef super
 }
-
-double yaooc_json_real_get(const_pointer p)
+int yaooc_json_null_virtual_rich_compare(const_pointer __pthis__,const_pointer other)
 {
-  return ((yaooc_json_real_const_pointer)p)->real_;
+yaooc_json_null_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_null_parent_class_table->virtual_rich_compare(this,other)
+#define PM(method,...) CTM((*yaooc_json_null_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_json_null_rich_compare(this,other);
+    
+#undef PM
+#undef super
 }
-
-
-/* Class table for yaooc_json_real */
-yaooc_json_real_class_table_t yaooc_json_real_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .type_name_ = (const char*) "yaooc_json_real_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_json_real_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaooc_json_real_virtual_dtor,
-  .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_real_virtual_copy_ctor,
-  .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_real_virtual_assign,
-  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_real_virtual_rich_compare,
-  .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
-  .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_real_print,
-  .set = (void (*) (pointer p,double)) yaooc_json_real_set,
-  .get = (double (*) (const_pointer p)) yaooc_json_real_get,
+yaooc_json_null_class_table_t yaooc_json_null_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_json_value_class_table,
+.type_name_ = (const char*)"yaooc_json_null_t",
+.swap = (void(*)(pointer,pointer)) yaooc_json_null_swap,
+.virtual_dtor = (void(*)(pointer)) yaooc_json_null_virtual_dtor,
+.virtual_assign = (void(*)(pointer,const_pointer)) yaooc_json_null_virtual_assign,
+.virtual_rich_compare = (int(*)(const_pointer,const_pointer)) yaooc_json_null_virtual_rich_compare,
 };
-
-
-DEFINE_TYPE_INFO(yaooc_json_real,Y,N,N,N,N,N,N,Y,yaooc_json_value);
-/* Private items for yaooc_json_string */
-
-/* Protected items for yaooc_json_string */
-
-
-/* Typeinfo for yaooc_json_string */
-void yaooc_json_string_default_ctor(pointer p)
-{
-  yaooc_json_string_pointer this=p;
-  this->type_=JSON_STRING;
-  this->string_=STRDUP("");
-}
-/*
-void yaooc_json_string_copy_ctor(pointer d,const_pointer s)
-{
-  yaooc_json_string_pointer dst=d;
-  yaooc_json_string_const_pointer src=s;
-}
-*/
-/* Constructors for yaooc_json_string */
-void yaooc_json_string_ctor_ccs(pointer p,va_list args)
-{
-  yaooc_json_string_pointer this=p;
-  const char* str = va_arg(args,const char*);
-  this->type_=JSON_STRING;
-  this->string_=STRDUP(str == NULL ? "" : str);
-}
-void yaooc_json_string_ctor_ccs_size(pointer p,va_list args)
-{
-  yaooc_json_string_pointer this=p;
-  const char* str = va_arg(args,const char*);
-  size_t n = va_arg(args,size_t);
-  this->type_=JSON_STRING;
-  if(str && n>0) {
-    if(n>strlen(str)) n=strlen(str);
-    this->string_=MALLOC(n+1);
-    strncpy(this->string_,str,n);
-    this->string_[n]=0;
-  } else
-    this->string_=STRDUP("");
-}
-
-/* Class table methods for yaooc_json_string */
-void yaooc_json_string_virtual_dtor(pointer p)
-{
-  yaooc_json_string_pointer this=p;
-  FREE(this->string_);
-}
-
-void yaooc_json_string_virtual_copy_ctor(pointer p,const_pointer s)
-{
-  yaooc_json_string_pointer this=p;
-  this->type_=JSON_STRING;
-  this->string_=STRDUP(((yaooc_json_string_const_pointer)s)->string_);
-}
-
-void yaooc_json_string_virtual_assign(pointer p,const_pointer s)
-{
-  yaooc_json_string_pointer this=p;
-  if(this->type_==JSON_UNDEFINED) {
-    this->class_table_=&yaooc_json_string_class_table;
-    yaooc_json_string_default_ctor(this);
-  }
-  if(this->type_==JSON_STRING) {
-    FREE(this->string_);
-    this->string_=STRDUP(((yaooc_json_string_const_pointer)s)->string_);
-  } else {
-		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
-					"Attempt to assign JSON_STRING to %s",yaooc_json_type_strings[this->type_]));
-  }
-}
-
-int yaooc_json_string_virtual_rich_compare(const_pointer p,const_pointer o)
-{
-  return strcmp(((yaooc_json_string_const_pointer)p)->string_,((yaooc_json_string_const_pointer)o)->string_);
-}
-
-void yaooc_json_string_print(const_pointer p,ostream_pointer s)
-{
-  yaooc_json_string_const_pointer this=p;
-	yaooc_ostream_pointer strm=s;
-	M(strm,printf,"\"%s\"",this->string_);
-}
-
-void yaooc_json_string_set(pointer p,const char* value)
-{
-  yaooc_json_string_pointer this=p;
-  FREE(this->string_);
-  this->string_=STRDUP(value);
-}
-
-const char* yaooc_json_string_get(const_pointer p)
-{
-  return ((yaooc_json_string_const_pointer)p)->string_;
-}
-
-size_t yaooc_json_string_size(const_pointer p)
-{
-  return strlen(((yaooc_json_string_const_pointer)p)->string_);
-}
-
-void yaooc_json_string_clear(pointer p)
-{
-  yaooc_json_string_pointer this=p;
-  FREE(this->string_);
-  this->string_=STRDUP("");
-}
-
-
-/* Class table for yaooc_json_string */
-yaooc_json_string_class_table_t yaooc_json_string_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .type_name_ = (const char*) "yaooc_json_string_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_json_string_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaooc_json_string_virtual_dtor,
-  .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_string_virtual_copy_ctor,
-  .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_string_virtual_assign,
-  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_string_virtual_rich_compare,
-  .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
-  .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_string_print,
-  .set = (void (*) (pointer p,const char*)) yaooc_json_string_set,
-  .get = (const char* (*) (const_pointer p)) yaooc_json_string_get,
-  .size = (size_t (*) (const_pointer)) yaooc_json_string_size,
-  .clear = (void (*) (pointer p)) yaooc_json_string_clear,
+const type_info_t __yaooc_json_null_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_json_null_t),
+.rich_compare_=yaooc_json_null_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=yaooc_json_null_assign,
+.class_table_=(const class_table_t*) &yaooc_json_null_class_table,
+.parent_=&__yaooc_json_value_ti
 };
+const type_info_t* const yaooc_json_null_ti=&__yaooc_json_null_ti;
+void yaooc_json_bool_default_ctor(pointer __pthis__)
+{
+yaooc_json_bool_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_json_bool);
 
 
-DEFINE_TYPE_INFO(yaooc_json_string,Y,N,N,N,N,N,N,Y,yaooc_json_value);
+
+    this->type_=JSON_BOOL;
+    this->bool_=false;
+  
+}
+void yaooc_json_bool_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_json_bool_pointer this=__pthis__;(void)this;
+yaooc_json_bool_const_pointer src=__psrc__;(void)src;
 
 
+
+    if(src->type_==JSON_BOOL)
+      this->bool_=src->bool_;
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json bool to json bool"));
+  
+}
+int yaooc_json_bool_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_json_bool_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_json_bool_const_pointer rhs=__prhs__;(void)rhs;
+
+
+    if(lhs->type_==JSON_BOOL) {
+      if(rhs->type_==JSON_BOOL)
+        return lhs->bool_<rhs->bool_;
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1;
+    } else if(rhs->type_==JSON_BOOL) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1;
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to JSON_BOOL"));
+    return 0;
+  
+}
+void yaooc_json_bool_ctor_bool(pointer __pthis,va_list __con_args__){
+yaooc_json_bool_pointer this=__pthis;(void)this;
+int v = va_arg(__con_args__,int);
+
+call_default_ctor_static(this,yaooc_json_bool);
+
+
+    this->bool_=v;
+  
+}
+void yaooc_json_bool_virtual_dtor(pointer __pthis__)
+{
+yaooc_json_bool_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_bool_parent_class_table->virtual_dtor(this)
+#define PM(method,...) CTM((*yaooc_json_bool_parent_class_table),this,method,## __VA_ARGS__)
+
+
+    
+#undef PM
+#undef super
+}
+void yaooc_json_bool_virtual_assign(pointer __pthis__,const_pointer src)
+{
+yaooc_json_bool_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_bool_parent_class_table->virtual_assign(this,src)
+#define PM(method,...) CTM((*yaooc_json_bool_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_json_bool_assign(this,src);
+    
+#undef PM
+#undef super
+}
+int yaooc_json_bool_virtual_rich_compare(const_pointer __pthis__,const_pointer other)
+{
+yaooc_json_bool_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_bool_parent_class_table->virtual_rich_compare(this,other)
+#define PM(method,...) CTM((*yaooc_json_bool_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_json_bool_rich_compare(this,other);
+    
+#undef PM
+#undef super
+}
+yaooc_json_bool_class_table_t yaooc_json_bool_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_json_value_class_table,
+.type_name_ = (const char*)"yaooc_json_bool_t",
+.swap = (void(*)(pointer,pointer)) yaooc_json_bool_swap,
+.virtual_dtor = (void(*)(pointer)) yaooc_json_bool_virtual_dtor,
+.virtual_assign = (void(*)(pointer,const_pointer)) yaooc_json_bool_virtual_assign,
+.virtual_rich_compare = (int(*)(const_pointer,const_pointer)) yaooc_json_bool_virtual_rich_compare,
+};
+const type_info_t __yaooc_json_bool_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_json_bool_t),
+.rich_compare_=yaooc_json_bool_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=yaooc_json_bool_assign,
+.class_table_=(const class_table_t*) &yaooc_json_bool_class_table,
+.parent_=&__yaooc_json_value_ti
+};
+const type_info_t* const yaooc_json_bool_ti=&__yaooc_json_bool_ti;
+void yaooc_json_integer_default_ctor(pointer __pthis__)
+{
+yaooc_json_integer_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_json_integer);
+
+
+
+    this->type_=JSON_INTEGER;
+    this->int_=0;
+  
+}
+void yaooc_json_integer_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_json_integer_pointer this=__pthis__;(void)this;
+yaooc_json_integer_const_pointer src=__psrc__;(void)src;
+
+
+    if(src->type_==JSON_INTEGER)
+      this->int_=src->int_;
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json integer to json integer"));
+  
+}
+int yaooc_json_integer_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_json_integer_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_json_integer_const_pointer rhs=__prhs__;(void)rhs;
+
+
+    if(lhs->type_==JSON_INTEGER) {
+      if(rhs->type_==JSON_INTEGER) {
+        if(lhs->int_<rhs->int_)
+          return -1;
+        if(lhs->int_>rhs->int_)
+          return 1;
+        return 0;
+      }
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1;
+    } else if(rhs->type_==JSON_INTEGER) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1;
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json integer"));
+    return 0;
+  
+}
+void yaooc_json_integer_ctor_int(pointer __pthis,va_list __con_args__){
+yaooc_json_integer_pointer this=__pthis;(void)this;
+int v = va_arg(__con_args__,int);
+
+call_default_ctor_static(this,yaooc_json_integer);
+
+
+    this->int_=v;
+  
+}
+void yaooc_json_integer_virtual_dtor(pointer __pthis__)
+{
+yaooc_json_integer_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_integer_parent_class_table->virtual_dtor(this)
+#define PM(method,...) CTM((*yaooc_json_integer_parent_class_table),this,method,## __VA_ARGS__)
+
+
+    
+#undef PM
+#undef super
+}
+void yaooc_json_integer_virtual_assign(pointer __pthis__,const_pointer src)
+{
+yaooc_json_integer_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_integer_parent_class_table->virtual_assign(this,src)
+#define PM(method,...) CTM((*yaooc_json_integer_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_json_integer_assign(this,src);
+    
+#undef PM
+#undef super
+}
+int yaooc_json_integer_virtual_rich_compare(const_pointer __pthis__,const_pointer other)
+{
+yaooc_json_integer_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_integer_parent_class_table->virtual_rich_compare(this,other)
+#define PM(method,...) CTM((*yaooc_json_integer_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_json_integer_rich_compare(this,other);
+    
+#undef PM
+#undef super
+}
+yaooc_json_integer_class_table_t yaooc_json_integer_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_json_value_class_table,
+.type_name_ = (const char*)"yaooc_json_integer_t",
+.swap = (void(*)(pointer,pointer)) yaooc_json_integer_swap,
+.virtual_dtor = (void(*)(pointer)) yaooc_json_integer_virtual_dtor,
+.virtual_assign = (void(*)(pointer,const_pointer)) yaooc_json_integer_virtual_assign,
+.virtual_rich_compare = (int(*)(const_pointer,const_pointer)) yaooc_json_integer_virtual_rich_compare,
+};
+const type_info_t __yaooc_json_integer_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_json_integer_t),
+.rich_compare_=yaooc_json_integer_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=yaooc_json_integer_assign,
+.class_table_=(const class_table_t*) &yaooc_json_integer_class_table,
+.parent_=&__yaooc_json_value_ti
+};
+const type_info_t* const yaooc_json_integer_ti=&__yaooc_json_integer_ti;
+void yaooc_json_real_default_ctor(pointer __pthis__)
+{
+yaooc_json_real_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_json_real);
+
+
+
+    this->type_=JSON_REAL;
+    this->real_=0;
+  
+}
+void yaooc_json_real_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_json_real_pointer this=__pthis__;(void)this;
+yaooc_json_real_const_pointer src=__psrc__;(void)src;
+
+
+    if(src->type_==JSON_REAL)
+      this->real_=src->real_;
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json real to json real"));
+  
+}
+int yaooc_json_real_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_json_real_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_json_real_const_pointer rhs=__prhs__;(void)rhs;
+
+
+    if(lhs->type_==JSON_REAL) {
+      if(rhs->type_==JSON_REAL) {
+        if(lhs->real_<rhs->real_)
+          return -1;
+        if(lhs->real_>rhs->real_)
+          return 1;
+        return 0;
+      }
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1;
+    } else if(rhs->type_==JSON_REAL) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1;
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json real"));
+    return 0;
+  
+}
+void yaooc_json_real_ctor_int(pointer __pthis,va_list __con_args__){
+yaooc_json_real_pointer this=__pthis;(void)this;
+double v = va_arg(__con_args__,double);
+
+call_default_ctor_static(this,yaooc_json_real);
+
+
+    this->real_=v;
+  
+}
+void yaooc_json_real_virtual_dtor(pointer __pthis__)
+{
+yaooc_json_real_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_real_parent_class_table->virtual_dtor(this)
+#define PM(method,...) CTM((*yaooc_json_real_parent_class_table),this,method,## __VA_ARGS__)
+
+
+    
+#undef PM
+#undef super
+}
+void yaooc_json_real_virtual_assign(pointer __pthis__,const_pointer src)
+{
+yaooc_json_real_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_real_parent_class_table->virtual_assign(this,src)
+#define PM(method,...) CTM((*yaooc_json_real_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_json_real_assign(this,src);
+    
+#undef PM
+#undef super
+}
+int yaooc_json_real_virtual_rich_compare(const_pointer __pthis__,const_pointer other)
+{
+yaooc_json_real_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_real_parent_class_table->virtual_rich_compare(this,other)
+#define PM(method,...) CTM((*yaooc_json_real_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_json_real_rich_compare(this,other);
+    
+#undef PM
+#undef super
+}
+yaooc_json_real_class_table_t yaooc_json_real_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_json_value_class_table,
+.type_name_ = (const char*)"yaooc_json_real_t",
+.swap = (void(*)(pointer,pointer)) yaooc_json_real_swap,
+.virtual_dtor = (void(*)(pointer)) yaooc_json_real_virtual_dtor,
+.virtual_assign = (void(*)(pointer,const_pointer)) yaooc_json_real_virtual_assign,
+.virtual_rich_compare = (int(*)(const_pointer,const_pointer)) yaooc_json_real_virtual_rich_compare,
+};
+const type_info_t __yaooc_json_real_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_json_real_t),
+.rich_compare_=yaooc_json_real_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=yaooc_json_real_assign,
+.class_table_=(const class_table_t*) &yaooc_json_real_class_table,
+.parent_=&__yaooc_json_value_ti
+};
+const type_info_t* const yaooc_json_real_ti=&__yaooc_json_real_ti;
+void yaooc_json_string_default_ctor(pointer __pthis__)
+{
+yaooc_json_string_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_json_string);
+
+
+
+    this->type_=JSON_STRING;
+    this->string_=NULL;
+  
+}
+void yaooc_json_string_dtor(pointer __pthis__)
+{
+yaooc_json_string_pointer this=__pthis__;(void)this;
+
+
+    if(this->string_!=NULL)
+      FREE(this->string_);
+  
+}
+void yaooc_json_string_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_json_string_pointer this=__pthis__;(void)this;
+yaooc_json_string_const_pointer src=__psrc__;(void)src;
+
+
+    if(src->type_==JSON_STRING) {
+      deletep(this,yaooc_json_string);
+      newp(this,yaooc_json_string);
+      this->string_=src->string_ ? STRDUP(src->string_) : NULL;
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json string to json string"));
+  
+}
+int yaooc_json_string_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_json_string_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_json_string_const_pointer rhs=__prhs__;(void)rhs;
+
+
+    if(lhs->type_==JSON_STRING) {
+      if(rhs->type_==JSON_STRING) {
+        if(lhs->string_ == NULL) {
+          if(rhs->string_ == NULL)
+            return 0;
+          return -1;
+        }
+        if(rhs->string_ == NULL)
+          return 1;
+        return strcmp(lhs->string_,rhs->string_);
+      }
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1;
+    } else if(rhs->type_==JSON_STRING) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1;
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json string"));
+    return 0;
+  
+}
+void yaooc_json_string_ctor_ccs(pointer __pthis,va_list __con_args__){
+yaooc_json_string_pointer this=__pthis;(void)this;
+const char* v = va_arg(__con_args__,const char*);
+
+call_default_ctor_static(this,yaooc_json_string);
+
+
+    this->string_ = v ? STRDUP(v) : NULL;
+  
+}
+void yaooc_json_string_virtual_dtor(pointer __pthis__)
+{
+yaooc_json_string_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_string_parent_class_table->virtual_dtor(this)
+#define PM(method,...) CTM((*yaooc_json_string_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_json_string_dtor(this);
+    
+#undef PM
+#undef super
+}
+void yaooc_json_string_virtual_assign(pointer __pthis__,const_pointer src)
+{
+yaooc_json_string_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_string_parent_class_table->virtual_assign(this,src)
+#define PM(method,...) CTM((*yaooc_json_string_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_json_string_assign(this,src);
+    
+#undef PM
+#undef super
+}
+int yaooc_json_string_virtual_rich_compare(const_pointer __pthis__,const_pointer other)
+{
+yaooc_json_string_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_string_parent_class_table->virtual_rich_compare(this,other)
+#define PM(method,...) CTM((*yaooc_json_string_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_json_string_rich_compare(this,other);
+    
+#undef PM
+#undef super
+}
+yaooc_json_string_class_table_t yaooc_json_string_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_json_value_class_table,
+.type_name_ = (const char*)"yaooc_json_string_t",
+.swap = (void(*)(pointer,pointer)) yaooc_json_string_swap,
+.virtual_dtor = (void(*)(pointer)) yaooc_json_string_virtual_dtor,
+.virtual_assign = (void(*)(pointer,const_pointer)) yaooc_json_string_virtual_assign,
+.virtual_rich_compare = (int(*)(const_pointer,const_pointer)) yaooc_json_string_virtual_rich_compare,
+};
+const type_info_t __yaooc_json_string_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_json_string_t),
+.rich_compare_=yaooc_json_string_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=yaooc_json_string_dtor,
+.copy_ctor_=NULL,
+.assign_=yaooc_json_string_assign,
+.class_table_=(const class_table_t*) &yaooc_json_string_class_table,
+.parent_=&__yaooc_json_value_ti
+};
+const type_info_t* const yaooc_json_string_ti=&__yaooc_json_string_ti;
 VECTOR_IMPLEMENTATION(yaooc_json_value,yaooc_json_value_array);
 
-/* Private items for yaooc_json_array */
 
-/* Protected items for yaooc_json_array */
-
-
-/* Typeinfo for yaooc_json_array */
-void yaooc_json_array_default_ctor(pointer p)
+void yaooc_json_array_default_ctor(pointer __pthis__)
 {
-  yaooc_json_array_pointer this=p;
-  this->type_=JSON_ARRAY;
-  this->array_=new(yaooc_json_value_array);
+yaooc_json_array_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_json_array);
+
+
+
+    this->type_=JSON_ARRAY;
+    this->array_=new(yaooc_json_value_array);
+  
 }
-/*
-void yaooc_json_array_copy_ctor(pointer d,const_pointer s)
+void yaooc_json_array_dtor(pointer __pthis__)
 {
-  yaooc_json_array_pointer dst=d;
-  yaooc_json_array_const_pointer src=s;
+yaooc_json_array_pointer this=__pthis__;(void)this;
+
+
+    delete(this->array_);
+  
 }
-*/
-/* Constructors for yaooc_json_array */
-
-/* Class table methods for yaooc_json_array */
-void yaooc_json_array_virtual_dtor(pointer p)
+void yaooc_json_array_assign(pointer __pthis__,const_pointer __psrc__)
 {
-  yaooc_json_array_pointer this=p;
-  delete(this->array_);
+yaooc_json_array_pointer this=__pthis__;(void)this;
+yaooc_json_array_const_pointer src=__psrc__;(void)src;
+
+
+    if(src->type_==JSON_ARRAY) {
+      assign_static(this->array_,src->array_,yaooc_json_value_array);
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json string to json string"));
+  
 }
-
-void yaooc_json_array_virtual_copy_ctor(pointer p,const_pointer s)
+int yaooc_json_array_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 {
-  yaooc_json_array_pointer this=p;
-  yaooc_json_array_default_ctor(p);
-  assign(this->array_,((yaooc_json_array_pointer)s)->array_);
+yaooc_json_array_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_json_array_const_pointer rhs=__prhs__;(void)rhs;
+
+
+    if(lhs->type_==JSON_ARRAY) {
+      if(rhs->type_==JSON_ARRAY) {
+        return op_rich_compare_static(lhs,rhs,yaooc_json_value_array);
+      }
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1;
+    } else if(rhs->type_==JSON_ARRAY) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1;
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json array"));
+    return 0;
+  
 }
-
-void yaooc_json_array_virtual_assign(pointer p,const_pointer s)
+void yaooc_json_array_virtual_dtor(pointer __pthis__)
 {
-  yaooc_json_array_pointer this=p;
-  if(this->type_==JSON_UNDEFINED) {
-    this->class_table_=&yaooc_json_array_class_table;
-    yaooc_json_array_default_ctor(this);
-  }
-  if(this->type_==JSON_ARRAY) {
-    assign(this->array_,((yaooc_json_array_pointer)s)->array_);
-  } else {
-		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
-					"Attempt to assign JSON_ARRAY to %s",yaooc_json_type_strings[this->type_]));
-  }
+yaooc_json_array_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_array_parent_class_table->virtual_dtor(this)
+#define PM(method,...) CTM((*yaooc_json_array_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_json_array_dtor(this);
+    
+#undef PM
+#undef super
 }
-
-int yaooc_json_array_virtual_rich_compare(const_pointer p,const_pointer o)
+void yaooc_json_array_virtual_assign(pointer __pthis__,const_pointer src)
 {
-  return 0;
+yaooc_json_array_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_array_parent_class_table->virtual_assign(this,src)
+#define PM(method,...) CTM((*yaooc_json_array_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_json_array_assign(this,src);
+    
+#undef PM
+#undef super
 }
-
-void yaooc_json_array_print(const_pointer p,ostream_pointer s)
+int yaooc_json_array_virtual_rich_compare(const_pointer __pthis__,const_pointer other)
 {
-  yaooc_json_array_const_pointer this=p;
-	yaooc_ostream_pointer strm=s;
-	yaooc_json_array_const_iterator ia;
-	M(strm,printf,"[");
-	if(M(this,size)>0) {
-		ia=M(this,begin);
-		M(ia,print,s);
-		for(ia++;ia!=M(this,end);ia++) {
-			M(strm,printf,",");
-			M(ia,print,s);
-		}
-	}
-	M(strm,printf,"]");
+yaooc_json_array_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_array_parent_class_table->virtual_rich_compare(this,other)
+#define PM(method,...) CTM((*yaooc_json_array_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_json_array_rich_compare(this,other);
+    
+#undef PM
+#undef super
 }
-
-yaooc_json_array_iterator yaooc_json_array_insert(pointer p,pointer value)
-{
-  yaooc_json_array_pointer this=p;
-  const_iterator pos=M(this->array_,end);
-  return M(this->array_,insert,pos,value);
-}
-
-void yaooc_json_array_erase(pointer p,pointer value)
-{
-  yaooc_json_array_pointer this=p;
-  M(this->array_,erase_value,value);
-}
-
-void yaooc_json_array_clear(pointer p)
-{
-  yaooc_json_array_pointer this=p;
-  M(this->array_,clear);
-}
-
-size_t yaooc_json_array_size(const_pointer p)
-{
-  yaooc_json_array_const_pointer this=p;
-  return M(this->array_,size);
-}
-
-yaooc_json_array_iterator yaooc_json_array_at(const_pointer p,size_t i)
-{
-  yaooc_json_array_const_pointer this=p;
-  return M(this->array_,at,i);
-}
-
-yaooc_json_array_iterator yaooc_json_array_begin(const_pointer p)
-{
-  yaooc_json_array_const_pointer this=p;
-  return M(this->array_,begin);
-}
-
-yaooc_json_array_iterator yaooc_json_array_end(const_pointer p)
-{
-  yaooc_json_array_const_pointer this=p;
-  return M(this->array_,end);
-}
-
-
-/* Class table for yaooc_json_array */
-yaooc_json_array_class_table_t yaooc_json_array_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .type_name_ = (const char*) "yaooc_json_array_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_json_array_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaooc_json_array_virtual_dtor,
-  .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_array_virtual_copy_ctor,
-  .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_array_virtual_assign,
-  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_array_virtual_rich_compare,
-  .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
-  .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_array_print,
-  .insert = (yaooc_json_array_iterator (*) (pointer p,pointer)) yaooc_json_array_insert,
-  .erase = (void (*) (pointer p,pointer)) yaooc_json_array_erase,
-  .clear = (void (*) (pointer p)) yaooc_json_array_clear,
-  .size = (size_t (*) (const_pointer p)) yaooc_json_array_size,
-  .at = (yaooc_json_array_iterator (*) (const_pointer p,size_t)) yaooc_json_array_at,
-  .begin = (yaooc_json_array_iterator (*) (const_pointer p)) yaooc_json_array_begin,
-  .end = (yaooc_json_array_iterator (*) (const_pointer p)) yaooc_json_array_end,
+yaooc_json_array_class_table_t yaooc_json_array_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_json_value_class_table,
+.type_name_ = (const char*)"yaooc_json_array_t",
+.swap = (void(*)(pointer,pointer)) yaooc_json_array_swap,
+.virtual_dtor = (void(*)(pointer)) yaooc_json_array_virtual_dtor,
+.virtual_assign = (void(*)(pointer,const_pointer)) yaooc_json_array_virtual_assign,
+.virtual_rich_compare = (int(*)(const_pointer,const_pointer)) yaooc_json_array_virtual_rich_compare,
 };
-
-
-DEFINE_TYPE_INFO(yaooc_json_array,Y,N,N,N,N,N,N,Y,yaooc_json_value);
-
-
+const type_info_t __yaooc_json_array_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_json_array_t),
+.rich_compare_=yaooc_json_array_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=yaooc_json_array_dtor,
+.copy_ctor_=NULL,
+.assign_=yaooc_json_array_assign,
+.class_table_=(const class_table_t*) &yaooc_json_array_class_table,
+.parent_=&__yaooc_json_value_ti
+};
+const type_info_t* const yaooc_json_array_ti=&__yaooc_json_array_ti;
 MINI_MAP_IMPLEMENTATION(yaooc_json_string,yaooc_json_value,yaooc_json_string_value_map);
 
 
-/* Private items for yaooc_json_object */
-
-/* Protected items for yaooc_json_object */
-
-
-/* Typeinfo for yaooc_json_object */
-void yaooc_json_object_default_ctor(pointer p)
+void yaooc_json_object_default_ctor(pointer __pthis__)
 {
-  yaooc_json_object_pointer this=p;
-  this->type_=JSON_OBJECT;
-  this->object_=new(yaooc_json_string_value_map);
+yaooc_json_object_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_json_object);
+
+
+
+    this->type_=JSON_OBJECT;
+    this->object_=new(yaooc_json_string_value_map);
+  
 }
-/*
-void yaooc_json_object_copy_ctor(pointer d,const_pointer s)
+void yaooc_json_object_dtor(pointer __pthis__)
 {
-  yaooc_json_object_pointer dst=d;
-  yaooc_json_object_const_pointer src=s;
+yaooc_json_object_pointer this=__pthis__;(void)this;
+
+
+    delete(this->object_);
+  
 }
-*/
-/* Constructors for yaooc_json_object */
-
-/* Class table methods for yaooc_json_object */
-void yaooc_json_object_virtual_dtor(pointer p)
+void yaooc_json_object_assign(pointer __pthis__,const_pointer __psrc__)
 {
-  yaooc_json_object_pointer this=p;
-  delete(this->object_);
+yaooc_json_object_pointer this=__pthis__;(void)this;
+yaooc_json_object_const_pointer src=__psrc__;(void)src;
+
+
+    if(src->type_==JSON_OBJECT) {
+      assign_static(this->object_,src->object_,yaooc_json_string_value_map);
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json object to json object"));
+  
 }
-
-void yaooc_json_object_virtual_copy_ctor(pointer p,const_pointer s)
+int yaooc_json_object_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 {
-  yaooc_json_object_pointer this=p;
-  yaooc_json_object_default_ctor(p);
-  assign(this->object_,((yaooc_json_object_const_pointer)s)->object_);
+yaooc_json_object_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_json_object_const_pointer rhs=__prhs__;(void)rhs;
+
+
+    if(lhs->type_==JSON_OBJECT) {
+      if(rhs->type_==JSON_OBJECT) {
+        return 0;
+      }
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1;
+    } else if(rhs->type_==JSON_OBJECT) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1;
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json object"));
+    return 0;
+  
 }
-
-void yaooc_json_object_virtual_assign(pointer p,const_pointer s)
+void yaooc_json_object_virtual_dtor(pointer __pthis__)
 {
-  yaooc_json_object_pointer this=p;
-  if(this->type_==JSON_UNDEFINED) {
-    this->class_table_=&yaooc_json_object_class_table;
-    yaooc_json_object_default_ctor(this);
-  }
-  if(this->type_==JSON_OBJECT) {
-    assign(this->object_,((yaooc_json_object_const_pointer)s)->object_);
-  } else {
-		THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,
-					"Attempt to assign JSON_OBJECT to %s",yaooc_json_type_strings[this->type_]));
-  }
+yaooc_json_object_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_object_parent_class_table->virtual_dtor(this)
+#define PM(method,...) CTM((*yaooc_json_object_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_json_object_dtor(this);
+    
+#undef PM
+#undef super
 }
-
-int yaooc_json_object_virtual_rich_compare(const_pointer p,const_pointer o)
+void yaooc_json_object_virtual_assign(pointer __pthis__,const_pointer src)
 {
-  return 0;
+yaooc_json_object_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_object_parent_class_table->virtual_assign(this,src)
+#define PM(method,...) CTM((*yaooc_json_object_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_json_object_assign(this,src);
+    
+#undef PM
+#undef super
 }
-
-void yaooc_json_object_print(const_pointer p,ostream_pointer s)
+int yaooc_json_object_virtual_rich_compare(const_pointer __pthis__,const_pointer other)
 {
-  yaooc_json_object_const_pointer this=p;
-	yaooc_ostream_pointer strm=s;
-	M(strm,printf,"{");
-	yaooc_json_object_const_iterator io;
-	if(M(this,size)>0) {
-		io=M(this->object_,begin);
-		M(&io->first,print,s);
-		M(strm,printf,":");
-		M(&io->second,print,s);
-		for(io++;io!=M(this->object_,end);io++) {
-			M(strm,printf,",");
-			M(&io->first,print,s);
-			M(strm,printf,":");
-			M(&io->second,print,s);
-		}
-  }
-	M(strm,printf,"}");
+yaooc_json_object_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_json_object_parent_class_table->virtual_rich_compare(this,other)
+#define PM(method,...) CTM((*yaooc_json_object_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_json_object_rich_compare(this,other);
+    
+#undef PM
+#undef super
 }
-
-yaooc_json_object_iterator yaooc_json_object_insert(pointer p,const_pointer str,const_pointer val)
-{
-  yaooc_json_object_pointer this=p;
-  return M(this->object_,insert,str,val);
-}
-
-void yaooc_json_object_erase(pointer p,const_pointer str)
-{
-  yaooc_json_object_pointer this=p;
-  M(this->object_,erase_key,str);
-}
-
-void yaooc_json_object_clear(pointer p)
-{
-  yaooc_json_object_pointer this=p;
-  M(this->object_,clear);
-}
-
-size_t yaooc_json_object_size(const_pointer p)
-{
-  yaooc_json_object_const_pointer this=p;
-  return M(this->object_,size);
-}
-
-yaooc_json_value_pointer yaooc_json_object_at(const_pointer p,const_pointer str)
-{
-  yaooc_json_object_const_pointer this=p;
-  return M(this->object_,at,str);
-}
-
-yaooc_json_object_iterator yaooc_json_object_begin(const_pointer p)
-{
-  yaooc_json_object_const_pointer this=p;
-  return M(this->object_,begin);
-}
-
-yaooc_json_object_iterator yaooc_json_object_end(const_pointer p)
-{
-  yaooc_json_object_const_pointer this=p;
-  return M(this->object_,end);
-}
-
-
-/* Class table for yaooc_json_object */
-yaooc_json_object_class_table_t yaooc_json_object_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_json_value_class_table,
-  .type_name_ = (const char*) "yaooc_json_object_t",
-  .swap = (void (*) (pointer p,pointer)) yaooc_json_object_swap,
-  .virtual_dtor = (void (*) (pointer p)) yaooc_json_object_virtual_dtor,
-  .virtual_copy_ctor = (void (*) (pointer,const_pointer)) yaooc_json_object_virtual_copy_ctor,
-  .virtual_assign = (void (*) (pointer,const_pointer)) yaooc_json_object_virtual_assign,
-  .virtual_rich_compare = (int (*) (const_pointer,const_pointer)) yaooc_json_object_virtual_rich_compare,
-  .type = (yaooc_json_type_t (*) (const_pointer)) yaooc_json_value_type,
-  .print = (void (*) (const_pointer,ostream_pointer)) yaooc_json_object_print,
-  .insert = (yaooc_json_object_iterator (*) (pointer p,const_pointer,const_pointer)) yaooc_json_object_insert,
-  .erase = (void (*) (pointer p,const_pointer)) yaooc_json_object_erase,
-  .clear = (void (*) (pointer p)) yaooc_json_object_clear,
-  .size = (size_t (*) (const_pointer p)) yaooc_json_object_size,
-  .at = (yaooc_json_value_pointer (*) (const_pointer p,const_pointer)) yaooc_json_object_at,
-  .begin = (yaooc_json_object_iterator (*) (const_pointer p)) yaooc_json_object_begin,
-  .end = (yaooc_json_object_iterator (*) (const_pointer p)) yaooc_json_object_end,
+yaooc_json_object_class_table_t yaooc_json_object_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_json_value_class_table,
+.type_name_ = (const char*)"yaooc_json_object_t",
+.swap = (void(*)(pointer,pointer)) yaooc_json_object_swap,
+.virtual_dtor = (void(*)(pointer)) yaooc_json_object_virtual_dtor,
+.virtual_assign = (void(*)(pointer,const_pointer)) yaooc_json_object_virtual_assign,
+.virtual_rich_compare = (int(*)(const_pointer,const_pointer)) yaooc_json_object_virtual_rich_compare,
 };
-
-
-DEFINE_TYPE_INFO(yaooc_json_object,Y,N,N,N,N,N,N,Y,yaooc_json_value);
-/*  End YAOOC PreProcessor generated content */
+const type_info_t __yaooc_json_object_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_json_object_t),
+.rich_compare_=yaooc_json_object_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=yaooc_json_object_dtor,
+.copy_ctor_=NULL,
+.assign_=yaooc_json_object_assign,
+.class_table_=(const class_table_t*) &yaooc_json_object_class_table,
+.parent_=&__yaooc_json_value_ti
+};
+const type_info_t* const yaooc_json_object_ti=&__yaooc_json_object_ti;

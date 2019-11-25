@@ -38,9 +38,9 @@ STACK_DEFINITION(parser_position,parser_position_stack);
 
 enum { PARSE_SUCCESS = 0, PARSE_FAILED };
 
-#define RULE_START(p) M((yaooc_base_parser_pointer)this,rule_start)
-#define RULE_FAIL(p) M((yaooc_base_parser_pointer)this,rule_fail)
-#define RULE_SUCCESS(p) M((yaooc_base_parser_pointer)this,rule_success)
+#define RULE_START(p) M((yaooc_base_parser_pointer)p,rule_start)
+#define RULE_FAIL(p) M((yaooc_base_parser_pointer)p,rule_fail)
+#define RULE_SUCCESS(p) M((yaooc_base_parser_pointer)p,rule_success)
 
 #define YAOOC_PARSER_OPTIONAL(rule) ((rule),true)
 #define YAOOC_PARSER_TRY_RULE(p,rule) (RULE_START(p), (rule) ? RULE_SUCCESS(p) : RULE_FAIL(p))

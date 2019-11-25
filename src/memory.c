@@ -1,47 +1,68 @@
 #include <yaooc/memory.h>
-
-#include <stdlib.h>
-
-
-
-
-
-
-
-
-
-void dynamic_pointer_default_ctor(pointer p)
+void yaooc_dynamic_pointer_ctor_ptr(pointer __pthis__,va_list __con_args__)
 {
-  (*(void**)p) = NULL;
+yaooc_dynamic_pointer_pointer this=__pthis__;
+const_pointer p = va_arg(__con_args__,const_pointer);
+
+
+ yaooc_dynamic_pointer_copy_ctor(this,p); 
 }
-void dynamic_pointer_dtor(pointer p)
+void yaooc_dynamic_pointer_default_ctor(pointer __pthis__)
 {
-  if((*(void**)p)) {
-    delete ((*(void**)p));
-    (*(void**)p)=NULL;
-  }
-}
+yaooc_dynamic_pointer_pointer this=__pthis__;(void)this;
 
-void dynamic_pointer_copy_ctor(pointer d,const_pointer s)
+
+ this->ptr_=NULL; 
+}
+void yaooc_dynamic_pointer_dtor(pointer __pthis__)
 {
-  if((*(void**)s))
-    (*(void**)d)=new_copy((*(void**)s));
-  else
-    (*(void**)d)=NULL;
-}
+yaooc_dynamic_pointer_pointer this=__pthis__;(void)this;
 
-void dynamic_pointer_assign(pointer d,const_pointer s)
+ if(this->ptr_!=NULL) delete(this->ptr_); 
+}
+void yaooc_dynamic_pointer_copy_ctor(pointer __pthis__,const_pointer __psrc__)
 {
-  dynamic_pointer_dtor(d);
-  dynamic_pointer_copy_ctor(d,s);
-}
+yaooc_dynamic_pointer_pointer this=__pthis__;(void)this;
+yaooc_dynamic_pointer_const_pointer src=__psrc__;(void)src;
 
-int dynamic_pointer_rich_compare(const_pointer p1,const_pointer p2)
+
+
+      this->ptr_ = src->ptr_ ? new_copy(src->ptr_) : NULL;
+    
+}
+void yaooc_dynamic_pointer_assign(pointer __pthis__,const_pointer __psrc__)
 {
-  return op_rich_compare(*(pointer**)p1,*(pointer**)p2);
+yaooc_dynamic_pointer_pointer this=__pthis__;(void)this;
+yaooc_dynamic_pointer_const_pointer src=__psrc__;(void)src;
+
+
+      yaooc_dynamic_pointer_dtor(this);
+      yaooc_dynamic_pointer_copy_ctor(this,src);
+    
 }
+int yaooc_dynamic_pointer_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_dynamic_pointer_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_dynamic_pointer_const_pointer rhs=__prhs__;(void)rhs;
 
-
+      return op_rich_compare(lhs->ptr_,rhs->ptr_);
+    
+}
+const type_info_t __yaooc_dynamic_pointer_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_dynamic_pointer_t),
+.rich_compare_=yaooc_dynamic_pointer_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_dynamic_pointer_default_ctor,
+.dtor_=yaooc_dynamic_pointer_dtor,
+.copy_ctor_=yaooc_dynamic_pointer_copy_ctor,
+.assign_=yaooc_dynamic_pointer_assign,
+.class_table_=NULL,
+.parent_=NULL
+};
+const type_info_t* const yaooc_dynamic_pointer_ti=(const type_info_t* const)&__yaooc_dynamic_pointer_ti;
 void yaooc_unique_pointer_ctor_ptr(pointer __pthis__,va_list __con_args__)
 {
 yaooc_unique_pointer_pointer this=__pthis__;

@@ -26,9 +26,9 @@ void yaooc_regex_pattern_info_copy_ctor(pointer __pthis__,const_pointer __psrc__
 yaooc_regex_pattern_info_pointer this=__pthis__;(void)this;
 yaooc_regex_pattern_info_const_pointer src=__psrc__;(void)src;
 
-
 call_default_ctor_static(this,yaooc_regex_pattern_info);
 assign_static(this,src,yaooc_regex_pattern_info);
+
 
 }
 void yaooc_regex_pattern_info_assign(pointer __pthis__,const_pointer __psrc__)

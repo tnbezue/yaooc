@@ -1,615 +1,526 @@
-/* Begin YAOOCPP output */
-
 #include <yaooc/rbtree_index_array_container.h>
-#include <sys/types.h>
-#include <sys/param.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
-yaooc_rbnode_t* yaooc_rbnode_new();
-/*
-	If the index value for this node is >= index, increment it and decrement count.
-	If count is zero, return 1 to terminate iteration
-*/
-int yaooc_rbnode_increment_index(yaooc_rbnode_t* node, unsigned int index,unsigned int n,unsigned int* count)
+static bool yaooc_rbnode_is_red(const_pointer);
+static const yaooc_rbnode_t* yaooc_rbnode_find_node(const_pointer,yaooc_rbtree_index_array_container_const_pointer,const_pointer);
+static yaooc_rbnode_t* yaooc_rbnode_rotate(pointer,int);
+static yaooc_rbnode_t* yaooc_rbnode_rotate2(pointer,int);
+static void yaooc_rbnode_decrement_index(pointer,unsigned int,unsigned int,unsigned int*);
+static bool yaooc_rbnode_is_red(const_pointer __pthis__)
 {
-	if(node->index_ >= index) {
-		node->index_+=n;
-		(*count)--;
-		return *count == 0;
-	}
-	return 0;
+yaooc_rbnode_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_rbnode_parent_class_table->is_red(this)
+#define PM(method,...) CTM((*yaooc_rbnode_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return this && this->color_==RED;
+    
+#undef PM
+#undef super
 }
-
-/*
-	If the index value for this node is >= index, decrement it and decrement count.
-	If count is zero, return 1 to terminate iteration
-*/
-int yaooc_rbnode_decrement_index(yaooc_rbnode_t* node, unsigned int index,unsigned int n,unsigned int* count)
+static const yaooc_rbnode_t* yaooc_rbnode_find_node(const_pointer __pthis__,yaooc_rbtree_index_array_container_const_pointer rbtree,const_pointer value)
 {
-	if(node->index_ >= index) {
-		node->index_-=n;
-		(*count)--;
-		return *count == 0;
-	}
-	return 0;
+yaooc_rbnode_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_rbnode_parent_class_table->find_node(this,rbtree,value)
+#define PM(method,...) CTM((*yaooc_rbnode_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this) {
+
+        int rc=__op_rich_compare__(value,AT(rbtree,this->index_),get_rich_compare(TYPE_INFO(rbtree)));
+
+        if(rc == 0)
+          return this;
+        if(rc < 0)
+          return yaooc_rbnode_find_node(this->link_[0],rbtree,value);
+        else
+          return yaooc_rbnode_find_node(this->link_[1],rbtree,value);
+      }
+      return NULL;
+    
+#undef PM
+#undef super
 }
-
-/* Private variables implementation for yaooc_rbtree_index_array_container */
-
-/* Private methods prototypes for yaooc_rbtree_index_array_container */
-static void yaooc_rbtree_index_array_container_rotate_left(yaooc_rbnode_t*);
-static void yaooc_rbtree_index_array_container_rotate_right( yaooc_rbnode_t*);
-static yaooc_rbnode_t* yaooc_rbtree_index_array_container_rbsuccessor(pointer, yaooc_rbnode_t*);
-static void yaooc_rbtree_index_array_container_rbdestroy_private(pointer, yaooc_rbnode_t*);
-static void yaooc_rbtree_index_array_container_rbrepair(yaooc_rbnode_t*);
-
-/* Type Info implemmentation for yaooc_rbtree_index_array_container */
-void yaooc_rbtree_index_array_container_dtor(pointer p)
+static yaooc_rbnode_t* yaooc_rbnode_rotate(pointer __pthis__,int dir)
 {
-  yaooc_rbtree_index_array_container_pointer this=p;
-	yaooc_rbtree_index_array_container_rbdestroy_private(this,yaooc_rbtree_index_array_container_rbfirst(this));
-	FREE(this->root_);
+yaooc_rbnode_pointer this=__pthis__;(void)this;
+#define super() yaooc_rbnode_parent_class_table->rotate(this,dir)
+#define PM(method,...) CTM((*yaooc_rbnode_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_rbnode_t *result = NULL;
+      if (this) {
+          result = this->link_[!dir];
+          this->link_[!dir] = result->link_[dir];
+          result->link_[dir] = this;
+          this->color_=RED;
+          result->color_=BLACK;
+      }
+      return result;
+    
+#undef PM
+#undef super
 }
-
-void yaooc_rbtree_index_array_container_copy_ctor(pointer p,const_pointer s)
+static yaooc_rbnode_t* yaooc_rbnode_rotate2(pointer __pthis__,int dir)
 {
-  call_constructor(p,yaooc_rbtree_index_array_container_ctor_ti,TYPE_INFO(s));
-  yaooc_rbtree_index_array_container_assign(p,s);
+yaooc_rbnode_pointer this=__pthis__;(void)this;
+#define super() yaooc_rbnode_parent_class_table->rotate2(this,dir)
+#define PM(method,...) CTM((*yaooc_rbnode_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_rbnode_t *result = NULL;
+      if (this) {
+          this->link_[!dir] = yaooc_rbnode_rotate(this->link_[!dir], !dir);
+          result = yaooc_rbnode_rotate(this, dir);
+      }
+      return result;
+    
+#undef PM
+#undef super
 }
-
-yaooc_rbnode_t* yaooc_rbtree_clone_node(yaooc_rbnode_t* node)
+static void yaooc_rbnode_decrement_index(pointer __pthis__,unsigned int index,unsigned int n,unsigned int* remaining)
 {
-	yaooc_rbnode_t* dup=yaooc_rbnode_rbnil;
-	if(node != yaooc_rbnode_rbnil) {
-		dup=yaooc_rbnode_new();
-		dup->index_ = node->index_;
-		dup->left_=yaooc_rbtree_clone_node(node->left_);
-		if(dup->left_ != yaooc_rbnode_rbnil)
-			dup->left_->parent_=dup;
-		dup->right_=yaooc_rbtree_clone_node(node->right_);
-		if(dup->right_ != yaooc_rbnode_rbnil)
-			dup->right_->parent_=dup;
-	}
-	return dup;
+yaooc_rbnode_pointer this=__pthis__;(void)this;
+#define super() yaooc_rbnode_parent_class_table->decrement_index(this,index,n,remaining)
+#define PM(method,...) CTM((*yaooc_rbnode_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this) {
+        if(this->index_ > index) {
+          this->index_ -= n;
+          (*remaining)--;
+        }
+        if(*remaining == 0)
+          return;
+        yaooc_rbnode_decrement_index(this->link_[0],index,n,remaining);
+        if(*remaining == 0)
+          return;
+        yaooc_rbnode_decrement_index(this->link_[1],index,n,remaining);
+      }
+    
+#undef PM
+#undef super
 }
-
-void yaooc_rbtree_delete_node(yaooc_rbnode_t* node)
+void yaooc_rbnode_default_ctor(pointer __pthis__)
 {
-	if(node != yaooc_rbnode_rbnil) {
-		yaooc_rbtree_delete_node(node->left_);
-		yaooc_rbtree_delete_node(node->right_);
-		FREE(node);
-	}
+yaooc_rbnode_pointer this=__pthis__;(void)this;
+
+
+
+    this->link_[0]=this->link_[1]=NULL;
+    this->index_=0; this->color_=BLACK;
+  
 }
-
-void yaooc_rbtree_index_array_container_assign(pointer p,const_pointer s)
+void yaooc_rbnode_dtor(pointer __pthis__)
 {
-  yaooc_rbtree_index_array_container_pointer this=p;
-  yaooc_rbtree_index_array_container_const_pointer src=s;
-	yaooc_rbtree_index_array_container_clear(this);
-//	yaooc_rbtree_index_array_container_rbdestroy_private(this,yaooc_rbtree_index_array_container_rbfirst(this));
-  yaooc_array_container_assign(this,src);
-	if(this->root_ != yaooc_rbnode_rbnil)
-		yaooc_rbtree_delete_node(this->root_);
-	this->root_=yaooc_rbtree_clone_node(src->root_);
+yaooc_rbnode_pointer this=__pthis__;(void)this;
+
+
+    if(this) {
+      delete(this->link_[0]);
+      delete(this->link_[1]);
+    }
+  
 }
-
-static yaooc_rbnode_t __yaooc_rbnode_rbnil = { .left_ = &__yaooc_rbnode_rbnil, .right_=&__yaooc_rbnode_rbnil, .parent_=&__yaooc_rbnode_rbnil };
-yaooc_rbnode_t* yaooc_rbnode_rbnil = &__yaooc_rbnode_rbnil;
-
-/* Constructors implementation for yaooc_rbtree_index_array_container */
-void yaooc_rbtree_index_array_container_ctor_ti(pointer p,va_list args)
+void yaooc_rbnode_copy_ctor(pointer __pthis__,const_pointer __psrc__)
 {
-  yaooc_rbtree_index_array_container_pointer this=p;
-  call_constructor(p,yaooc_array_container_ctor_ti,va_arg(args,const type_info_t*));
-	this->root_=yaooc_rbnode_new();
-	/*
-	 * We use a self-referencing sentinel node called nil to simplify the
-	 * code by avoiding the need to check for NULL pointers.
-	 *
-	this->nil_.left_ = this->nil_.right_ = this->nil_.parent_ = &this->nil_;
-	this->nil_.color_ = black;
-	this->nil_.index_ = 0;
-
-	this->nil_=&nil;*/
-	/*
-	 * Similarly, the fake root node keeps us from having to worry
-	 * about splitting the root.
-
-	this->root_=MALLOC(sizeof(yaooc_rbnode_t));
-	this->root_->left_ = this->root_->right_ = this->root_->parent_ = yaooc_rbnode_rbnil;
-	this->root_->color_ = black;
-	this->root_->index_ = 0;*/
-}
+yaooc_rbnode_pointer this=__pthis__;(void)this;
+yaooc_rbnode_const_pointer src=__psrc__;(void)src;
 
 
-/* Private methods implementation for yaooc_rbtree_index_array_container */
-/*
- * Perform a left rotation starting at node.
- */
-static void yaooc_rbtree_index_array_container_rotate_left(yaooc_rbnode_t* node)
-{
-	yaooc_rbnode_t *child;
-
-	child = node->right_;
-	node->right_ = child->left_;
-
-	if (child->left_ != yaooc_rbnode_rbnil)
-		child->left_->parent_ = node;
-	child->parent_ = node->parent_;
-
-	if (node == node->parent_->left_)
-		node->parent_->left_ = child;
-	else
-		node->parent_->right_ = child;
-	child->left_ = node;
-	node->parent_ = child;
-}
-
-/*
- * Perform a right rotation starting at node.
- */
-static void yaooc_rbtree_index_array_container_rotate_right(yaooc_rbnode_t* node)
-{
-	yaooc_rbnode_t *child;
-
-	child = node->left_;
-	node->left_ = child->right_;
-
-	if (child->right_ != yaooc_rbnode_rbnil)
-		child->right_->parent_ = node;
-	child->parent_ = node->parent_;
-
-	if (node == node->parent_->left_)
-		node->parent_->left_ = child;
-	else
-		node->parent_->right_ = child;
-	child->right_ = node;
-	node->parent_ = child;
-}
-
-static yaooc_rbnode_t* yaooc_rbtree_index_array_container_rbsuccessor(pointer p,yaooc_rbnode_t* node)
-{
-	yaooc_rbtree_index_array_container_pointer this=p;
-	yaooc_rbnode_t* ret;
-
-	if ((ret = node->right_) != yaooc_rbnode_rbnil) {
-		while (ret->left_ != yaooc_rbnode_rbnil)
-		ret = ret->left_;
-	} else {
-		/* No right child, move up until we find it or hit the root */
-		for (ret = node->parent_; node == ret->right_; ret = ret->parent_)
-			node = ret;
-		if (ret == yaooc_rbtree_index_array_container_rbroot(this))
-		ret = yaooc_rbnode_rbnil;
-	}
-	return ret;
-}
-
-static void yaooc_rbtree_index_array_container_rbdestroy_private(pointer p,yaooc_rbnode_t* node)
-{
-  yaooc_rbtree_index_array_container_pointer this=p;
-	if (node != yaooc_rbnode_rbnil) {
-		yaooc_rbtree_index_array_container_rbdestroy_private(this, node->left_);
-		yaooc_rbtree_index_array_container_rbdestroy_private(this, node->right_);
-		FREE(node);
-	}
-}
-
-static void yaooc_rbtree_index_array_container_rbrepair(yaooc_rbnode_t* node)
-{
-	yaooc_rbnode_t *sibling;
-
-	while (node->color_ == yaooc_rbblack) {
-		if (node == node->parent_->left_) {
-			sibling = node->parent_->right_;
-			if (sibling->color_ == yaooc_rbred) {
-				sibling->color_ = yaooc_rbblack;
-				node->parent_->color_ = yaooc_rbred;
-				yaooc_rbtree_index_array_container_rotate_left( node->parent_);
-				sibling = node->parent_->right_;
-			}
-			if (sibling->right_->color_ == yaooc_rbblack && sibling->left_->color_ == yaooc_rbblack) {
-				sibling->color_ = yaooc_rbred;
-				node = node->parent_;
-			} else {
-				if (sibling->right_->color_ == yaooc_rbblack) {
-					sibling->left_->color_ = yaooc_rbblack;
-					sibling->color_ = yaooc_rbred;
-					yaooc_rbtree_index_array_container_rotate_right( sibling);
-					sibling = node->parent_->right_;
-				}
-				sibling->color_ = node->parent_->color_;
-				node->parent_->color_ = yaooc_rbblack;
-				sibling->right_->color_ = yaooc_rbblack;
-				yaooc_rbtree_index_array_container_rotate_left(node->parent_);
-				break;
-			}
-		} else { /* if (node == node->parent_->right_) */
-			sibling = node->parent_->left_;
-			if (sibling->color_ == yaooc_rbred) {
-				sibling->color_ = yaooc_rbblack;
-				node->parent_->color_ = yaooc_rbred;
-				yaooc_rbtree_index_array_container_rotate_right(node->parent_);
-				sibling = node->parent_->left_;
-			}
-			if (sibling->right_->color_ == yaooc_rbblack && sibling->left_->color_ == yaooc_rbblack) {
-				sibling->color_ = yaooc_rbred;
-				node = node->parent_;
-			} else {
-				if (sibling->left_->color_ == yaooc_rbblack) {
-					sibling->right_->color_ = yaooc_rbblack;
-					sibling->color_ = yaooc_rbred;
-					yaooc_rbtree_index_array_container_rotate_left(sibling);
-					sibling = node->parent_->left_;
-				}
-				sibling->color_ = node->parent_->color_;
-				node->parent_->color_ = yaooc_rbblack;
-				sibling->left_->color_ = yaooc_rbblack;
-				yaooc_rbtree_index_array_container_rotate_right(node->parent_);
-				break;
-			}
-		}
-	}
-}
-
-yaooc_rbnode_t* yaooc_rbnode_new()
-{
-	yaooc_rbnode_t* node=MALLOC(sizeof(yaooc_rbnode_t));
-	node->left_=node->right_=node->parent_=yaooc_rbnode_rbnil;
-	node->index_=0; node->color_=yaooc_rbblack;
-	return node;
-}
-
-void yaooc_rbtree_index_array_container_insert_index(pointer p,yaooc_rbnode_t** parent,unsigned int index);
-/* Protected implementation for yaooc_rbtree_index_array_container */
-iterator yaooc_rbtree_index_array_container_insert(pointer p,const_iterator pos,const_pointer value)
-{
-	yaooc_rbtree_index_array_container_pointer this=p;
-/*	yaooc_rbnode_t *node = yaooc_rbtree_index_array_container_rbfirst(this);
-	yaooc_rbnode_t *parent = yaooc_rbtree_index_array_container_rbroot(this);*/
-
-	yaooc_rbtree_index_array_container_find_result_t fr = yaooc_rbtree_index_array_container_rbfind(this,value);
-	if(fr.found_)
-		return AT(p,(*fr.node_)->index_);
-	// Not found, insert value into array
-	iterator ppos=yaooc_array_container_insert(p,pos,value);
-	yaooc_rbtree_index_array_container_insert_index(p,fr.node_,INDEX(p,ppos));
-	return ppos;
-}
-
-void yaooc_rbtree_index_array_container_insert_index(pointer p,yaooc_rbnode_t** parent,unsigned int index)
-{
-	yaooc_rbtree_index_array_container_pointer this=p;
-	// Renumber indexes
-	unsigned int n_gt_index=SIZE(this)-index-1;
-	if(n_gt_index > 0)
-		yaooc_rbtree_index_array_container_rbapply(this,yaooc_rbnode_increment_index,index,1,&n_gt_index);
-	yaooc_rbnode_t* node;
-
-	rich_compare rich_cmp=get_rich_compare(TYPE_INFO(p));
-	if (*parent == yaooc_rbtree_index_array_container_rbroot(this) ||
-						(rich_cmp(AT(this,index),AT(this,(*parent)->index_)) < 0)) {
-		node = (*parent)->left_ = yaooc_rbnode_new();
-	} else {
-		node = (*parent)->right_ = yaooc_rbnode_new();
-	}
-	node->index_ = index;
-	node->parent_ = *parent;
-	node->color_ = yaooc_rbred;
-
-	/*
-	* If the parent node is black we are all set, if it is red we have
-	* the following possible cases to deal with.  We iterate through
-	* the rest of the tree to make sure none of the required properties
-	* is violated.
-	*
-	*	1) The uncle is red.  We repaint both the parent and uncle black
-	*     and repaint the grandparent node red.
-	*
-	*  2) The uncle is black and the new node is the right child of its
-	*     parent, and the parent in turn is the left child of its parent.
-	*     We do a left rotation to switch the roles of the parent and
-	*     child, relying on further iterations to fixup the old parent.
-	*
-	*  3) The uncle is black and the new node is the left child of its
-	*     parent, and the parent in turn is the left child of its parent.
-	*     We switch the colors of the parent and grandparent and perform
-	*     a right rotation around the grandparent.  This makes the former
-	*     parent the parent of the new node and the former grandparent.
-	*
-	* Note that because we use a sentinel for the root node we never
-	* need to worry about replacing the root.
-	*/
-	while (node->parent_->color_ == yaooc_rbred) {
-		yaooc_rbnode_t *uncle;
-		if (node->parent_ == node->parent_->parent_->left_) {
-			uncle = node->parent_->parent_->right_;
-			if (uncle->color_ == yaooc_rbred) {
-				node->parent_->color_ = yaooc_rbblack;
-				uncle->color_ = yaooc_rbblack;
-				node->parent_->parent_->color_ = yaooc_rbred;
-				node = node->parent_->parent_;
-			} else /* if (uncle->color_ == black) */ {
-				if (node == node->parent_->right_) {
-					node = node->parent_;
-					yaooc_rbtree_index_array_container_rotate_left(node);
-				}
-				node->parent_->color_ = yaooc_rbblack;
-				node->parent_->parent_->color_ = yaooc_rbred;
-				yaooc_rbtree_index_array_container_rotate_right(node->parent_->parent_);
-			}
-		} else { /* if (node->parent_ == node->parent_->parent_->right_) */
-			uncle = node->parent_->parent_->left_;
-			if (uncle->color_ == yaooc_rbred) {
-				node->parent_->color_ = yaooc_rbblack;
-				uncle->color_ = yaooc_rbblack;
-				node->parent_->parent_->color_ = yaooc_rbred;
-				node = node->parent_->parent_;
-			} else /* if (uncle->color_ == black) */ {
-				if (node == node->parent_->left_) {
-					node = node->parent_;
-					yaooc_rbtree_index_array_container_rotate_right(node);
-				}
-				node->parent_->color_ = yaooc_rbblack;
-				node->parent_->parent_->color_ = yaooc_rbred;
-				yaooc_rbtree_index_array_container_rotate_left(node->parent_->parent_);
-			}
-		}
-	}
-	yaooc_rbtree_index_array_container_rbfirst(this)->color_ = yaooc_rbblack;	/* first node is always black */
-}
-
-/*
-iterator yaooc_rbtree_index_array_container_remove_index(pointer p,unsigned int index)
-{
-  yaooc_rbtree_index_array_container_pointer this=p;
-  iterator ret;
-  return ret;
-}
-
-
-iterator yaooc_rbtree_index_array_container_insert(pointer p,const_iterator pos,const_pointer value)
-{
-	yaooc_private_iterator ppos=(yaooc_private_iterator)pos;
-  yaooc_rbnode_t* ret=yaooc_rbtree_index_array_container_rbfind(p,value);
-	if(ret == NULL) {
-		ppos=yaooc_array_container_insert(p,pos,value);
-		unsigned index=INDEX(p,ppos);
-		yaooc_rbtree_index_array_container_insert_index(p,index);
-	}
-	return ppos;
-}
-*/
-/*
-	red black tree is unique so only insert 1
-*/
-iterator yaooc_rbtree_index_array_container_insertn(pointer p,const_iterator pos,size_t n,const_pointer value)
-{
-	return yaooc_rbtree_index_array_container_insert(p,pos,value);
-}
-
-iterator yaooc_rbtree_index_array_container_insert_range(pointer p,const_iterator pos,const_iterator f,const_iterator l)
-{
-  yaooc_rbtree_index_array_container_pointer this=p;
-	yaooc_private_const_iterator first=f;
-//	yaooc_private_const_iterator ppos=pos;
-	size_t idx=SIZE_MAX;
-	size_t ipos=INDEX(p,pos);
-	size_t old_size=SIZE(this);
-	for(;first!=l;first+=TYPE_SIZE(p)) {
-		iterator ret=yaooc_rbtree_index_array_container_insert(p,AT(p,ipos),first);
-		if(old_size != SIZE(p)) { // Size changed, must have been an insert.
-			if(idx==SIZE_MAX)
-				idx=INDEX(p,ret);
-			old_size++;
-			ipos=INDEX(p,ret)+1;
-		}
-	}
-  return AT(p,idx);
-}
-
-/*
-yaooc_rbtree_index_array_container_find_result_t yaooc_rbtree_index_array_container_find_protected(pointer p,const_pointer value)
-{
-  yaooc_rbtree_index_array_container_pointer this=p;
-  yaooc_rbtree_index_array_container_find_result_t ret;
-  return ret;
-}
-*/
-
-iterator yaooc_rbtree_index_array_container_find(pointer p,const_pointer value)
-{
-	yaooc_rbtree_index_array_container_find_result_t fr=yaooc_rbtree_index_array_container_rbfind(p,value);
-  return fr.found_ ? AT(p,(*fr.node_)->index_) : END(p);
-}
-
-iterator yaooc_rbtree_index_array_container_erase(pointer p,const_iterator pos)
-{
-//  yaooc_rbtree_index_array_container_pointer this=p;
-	unsigned int index=INDEX(p,pos);
-  yaooc_rbtree_index_array_container_erase_value(p,pos);
-	return AT(p,index);
-}
-
-size_t yaooc_rbtree_index_array_container_erase_value(pointer p,const_pointer value)
-{
-  yaooc_rbtree_index_array_container_pointer this=p;
-  size_t ret=0;
-	yaooc_rbtree_index_array_container_find_result_t fr=yaooc_rbtree_index_array_container_rbfind(p,value);
-	if(fr.found_) {
-		yaooc_array_container_erase(p,AT(p,(*fr.node_)->index_));
-		unsigned int index=(*fr.node_)->index_;
-		unsigned int n_gt_index=SIZE(p)-index;
-		yaooc_rbtree_index_array_container_rbdelete(p,*fr.node_);
-		if(n_gt_index > 0)
-			yaooc_rbtree_index_array_container_rbapply(this,yaooc_rbnode_decrement_index,index,1,&n_gt_index);
-		ret++;
-	}
-  return ret;
-}
-
-iterator yaooc_rbtree_index_array_container_erase_range(pointer p,const_iterator f,const_iterator l)
-{
-  yaooc_rbtree_index_array_container_pointer this=p;
-	yaooc_private_const_iterator last=l;
-	yaooc_private_const_iterator first=f;
-	for(;first!=last;first+=TYPE_SIZE(this)) {
-		yaooc_rbtree_index_array_container_find_result_t fr=yaooc_rbtree_index_array_container_rbfind(p,first);
-		yaooc_rbtree_index_array_container_rbdelete(p,*fr.node_);
-	}
-//	first=f;
-	iterator ret = yaooc_array_container_erase_range(p,f,l);
-	unsigned int n_gt_index=this->size_-DISTANCE(TYPE_INFO(p),this->array_,f);
-	yaooc_rbtree_index_array_container_rbapply(this,yaooc_rbnode_decrement_index,DISTANCE(TYPE_INFO(p),this->array_,f),DISTANCE(TYPE_INFO(p),f,l),&n_gt_index);
-  return ret;
-}
-
-void yaooc_rbtree_index_array_container_resize(pointer p,size_t n)
-{
-//  yaooc_rbtree_index_array_container_pointer this=p;
-	pointer v=__new_array(TYPE_INFO(p),1);
-	yaooc_rbtree_index_array_container_resize_value(p,1,v);
-	delete(v);
-}
-
-void yaooc_rbtree_index_array_container_resize_value(pointer p,size_t n,const_pointer value)
-{
-//  yaooc_rbtree_index_array_container_pointer this=p;
-	if(n <= SIZE(p)) {
-		yaooc_rbtree_index_array_container_erase_range(p,END(p)-(SIZE(p)-n)*TYPE_SIZE(p),END(p));
-	} else {
-		yaooc_rbtree_index_array_container_insert(p,END(p),value);
-	}
-}
-
-void yaooc_rbtree_index_array_container_clear(pointer p)
-{
-  yaooc_rbtree_index_array_container_pointer this=p;
-	yaooc_rbtree_index_array_container_rbdestroy_private(this,yaooc_rbtree_index_array_container_rbfirst(this));
-	this->root_->left_ = this->root_->right_ = this->root_->parent_ = yaooc_rbnode_rbnil;
-	this->root_->color_ = yaooc_rbblack;
-	this->root_->index_ = 0;
-	yaooc_array_container_clear(p);
-}
-
-int yaooc_rbtree_index_array_container_rbapply_node(yaooc_rbnode_t* node,action_func func,unsigned int index,unsigned int n,unsigned int* count)
-{
-//  yaooc_rbtree_index_array_container_pointer this=p;
-  int ret=0;
-	if(node != yaooc_rbnode_rbnil) {
-		if((ret = yaooc_rbtree_index_array_container_rbapply_node(node->left_,func,index,n,count)) != 0)
-			return ret;
-		if((ret = func(node,index,n,count)) != 0)
-			return ret;
-		if((ret = yaooc_rbtree_index_array_container_rbapply_node(node->right_,func,index,n,count)) != 0)
-			return ret;
-	}
-	return ret;
-}
-
-yaooc_rbtree_index_array_container_find_result_t
-yaooc_rbtree_index_array_container_rbfind(const_pointer p,const_pointer value)
-{
-  yaooc_rbtree_index_array_container_const_pointer this=p;
-	yaooc_rbnode_t* node=this->root_->left_;
-	yaooc_rbnode_t** anode = &this->root_->left_;
-	yaooc_rbnode_t** aparent=(yaooc_rbnode_t**)&this->root_;
-
-	rich_compare rich_cmp=get_rich_compare(TYPE_INFO(p));  // lt_cmp should always be defined
-	while (node != yaooc_rbnode_rbnil) {
-		aparent=anode;
-    int rc = rich_cmp(value,AT(this,node->index_));
-    if(rc < 0) {
-      node=node->left_;
-      anode=&(*anode)->left_;
-    } else if(rc > 0) {
-      node=node->right_;
-      anode=&(*anode)->right_;
-    } else
-      return (yaooc_rbtree_index_array_container_find_result_t){ anode, true };
-	}
-	return (yaooc_rbtree_index_array_container_find_result_t){ aparent, false};
-}
-
-/*
-yaooc_rbnode_t* yaooc_rbtree_index_array_container_rbinsert(pointer p,const_pointer value)
-{
-  yaooc_rbtree_index_array_container_pointer this=p;
-  yaooc_rbnode_t* ret=yaooc_rbtree_index_array_container_rbfind(p,value);
-	if(ret == NULL) {
-
-	}
-  return ret;
-}
-*/
-void yaooc_rbtree_index_array_container_rbdelete(pointer p,yaooc_rbnode_t* z)
-{
-  yaooc_rbtree_index_array_container_pointer this=p;
-	yaooc_rbnode_t *x, *y;
-
-	if (z->left_ == yaooc_rbnode_rbnil || z->right_ == yaooc_rbnode_rbnil)
-		y = z;
-	else
-		y = yaooc_rbtree_index_array_container_rbsuccessor(this, z);
-	x = (y->left_ == yaooc_rbnode_rbnil) ? y->right_ : y->left_;
-
-	if ((x->parent_ = y->parent_) == yaooc_rbtree_index_array_container_rbroot(this)) {
-		yaooc_rbtree_index_array_container_rbfirst(this) = x;
-	} else {
-		if (y == y->parent_->left_)
-		y->parent_->left_ = x;
-		else
-		y->parent_->right_ = x;
-	}
-	if (y->color_ == yaooc_rbblack)
-		yaooc_rbtree_index_array_container_rbrepair( x);
-	if (y != z) {
-		y->left_ = z->left_;
-		y->right_ = z->right_;
-		y->parent_ = z->parent_;
-		y->color_ = z->color_;
-		z->left_->parent_ = z->right_->parent_ = y;
-		if (z == z->parent_->left_)
-		z->parent_->left_ = y;
-		else
-		z->parent_->right_ = y;
-	}
-	FREE(z);
-}
-
-
-/* Table implementation for yaooc_rbtree_index_array_container */
-void yaooc_rbtree_index_array_container_swap(pointer p,pointer p2)
-{
-	yaooc_rbtree_index_array_container_pointer this=p;
-	yaooc_rbtree_index_array_container_pointer other=p2;
-	yaooc_array_container_swap(this,other);
+call_default_ctor_static(this,yaooc_rbnode);
+assign_static(this,src,yaooc_rbnode);
 
 }
-
-
-/* Class table definition for yaooc_rbtree_index_array_container */
-yaooc_rbtree_index_array_container_class_table_t yaooc_rbtree_index_array_container_class_table =
+void yaooc_rbnode_assign(pointer __pthis__,const_pointer __psrc__)
 {
-  .parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table,
-  .type_name_ = (const char*) "yaooc_rbtree_index_array_container_t",
-  .swap = (void(*)(pointer, pointer)) yaooc_rbtree_index_array_container_swap,
-  .increase_capacity = (bool(*)(pointer, size_t)) yaooc_rbtree_index_array_container_increase_capacity,
-  .size_needed = (size_t(*)(const_pointer, size_t)) yaooc_rbtree_index_array_container_size_needed,
-  .size = (size_t(*)(const_pointer)) yaooc_rbtree_index_array_container_size,
-  .capacity = (size_t(*)(const_pointer)) yaooc_rbtree_index_array_container_capacity,
-  .empty = (bool(*)(const_pointer)) yaooc_rbtree_index_array_container_empty,
-  .begin = (iterator(*)(pointer)) yaooc_rbtree_index_array_container_begin,
-  .end = (iterator(*)(pointer)) yaooc_rbtree_index_array_container_end,
-  .cbegin = (const_iterator(*)(const_pointer)) yaooc_rbtree_index_array_container_cbegin,
-  .cend = (const_iterator(*)(const_pointer)) yaooc_rbtree_index_array_container_cend,
+yaooc_rbnode_pointer this=__pthis__;(void)this;
+yaooc_rbnode_const_pointer src=__psrc__;(void)src;
+
+
+
+  
+}
+void yaooc_rbnode_ctor_index(pointer __pthis,va_list __con_args__){
+yaooc_rbnode_pointer this=__pthis;(void)this;
+unsigned int index = va_arg(__con_args__,unsigned int);
+
+call_default_ctor_static(this,yaooc_rbnode);
+
+
+    this->index_=index;
+    this->color_=RED;
+  
+}
+const type_info_t __yaooc_rbnode_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_rbnode_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_rbnode_default_ctor,
+.dtor_=yaooc_rbnode_dtor,
+.copy_ctor_=yaooc_rbnode_copy_ctor,
+.assign_=yaooc_rbnode_assign,
+.class_table_=NULL,
+.parent_=NULL
 };
+const type_info_t* const yaooc_rbnode_ti=(const type_info_t* const)&__yaooc_rbnode_ti;
+static void yaooc_rbtree_index_array_container_insert_node(pointer,int);
+static void yaooc_rbtree_index_array_container_erase_node(pointer,int);
+static void yaooc_rbtree_index_array_container_insert_node(pointer __pthis__,int idx)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+#define super() yaooc_rbtree_index_array_container_parent_class_table->insert_node(this,idx)
+#define PM(method,...) CTM((*yaooc_rbtree_index_array_container_parent_class_table),this,method,## __VA_ARGS__)
 
-/* Type info structure for yaooc_rbtree_index_array_container */
-DEFINE_TYPE_INFO(yaooc_rbtree_index_array_container,N,Y,Y,Y,N,N,N,Y,yaooc_array_container);
 
-/* End YAOOCPP output */
+      yaooc_rbnode_t* node=yaooc_rbnode_create(idx);
+      if (this->root_ == NULL) {
+          this->root_ = node;
+      } else {
+          yaooc_rbnode_t head = { .link_[0]=NULL,.link_[1]=NULL, .color_=BLACK, .index_=0 };
+          yaooc_rbnode_t *g, *t;
+          yaooc_rbnode_t *p, *q;
+          int dir = 0, last = 0;
 
+
+          t = &head;
+          g = p = NULL;
+          q = t->link_[1] = this->root_;
+
+
+          while (true) {
+              if (q == NULL) {
+
+
+                  p->link_[dir] = q = node;
+              } else if (yaooc_rbnode_is_red(q->link_[0]) && yaooc_rbnode_is_red(q->link_[1])) {
+
+
+                  q->color_=RED;
+                  q->link_[0]->color_=BLACK;
+                  q->link_[1]->color_=BLACK;
+              }
+
+              if (yaooc_rbnode_is_red(q) && yaooc_rbnode_is_red(p)) {
+
+
+                  int dir2 = t->link_[1] == g;
+                  if (q == p->link_[last]) {
+                      t->link_[dir2] = yaooc_rbnode_rotate(g, !last);
+                  } else {
+                      t->link_[dir2] = yaooc_rbnode_rotate2(g, !last);
+                  }
+              }
+
+
+
+              int rc=__op_rich_compare__(AT(this,q->index_),AT(this,node->index_),get_rich_compare(TYPE_INFO(this)));
+              if(rc == 0)
+                break;
+
+              last = dir;
+              dir = rc < 0;
+
+
+              if (g != NULL) {
+                  t = g;
+              }
+
+              g = p, p = q;
+              q = q->link_[dir];
+          }
+
+
+          this->root_ = head.link_[1];
+      }
+
+
+      this->root_->color_ = BLACK;
+    
+#undef PM
+#undef super
+}
+static void yaooc_rbtree_index_array_container_erase_node(pointer __pthis__,int index)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+#define super() yaooc_rbtree_index_array_container_parent_class_table->erase_node(this,index)
+#define PM(method,...) CTM((*yaooc_rbtree_index_array_container_parent_class_table),this,method,## __VA_ARGS__)
+
+
+        yaooc_rbnode_t head = { .link_[0]=NULL,.link_[1]=NULL, .color_=BLACK, .index_=0 };
+        yaooc_rbnode_t *q, *p, *g;
+        yaooc_rbnode_t *f = NULL;
+        int dir = 1;
+
+
+        q = &head;
+        g = p = NULL;
+        q->link_[1] = this->root_;
+
+
+
+        while (q->link_[dir] != NULL) {
+            int last = dir;
+
+
+            g = p, p = q;
+            q = q->link_[dir];
+
+            int rc=__op_rich_compare__(AT(this,q->index_),AT(this,index),get_rich_compare(TYPE_INFO(this)));
+
+            dir = rc < 0;
+
+
+
+            if (rc == 0) {
+                f = q;
+            }
+
+
+            if (!yaooc_rbnode_is_red(q) && !yaooc_rbnode_is_red(q->link_[dir])) {
+                if (yaooc_rbnode_is_red(q->link_[!dir])) {
+                    p = p->link_[last] = yaooc_rbnode_rotate(q, dir);
+                } else if (!yaooc_rbnode_is_red(q->link_[!dir])) {
+                    yaooc_rbnode_t *s = p->link_[!last];
+                    if (s) {
+                        if (!yaooc_rbnode_is_red(s->link_[!last]) && !yaooc_rbnode_is_red(s->link_[last])) {
+
+
+                            p->color_ = BLACK;
+                            s->color_ = RED;
+                            q->color_ = RED;
+                        } else {
+                            int dir2 = g->link_[1] == p;
+                            if (yaooc_rbnode_is_red(s->link_[last])) {
+                                g->link_[dir2] = yaooc_rbnode_rotate2(p, last);
+                            } else if (yaooc_rbnode_is_red(s->link_[!last])) {
+                                g->link_[dir2] = yaooc_rbnode_rotate(p, last);
+                            }
+
+
+                            q->color_ = g->link_[dir2]->color_=RED;
+                            g->link_[dir2]->link_[0]->color_=BLACK;
+                            g->link_[dir2]->link_[1]->color_=BLACK;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        if (f) {
+            unsigned int tmp = f->index_;
+            f->index_ = q->index_;
+            q->index_ = tmp;
+
+            p->link_[p->link_[1] == q] = q->link_[q->link_[0] == NULL];
+
+
+
+
+            q = NULL;
+        }
+
+
+        this->root_ = head.link_[1];
+
+
+        if (this->root_ != NULL) {
+            this->root_->color_=BLACK;
+        }
+
+
+    
+#undef PM
+#undef super
+}
+void yaooc_rbtree_index_array_container_dtor(pointer __pthis__)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+
+
+      delete(this->root_);
+    
+}
+void yaooc_rbtree_index_array_container_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+yaooc_rbtree_index_array_container_const_pointer src=__psrc__;(void)src;
+
+call_constructor(this,yaooc_rbtree_index_array_container_ctor_ti,TYPE_INFO(src));
+
+
+      assign_static(this,src,yaooc_rbtree_index_array_container);
+    
+}
+void yaooc_rbtree_index_array_container_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+yaooc_rbtree_index_array_container_const_pointer src=__psrc__;(void)src;
+
+
+      yaooc_array_container_assign(this,src);
+      delete(this->root_);
+      this->root_=NULL;
+      size_t i;
+      for(i=0;i!=M(src,size);i++) {
+        yaooc_rbtree_index_array_container_insert_node(this,i);
+      }
+    
+}
+void yaooc_rbtree_index_array_container_ctor_ti(pointer __pthis,va_list __con_args__){
+yaooc_rbtree_index_array_container_pointer this=__pthis;(void)this;
+const type_info_t* ti = va_arg(__con_args__,const type_info_t*);
+
+call_constructor(this,yaooc_array_container_ctor_ti,ti);
+
+
+      this->root_=NULL;
+    
+}
+iterator yaooc_rbtree_index_array_container_find(pointer __pthis__,const_pointer value)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+
+      const yaooc_rbnode_t* node=yaooc_rbnode_find_node(this->root_,this,value);
+      return node ? AT(this,node->index_) : END(this);
+    
+}
+iterator yaooc_rbtree_index_array_container_insert(pointer __pthis__,const_iterator pos,const_pointer value)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+
+
+      if(yaooc_rbtree_index_array_container_find(this,value) == END(this)) {
+        yaooc_array_container_insert(this,END(this),value);
+        yaooc_rbtree_index_array_container_insert_node(this,SIZE(this)-1);
+      }
+      return SIZE(this) > 0 ? AT(this,this->size_-1) : AT(this,0);
+    
+}
+iterator yaooc_rbtree_index_array_container_insertn(pointer __pthis__,const_iterator pos,size_t n,const_pointer value)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+
+
+      return yaooc_rbtree_index_array_container_insert(this,END(this),value);
+    
+}
+iterator yaooc_rbtree_index_array_container_insert_range(pointer __pthis__,const_iterator pos,const_iterator f,const_iterator l)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+
+      yaooc_private_const_iterator first=f;
+      yaooc_private_const_iterator last=l;
+      for(;first!=last;first+=TYPE_SIZE(this)) {
+        yaooc_rbtree_index_array_container_insert(this,END(this),first);
+      }
+      return SIZE(this) > 0 ? AT(this,this->size_-1) : AT(this,0);
+    
+}
+iterator yaooc_rbtree_index_array_container_erase(pointer __pthis__,const_iterator pos)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+
+      return yaooc_rbtree_index_array_container_erase_range(this,pos,((yaooc_private_const_pointer)pos)+TYPE_SIZE(this));
+    
+}
+iterator yaooc_rbtree_index_array_container_erase_range(pointer __pthis__,const_iterator f,const_iterator l)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+
+      size_t start_idx=DISTANCE(TYPE_INFO(this),BEGIN(this),f);
+      size_t end_idx=DISTANCE(TYPE_INFO(this),BEGIN(this),l);
+      unsigned int n = end_idx-start_idx;
+      unsigned int remaining=SIZE(this)-end_idx;
+      size_t idx;
+      for(idx=start_idx;idx<end_idx;idx++)
+        yaooc_rbtree_index_array_container_erase_node(this,idx);
+      yaooc_rbnode_decrement_index(this->root_,start_idx,n,&remaining);
+      return yaooc_array_container_erase_range(this,f,l);
+    
+}
+size_t yaooc_rbtree_index_array_container_erase_value(pointer __pthis__,const_pointer value)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+
+      size_t ret=0;
+      const_iterator pos=yaooc_rbtree_index_array_container_find(this,value);
+      if(pos != M(this,cend)) {
+        yaooc_rbtree_index_array_container_erase(this,pos);
+        ret=1;
+      }
+      return ret;
+    
+}
+void yaooc_rbtree_index_array_container_resize(pointer __pthis__,size_t n)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+
+      pointer temp=__new_array(TYPE_INFO(this),1);
+      yaooc_rbtree_index_array_container_resize_value(this,n,temp);
+      delete(temp);
+    
+}
+void yaooc_rbtree_index_array_container_resize_value(pointer __pthis__,size_t n,const_pointer value)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+
+      if(n < M(this,size))
+        yaooc_rbtree_index_array_container_erase_range(this,((yaooc_private_const_iterator)BEGIN(this))+n*TYPE_SIZE(this),END(this));
+      else if(n > M(this,size))
+        yaooc_rbtree_index_array_container_insert(this,END(this),value);
+    
+}
+void yaooc_rbtree_index_array_container_clear(pointer __pthis__)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+
+      yaooc_array_container_clear(this);
+      delete(this->root_);
+      this->root_=NULL;
+    
+}
+void yaooc_rbtree_index_array_container_swap(pointer __pthis__,pointer o)
+{
+yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
+#define super() yaooc_rbtree_index_array_container_parent_class_table->swap(this,o)
+#define PM(method,...) CTM((*yaooc_rbtree_index_array_container_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_rbtree_index_array_container_pointer other=0;
+      SWAP(yaooc_rbnode_t*,this->root_,other->root_);
+    
+#undef PM
+#undef super
+}
+yaooc_rbtree_index_array_container_class_table_t yaooc_rbtree_index_array_container_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_array_container_class_table,
+.type_name_ = (const char*)"yaooc_rbtree_index_array_container_t",
+.swap = (void(*)(pointer,pointer)) yaooc_rbtree_index_array_container_swap,
+.increase_capacity = (bool(*)(pointer,size_t)) yaooc_rbtree_index_array_container_increase_capacity,
+.size_needed = (size_t(*)(const_pointer,size_t)) yaooc_rbtree_index_array_container_size_needed,
+.size = (size_t(*)(const_pointer)) yaooc_rbtree_index_array_container_size,
+.capacity = (size_t(*)(const_pointer)) yaooc_rbtree_index_array_container_capacity,
+.empty = (bool(*)(const_pointer)) yaooc_rbtree_index_array_container_empty,
+.begin = (iterator(*)(pointer)) yaooc_rbtree_index_array_container_begin,
+.end = (iterator(*)(pointer)) yaooc_rbtree_index_array_container_end,
+.cbegin = (const_iterator(*)(const_pointer)) yaooc_rbtree_index_array_container_cbegin,
+.cend = (const_iterator(*)(const_pointer)) yaooc_rbtree_index_array_container_cend,
+};
+const type_info_t __yaooc_rbtree_index_array_container_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_rbtree_index_array_container_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=yaooc_rbtree_index_array_container_dtor,
+.copy_ctor_=yaooc_rbtree_index_array_container_copy_ctor,
+.assign_=yaooc_rbtree_index_array_container_assign,
+.class_table_=(const class_table_t*) &yaooc_rbtree_index_array_container_class_table,
+.parent_=&__yaooc_array_container_ti
+};
+const type_info_t* const yaooc_rbtree_index_array_container_ti=&__yaooc_rbtree_index_array_container_ti;

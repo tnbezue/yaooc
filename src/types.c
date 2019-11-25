@@ -22,7 +22,7 @@
   Type info for POD
 */
 #define POD_TYPE_INFO_IMPLEMENTATION(T) \
-int T ## _rich_compare(const T ## _t * v1,const T ## _t * v2) { return *v1 - *v2; } \
+int T ## _rich_compare(const T ## _t * lhs,const T ## _t * rhs) { return (*lhs > *rhs) - (*lhs < *rhs); } \
 __DEFINE_POD_TYPE_INFO__(T,(rich_compare)T ## _rich_compare,(to_stream)T ## _to_stream,(from_stream) T ## _from_stream)
 
 POD_TYPE_INFO_IMPLEMENTATION(char);

@@ -4,22 +4,19 @@
 
 #include <yaooc/object.h>
 
+yaooc_struct(yaooc_dynamic_pointer) {
+  void* ptr_;
+};
+void yaooc_dynamic_pointer_default_ctor(pointer);
+void yaooc_dynamic_pointer_dtor(pointer);
+void yaooc_dynamic_pointer_copy_ctor(pointer,const_pointer);
+void yaooc_dynamic_pointer_assign(pointer,const_pointer);
+int yaooc_dynamic_pointer_rich_compare(const_pointer,const_pointer);
+void yaooc_dynamic_pointer_ctor_ptr(pointer,va_list);
 
-void dynamic_pointer_default_ctor(pointer);
-void dynamic_pointer_dtor(pointer);
-void dynamic_pointer_copy_ctor(pointer,const_pointer);
-void dynamic_pointer_assign(pointer,const_pointer);
-int dynamic_pointer_rich_compare(const_pointer,const_pointer);
-
-
-#define DYNAMIC_POINTER_DEFINITION(T,N) \
-typedef T ## _t* N ## _t; \
-typedef N ## _t* N ## _pointer; \
-typedef const N ## _t* N ## _const_pointer; \
-extern const type_info_t* const N ## _ti
-
-#define DYNAMIC_POINTER_IMPLEMENTATION(T,N) \
-  __DEFINE_TYPE_INFO__(N,dynamic_pointer_default_ctor,dynamic_pointer_dtor,dynamic_pointer_copy_ctor,dynamic_pointer_assign,dynamic_pointer_rich_compare,NULL,NULL,NULL,NULL)
+#define yaooc_dynamic_pointer_get(p) ((yaooc_dynamic_pointer_pointer)p)->ptr_;
+#define make_dynamic_pointer(p) &(yaooc_dynamic_pointer_t) { .ptr_=p }
+#include <yaooc/vector.h>
 
 
 yaooc_class_table(yaooc_unique_pointer) {

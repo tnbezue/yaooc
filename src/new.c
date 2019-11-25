@@ -94,6 +94,13 @@ void __call_default_ctor_static(pointer ptr,const type_info_t* ti)
     pdc(ptr);
 }
 
+void __call_copy_ctor_static(pointer ptr,const_pointer src,const type_info_t* ti)
+{
+  copy_constructor cc=get_copy_ctor(ti);
+  if(cc)
+    cc(ptr,src);
+}
+
 pointer __newp_array(pointer ptr,const type_info_t* ti,size_t n_elements)
 {
 	size_t i;

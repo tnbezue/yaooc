@@ -238,15 +238,15 @@ const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti
 /*
 	Comparison operators
 */
-#define __op_rich_rich_compare__(lhs,rhs,rich_compare) ( rich_compare ? rich_compare(lhs,rhs) : 0 )
-#define __op_eq__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) == 0 )
-#define __op_ne__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) != 0)
-#define __op_lt__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) <  0)
-#define __op_le__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) <= 0)
-#define __op_gt__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) >  0)
-#define __op_ge__(lhs,rhs,rich_compare) (__op_rich_rich_compare__(lhs,rhs,rich_compare) >= 0)
+#define __op_rich_compare__(lhs,rhs,rich_compare) ( rich_compare ? rich_compare(lhs,rhs) : 0 )
+#define __op_eq__(lhs,rhs,rich_compare) (__op_rich_compare__(lhs,rhs,rich_compare) == 0 )
+#define __op_ne__(lhs,rhs,rich_compare) (__op_rich_compare__(lhs,rhs,rich_compare) != 0)
+#define __op_lt__(lhs,rhs,rich_compare) (__op_rich_compare__(lhs,rhs,rich_compare) <  0)
+#define __op_le__(lhs,rhs,rich_compare) (__op_rich_compare__(lhs,rhs,rich_compare) <= 0)
+#define __op_gt__(lhs,rhs,rich_compare) (__op_rich_compare__(lhs,rhs,rich_compare) >  0)
+#define __op_ge__(lhs,rhs,rich_compare) (__op_rich_compare__(lhs,rhs,rich_compare) >= 0)
 
-#define op_rich_compare_static(lhs,rhs,T) __op_rich_rich_compare__(lhs,rhs,get_rich_compare(T ## _ti))
+#define op_rich_compare_static(lhs,rhs,T) __op_rich_compare__(lhs,rhs,get_rich_compare(T ## _ti))
 #define op_eq_static(lhs,rhs,T) (op_rich_compare_static(lhs,rhs,T) == 0)
 #define op_ne_static(lhs,rhs,T) (op_rich_compare_static(lhs,rhs,T) != 0)
 #define op_lt_static(lhs,rhs,T) (op_rich_compare_static(lhs,rhs,T) <  0)
@@ -254,7 +254,7 @@ const type_info_t* const T ## _ti = (const type_info_t*)&__ ## T ## _ti
 #define op_gt_static(lhs,rhs,T) (op_rich_compare_static(lhs,rhs,T) >  0)
 #define op_ge_static(lhs,rhs,T) (op_rich_compare_static(lhs,rhs,T) >= 0)
 
-#define op_rich_compare(lhs,rhs) __op_rich_rich_compare__(lhs,rhs,get_rich_compare(get_type_info(lhs)))
+#define op_rich_compare(lhs,rhs) __op_rich_compare__(lhs,rhs,get_rich_compare(get_type_info(lhs)))
 #define op_eq(lhs,rhs) (op_rich_compare(lhs,rhs) == 0)
 #define op_ne(lhs,rhs) (op_rich_compare(lhs,rhs) != 0)
 #define op_lt(lhs,rhs) (op_rich_compare(lhs,rhs) <  0)

@@ -136,6 +136,8 @@ static yaooc_string_t* preprocess(const char* file)
         M(&cpp_command,append," -I");
         M(&cpp_command,append,M(id,c_str));
       }
+//      puts(M(&cpp_command,c_str));
+//      puts(M(&output,c_str));
       yaooc_string_t* se=new(yaooc_string);
       int rc = command_pipe(M(&cpp_command,c_str),&output,contents,se);
       deletep(&cpp_command,yaooc_string);
@@ -198,25 +200,25 @@ static yaooc_string_t* preprocess(const char* file)
       yaoocpp_mixin_t* mixin;
       while(true) {
         if(yaoocpp_parser_class_forward(this,&current_section)) {
-          M(&this->sections_,push_back,(pointer)&current_section);
+          M(&this->sections_,push_back,make_dynamic_pointer(current_section));
           delete(current_section);
         } else if(yaoocpp_parser_class_definition(this,&current_section)) {
-          M(&this->sections_,push_back,(pointer)&current_section);
+          M(&this->sections_,push_back,make_dynamic_pointer(current_section));
           delete(current_section);
         } else if(yaoocpp_parser_header_directory(this)) {
 //          M(&this->sections_,push_back,(pointer)&current_section);
 //          delete(current_section);
         } else if(yaoocpp_parser_header(this,(pointer)&current_section)) {
-          M(&this->sections_,push_back,(pointer)&current_section);
+          M(&this->sections_,push_back,make_dynamic_pointer(current_section));
           delete(current_section);
         } else if(yaoocpp_parser_mixin(this,&mixin)) {
-          M(&this->mixins_,push_back,(pointer)&mixin);
+          M(&this->mixins_,push_back,make_dynamic_pointer(mixin));
           delete(mixin);
 //        } else if(yaoocpp_parser_definition_directory(this)) {
 //          M(&this->sections_,push_back,(pointer)&current_section);
         } else if(*this->current_pos_ != 0) {
           yaoocpp_parser_source(this,&current_section);
-          M(&this->sections_,push_back,(pointer)&current_section);
+          M(&this->sections_,push_back,make_dynamic_pointer(current_section));
           delete(current_section);
         } else {
           break;
@@ -402,6 +404,8 @@ static yaooc_string_t* preprocess(const char* file)
           else
             yaoocpp_class_inherit(*section);
           }
+          if(parent_name != NULL)
+            delete(parent_name);
         }
         if(LBRACE(temp)) {
           while(true) {
@@ -446,34 +450,37 @@ static yaooc_string_t* preprocess(const char* file)
       yaoocpp_variable_t* var;
       yaoocpp_method_t* method;
       while(true) {
+        yaooc_dynamic_pointer_t* dp;
         if(yaoocpp_parser_variable(this,&var,include_value)) {
-          yaoocpp_variable_pointer* existing_var = yaooc_find(yaoocpp_item_pointer,M(list,cbegin),M(list,cend),(pointer)&var);
-          if(existing_var == M(list,cend)) {
-            M(list,push_back,(pointer)&var);
-            existing_var=M(list,begin);
+          dp = yaooc_find(yaooc_dynamic_pointer,M(list,cbegin),M(list,cend),make_dynamic_pointer(var));
+          if(dp == M(list,cend)) {
+            M(list,push_back,make_dynamic_pointer(var));
+//            existing_var=M(list,begin);
           } else {
-            if((*existing_var)->generation_!=INHERITED) {
-              // Duplicate variable specified
+            yaoocpp_variable_t* existing_var=dp->ptr_;
+            if(existing_var->generation_!=INHERITED) {
+
               printf("Duplicate variable specified on or before line number %d\n",this->line_no_);
-              printf("X%sX X%sX\n",M(&(*existing_var)->name_,c_str),M(&var->name_,c_str));
+              printf("X%sX X%sX\n",M(&existing_var->name_,c_str),M(&var->name_,c_str));
               exit(3);
             }
-            (*existing_var)->generation_=OVERRIDDEN;
-            assign_static(&((*existing_var)->value_),&var->value_,yaooc_string);
+            assign_static(&existing_var->value_,&var->value_,yaooc_string);
+            existing_var->generation_=OVERRIDDEN;
           }
           delete(var);
         } else if(yaoocpp_parser_method(this,&method)) {
-          yaoocpp_method_t** existing_method = yaooc_find(yaoocpp_item_pointer,M(list,begin),M(list,end),(pointer)&var);
-          if(existing_method == M(list,cend))
-            M(list,push_back,(pointer)&method);
+          dp = yaooc_find(yaooc_dynamic_pointer,M(list,begin),M(list,end),make_dynamic_pointer(method));
+          if(dp == M(list,cend))
+            M(list,push_back,make_dynamic_pointer(method));
           else {
-            if((*existing_method)->generation_!=INHERITED) {
-              // Duplicate method specified
+            yaoocpp_method_t* existing_method = dp->ptr_;
+            if(existing_method->generation_!=INHERITED) {
+
               printf("Duplicate method specified on or before line number %d\n",this->line_no_);
               exit(3);
             }
-            assign_static(*existing_method,method,yaoocpp_method);
-            (*existing_method)->generation_=OVERRIDDEN;
+            assign_static(existing_method,method,yaoocpp_method);
+            existing_method->generation_=OVERRIDDEN;
 
           }
           delete(method);
@@ -506,7 +513,13 @@ static yaooc_string_t* preprocess(const char* file)
           M(&(*var)->value_,set,"0");
           return RULE_SUCCESS(this);
         }
+      } else if(M(this,ident,&val) && SEMICOLON(t)) {  // Just a variable type
+        *var=new(yaoocpp_variable);
+        M(&(*var)->type_,setn,val.beg_,val.end_-val.beg_);
+        return RULE_SUCCESS(this);
       }
+      if(*var != NULL)
+        delete(*var);
       return RULE_FAIL(this);
     }
 
@@ -554,15 +567,18 @@ static yaooc_string_t* preprocess(const char* file)
 
     bool set_parent(const char*parent_name,const yaoocpp_struct_t** parent)
     {
-      // Find the class for this
-      yaoocpp_item_pointer_vector_const_iterator i;
-      CFOR_EACH(i,&this->sections_) {
-        if(strcmp(M(&(*i)->name_,c_str),parent_name)==0) {
-          *parent=(yaoocpp_struct_t*)*i;
-          return true;
-        }
-      }
-      return false;
+      // Put class name in item to find in list
+      yaoocpp_item_t parent_item;
+      newp(&parent_item,yaoocpp_item);
+      M(&parent_item.name_,set,parent_name);
+      yaooc_dynamic_pointer_const_pointer dp=yaooc_find(yaooc_dynamic_pointer,M(&this->sections_,cbegin),
+          M(&this->sections_,cend),make_dynamic_pointer(&parent_item));
+      if(dp != M(&this->sections_,cend))
+        *parent=(yaoocpp_struct_t*)dp->ptr_;
+      else
+        *parent=NULL;
+      deletep(&parent_item,yaoocpp_item);
+      return *parent != NULL;
     }
 
     bool type_info(yaoocpp_struct_t* section)
@@ -593,7 +609,7 @@ static yaooc_string_t* preprocess(const char* file)
             char* value_text=gb_save(yaooc_token_raw_text(&value));
             yaoocpp_constructor_initializer_t* temp=gb_new_ctor(yaoocpp_constructor_initializer,
                   yaoocpp_constructor_initializer_ctor_id_value,id_text,value_text);
-            M(list,push_back,(pointer)&temp);
+            M(list,push_back,make_dynamic_pointer(temp));
           } else {
             printf("Error processing constructor initializers near line %d\n",saved_line_no);
             exit(9);
@@ -839,7 +855,7 @@ static yaooc_string_t* preprocess(const char* file)
         do {
           int saved_line_no=this->line_no_;
           if(M(this,ident,&id)) {
-            yaooc_string_t temp = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+            yaooc_string_t temp=YAOOC_STRING_STATIC_DEFAULT_CTOR;
             M(&temp,setn,id.beg_,id.end_-id.beg_);
             if(yaooc_find(yaooc_string,M(mixin_vector,begin),M(mixin_vector,end),&temp) != M(mixin_vector,end))
             {
@@ -925,10 +941,10 @@ static yaooc_string_t* preprocess(const char* file)
       do {
         yaoocpp_argument_t* arg;
         if(yaoocpp_parser_argument(this,&arg)) {
-          M(args,push_back,(pointer)&arg);
+          M(args,push_back,make_dynamic_pointer(arg));
           delete(arg);
         } else if(yaoocpp_parser_va_argument(this,&arg)) {
-          M(args,push_back,(pointer)&arg);
+          M(args,push_back,make_dynamic_pointer(arg));
           delete(arg);
         } else
           break;
@@ -950,7 +966,7 @@ static yaooc_string_t* preprocess(const char* file)
           // We have a constructor
           yaoocpp_constructor_t* con=gb_new(yaoocpp_constructor);
           M(&con->name_,setn,con_name.beg_,l);
-          if(yaooc_find(yaoocpp_item_pointer,M(&section->constructors_,cbegin),M(&section->constructors_,cend),(pointer)&con)
+          if(yaooc_find(yaooc_dynamic_pointer,M(&section->constructors_,cbegin),M(&section->constructors_,cend),(pointer)&con)
                 != M(&section->constructors_,cend)) {
             printf("Duplicate constructor %s specified on line number %d\n",M(&con->name_,c_str),saved_line_no);
             exit(12);
@@ -975,8 +991,9 @@ static yaooc_string_t* preprocess(const char* file)
                 printf("Error processing imlementation for constructor %.*s\n",(int)l,con_name.beg_);
                 exit(3);
               }
-              M(&section->constructors_,push_back,(pointer)&con);
-              delete(con);
+              M(&section->constructors_,push_back,make_dynamic_pointer(con));
+//              delete(con);
+              gb_exit();
               return RULE_SUCCESS(this);
             }
             printf("Error parsing constructor at line number %d\n",saved_line_no);
@@ -1045,7 +1062,7 @@ static yaooc_string_t* preprocess(const char* file)
       CFOR_EACH(imixin_name,&cls->mixins_) {
         assign_static(&temp->name_,imixin_name,yaooc_string);
 //        printf("Trying to find %s\n",M(&temp->name_,c_str));
-        yaoocpp_mixin_const_pointer* mixin=yaooc_find(yaoocpp_item_pointer,M(&this->mixins_,cbegin),M(&this->mixins_,cend),(pointer)&temp);
+        yaoocpp_mixin_const_pointer* mixin=yaooc_find(yaooc_dynamic_pointer,M(&this->mixins_,cbegin),M(&this->mixins_,cend),(pointer)&temp);
         if(mixin == M(&this->mixins_,cend)) {
 //          printf("Mixin \"%s\" not found.\n",M(imixin_name,c_str));
           exit(7);

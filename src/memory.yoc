@@ -1,63 +1,58 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 %include <yaooc/object.yod>
 %header_directory yaooc
 
-#include <stdlib.h>
-
 /*
-  Handles dynamically allocated objects.
-  It is meant to be used for polymorphic object pointers in a container (vector, map, etc)
+  Dynamic memory type is meant to used in a container (VECTOR). It allows different
+  types of dynamically allocated objects to be stored.  If containers will be searched (yaooc_find),
+  then each object should have a common virtual base.
 */
 
+%struct yaooc_dynamic_pointer
+{
+    yaooc_dynamic_pointer() { this->ptr_=NULL; }
+    ~yaooc_dynamic_pointer() { if(this->ptr_!=NULL) delete(this->ptr_); }
+    yaooc_dynamic_pointer(src) {
+      this->ptr_ = src->ptr_ ? new_copy(src->ptr_) : NULL;
+    }
+    operator=(src) {
+      yaooc_dynamic_pointer_dtor(this);
+      yaooc_dynamic_pointer_copy_ctor(this,src);
+    }
+    int operator<=>(lhs,rhs)
+    {
+      return op_rich_compare(lhs->ptr_,rhs->ptr_);
+    }
+
+    yaooc_dynamic_pointer_ctor_ptr(const_pointer p) { yaooc_dynamic_pointer_copy_ctor(this,p);  }
+  instance:
+    void* ptr_;
+  adjunct:
+};
 
 %header
-void dynamic_pointer_default_ctor(pointer);
-void dynamic_pointer_dtor(pointer);
-void dynamic_pointer_copy_ctor(pointer,const_pointer);
-void dynamic_pointer_assign(pointer,const_pointer);
-int dynamic_pointer_rich_compare(const_pointer,const_pointer);
-
-
-#define DYNAMIC_POINTER_DEFINITION(T,N) \
-typedef T ## _t* N ## _t; \
-typedef N ## _t* N ## _pointer; \
-typedef const N ## _t* N ## _const_pointer; \
-extern const type_info_t* const N ## _ti
-
-#define DYNAMIC_POINTER_IMPLEMENTATION(T,N) \
-  __DEFINE_TYPE_INFO__(N,dynamic_pointer_default_ctor,dynamic_pointer_dtor,dynamic_pointer_copy_ctor,dynamic_pointer_assign,dynamic_pointer_rich_compare,NULL,NULL,NULL,NULL)
-
+#define yaooc_dynamic_pointer_get(p) ((yaooc_dynamic_pointer_pointer)p)->ptr_;
+#define make_dynamic_pointer(p) &(yaooc_dynamic_pointer_t) { .ptr_=p }
+#include <yaooc/vector.h>
+//VECTOR_DEFINITION(yaooc_dynamic_pointer,yaooc_dynamic_pointer_vector);
 %%
-
-void dynamic_pointer_default_ctor(pointer p)
-{
-  (*(void**)p) = NULL;
-}
-void dynamic_pointer_dtor(pointer p)
-{
-  if((*(void**)p)) {
-    delete ((*(void**)p));
-    (*(void**)p)=NULL;
-  }
-}
-
-void dynamic_pointer_copy_ctor(pointer d,const_pointer s)
-{
-  if((*(void**)s))
-    (*(void**)d)=new_copy((*(void**)s));
-  else
-    (*(void**)d)=NULL;
-}
-
-void dynamic_pointer_assign(pointer d,const_pointer s)
-{
-  dynamic_pointer_dtor(d);
-  dynamic_pointer_copy_ctor(d,s);
-}
-
-int dynamic_pointer_rich_compare(const_pointer lhs,const_pointer rhs)
-{
-  return op_rich_compare(*(pointer**)lhs,*(pointer**)rhs);
-}
+//VECTOR_IMPLEMENTATION(yaooc_dynamic_pointer,yaooc_dynamic_pointer_vector);
 
 %class yaooc_unique_pointer : yaooc_object {
     yaooc_unique_pointer()

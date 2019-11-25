@@ -235,23 +235,39 @@ int command_pipe(const char* command,const yaooc_string_t* std_in,yaooc_string_t
 #include <string.h>
 
 typedef struct {
+#ifdef _WIN32
+  HANDLE pipe_handle;
+#else
   const char* pipename;
+#endif
   const yaooc_string_t *buffer;
 } thread_data_input;
 
 typedef struct {
+#ifdef _WIN32
+  HANDLE pipe_handle;
+#else
   const char* pipename;
+#endif
   yaooc_string_t *buffer;
 } thread_data_output;
 
 void* thread_writer(pointer p,void* data)
 {
   thread_data_input* wd=data;
+#ifdef _WIN32
+  if(ConnectNamedPipe(wd->pipe_handle, NULL) != FALSE) {
+    DWORD dwWritten;
+    WriteFile(wd->pipe_handle,M(wd->buffer,c_str),M(wd->buffer,size),&dwWritten,NULL);
+  }
+  CloseHandle(wd->pipe_handle);
+#else
   FILE* fh = fopen(wd->pipename,"w");
   if(fh) {
     fwrite(M(wd->buffer,c_str),1,M(wd->buffer,size),fh);
     fclose(fh);
   }
+#endif
   return NULL;
 }
 
@@ -259,8 +275,17 @@ void* thread_writer(pointer p,void* data)
 void* thread_reader(pointer p,void* data)
 {
   thread_data_output *rd = data;
-  FILE* fh = fopen(rd->pipename,"r");
   char* temp_buffer=MALLOC(TEMP_BUF_SIZE);
+#ifdef _WIN32
+  if(ConnectNamedPipe(rd->pipe_handle, NULL) != FALSE) {
+    DWORD dwRead;
+    while(ReadFile(rd->pipe_handle, temp_buffer, TEMP_BUF_SIZE, &dwRead, NULL) != FALSE) {
+      M(rd->buffer,appendn,temp_buffer,dwRead);
+    }
+    CloseHandle(rd->pipe_handle);
+  }
+#else
+  FILE* fh = fopen(rd->pipename,"r");
   M(rd->buffer,clear);
   if(fh) {
     while(!feof(fh)) {
@@ -269,6 +294,7 @@ void* thread_reader(pointer p,void* data)
     }
     fclose(fh);
   }
+#endif
   FREE(temp_buffer);
   return NULL;
 }
@@ -283,35 +309,54 @@ int command_pipe(const char* command,const yaooc_string_t* std_in,yaooc_string_t
   yaooc_thread_t* errreader=new_ctor(yaooc_thread,yaooc_thread_ctor_method,thread_reader);
 
   thread_data_input wd;
-  wd.pipename = "/tmp/pipein";
-  wd.buffer = std_in;
+#ifdef _WIN32
+  const char* pipein=TEXT("\\\\.\\pipe\\Pipein");
+  wd.pipe_handle=CreateNamedPipe(pipein,PIPE_ACCESS_DUPLEX,PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,1,1024 * 16,1024 * 16,NMPWAIT_USE_DEFAULT_WAIT,NULL);
+#else
+  const char* pipein="/tmp/pipein";
+  wd.pipename = pipein;
   mkfifo(wd.pipename, 0600);
+#endif
+  wd.buffer = std_in;
 
   thread_data_output rd;
-  rd.pipename = "/tmp/pipeout";
-  rd.buffer = std_out;
+
+#ifdef _WIN32
+  const char* pipeout=TEXT("\\\\.\\pipe\\Pipeout");
+  wd.pipe_handle=CreateNamedPipe(pipeout,PIPE_ACCESS_DUPLEX,PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,1,1024 * 16,1024 * 16,NMPWAIT_USE_DEFAULT_WAIT,NULL);
+#else
+  const char* pipeout="/tmp/pipeout";
+  rd.pipename = pipeout;
   mkfifo(rd.pipename, 0600);
+#endif
+  rd.buffer = std_out;
 
   thread_data_output err;
-  err.pipename = "/tmp/pipeerr";
-  err.buffer = std_err;
+#ifdef _WIN32
+  const char* pipeerr=TEXT("\\\\.\\pipe\\Pipeerr");
+  wd.pipe_handle=CreateNamedPipe(pipeerr,PIPE_ACCESS_DUPLEX,PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,1,1024 * 16,1024 * 16,NMPWAIT_USE_DEFAULT_WAIT,NULL);
+#else
+  const char* pipeerr = "/tmp/pipeerr";
+  err.pipename = pipeerr;
   mkfifo(err.pipename, 0600);
+#endif
+  err.buffer = std_err;
 
   M(writer,start,&wd);
   M(reader,start,&rd);
   M(errreader,start,&err);
 
   char* temp_cmd = malloc(strlen(command)+64);
-  sprintf(temp_cmd,"%s < %s > %s 2> %s",command,wd.pipename,rd.pipename,err.pipename);
+  sprintf(temp_cmd,"%s < %s > %s 2> %s",command,pipein,pipeout,pipeerr);
   int rc = system(temp_cmd);
   free(temp_cmd);
   M(writer,join);
   M(reader,join);
   M(errreader,join);
 
-  unlink(wd.pipename);
-  unlink(rd.pipename);
-  unlink(err.pipename);
+  unlink(pipein);
+  unlink(pipeout);
+  unlink(pipeerr);
   delete(writer);
   delete(reader);
   delete(errreader);

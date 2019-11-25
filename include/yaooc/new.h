@@ -157,6 +157,12 @@ void __call_default_ctor_static(pointer,const type_info_t*);
 #define call_parent_default_ctor_static(P,T) __call_default_ctor_static(P,T ## _ti->parent_)
 #define call_parent_default_ctor(P) __call_default_ctor_static(P,get_type_info(P)->parent_)
 
+void __call_copy_ctor_static(pointer,const_pointer,const type_info_t*);
+#define call_copy_ctor_static (P,S,T) __call_copy_ctor_static(P,S,T ## _ti)
+#define call_copy_ctor(P,S) __call_copy_ctor_static(P,S,get_type_info(S))
+#define call_parent_copy_ctor_static (P,S,T) __call_copy_ctor_static(P,S,T ## _ti->parent_)
+#define call_parent_copy_ctor(P,S) __call_copy_ctor_static(P,S,get_type_info(S)->parent_)
+
 bool has_destructor(const type_info_t*);
 copy_constructor get_copy_ctor(const type_info_t*);
 assignment get_assignment(const type_info_t*);

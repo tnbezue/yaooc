@@ -60,7 +60,7 @@ If not specified, the parent will be &quot;yaooc_object&quot;.  &quot;yaooc_obje
 </code></pre>
 
 <p>
-A class inherits all instance and table members.  Table members can be overriden -- instance members can not.
+A class inherits all instance and table members.  Table and instance members can be overriden.
 An overridden method should have the same return type, name, and argument types.
 </p>
 <p>
@@ -85,7 +85,7 @@ For the my_string class, the swap method will be overridden with the following:
 Note the the swap method uses a generic pointer (void *) as an argument.  A pointer of the appropriate type must be defined.
 </p>
 <p>
-Although possible (if you understand the inter workings of YAOOC),
+Although possible (if you understand the inner workings of YAOOC),
 a struct should not have a class as a parent and a class should not have a struct as a parent.
 </p>
 <h3>Calling Parent Method</h3>

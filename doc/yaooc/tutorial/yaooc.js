@@ -21,6 +21,7 @@ var menu_items = [
   ["memory_layout","Memory Layout"],
   ["placement_new_delete","Placement New and Delete"],
   ["rules","YAOOC Rules"],
+  ["complete_my_string_class","Complete my_string class"],
   ["garbage_bag","Garbage Bag"],
   ["exceptions","Exceptions"],
   ["containers","Containers"],

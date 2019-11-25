@@ -17,9 +17,532 @@
 
 %header_directory yaooc
 %include <yaooc/object.yod>
-
+%include <yaooc/exception.yod>
 %header
 #include <yaooc/stream.h>
 #include <yaooc/vector.h>
 #include <yaooc/map.h>
+typedef enum { JSON_UNDEFINED=0, JSON_NULL, JSON_BOOL, JSON_INTEGER, JSON_REAL, JSON_STRING,
+        JSON_ARRAY, JSON_OBJECT } yaooc_json_type_t;
 %%
+
+%class yaooc_json_value_array;
+%class yaooc_json_string_value_map;
+
+%header
+/*
+*/
+typedef union {
+  bool bool_;
+  int64_t int_;
+  double real_;
+  char* string_;
+  yaooc_json_value_array_t* array_;
+  yaooc_json_string_value_map_t* object_;
+} json_data_t;
+%%
+
+%class yaooc_json_exception : yaooc_exception {
+  yaooc_json_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
+};
+
+%class yaooc_json_value : yaooc_object
+{
+  yaooc_json_value()
+  {
+    this->type_=JSON_UNDEFINED;
+    this->real_=0;
+  }
+
+  ~yaooc_json_value()
+  {
+    if(this->type_ != JSON_UNDEFINED)
+      M(this,virtual_dtor);
+  }
+
+  operator=(src)
+  {
+    if(this->type_ == JSON_UNDEFINED) {
+      /* An undefined type can become any other type */
+      switch(src->type_) {
+        case JSON_UNDEFINED:
+          break;
+
+        case JSON_NULL:
+          this->type_=JSON_NULL;
+          break;
+
+        case JSON_BOOL:
+          this->type_=JSON_BOOL;
+          this->bool_=src->bool_;
+          break;
+
+        case JSON_INTEGER:
+          this->type_=JSON_INTEGER;
+          this->int_=src->int_;
+          break;
+
+        case JSON_REAL:
+          this->type_=JSON_REAL;
+          this->real_=src->real_;
+          break;
+
+        case JSON_STRING:
+          this->type_=JSON_STRING;
+          this->string_=src->string_ ? STRDUP(src->string_) : NULL;
+          break;
+
+        case JSON_ARRAY:
+          this->type_=JSON_ARRAY;
+          this->array_=new(yaooc_json_value_array);
+          assign_static(this->array_,src->array_,yaooc_json_value_array);
+          break;
+
+        case JSON_OBJECT:
+          this->type_=JSON_OBJECT;
+          this->array_=new(yaooc_json_string_value_map);
+          assign_static(this->object_,src->object_,yaooc_json_string_value_map);
+          break;
+      }
+    } else {
+      M(this,virtual_assign,src);
+    }
+  }
+
+  int operator<=>(lhs,rhs)
+  {
+    if(lhs->type_ == JSON_UNDEFINED) {
+      if(rhs->type_ == JSON_UNDEFINED)
+        return 0;
+      return -1; // Undefined less than everything else
+    }
+    return M(lhs,virtual_rich_compare,rhs);
+  }
+
+  instance:
+    json_data_t;
+    yaooc_json_type_t type_;
+
+  table:
+    void virtual_dtor()
+    {
+    }
+
+    void virtual_assign(const_pointer src)
+    {
+    }
+
+    int virtual_rich_compare(const_pointer other) const
+    {
+      return 0;
+    }
+};
+
+%class yaooc_json_null : yaooc_json_value
+{
+  yaooc_json_null() : yaooc_json_value()
+  {
+    this->type_=JSON_NULL;
+  }
+
+  ~yaooc_json_null() = delete;
+
+  operator=(src) {
+    // Only allow json null to be assigned
+    if(src->type_!=JSON_NULL)
+      THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json null to json null"));
+  }
+
+  int operator<=>(lhs,rhs)
+  {
+    // Compare to other json null or json_value
+    if(lhs->type_==JSON_NULL) {
+      if(rhs->type_==JSON_NULL)
+        return 0;
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1; // greater than NULL
+    } else if(rhs->type_==JSON_NULL) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1; // greater than
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to JSON_NULL"));
+    return 0;
+  }
+
+  table:
+    void virtual_dtor()
+    {
+    }
+
+    void virtual_assign(const_pointer src)
+    {
+      yaooc_json_null_assign(this,src);
+    }
+
+    int virtual_rich_compare(const_pointer other) const
+    {
+      return yaooc_json_null_rich_compare(this,other);
+    }
+};
+
+%class yaooc_json_bool : yaooc_json_value
+{
+  yaooc_json_bool() : yaooc_json_value()
+  {
+    this->type_=JSON_BOOL;
+    this->bool_=false;
+  }
+
+  ~yaooc_json_bool() = delete;
+
+  operator=(src) {
+    // Only allow json null to be assigned
+    if(src->type_==JSON_BOOL)
+      this->bool_=src->bool_;
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json bool to json bool"));
+  }
+
+  int operator<=>(lhs,rhs)
+  {
+    // Compare to other json null or json_value
+    if(lhs->type_==JSON_BOOL) {
+      if(rhs->type_==JSON_BOOL)
+        return lhs->bool_<rhs->bool_;
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1; // greater than NULL
+    } else if(rhs->type_==JSON_BOOL) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1; // greater than
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to JSON_BOOL"));
+    return 0;
+  }
+
+  yaooc_json_bool_ctor_bool(int v) : yaooc_json_bool()
+  {
+    this->bool_=v;
+  }
+
+  table:
+    void virtual_dtor()
+    {
+    }
+
+    void virtual_assign(const_pointer src)
+    {
+      yaooc_json_bool_assign(this,src);
+    }
+
+    int virtual_rich_compare(const_pointer other) const
+    {
+      return yaooc_json_bool_rich_compare(this,other);
+    }
+};
+
+%class yaooc_json_integer : yaooc_json_value
+{
+  yaooc_json_integer()
+  {
+    this->type_=JSON_INTEGER;
+    this->int_=0;
+  }
+
+  ~yaooc_json_integer() = delete;
+
+  operator=(src)
+  {
+    if(src->type_==JSON_INTEGER)
+      this->int_=src->int_;
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json integer to json integer"));
+  }
+
+  int operator<=>(lhs,rhs)
+  {
+    // Compare to other json null or json_value
+    if(lhs->type_==JSON_INTEGER) {
+      if(rhs->type_==JSON_INTEGER) {
+        if(lhs->int_<rhs->int_)
+          return -1;
+        if(lhs->int_>rhs->int_)
+          return 1;
+        return 0;
+      }
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1; // greater than NULL
+    } else if(rhs->type_==JSON_INTEGER) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1; // greater than
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json integer"));
+    return 0;
+  }
+
+  yaooc_json_integer_ctor_int(int v) : yaooc_json_integer()
+  {
+    this->int_=v;
+  }
+
+  table:
+    void virtual_dtor()
+    {
+    }
+
+    void virtual_assign(const_pointer src)
+    {
+      yaooc_json_integer_assign(this,src);
+    }
+
+    int virtual_rich_compare(const_pointer other) const
+    {
+      return yaooc_json_integer_rich_compare(this,other);
+    }
+};
+
+%class yaooc_json_real : yaooc_json_value
+{
+  yaooc_json_real()
+  {
+    this->type_=JSON_REAL;
+    this->real_=0;
+  }
+
+  ~yaooc_json_real() = delete;
+
+  operator=(src)
+  {
+    if(src->type_==JSON_REAL)
+      this->real_=src->real_;
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json real to json real"));
+  }
+
+  int operator<=>(lhs,rhs)
+  {
+    // Compare to other json null or json_value
+    if(lhs->type_==JSON_REAL) {
+      if(rhs->type_==JSON_REAL) {
+        if(lhs->real_<rhs->real_)
+          return -1;
+        if(lhs->real_>rhs->real_)
+          return 1;
+        return 0;
+      }
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1; // greater than NULL
+    } else if(rhs->type_==JSON_REAL) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1; // greater than
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json real"));
+    return 0;
+  }
+
+  yaooc_json_real_ctor_int(double v) : yaooc_json_real()
+  {
+    this->real_=v;
+  }
+
+  table:
+    void virtual_dtor()
+    {
+    }
+
+    void virtual_assign(const_pointer src)
+    {
+      yaooc_json_real_assign(this,src);
+    }
+
+    int virtual_rich_compare(const_pointer other) const
+    {
+      return yaooc_json_real_rich_compare(this,other);
+    }
+};
+
+%class yaooc_json_string : yaooc_json_value
+{
+  yaooc_json_string()
+  {
+    this->type_=JSON_STRING;
+    this->string_=NULL;
+  }
+
+  ~yaooc_json_string()
+  {
+    if(this->string_!=NULL)
+      FREE(this->string_);
+  }
+
+  operator=(src)
+  {
+    if(src->type_==JSON_STRING) {
+      deletep(this,yaooc_json_string);
+      newp(this,yaooc_json_string);
+      this->string_=src->string_ ? STRDUP(src->string_) : NULL;
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json string to json string"));
+  }
+
+  int operator<=>(lhs,rhs)
+  {
+    // Compare to other json null or json_value
+    if(lhs->type_==JSON_STRING) {
+      if(rhs->type_==JSON_STRING) {
+        if(lhs->string_ == NULL) {
+          if(rhs->string_ == NULL)
+            return 0; // NULL == NULL
+          return -1; // NULL < !NULL
+        }
+        if(rhs->string_ == NULL)
+          return 1;
+        return strcmp(lhs->string_,rhs->string_);
+      }
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1; // greater than NULL
+    } else if(rhs->type_==JSON_STRING) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1; // greater than
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json string"));
+    return 0;
+  }
+
+  yaooc_json_string_ctor_ccs(const char* v) : yaooc_json_string()
+  {
+    this->string_ = v ? STRDUP(v) : NULL;
+  }
+
+  table:
+    void virtual_dtor()
+    {
+      yaooc_json_string_dtor(this);
+    }
+
+    void virtual_assign(const_pointer src)
+    {
+      yaooc_json_string_assign(this,src);
+    }
+
+    int virtual_rich_compare(const_pointer other) const
+    {
+      return yaooc_json_string_rich_compare(this,other);
+    }
+};
+
+%header
+VECTOR_DEFINITION(yaooc_json_value,yaooc_json_value_array);
+%%
+VECTOR_IMPLEMENTATION(yaooc_json_value,yaooc_json_value_array);
+
+%class yaooc_json_array : yaooc_json_value
+{
+  yaooc_json_array()
+  {
+    this->type_=JSON_ARRAY;
+    this->array_=new(yaooc_json_value_array);
+  }
+
+  ~yaooc_json_array()
+  {
+    delete(this->array_);
+  }
+
+  operator=(src)
+  {
+    if(src->type_==JSON_ARRAY) {
+      assign_static(this->array_,src->array_,yaooc_json_value_array);
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json string to json string"));
+  }
+
+  int operator<=>(lhs,rhs)
+  {
+    // Compare to other json array.  Should not really be used
+    if(lhs->type_==JSON_ARRAY) {
+      if(rhs->type_==JSON_ARRAY) {
+        return op_rich_compare_static(lhs,rhs,yaooc_json_value_array);
+      }
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1; // greater than NULL
+    } else if(rhs->type_==JSON_ARRAY) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1; // greater than
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json array"));
+    return 0;
+  }
+
+  table:
+    void virtual_dtor()
+    {
+      yaooc_json_array_dtor(this);
+    }
+
+    void virtual_assign(const_pointer src)
+    {
+      yaooc_json_array_assign(this,src);
+    }
+
+    int virtual_rich_compare(const_pointer other) const
+    {
+      return yaooc_json_array_rich_compare(this,other);
+    }
+};
+
+%header
+MINI_MAP_DEFINITION(yaooc_json_string,yaooc_json_value,yaooc_json_string_value_map);
+%%
+MINI_MAP_IMPLEMENTATION(yaooc_json_string,yaooc_json_value,yaooc_json_string_value_map);
+
+%class yaooc_json_object : yaooc_json_value
+{
+  yaooc_json_object()
+  {
+    this->type_=JSON_OBJECT;
+    this->object_=new(yaooc_json_string_value_map);
+  }
+
+  ~yaooc_json_object()
+  {
+    delete(this->object_);
+  }
+
+  operator=(src)
+  {
+    if(src->type_==JSON_OBJECT) {
+      assign_static(this->object_,src->object_,yaooc_json_string_value_map);
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json object to json object"));
+  }
+
+  int operator<=>(lhs,rhs)
+  {
+    // Compare to other json array.  Should not really be used
+    if(lhs->type_==JSON_OBJECT) {
+      if(rhs->type_==JSON_OBJECT) {
+        return 0;
+      }
+      if(rhs->type_==JSON_UNDEFINED)
+        return 1; // greater than NULL
+    } else if(rhs->type_==JSON_OBJECT) {
+      if(lhs->type_==JSON_UNDEFINED)
+        return -1; // greater than
+    }
+    THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json object"));
+    return 0;
+  }
+
+  table:
+    void virtual_dtor()
+    {
+      yaooc_json_object_dtor(this);
+    }
+
+    void virtual_assign(const_pointer src)
+    {
+      yaooc_json_object_assign(this,src);
+    }
+
+    int virtual_rich_compare(const_pointer other) const
+    {
+      return yaooc_json_object_rich_compare(this,other);
+    }
+};

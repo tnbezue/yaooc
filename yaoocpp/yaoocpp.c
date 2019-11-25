@@ -189,6 +189,7 @@ char* root_name(const char* fname)
 
 int main(int argc,char* argv[])
 {
+  yaooc_init();
 	gb_init();
   gb_newp(&include_directories,yaooc_string_vector);
 //  M(&include_directories,push_back,gb_new_ctor(yaooc_string,yaooc_string_ctor_ccs,""));
@@ -235,10 +236,6 @@ int main(int argc,char* argv[])
           char* uc_root=gb_save(yaooc_upcase(root));
           M(&h_strm,printf,"#ifndef __%s_INCLUDED__\n"
                           "#define __%s_INCLUDED__\n\n",uc_root,uc_root);
-//          M(&h_strm,printf,"/* Begin YAOOCPP output */\n\n");
-/*          M(&h_strm,printf,"#include <yaooc/object.h>\n"
-                          "#include <yaooc/stream.h>\n"
-                          "\n");*/
           l = M(&definition_directory,size)+strlen(root)+7; // header_directory + "/" + root + ".yod"
           char* yod_fname=gb_new_array(char,l);
           *yod_fname=0;
@@ -258,7 +255,6 @@ int main(int argc,char* argv[])
           strcpy(source_fname,root);
           strcat(source_fname,".c");
           M(&c_strm,open,source_fname,"w");
-//          M(&c_strm,printf,"/* Begin YAOOCPP output */\n\n");
           if(M(&yaoocpp_header_prefix,size)==0) {
             M(&c_strm,printf,"#include \"%s.h\"\n\n",root);
           } else {
@@ -269,7 +265,7 @@ int main(int argc,char* argv[])
 
 //  				M(cout,printf,"%zu sections defined\n",M(&parser.sections_,size));
           CFOR_EACH(k,&parser.sections_) {
-            yaoocpp_section_const_pointer section=(yaoocpp_section_const_pointer)*k;
+            yaoocpp_section_const_pointer section=(yaoocpp_section_const_pointer)k->ptr_;
             if(section->defined_in_top_level_file_) {
 //              printf("Section %s of type %s\n",M(&section->name_,c_str),section->class_table_->type_name_);
               M(section,print_to_header,&h_strm);
@@ -280,7 +276,7 @@ int main(int argc,char* argv[])
           }
 //          M(cout,printf,"%zu mixins defined\n",M(&parser.mixins_,size));
           CFOR_EACH(k,&parser.mixins_) {
-            yaoocpp_mixin_const_pointer mixin=(yaoocpp_mixin_const_pointer)*k;
+            yaoocpp_mixin_const_pointer mixin=(yaoocpp_mixin_const_pointer)k->ptr_;
             if(mixin->defined_in_top_level_file_) {
               M(mixin,print_to_yod,&yod_strm);
             }

@@ -162,13 +162,18 @@ typedef struct {
     -- Can have assignment
     -- Can have parent
 */
-#ifdef _WIN64
-#define __WORDSIZE 64
-#else
-#ifdef _WIN32
-#define __WORDSIZE 32
+#ifndef __WORDSIZE
+# ifdef _WIN64
+#   define __WORDSIZE 64
+# else
+#   ifdef _WIN32
+#     define __WORDSIZE 32
+#   else
+#     error Could not determine __WORDSIZE
+#   endif
+# endif
 #endif
-#endif
+
 typedef struct min_type_info_s min_type_info_t;
 struct min_type_info_s {
 #if __WORDSIZE == 64

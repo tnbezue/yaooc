@@ -1,0 +1,298 @@
+%include <yaooc/object.yod>
+
+%header
+#include <string.h>
+#include <yaooc/stream.h>
+%%
+#include <stdio.h>
+#include <stdlib.h>
+
+%class my_string : yaooc_object
+{
+    // Parent default constructor called by default
+    my_string() : str(NULL)
+    {
+    }
+
+    ~my_string()
+    {
+      if(this->str)
+         free(this->str);
+      this->str = NULL;
+    }
+
+    // The default constructor for my_string is called by default
+    my_string(src)
+    {
+      my_string_assign(this,src);
+    }
+
+
+    operator=(src)
+    {
+      deletep(this,my_string); // use placement delete rather than calling default ctor
+      M(this,set,src->str);
+    }
+
+    operator<=>(lhs,rhs)
+    {
+      if(lhs->str == NULL) {
+        if(rhs->str == NULL)
+          return 0; /* both NULL, equal */
+        else
+          return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
+      } else if(rhs->str == NULL)
+        return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
+      return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
+    }
+
+    operator<<(ostrm)
+    {
+      M(ostrm,printf,"%s",this->str);
+    }
+		operator>>(istrm)
+    {
+      char temp[256];
+      M(istrm,scanf,"%255s",temp);
+      if(this->str)
+        free(this->str);
+      this->str=strdup(temp);
+    }
+
+    /*
+      Constructors
+    */
+    // Default constructor called by default
+    my_string_ctor_ccs_size(const char* str,size_t n)
+    {
+      if(str != NULL) {
+        if(n > strlen(str))
+          n=strlen(str);
+        if(n > 0) {
+          my_string_insert_space(this,0,n);
+          strncpy(this->str,str,n);
+          this->str[n]=0;
+        }
+      }
+    }
+
+    // Since a constructor initializer is specified, it is called rather than default ctor
+    my_string_ctor_ccs(const char* str) : my_string_ctor_ccs_size(str,SIZE_MAX)
+    {
+    }
+
+    my_string_ctor_chr_size(int ch,size_t n)
+    {
+      if(ch && n > 0) {
+        my_string_insert_space(this,0,n);
+        memset(this->str,ch,n);
+        this->str[n]=0;
+      }
+    }
+
+    /*
+			Table entries.
+    */
+
+    table:
+      // Type name. If not specified, YAOOCPP adds it
+      const char* type_name_="my_string_t";
+
+      // Variable member of table
+			const size_t n_pos = -1;
+
+      // Override yaooc_object swap method
+      void swap(pointer o)
+      {
+        char* temp=this->str;
+        this->str=other->str;
+        other->str=temp;
+      }
+
+      // Returns string value
+      const char* get() const
+      {
+        return this->str;
+      }
+
+      // same as get
+      const char* c_str() const = my_string_get;
+
+      // Sets string
+      void set(const char* s)
+      {
+        deletep(this,my_string);
+        newp(this,my_string);
+        this->str = s ? strdup(s) : NULL;
+      }
+      // Return new string object created from substring of this string
+      my_string_pointer substr(size_t beg,size_t n)
+      {
+        return new_ctor(my_string,my_string_ctor_ccs_size,this->str+beg,n);
+      }
+
+      // Insert string at position
+      void insert(size_t pos,const char* s) {
+        my_string_insertn(this,pos,s,SIZE_MAX);
+      }
+
+      // Insert n chars from string at position
+      void insertn(size_t pos,const char* s,size_t n)
+      {
+        if(s) {
+          size_t l=strlen(s);
+          if(n>l)
+            n=l;
+          my_string_insert_space(this,pos,n);
+          memcpy(this->str+pos,s,n);
+        }
+      }
+
+      // Erase n chars starting at pos
+      void erase(size_t pos,size_t n)
+      {
+        my_string_erase_space(this,pos,n);
+      }
+
+      // Append string
+      void append(const char* s)
+      {
+        my_string_insertn(this,strlen(this->str),s,SIZE_MAX);
+      }
+
+      // Append n characters from string
+      void appendn(const char* s,size_t n)
+      {
+        my_string_insertn(this,strlen(this->str),s,n);
+      }
+
+      // return pointer to first occurance of substring s in this string
+      const char* find(const char* s) const
+      {
+        return strstr(this->str,s)
+      }
+
+      // Reverse find
+      const char* rfind(const char* s) const
+      {
+        return my_string_strrstr(this,s);
+      }
+
+      // return pointer to last occurance of character ch in this string
+      const char* find_chr(char ch) const
+      {
+        return strchr(this->str,ch);
+      }
+
+      // return pointer to last occurance of character ch in this string
+      const char* rfind_chr(char ch) const
+      {
+        return strrchr(this->str,ch);
+      }
+
+      // Return pointer to character at index i
+      char * at(size_t i)
+      {
+        return this->str+i
+      }
+
+      // Length (size) of string
+      size_t size() const
+      {
+        return strlen(this->str);
+      }
+
+    /*
+      Instance members
+    */
+    instance:
+      char * str;  /* The string */
+
+    /*
+			Helpers methods and variables are meant to be used by this class and derived classes --
+      not meant for normal class usage.
+    */
+    adjuct:
+      // Insert space in string
+      void insert_space(size_t pos,size_t n)
+      {
+        size_t cur_size=M(this,size);  // Can call table members with M
+        my_string_allocate_space(this,cur_size+n);  // must use complete method name for adjuct and private
+        memmove(this->str+pos+n,this->str+pos,cur_size-pos);
+        this->str[cur_size+n]=0;
+      }
+
+      // Erase space in string
+      void erase_space(size_t pos,size_t n)
+      {
+        size_t cur_size=my_string_size(this);  // Can also use full method name for table entries
+        memmove(this->str+pos,this->str+pos+n,strlen(this->str)-(pos+n));
+        this->str[cur_size-n]=0;
+      }
+
+    /*
+      Private methods and variables are meant for use only by this class.  They will be declared as
+      static in the C source file.
+    */
+    private:
+      // Allocates space to hold string (maybe should be in adjuct sub-section but something needs to be private)
+      void allocate_space(size_t n) {
+        this->str=realloc(this->str,n+1);  // one extra byte for terminating 0
+      }
+
+      // Find last pat in str
+      char *strrstr(const char *pat) const
+      {
+        char* ret = NULL;
+        const char* ptr=this->str;
+
+        if(ptr != NULL && pat != NULL) {
+          size_t size = strlen(ptr);
+          size_t patsize=strlen(pat);
+          /* Special cases */
+          if (size < patsize)
+            return NULL;
+          if (patsize == 0)
+            return (char*)ptr;
+
+          for (ret = (char*)ptr + size - patsize ; size >= patsize; --ret, --size)
+            if(*ret == *pat)
+              if (memcmp(ret, pat, patsize) == 0)
+                return ret;
+        }
+        return ret;
+      }
+
+    table: /* More things to add to table */
+      size_t length() const = my_string_size;                /* Same as size */
+      char* begin() const = my_string_get;                   /* Return beginning of string. Same as get */
+
+      // Returns end of string
+      char* end() const
+      {
+        return this->str ? this->str+strlen(this->str) : NULL;
+      }
+};
+
+int main(int argc,char* argv[])
+{
+  yaooc_init();
+  /* Create a new my_string object using my_string_ctor_ccs ctor */
+  my_string_pointer sp=new_ctor(my_string,my_string_ctor_ccs,"This is a test string.");
+
+  const char* ptr = M(sp,find,"is");
+  M(cout,printf,"First 'is' at pos %zu\n",ptr-M(sp,c_str));
+  ptr=M(sp,rfind,"is");
+  M(cout,printf,"Last 'is' at pos %zu\n",ptr-M(sp,c_str));
+  M(cout,printf,"Str: %s\n",M(sp,c_str));
+  M(cout,printf,"Size: %zu\n",M(sp,size));
+  M(sp,erase,5,2);
+  M(cout,printf,"Str: %s\n",M(sp,c_str));
+  M(cout,printf,"Size: %zu\n",M(sp,size));
+  M(sp,insert,5,"was");
+  M(cout,printf,"Str: %s\n",M(sp,c_str));
+  M(cout,printf,"Size: %zu\n",M(sp,size));
+  /* Delete allocated objects */
+  delete(sp);
+
+}

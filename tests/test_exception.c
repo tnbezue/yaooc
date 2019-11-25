@@ -23,7 +23,7 @@
 #include <yaooc/exception.h>
 #include <yaooc/pointer_bag.h>
 #include "test_harness.h"
-#include "demo_def.inc"
+#include "demo_def.h"
 
 yaooc_class_table(demo_exception)
 {
