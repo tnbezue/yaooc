@@ -406,7 +406,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
         M(&super_definition,append,")");
         M(ostrm,printf,")\n{\n");
         if(pure_virtual) {
-          M(ostrm,printf,"yaooc_pure_virtual(\"%s\",\"%s\");",M(&this->name_,c_str),class_name);
+          M(ostrm,printf,"yaooc_pure_virtual(\"%s\",\"%s\");exit(0);",M(&this->name_,c_str),class_name);
         } else {
           M(ostrm,printf,"%s_%spointer this=__pthis__;(void)this;\n",class_name,(this->is_const_ ? "const_" : ""));
           if(has_va_arg)
@@ -627,6 +627,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
         if(this->form_==IMPLEMENTATION_TEXT) {
           M(&this->mixin_text_,append,"\n");
           M(&this->mixin_text_,append,M(&mixin->default_ctor_.implementation_,c_str));
+          M(&this->mixin_text_,gsub_,"@CLASS@",class_name);
         }
       }
     }
@@ -718,6 +719,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
         if(this->form_==IMPLEMENTATION_TEXT) {
           M(&this->mixin_text_,append,"\n");
           M(&this->mixin_text_,append,M(&mixin->dtor_.implementation_,c_str));
+          M(&this->mixin_text_,gsub_,"@CLASS@",class_name);
         }
       }
     }
@@ -808,6 +810,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
       if(M(&mixin->copy_ctor_.implementation_,size)>0 && this->form_==IMPLEMENTATION_TEXT) {
         M(&this->mixin_text_,append,"\n");
         M(&this->mixin_text_,append,M(&mixin->copy_ctor_.implementation_,c_str));
+        M(&this->mixin_text_,gsub_,"@CLASS@",class_name);
       }
     }
     void print_implementation(ostream_pointer ostrm,const char* namespace) const
@@ -926,6 +929,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
         if(this->form_==IMPLEMENTATION_TEXT) {
           M(&this->mixin_text_,append,"\n");
           M(&this->mixin_text_,append,M(&mixin->assign_.implementation_,c_str));
+          M(&this->mixin_text_,gsub_,"@CLASS@",class_name);
         }
       }
     }

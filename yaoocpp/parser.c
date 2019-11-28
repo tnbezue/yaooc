@@ -110,9 +110,9 @@ static yaooc_string_t* preprocess(const char* file)
         rc = command_pipe("cpp -nostdinc -fpreprocessed",&output,contents,se);
 
       } else {
-        puts("Error in 1st pass of CPP");
-        puts(M(se,c_str));
-        exit(99);
+        puts(M(contents,c_str));
+        THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+            "YAOOCPP encounter problem processing \"%s\". Error is: %s\n",file,M(se,c_str)));
       }
       deletep(&output,yaooc_string);
       delete(se);
@@ -200,8 +200,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           M(this,string_until_eol,&temp);
         }
         if(temp.end_ == NULL) {
-          printf("Unterminated header declaration starting near %d\n",saved_line_no);
-          exit(5);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+              "Unterminated header declaration starting near %d\n",saved_line_no));
         }
 
           yaoocpp_header_t* hs= new(yaoocpp_header);
@@ -297,8 +297,9 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
             parent_name=yaooc_strdup("yaooc_object");
           if(parent_name != NULL ) {
             if(!yaoocpp_parser_set_parent(this,parent_name,&((yaoocpp_struct_t*)*section)->parent_)) {
-              printf("Parent class '%s' for '%.*s' not defined\n",parent_name,(int)(class_name.end_-class_name.beg_),class_name.beg_);
-              exit(6);
+              THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                "Parent class '%s' for '%.*s' not defined\n",parent_name,
+                    (int)(class_name.end_-class_name.beg_),class_name.beg_));
             }
           if(is_struct)
             yaoocpp_struct_inherit(*section);
@@ -317,8 +318,9 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           while(true) {
             if(TABLE(temp)) {
               if(is_struct) {
-                printf("Table not allowed for struct %.*s",(int)(class_name.end_-class_name.beg_),class_name.beg_);
-                exit(7);
+                THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                    "Table not allowed for struct %.*s",
+                    (int)(class_name.end_-class_name.beg_),class_name.beg_));
               }
               yaoocpp_parser_sub_section(this,&((yaoocpp_class_t*)*section)->table_,true);
             } else if(INSTANCE(temp)) {
@@ -339,8 +341,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           return RULE_SUCCESS(this);
         }
         else {
-          printf("Error processing %s near line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
-          exit(7);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+              "Error processing %s near line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_));
         }
       }
       return RULE_FAIL(this);
@@ -363,9 +365,9 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
             yaoocpp_variable_t* existing_var=dp->ptr_;
             if(existing_var->generation_!=INHERITED) {
 
-              printf("Duplicate variable specified on or before line number %d\n",this->line_no_);
-              printf("X%sX X%sX\n",M(&existing_var->name_,c_str),M(&var->name_,c_str));
-              exit(3);
+              THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                    "Duplicate variable specified on or before line number %d\n",this->line_no_));
+
             }
             assign_static(&existing_var->value_,&var->value_,yaooc_string);
             existing_var->generation_=OVERRIDDEN;
@@ -379,8 +381,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
             yaoocpp_method_t* existing_method = dp->ptr_;
             if(existing_method->generation_!=INHERITED) {
 
-              printf("Duplicate method specified on or before line number %d\n",this->line_no_);
-              exit(3);
+              THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                  "Duplicate method specified on or before line number %d\n",this->line_no_));
             }
             assign_static(existing_method,method,yaoocpp_method);
             existing_method->generation_=OVERRIDDEN;
@@ -408,8 +410,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         int saved_line_no=this->line_no_;
         if(YAOOC_PARSER_TRY_RULE(this,EQUAL(t) && M(this,string_until_chrs,";",&val) && SEMICOLON(t))) {
           if(!include_value) {
-            printf("Unexpected default value near line number %d\n",saved_line_no);
-            exit(17);
+            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                "Unexpected default value near line number %d\n",saved_line_no));
           }
           M(&(*var)->value_,setn,val.beg_,val.end_-val.beg_);
           return RULE_SUCCESS(this);
@@ -465,8 +467,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
       yaooc_token_t temp;
       if(COLON(temp)) {
         if(!M(this,ident,&temp)) {
-          printf("Expecting parent name after ':' near line %d",this->line_no_);
-          exit(8);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+              "Expecting parent name after ':' near line %d",this->line_no_));
         }
         *name=yaooc_token_raw_text(&temp);
         return true;
@@ -526,12 +528,12 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
                   yaoocpp_constructor_initializer_ctor_id_value,id_text,value_text);
             M(list,push_back,make_dynamic_pointer(temp));
           } else {
-            printf("Error processing constructor initializers near line %d\n",saved_line_no);
-            exit(9);
+            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                "Error processing constructor initializers near line %d\n",saved_line_no));
           }
         } else {
-          printf("Error processing constructor initializers near line %d\n",saved_line_no);
-          exit(10);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                "Error processing constructor initializers near line %d\n",saved_line_no));
         }
       } while(COMMA(t));
       gb_exit();
@@ -554,8 +556,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           yaoocpp_parser_constructor_initializers(this,&section->default_ctor_.initializers_);
         }
         if(has_initializers && !allow_initializers) {
-          printf("Constructor initializers not allowed here.  Near line %d\n",this->line_no_);
-          exit(77);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+              "Constructor initializers not allowed here.  Near line %d\n",this->line_no_));
         }
         if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
 
@@ -563,9 +565,9 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           return RULE_SUCCESS(this);
         } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
           if(has_initializers) {
-            printf("Error processing default constructor for class %s\n"
-                   "Cannot specify construction initializers and implementation method",class_name);
-            exit(1);
+            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                    "Error processing default constructor for class %s\n"
+                   "Cannot specify construction initializers and implementation method",class_name));
           }
           if(IS_DELETE(implementation)) {
             section->default_ctor_.form_=DELETE;
@@ -576,8 +578,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           }
           return RULE_SUCCESS(this);
         } else {
-          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
-          exit(1);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                "Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_));
         }
       }
       return RULE_FAIL(this);
@@ -608,8 +610,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           }
           return RULE_SUCCESS(this);
         } else {
-          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
-          exit(1);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+              "Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_));
         }
       }
       return RULE_FAIL(this);
@@ -632,8 +634,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           yaoocpp_parser_constructor_initializers(this,&section->copy_ctor_.initializers_);
         }
         if(has_initializers && !allow_initializers) {
-          printf("Constructor initializers not allowed here.  Near line %d\n",this->line_no_);
-          exit(77);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+              "Constructor initializers not allowed here.  Near line %d\n",this->line_no_));
         }
         if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
 
@@ -641,9 +643,9 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           return RULE_SUCCESS(this);
         } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
           if(has_initializers) {
-            printf("Error processing copy constructor for class %s\n"
-                   "Cannot specify construction initializers and implementation method",class_name);
-            exit(1);
+            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                    "Error processing copy constructor for class %s\n"
+                   "Cannot specify construction initializers and implementation method",class_name));
           }
 
           if(IS_DELETE(implementation)) {
@@ -655,8 +657,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           }
           return RULE_SUCCESS(this);
         } else {
-          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
-          exit(1);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+              "Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_));
         }
       }
       return RULE_FAIL(this);
@@ -686,8 +688,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           }
           return RULE_SUCCESS(this);
         } else {
-          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
-          exit(1);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                "Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_));
         }
       }
       return RULE_FAIL(this);
@@ -718,8 +720,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           }
           return RULE_SUCCESS(this);
         } else {
-          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
-          exit(1);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+              "Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_));
         }
       }
       return RULE_FAIL(this);
@@ -743,8 +745,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
 
           return RULE_SUCCESS(this);
         } else {
-          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
-          exit(1);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+              "Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_));
         }
       }
       return RULE_FAIL(this);
@@ -768,8 +770,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
 
           return RULE_SUCCESS(this);
         } else {
-          printf("Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
-          exit(1);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+              "Error processing file %s at line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_));
         }
       }
       return RULE_FAIL(this);
@@ -790,14 +792,14 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
             M(&temp,setn,id.beg_,id.end_-id.beg_);
             if(yaooc_find(yaooc_string,M(mixin_vector,begin),M(mixin_vector,end),&temp) != M(mixin_vector,end))
             {
-              printf("Duplicate mixin specified on or before line %d\n",saved_line_no);
-              exit(30);
+              THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                  "Duplicate mixin specified on or before line %d\n",saved_line_no));
             }
             M(mixin_vector,push_back,&temp);
             deletep(&temp,yaooc_string);
           } else {
-            printf("Error including mixins on or before line %d\n",saved_line_no);
-            exit(31);
+            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                "Error including mixins on or before line %d\n",saved_line_no));
           }
         } while(COMMA(t));
         if(SEMICOLON(t)) {
@@ -907,8 +909,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           M(&con->name_,setn,con_name.beg_,l);
           if(yaooc_find(yaooc_dynamic_pointer,M(&section->constructors_,cbegin),M(&section->constructors_,cend),(pointer)&con)
                 != M(&section->constructors_,cend)) {
-            printf("Duplicate constructor %s specified on line number %d\n",M(&con->name_,c_str),saved_line_no);
-            exit(12);
+            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                "Duplicate constructor %s specified on line number %d\n",M(&con->name_,c_str),saved_line_no));
           }
           if(yaoocpp_parser_arguments(this,&con->arguments_)) {
             if(RPAREN(t)) {
@@ -920,28 +922,28 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
                 M(con,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
               } else if (EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
                 if(has_initializers) {
-                  printf("Error processing constructor %.*s\n"
-                         "Cannot specify construction initializers and implementation method.",
-                         (int)(con_name.end_-con_name.beg_),con_name.beg_);
-                  exit(1);
+                  THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                        "Error processing constructor %.*s\n"
+                        "Cannot specify construction initializers and implementation method.",
+                         (int)(con_name.end_-con_name.beg_),con_name.beg_));
                 }
                 M(con,set_implemented_as,implementation.beg_,implementation.end_-implementation.beg_);
               } else {
-                printf("Error processing imlementation for constructor %.*s\n",(int)l,con_name.beg_);
-                exit(3);
+                THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                      "Error processing imlementation for constructor %.*s\n",(int)l,con_name.beg_));
               }
               M(&section->constructors_,push_back,make_dynamic_pointer(con));
 
               gb_exit();
               return RULE_SUCCESS(this);
             }
-            printf("Error parsing constructor at line number %d\n",saved_line_no);
-            exit(33);
+            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                "Error parsing constructor at line number %d\n",saved_line_no));
           } else {
 
-            printf("Constructors must have at least 1 argument.\n"
-                  "Constructor %.*s has zero arguments.\n",(int)l,con_name.beg_);
-            exit(22);
+            THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+                  "Constructors must have at least 1 argument.\n"
+                  "Constructor %.*s has zero arguments.\n",(int)l,con_name.beg_));
           }
         }
       }
@@ -985,8 +987,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           return RULE_SUCCESS(this);
         }
         else {
-          printf("Error processing %s near line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_);
-          exit(7);
+          THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+              "Error processing %s near line number %d\n",yaoocpp_parser_file_being_parsed,this->line_no_));
         }
       }
       return RULE_FAIL(this);

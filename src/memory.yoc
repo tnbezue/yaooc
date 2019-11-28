@@ -50,10 +50,63 @@
 #define yaooc_dynamic_pointer_get(p) ((yaooc_dynamic_pointer_pointer)p)->ptr_;
 #define make_dynamic_pointer(p) &(yaooc_dynamic_pointer_t) { .ptr_=p }
 #include <yaooc/vector.h>
-//VECTOR_DEFINITION(yaooc_dynamic_pointer,yaooc_dynamic_pointer_vector);
 %%
-//VECTOR_IMPLEMENTATION(yaooc_dynamic_pointer,yaooc_dynamic_pointer_vector);
 
+%header
+#define yaooc_static_pointer_definition(T) \
+yaooc_struct(T ## _static_pointer) { \
+  T ## _t *ptr_; \
+}; \
+void T ## _static_pointer_default_ctor(pointer); \
+void T ## _static_pointer_dtor(pointer); \
+void T ## _static_pointer_copy_ctor(pointer,const_pointer); \
+void T ## _static_pointer_assign(pointer,const_pointer); \
+int T ## _static_pointer_rich_compare(const_pointer,const_pointer);
+
+#define yaooc_static_pointer_implementation(T) \
+void T ## _static_pointer_default_ctor(pointer p) \
+{ \
+  T ## _static_pointer_pointer this=p; \
+  this->ptr_=NULL; \
+}\
+void T ## _static_pointer_dtor(pointer p) \
+{ \
+  T ## _static_pointer_pointer this=p; \
+  if(this->ptr_) { \
+    deletep(this->ptr_,T); FREE(this->ptr_); \
+  } \
+  this->ptr_=NULL; \
+}\
+void T ## _static_pointer_copy_ctor(pointer p,const_pointer s) \
+{ \
+  T ## _static_pointer_pointer this=p; \
+  T ## _static_pointer_const_pointer src=s; \
+  if(src->ptr_ != NULL) { \
+    this->ptr_=MALLOC(src->ptr_->class_table_->this_ti->type_size_); \
+    __newp_array_copy_static(this->ptr_, \
+          src->ptr_->class_table_->this_ti,src->ptr_,1); \
+  } else { \
+    this->ptr_=NULL; \
+  }\
+}\
+void T ## _static_pointer_assign(pointer p,const_pointer s) \
+{ \
+  T ## _static_pointer_pointer this=p; \
+  T ## _static_pointer_const_pointer src=s; \
+  T ## _assign(this->ptr_,src->ptr_); \
+}\
+int T ## _static_pointer_rich_compare(const_pointer l,const_pointer r) \
+{\
+  T ## _static_pointer_const_pointer lhs=l; \
+  T ## _static_pointer_const_pointer rhs=r; \
+  return T ## _rich_compare(lhs->ptr_,rhs->ptr_); \
+}\
+DEFINE_TYPE_INFO(T ## _static_pointer,Y,Y,Y,Y,Y,N,N,N,NULL)
+
+// A static pointer looks the same as a dynamic pointer
+#define make_static_pointer(p) (void*)make_dynamic_pointer(p)
+
+%%
 %class yaooc_unique_pointer : yaooc_object {
     yaooc_unique_pointer()
     {

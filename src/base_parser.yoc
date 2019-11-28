@@ -255,9 +255,12 @@ STACK_IMPLEMENTATION(parser_position,parser_position_stack);
       *r=yaooc_default_token(this);
       int l=strlen(str);
       if(l>0 && strncmp(this->current_pos_,str,l)==0) {
-        yaooc_base_parser_skip(this,l);
-        r->end_=this->current_pos_;
-        M(this,whitespace,&ws);
+        // Must be at one whitespace character following string
+        if(!isalnum(*(this->current_pos_+l))) {
+          yaooc_base_parser_skip(this,l);
+          r->end_=this->current_pos_;
+          M(this,whitespace,&ws);
+        }
       }
       return r->end_!=NULL;
     }

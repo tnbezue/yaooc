@@ -334,9 +334,12 @@ yaooc_base_parser_pointer this=__pthis__;(void)this;
       *r=yaooc_default_token(this);
       int l=strlen(str);
       if(l>0 && strncmp(this->current_pos_,str,l)==0) {
-        yaooc_base_parser_skip(this,l);
-        r->end_=this->current_pos_;
-        M(this,whitespace,&ws);
+
+        if(!isalnum(*(this->current_pos_+l))) {
+          yaooc_base_parser_skip(this,l);
+          r->end_=this->current_pos_;
+          M(this,whitespace,&ws);
+        }
       }
       return r->end_!=NULL;
     
