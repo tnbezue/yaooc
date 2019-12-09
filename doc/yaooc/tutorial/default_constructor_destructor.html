@@ -46,7 +46,7 @@ Let's make my_string a bit more robust by adding default constructor and destruc
       my_string()
       {
         // "this" is a my_string pointer to this instance of my_string
-        // It is automatically added as first argument.
+        // "this" is available for use in constuctors, destructor, methods, etc.
         this-&gt;str=NULL;
       }
       // Destructor  -- method name will be my_string_dtor
@@ -64,46 +64,23 @@ Let's make my_string a bit more robust by adding default constructor and destruc
 <p>
 The default constructor is called by the new method after allocating memory for the object. If the default constructor is not specified or it is specified as &quot;my_string()=default;&quot; yaoocpp
 will create a default constructor.  In fact, the above default constructor is exactly the
-default constructor that would be created by yaoocpp.<br>
-In a later lesson, the rules yaoocpp uses to create a default constructor will be explained further.<br>
+default constructor that would be created by yaoocpp.
+</p>
+<p>
+In a later lesson, the rules yaoocpp uses to create a default constructor will be explained further.
+</p>
+<p>
 To keep yaoocpp from creating a default constructor, use &quot;my_string()=delete;&quot;
 </p>
 <h3>Destructor</h3>
 <p>
 The destructor is called by the delete method prior to freeing memory allocated. If the destructor is not specified or is specified as &quot;~my_string()=default;&quot;, then yaoocpp
-will create a destructor (in this case, the one shown above).  To avoid the creation of a destructor, use &quot;~my_string()=delete;&quot;.
-</p>
-<h3>Important Requirement</h3>
-<p>
-Before continuing with the my_string class, one important requirement for custom classes -- class instances must be movable (objects within containers may be moved).  For example:
-</p>
-<pre><code>
-  %struct circular_buffer {
-    instance:
-    char* beg;
-    char* end;
-    char buffer[32];
-  };
-</code></pre>
-<p>
-In the above example, if beg and end are pointers to locations within buffer, then the pointers would be invalidated if the object is
-moved to a different memory location. Thus it is an immovable object and should not be used in YAOOC.
+will create a destructor (in this case, the one shown above).
 </p>
 <p>
-If the class was defined as:
+To avoid the creation of a destructor, use &quot;~my_string()=delete;&quot;.
 </p>
-<pre><code>
-  %struct circular_buffer {
-    instance:
-    char* beg;
-    char* end;
-    char* buffer;
-  };
-</code></pre>
-<p>
-If beg and end are pointers to memory within memory pointed to by buffer, then moving the object will not invalidate the pointers.
-This it a movable object and can be used in YAOOC.
-</p>
+
 </div>
 </div>
 </div>

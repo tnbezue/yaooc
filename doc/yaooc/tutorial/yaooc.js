@@ -20,7 +20,7 @@ var menu_items = [
   ["inheritance","Inheritance"],
   ["memory_layout","Memory Layout"],
   ["placement_new_delete","Placement New and Delete"],
-  ["rules","YAOOC Rules"],
+  ["rules","YAOOCPP Rules"],
   ["complete_my_string_class","Complete my_string class"],
   ["garbage_bag","Garbage Bag"],
   ["exceptions","Exceptions"],

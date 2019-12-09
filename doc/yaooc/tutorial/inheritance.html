@@ -50,7 +50,8 @@ A &quot;%struct&quot; inherits all instance entries of the parent.
 </p>
 <p>
 For &quot;%class&quot;, a parent is required (&quot;%struct&quot; does not require a parent).
-If not specified, the parent will be &quot;yaooc_object&quot;.  &quot;yaooc_object&quot; is defined as follows.
+If not specified, the parent will be &quot;yaooc_object&quot;.  For simplicity, let's assume that
+&quot;yaooc_object&quot; is defined as follows.
 </p>
 <pre><code>
   %class yaooc_object {
@@ -74,7 +75,7 @@ For the my_string class, the swap method will be overridden with the following:
     table:
       void swap(pointer o)
       {
-        my_string_pointer other=o;  // pointer is a generic pointer, must use my_string_pointer
+        my_string_pointer other=o;  // &quot;o&quot; is a generic pointer, must use my_string_pointer
         char* temp=this-&gt;str;
         this-&gt;str=other-&gt;str;
         other-&gt;str=temp;
@@ -95,15 +96,15 @@ The &quot;super()&quot; macro is used to call the parent method of the same name
 for my_string, &quot;super()&quot; would call the yaooc_object &quot;swap&quot; method.<br>
 The &quot;PM&quot; (parent method) macro is used to call any other parent method. It's syntax is &quot;PM(method,args)&quot;
 </p>
-<h3></h3>
+<h3>Type declarations</h3>
 <p>
 When a class is inherited from another class, the behaviour of default constructor, destructor, etc is as follows.
 </p>
 <h3>Default Constructor</h3>
 <p>
 If a default contructor is defined, YAOOC uses it.  If a default constructor is not defined, YAOOC will traverse
-the inheritance tree (parent, grand parent, etc) until a default constructor is found.  If not found, no action
-is taken.
+the inheritance tree (parent, grand parent, etc) until a default constructor is found.  If not found (user specified "delete"
+for this and ancestor default constructors), no action is taken.
 </p>
 <h3>Destructor</h3>
 <p>
