@@ -1,27 +1,48 @@
 #include <yaooc/sstream.h>
-
 #include <string.h>
 
 
-void yaooc_istringstream_ctor_ccs(pointer __pthis__,va_list __con_args__)
+void yaooc_istringstream_default_ctor(pointer __pthis__)
 {
-yaooc_istringstream_pointer this=__pthis__;
+yaooc_istringstream_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_istringstream);
+
+
+
+      yaooc_base_stream_default_ctor(this);
+      this->buffer_=NULL;
+    
+}
+void yaooc_istringstream_dtor(pointer __pthis__)
+{
+yaooc_istringstream_pointer this=__pthis__;(void)this;
+
+
+      if(this->handle_) {
+        fclose(this->handle_);
+        this->handle_=NULL;
+      }
+      if(this->buffer_)
+        FREE(this->buffer_);
+    
+}
+void yaooc_istringstream_ctor_ccs(pointer __pthis,va_list __con_args__){
+yaooc_istringstream_pointer this=__pthis;(void)this;
 const char* str = va_arg(__con_args__,const char*);
 
-call_parent_default_ctor_static(this,yaooc_istringstream);
+call_default_ctor_static(this,yaooc_istringstream);
 
 
       yaooc_base_stream_default_ctor(this);
       yaooc_istringstream_setn(this,str,SIZE_MAX);
     
 }
-void yaooc_istringstream_ctor_ccs_n(pointer __pthis__,va_list __con_args__)
-{
-yaooc_istringstream_pointer this=__pthis__;
+void yaooc_istringstream_ctor_ccs_n(pointer __pthis,va_list __con_args__){
+yaooc_istringstream_pointer this=__pthis;(void)this;
 const char* str = va_arg(__con_args__,const char*);
 size_t n = va_arg(__con_args__,size_t);
 
-call_parent_default_ctor_static(this,yaooc_istringstream);
+call_default_ctor_static(this,yaooc_istringstream);
 
 
       yaooc_base_stream_default_ctor(this);
@@ -84,9 +105,9 @@ yaooc_istringstream_const_pointer this=__pthis__;(void)this;
 
       if(this->buffer_!=NULL)
         FREE(((yaooc_istringstream_t*)this)->buffer_);
-      size_t ofs = M(this,tell);
+      size_t ofs = M(this,tell); 
       fseek(this->handle_,0,SEEK_END);
-      size_t n=M(this,tell);
+      size_t n=M(this,tell); 
       if(n>0) {
         fseek(this->handle_,0,SEEK_SET);
         ((yaooc_istringstream_t*)this)->buffer_=MALLOC(n+1);
@@ -100,8 +121,8 @@ yaooc_istringstream_const_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_istringstream_class_table_t yaooc_istringstream_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_istream_class_table,
-.type_name_ = (const char*) "yaooc_istringstream_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_istream_class_table,
+.type_name_ = (const char*)"yaooc_istringstream_t",
 .swap = (void(*)(pointer,pointer)) yaooc_istringstream_swap,
 .eof = (bool(*)(const_pointer)) yaooc_istringstream_eof,
 .seek = (bool(*)(pointer,size_t,int)) yaooc_istringstream_seek,
@@ -118,30 +139,6 @@ yaooc_istringstream_class_table_t yaooc_istringstream_class_table ={
 .setn = (void(*)(pointer,const char*,size_t)) yaooc_istringstream_setn,
 .c_str = (const char*(*)(const_pointer)) yaooc_istringstream_c_str,
 };
-void yaooc_istringstream_default_ctor(pointer __pthis__)
-{
-yaooc_istringstream_pointer this=__pthis__;(void)this;
-call_parent_default_ctor_static(this,yaooc_istringstream);
-
-
-
-      yaooc_base_stream_default_ctor(this);
-      this->buffer_=NULL;
-    
-}
-void yaooc_istringstream_dtor(pointer __pthis__)
-{
-yaooc_istringstream_pointer this=__pthis__;(void)this;
-
-
-      if(this->handle_) {
-        fclose(this->handle_);
-        this->handle_=NULL;
-      }
-      if(this->buffer_)
-        FREE(this->buffer_);
-    
-}
 const type_info_t __yaooc_istringstream_ti = {
 .min_flag_=0,
 .pod_flag_=0,
@@ -157,6 +154,30 @@ const type_info_t __yaooc_istringstream_ti = {
 .parent_=&__yaooc_istream_ti
 };
 const type_info_t* const yaooc_istringstream_ti=&__yaooc_istringstream_ti;
+void yaooc_ostringstream_default_ctor(pointer __pthis__)
+{
+yaooc_ostringstream_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_ostringstream);
+
+
+
+      this->buffer_=NULL;
+      this->handle_=tmpfile();
+    
+}
+void yaooc_ostringstream_dtor(pointer __pthis__)
+{
+yaooc_ostringstream_pointer this=__pthis__;(void)this;
+
+
+      if(this->handle_) {
+        fclose(this->handle_);
+        this->handle_=NULL;
+      }
+      if(this->buffer_)
+        FREE(this->buffer_);
+    
+}
 void yaooc_ostringstream_reset(pointer __pthis__)
 {
 yaooc_ostringstream_pointer this=__pthis__;(void)this;
@@ -182,9 +203,9 @@ yaooc_ostringstream_const_pointer this=__pthis__;(void)this;
 
       if(this->buffer_!=NULL)
         FREE(((yaooc_ostringstream_t*)this)->buffer_);
-      size_t ofs = M(this,tell);
+      size_t ofs = M(this,tell); 
       fseek(this->handle_,0,SEEK_END);
-      size_t n=M(this,tell);
+      size_t n=M(this,tell); 
       if(n>0) {
         fseek(this->handle_,0,SEEK_SET);
         ((yaooc_istringstream_t*)this)->buffer_=MALLOC(n+1);
@@ -198,8 +219,8 @@ yaooc_ostringstream_const_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_ostringstream_class_table_t yaooc_ostringstream_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_ostream_class_table,
-.type_name_ = (const char*) "yaooc_ostringstream_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_ostream_class_table,
+.type_name_ = (const char*)"yaooc_ostringstream_t",
 .swap = (void(*)(pointer,pointer)) yaooc_ostringstream_swap,
 .eof = (bool(*)(const_pointer)) yaooc_ostringstream_eof,
 .seek = (bool(*)(pointer,size_t,int)) yaooc_ostringstream_seek,
@@ -214,30 +235,6 @@ yaooc_ostringstream_class_table_t yaooc_ostringstream_class_table ={
 .reset = (void(*)(pointer)) yaooc_ostringstream_reset,
 .c_str = (const char*(*)(const_pointer)) yaooc_ostringstream_c_str,
 };
-void yaooc_ostringstream_default_ctor(pointer __pthis__)
-{
-yaooc_ostringstream_pointer this=__pthis__;(void)this;
-call_parent_default_ctor_static(this,yaooc_ostringstream);
-
-
-
-      this->buffer_=NULL;
-      this->handle_=tmpfile();
-    
-}
-void yaooc_ostringstream_dtor(pointer __pthis__)
-{
-yaooc_ostringstream_pointer this=__pthis__;(void)this;
-
-
-      if(this->handle_) {
-        fclose(this->handle_);
-        this->handle_=NULL;
-      }
-      if(this->buffer_)
-        FREE(this->buffer_);
-    
-}
 const type_info_t __yaooc_ostringstream_ti = {
 .min_flag_=0,
 .pod_flag_=0,

@@ -1,7 +1,6 @@
 #ifndef __UNIQUE_INDEX_ARRAY_CONTAINER_INCLUDED__
 #define __UNIQUE_INDEX_ARRAY_CONTAINER_INCLUDED__
 
-
 #include <yaooc/index_array_container.h>
 
 yaooc_class_table(yaooc_unique_index_array_container) {
@@ -9,12 +8,11 @@ yaooc_class_table(yaooc_unique_index_array_container) {
 };
 #define yaooc_unique_index_array_container_parent_class_table ((yaooc_object_class_table_t*)(yaooc_unique_index_array_container_class_table.parent_class_table_))
 yaooc_class_without_instance(yaooc_unique_index_array_container);
-
 #define yaooc_unique_index_array_container_swap yaooc_object_swap
-iterator yaooc_unique_index_array_container_insert(pointer,const_iterator,const_pointer);
-iterator yaooc_unique_index_array_container_insertn(pointer,const_iterator,size_t,const_pointer);
-iterator yaooc_unique_index_array_container_insert_range(pointer,const_iterator,const_iterator,const_iterator);
-void yaooc_unique_index_array_container_yaooc_unique_index_array_container_resize(pointer,size_t);
-void yaooc_unique_index_array_container_resize_value(pointer,size_t,const_pointer);
+ iterator yaooc_unique_index_array_container_insert(pointer,const_iterator,const_pointer);
+ iterator yaooc_unique_index_array_container_insertn(pointer,const_iterator,size_t,const_pointer);
+ iterator yaooc_unique_index_array_container_insert_range(pointer,const_iterator,const_iterator,const_iterator);
+ void yaooc_unique_index_array_container_yaooc_unique_index_array_container_resize(pointer,size_t);
+ void yaooc_unique_index_array_container_resize_value(pointer,size_t,const_pointer);
 
 #endif

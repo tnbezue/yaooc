@@ -1,5 +1,5 @@
 %include <yaooc/array_container.yod>
-%header_directory yaooc
+%prefix_directory yaooc
 
 %header
 typedef char* yaooc_string_iterator;

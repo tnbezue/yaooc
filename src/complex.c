@@ -1,12 +1,54 @@
 #include <yaooc/complex.h>
-
 #include <math.h>
 #include <ctype.h>
 
 
-void yaooc_complex_ctor_r_i(pointer __pthis__,va_list __con_args__)
+void yaooc_complex_default_ctor(pointer __pthis__)
 {
-yaooc_complex_pointer this=__pthis__;
+yaooc_complex_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_complex);
+
+
+this->real_=(double)0;
+this->imag_=(double)0;
+
+}
+void yaooc_complex_dtor(pointer __pthis__)
+{
+yaooc_complex_pointer this=__pthis__;(void)this;
+
+
+}
+void yaooc_complex_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_complex_pointer this=__pthis__;(void)this;
+yaooc_complex_const_pointer src=__psrc__;(void)src;
+
+
+call_default_ctor_static(this,yaooc_complex);
+assign_static(this,src,yaooc_complex);
+
+}
+void yaooc_complex_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_complex_pointer this=__pthis__;(void)this;
+yaooc_complex_const_pointer src=__psrc__;(void)src;
+
+assign_static(this,src,yaooc_object);
+this->real_=src->real_;
+this->imag_=src->imag_;
+
+}
+void yaooc_complex_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__)
+{
+yaooc_complex_const_pointer this=__pthis__;(void)this;
+yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
+
+      M(ostrm,printf,"(%lg %c %lgi)",this->real_,(this->imag_ < 0 ? '-' : '+'),fabs(this->imag_));
+    
+}
+void yaooc_complex_ctor_r_i(pointer __pthis,va_list __con_args__){
+yaooc_complex_pointer this=__pthis;(void)this;
 double r = va_arg(__con_args__,double);
 double i = va_arg(__con_args__,double);
 
@@ -198,8 +240,8 @@ yaooc_complex_const_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_complex_class_table_t yaooc_complex_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-.type_name_ = (const char*) "yaooc_complex_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_complex_t",
 .swap = (void(*)(pointer,pointer)) yaooc_complex_swap,
 .set = (void(*)(pointer,double,double)) yaooc_complex_set,
 .set_polar = (void(*)(pointer,double,double)) yaooc_complex_set_polar,
@@ -214,50 +256,6 @@ yaooc_complex_class_table_t yaooc_complex_class_table ={
 .magnitude = (double(*)(const_pointer)) yaooc_complex_magnitude,
 .direction = (double(*)(const_pointer)) yaooc_complex_direction,
 };
-void yaooc_complex_default_ctor(pointer __pthis__)
-{
-yaooc_complex_pointer this=__pthis__;(void)this;
-
-
-call_parent_default_ctor_static(this,yaooc_complex);
-this->real_=(double)0;
-this->imag_=(double)0;
-
-}
-void yaooc_complex_dtor(pointer __pthis__)
-{
-yaooc_complex_pointer this=__pthis__;(void)this;
-
-
-}
-void yaooc_complex_copy_ctor(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_complex_pointer this=__pthis__;(void)this;
-yaooc_complex_const_pointer src=__psrc__;(void)src;
-
-
-call_default_ctor_static(this,yaooc_complex);
-assign_static(this,src,yaooc_complex);
-
-}
-void yaooc_complex_assign(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_complex_pointer this=__pthis__;(void)this;
-yaooc_complex_const_pointer src=__psrc__;(void)src;
-
-assign_static(this,src,yaooc_object);
-this->real_=src->real_;
-this->imag_=src->imag_;
-
-}
-void yaooc_complex_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__)
-{
-yaooc_complex_const_pointer this=__pthis__;(void)this;
-yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
-
-      M(ostrm,printf,"(%lg %c %lgi)",this->real_,(this->imag_ < 0 ? '-' : '+'),fabs(this->imag_));
-    
-}
 const type_info_t __yaooc_complex_ti = {
 .min_flag_=0,
 .pod_flag_=0,

@@ -6,7 +6,7 @@ yaooc_ordered_array_container_const_pointer this=__pthis__;(void)this;
       yaooc_ordered_array_container_find_result_t ret;
       ret.found_=false;
       ret.position_=AT(this,0);
-
+    
       size_t lower=0,upper=SIZE(this)-1,middle=0,position=0;
       rich_compare rich_cmp=get_rich_compare(this->type_info_);
       while(lower <= upper && upper != (size_t)-1) {
@@ -20,7 +20,7 @@ yaooc_ordered_array_container_const_pointer this=__pthis__;(void)this;
           position=middle;
         } else {
           ret.found_=true;
-
+          
 
 
 
@@ -121,8 +121,8 @@ yaooc_ordered_array_container_pointer this=__pthis__;(void)this;
     
 }
 yaooc_ordered_array_container_class_table_t yaooc_ordered_array_container_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table,
-.type_name_ = (const char*) "yaooc_ordered_array_container_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_array_container_class_table,
+.type_name_ = (const char*)"yaooc_ordered_array_container_t",
 .swap = (void(*)(pointer,pointer)) yaooc_ordered_array_container_swap,
 .increase_capacity = (bool(*)(pointer,size_t)) yaooc_ordered_array_container_increase_capacity,
 .size_needed = (size_t(*)(const_pointer,size_t)) yaooc_ordered_array_container_size_needed,

@@ -1,4 +1,4 @@
-%header_directory yaooc
+%prefix_directory yaooc
 %include <yaooc/object.yod>
 
 %header

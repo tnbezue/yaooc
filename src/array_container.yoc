@@ -1,5 +1,5 @@
 %include <yaooc/object.yod>
-%header_directory yaooc
+%prefix_directory yaooc
 
 %header
 
@@ -18,7 +18,7 @@ void throw_yaooc_array_container_exception(pointer,const char*);
         "Object type contained in array must be specified");
     }
 
-		yaooc_array_container_ctor_ti(const type_info_t* ti)
+		yaooc_array_container_ctor_ti(const type_info_t* ti) : yaooc_object()
     {
       this->array_ = NULL;
       this->type_info_ = ti;

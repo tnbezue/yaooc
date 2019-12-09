@@ -17,7 +17,7 @@
 
 %include <yaooc/object.yod>
 %include <yaooc/exception.yod>
-%header_directory yaooc
+%prefix_directory yaooc
 
 %header
 #include <yaooc/string.h>

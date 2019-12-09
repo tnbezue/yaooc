@@ -16,7 +16,7 @@
 */
 
 %include <yaooc/stream.yod>
-%header_directory yaooc
+%prefix_directory yaooc
 
 
 #include <string.h>

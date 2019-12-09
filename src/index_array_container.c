@@ -1,5 +1,4 @@
 #include <yaooc/index_array_container.h>
-
 #include <string.h>
 #include <stdio.h>
 
@@ -14,6 +13,46 @@ int cmp_size_t(const void* a,const void* b)
 
 
 
+void yaooc_index_array_container_dtor(pointer __pthis__)
+{
+yaooc_index_array_container_pointer this=__pthis__;(void)this;
+
+
+      if(this->indexes_ != NULL)
+        FREE(this->indexes_);
+    
+}
+void yaooc_index_array_container_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_index_array_container_pointer this=__pthis__;(void)this;
+yaooc_index_array_container_const_pointer src=__psrc__;(void)src;
+
+call_constructor(this,yaooc_index_array_container_ctor_ti,TYPE_INFO(src));
+
+
+      yaooc_index_array_container_assign(this,src);
+    
+}
+void yaooc_index_array_container_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_index_array_container_pointer this=__pthis__;(void)this;
+yaooc_index_array_container_const_pointer src=__psrc__;(void)src;
+
+
+      yaooc_array_container_assign(this,src);
+      memcpy(this->indexes_,src->indexes_,this->size_*sizeof(yaooc_index_array_container_index_t));
+    
+}
+void yaooc_index_array_container_ctor_ti(pointer __pthis,va_list __con_args__){
+yaooc_index_array_container_pointer this=__pthis;(void)this;
+const type_info_t* ti = va_arg(__con_args__,const type_info_t*);
+
+call_constructor(this,yaooc_array_container_ctor_ti,ti);
+
+
+      this->indexes_=NULL;
+    
+}
 yaooc_index_array_container_find_result_t yaooc_index_array_container_find_protected(const_pointer __pthis__,const_pointer value)
 {
 yaooc_index_array_container_const_pointer this=__pthis__;(void)this;
@@ -32,7 +71,7 @@ yaooc_index_array_container_const_pointer this=__pthis__;(void)this;
           upper=middle-1;
           ret.lower_index_=middle;
         } else {
-
+          
 
 
           size_t idx=middle-1;
@@ -246,17 +285,6 @@ yaooc_index_array_container_pointer this=__pthis__;(void)this;
       return AT_I(this,i);
     
 }
-void yaooc_index_array_container_ctor_ti(pointer __pthis__,va_list __con_args__)
-{
-yaooc_index_array_container_pointer this=__pthis__;
-const type_info_t* ti = va_arg(__con_args__,const type_info_t*);
-
-call_constructor(this,yaooc_array_container_ctor_ti,ti);
-
-
-      this->indexes_=NULL;
-    
-}
 bool yaooc_index_array_container_increase_capacity(pointer __pthis__,size_t n)
 {
 yaooc_index_array_container_pointer this=__pthis__;(void)this;
@@ -274,8 +302,8 @@ yaooc_index_array_container_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_index_array_container_class_table_t yaooc_index_array_container_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table,
-.type_name_ = (const char*) "yaooc_index_array_container_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_array_container_class_table,
+.type_name_ = (const char*)"yaooc_index_array_container_t",
 .swap = (void(*)(pointer,pointer)) yaooc_index_array_container_swap,
 .increase_capacity = (bool(*)(pointer,size_t)) yaooc_index_array_container_increase_capacity,
 .size_needed = (size_t(*)(const_pointer,size_t)) yaooc_index_array_container_size_needed,
@@ -287,36 +315,6 @@ yaooc_index_array_container_class_table_t yaooc_index_array_container_class_tabl
 .cbegin = (const_iterator(*)(const_pointer)) yaooc_index_array_container_cbegin,
 .cend = (const_iterator(*)(const_pointer)) yaooc_index_array_container_cend,
 };
-void yaooc_index_array_container_dtor(pointer __pthis__)
-{
-yaooc_index_array_container_pointer this=__pthis__;(void)this;
-
-
-      if(this->indexes_ != NULL)
-        FREE(this->indexes_);
-    
-}
-void yaooc_index_array_container_copy_ctor(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_index_array_container_pointer this=__pthis__;(void)this;
-yaooc_index_array_container_const_pointer src=__psrc__;(void)src;
-
-call_constructor(this,yaooc_index_array_container_ctor_ti,TYPE_INFO(src));
-
-
-      yaooc_index_array_container_assign(this,src);
-    
-}
-void yaooc_index_array_container_assign(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_index_array_container_pointer this=__pthis__;(void)this;
-yaooc_index_array_container_const_pointer src=__psrc__;(void)src;
-
-
-      yaooc_array_container_assign(this,src);
-      memcpy(this->indexes_,src->indexes_,this->size_*sizeof(yaooc_index_array_container_index_t));
-    
-}
 const type_info_t __yaooc_index_array_container_ti = {
 .min_flag_=0,
 .pod_flag_=0,

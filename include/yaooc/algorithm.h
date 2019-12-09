@@ -1,7 +1,6 @@
 #ifndef __ALGORITHM_INCLUDED__
 #define __ALGORITHM_INCLUDED__
 
-
 #include <yaooc/new.h>
 
 iterator __yaooc_move(const_iterator,const_iterator,iterator);
@@ -47,8 +46,8 @@ iterator __yaooc_remove_copy_if(const type_info_t*,const_iterator,const_iterator
 #define yaooc_remove_copy_if(T,F,L,D,FUN) __yaooc_remove_copy_if(T ## _ti,F,L,D,FUN)
 
 typedef struct {
- const_iterator first;
- const_iterator second;
+	const_iterator first;
+	const_iterator second;
 } yaooc_iterator_pair_t;
 
 yaooc_iterator_pair_t __yaooc_mismatch(const type_info_t*,const_iterator,const_iterator,const_iterator,const_iterator);

@@ -1,24 +1,70 @@
 #include <yaooc/date_time.h>
-
 #include <time.h>
 #include <yaooc/sstream.h>
 #include <string.h>
 
 
-void yaooc_date_time_ctor_int(pointer __pthis__,va_list __con_args__)
+void yaooc_date_time_default_ctor(pointer __pthis__)
 {
-yaooc_date_time_pointer this=__pthis__;
+yaooc_date_time_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_date_time);
+
+
+
+      this->time_=time(NULL);
+    
+}
+void yaooc_date_time_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_date_time_pointer this=__pthis__;(void)this;
+yaooc_date_time_const_pointer src=__psrc__;(void)src;
+
+
+call_default_ctor_static(this,yaooc_date_time);
+assign_static(this,src,yaooc_date_time);
+
+}
+void yaooc_date_time_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_date_time_pointer this=__pthis__;(void)this;
+yaooc_date_time_const_pointer src=__psrc__;(void)src;
+
+
+      this->time_=src->time_;
+    
+}
+int yaooc_date_time_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+yaooc_date_time_const_pointer lhs=__plhs__;(void)lhs;
+yaooc_date_time_const_pointer rhs=__prhs__;(void)rhs;
+
+      return lhs->time_ - rhs->time_;
+    
+}
+void yaooc_date_time_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__)
+{
+yaooc_date_time_const_pointer this=__pthis__;(void)this;
+yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
+
+
+      struct tm* tm=localtime(&this->time_);
+      char dstr[64];
+      strftime(dstr,64,"%c",tm);
+      M(ostrm,printf,"%s",dstr);
+    
+}
+void yaooc_date_time_ctor_int(pointer __pthis,va_list __con_args__){
+yaooc_date_time_pointer this=__pthis;(void)this;
 time_t t = va_arg(__con_args__,time_t);
 
-call_parent_default_ctor_static(this,yaooc_date_time);
+call_default_ctor_static(this,yaooc_date_time);
 
 
       M(this,set,t);
     
 }
-void yaooc_date_time_ctor_ymdhms(pointer __pthis__,va_list __con_args__)
-{
-yaooc_date_time_pointer this=__pthis__;
+void yaooc_date_time_ctor_ymdhms(pointer __pthis,va_list __con_args__){
+yaooc_date_time_pointer this=__pthis;(void)this;
 int y = va_arg(__con_args__,int);
 int mon = va_arg(__con_args__,int);
 int d = va_arg(__con_args__,int);
@@ -26,15 +72,14 @@ int h = va_arg(__con_args__,int);
 int min = va_arg(__con_args__,int);
 int s = va_arg(__con_args__,int);
 
-call_parent_default_ctor_static(this,yaooc_date_time);
+call_default_ctor_static(this,yaooc_date_time);
 
 
       M(this,set_ymdhms,y,mon,d,h,min,s);
     
 }
-void yaooc_date_time_ctor_ymd(pointer __pthis__,va_list __con_args__)
-{
-yaooc_date_time_pointer this=__pthis__;
+void yaooc_date_time_ctor_ymd(pointer __pthis,va_list __con_args__){
+yaooc_date_time_pointer this=__pthis;(void)this;
 int y = va_arg(__con_args__,int);
 int mon = va_arg(__con_args__,int);
 int d = va_arg(__con_args__,int);
@@ -44,22 +89,20 @@ call_constructor(this,yaooc_date_time_ctor_ymdhms,y,mon,d,0,0,0);
 
     
 }
-void yaooc_date_time_ctor_hms(pointer __pthis__,va_list __con_args__)
-{
-yaooc_date_time_pointer this=__pthis__;
+void yaooc_date_time_ctor_hms(pointer __pthis,va_list __con_args__){
+yaooc_date_time_pointer this=__pthis;(void)this;
 int h = va_arg(__con_args__,int);
 int min = va_arg(__con_args__,int);
 int s = va_arg(__con_args__,int);
 
-call_parent_default_ctor_static(this,yaooc_date_time);
+call_default_ctor_static(this,yaooc_date_time);
 
 
       M(this,set_hms,h,min,s);
     
 }
-void yaooc_date_time_ctor_tm(pointer __pthis__,va_list __con_args__)
-{
-yaooc_date_time_pointer this=__pthis__;
+void yaooc_date_time_ctor_tm(pointer __pthis,va_list __con_args__){
+yaooc_date_time_pointer this=__pthis;(void)this;
 const struct tm* tm = va_arg(__con_args__,const struct tm*);
 
 call_parent_default_ctor_static(this,yaooc_date_time);
@@ -70,12 +113,11 @@ call_parent_default_ctor_static(this,yaooc_date_time);
       this->time_=mktime(&tm2);
     
 }
-void yaooc_date_time_ctor_ccs(pointer __pthis__,va_list __con_args__)
-{
-yaooc_date_time_pointer this=__pthis__;
+void yaooc_date_time_ctor_ccs(pointer __pthis,va_list __con_args__){
+yaooc_date_time_pointer this=__pthis;(void)this;
 const char* str = va_arg(__con_args__,const char*);
 
-call_parent_default_ctor_static(this,yaooc_date_time);
+call_default_ctor_static(this,yaooc_date_time);
 
 
     
@@ -276,8 +318,8 @@ yaooc_date_time_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_date_time_class_table_t yaooc_date_time_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-.type_name_ = (const char*) "yaooc_date_time_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_date_time_t",
 .swap = (void(*)(pointer,pointer)) yaooc_date_time_swap,
 .set = (void(*)(pointer,time_t)) yaooc_date_time_set,
 .set_ymdhms = (void(*)(pointer,int,int,int,int,int,int)) yaooc_date_time_set_ymdhms,
@@ -294,55 +336,6 @@ yaooc_date_time_class_table_t yaooc_date_time_class_table ={
 .day_of_year = (int(*)(const_pointer)) yaooc_date_time_day_of_year,
 .strftime = (char*(*)(pointer,const char*)) yaooc_date_time_strftime,
 };
-void yaooc_date_time_default_ctor(pointer __pthis__)
-{
-yaooc_date_time_pointer this=__pthis__;(void)this;
-call_parent_default_ctor_static(this,yaooc_date_time);
-
-
-
-      this->time_=time(NULL);
-    
-}
-void yaooc_date_time_copy_ctor(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_date_time_pointer this=__pthis__;(void)this;
-yaooc_date_time_const_pointer src=__psrc__;(void)src;
-
-
-call_default_ctor_static(this,yaooc_date_time);
-assign_static(this,src,yaooc_date_time);
-
-}
-void yaooc_date_time_assign(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_date_time_pointer this=__pthis__;(void)this;
-yaooc_date_time_const_pointer src=__psrc__;(void)src;
-
-
-      this->time_=src->time_;
-    
-}
-int yaooc_date_time_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
-{
-yaooc_date_time_const_pointer lhs=__plhs__;(void)lhs;
-yaooc_date_time_const_pointer rhs=__prhs__;(void)rhs;
-
-      return lhs->time_ - rhs->time_;
-    
-}
-void yaooc_date_time_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__)
-{
-yaooc_date_time_const_pointer this=__pthis__;(void)this;
-yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
-
-
-      struct tm* tm=localtime(&this->time_);
-      char dstr[64];
-      strftime(dstr,64,"%c",tm);
-      M(ostrm,printf,"%s",dstr);
-    
-}
 const type_info_t __yaooc_date_time_ti = {
 .min_flag_=0,
 .pod_flag_=0,

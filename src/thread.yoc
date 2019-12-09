@@ -1,5 +1,5 @@
 %include <yaooc/object.yod>
-%header_directory yaooc
+%prefix_directory yaooc
 
 %header
 #ifdef _WIN32

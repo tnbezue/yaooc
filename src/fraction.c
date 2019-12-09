@@ -1,5 +1,4 @@
 #include <yaooc/fraction.h>
-
 #include <math.h>
 
 int yaooc_fraction_gcd(int a,int b)
@@ -14,7 +13,44 @@ int yaooc_fraction_gcd(int a,int b)
 }
 
 
-double yaooc_fraction_epsilon=5e-7;
+void yaooc_fraction_default_ctor(pointer __pthis__)
+{
+yaooc_fraction_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_fraction);
+
+
+
+    this->numerator_=0;
+    this->denominator_=1;
+  
+}
+void yaooc_fraction_dtor(pointer __pthis__)
+{
+yaooc_fraction_pointer this=__pthis__;(void)this;
+
+
+}
+void yaooc_fraction_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_fraction_pointer this=__pthis__;(void)this;
+yaooc_fraction_const_pointer src=__psrc__;(void)src;
+
+
+call_default_ctor_static(this,yaooc_fraction);
+assign_static(this,src,yaooc_fraction);
+
+}
+void yaooc_fraction_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_fraction_pointer this=__pthis__;(void)this;
+yaooc_fraction_const_pointer src=__psrc__;(void)src;
+
+assign_static(this,src,yaooc_object);
+this->numerator_=src->numerator_;
+this->denominator_=src->denominator_;
+
+}
+ double yaooc_fraction_epsilon=5e-7;
 void yaooc_fraction_swap(pointer __pthis__,pointer o)
 {
 yaooc_fraction_pointer this=__pthis__;(void)this;
@@ -149,8 +185,8 @@ yaooc_fraction_const_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_fraction_class_table_t yaooc_fraction_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-.type_name_ = (const char*) "yaooc_fraction_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_fraction_t",
 .swap = (void(*)(pointer,pointer)) yaooc_fraction_swap,
 .set = (void(*)(pointer,int,int)) yaooc_fraction_set,
 .set_mixed = (void(*)(pointer,int,int,int)) yaooc_fraction_set_mixed,
@@ -161,43 +197,6 @@ yaooc_fraction_class_table_t yaooc_fraction_class_table ={
 .divided_by = (void(*)(pointer,yaooc_fraction_t*)) yaooc_fraction_divided_by,
 .to_double = (double(*)(const_pointer)) yaooc_fraction_to_double,
 };
-void yaooc_fraction_default_ctor(pointer __pthis__)
-{
-yaooc_fraction_pointer this=__pthis__;(void)this;
-call_parent_default_ctor_static(this,yaooc_fraction);
-
-
-
-    this->numerator_=0;
-    this->denominator_=1;
-  
-}
-void yaooc_fraction_dtor(pointer __pthis__)
-{
-yaooc_fraction_pointer this=__pthis__;(void)this;
-
-
-}
-void yaooc_fraction_copy_ctor(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_fraction_pointer this=__pthis__;(void)this;
-yaooc_fraction_const_pointer src=__psrc__;(void)src;
-
-
-call_default_ctor_static(this,yaooc_fraction);
-assign_static(this,src,yaooc_fraction);
-
-}
-void yaooc_fraction_assign(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_fraction_pointer this=__pthis__;(void)this;
-yaooc_fraction_const_pointer src=__psrc__;(void)src;
-
-assign_static(this,src,yaooc_object);
-this->numerator_=src->numerator_;
-this->denominator_=src->denominator_;
-
-}
 const type_info_t __yaooc_fraction_ti = {
 .min_flag_=0,
 .pod_flag_=0,

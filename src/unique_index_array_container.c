@@ -10,7 +10,7 @@ iterator yaooc_unique_index_array_container_insertn(pointer __pthis__,const_iter
 {
 yaooc_unique_index_array_container_pointer this=__pthis__;(void)this;
 
-
+      
 
 
       return yaooc_unique_index_array_container_insert_range(this,pos,value,((yaooc_private_const_pointer)value)+TYPE_SIZE(this));
@@ -63,8 +63,8 @@ yaooc_unique_index_array_container_pointer this=__pthis__;(void)this;
     
 }
 yaooc_unique_index_array_container_class_table_t yaooc_unique_index_array_container_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-.type_name_ = (const char*) "yaooc_unique_index_array_container_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_unique_index_array_container_t",
 .swap = (void(*)(pointer,pointer)) yaooc_unique_index_array_container_swap,
 };
 const type_info_t __yaooc_unique_index_array_container_ti = {

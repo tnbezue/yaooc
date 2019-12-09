@@ -1,11 +1,28 @@
 #include <yaooc/fstream.h>
-void yaooc_ifstream_ctor_fname_mode(pointer __pthis__,va_list __con_args__)
+void yaooc_ifstream_default_ctor(pointer __pthis__)
 {
-yaooc_ifstream_pointer this=__pthis__;
+yaooc_ifstream_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_ifstream);
+
+
+
+      yaooc_base_stream_default_ctor(this);
+    
+}
+void yaooc_ifstream_dtor(pointer __pthis__)
+{
+yaooc_ifstream_pointer this=__pthis__;(void)this;
+
+
+      M(this,close);
+    
+}
+void yaooc_ifstream_ctor_fname_mode(pointer __pthis,va_list __con_args__){
+yaooc_ifstream_pointer this=__pthis;(void)this;
 const char* fname = va_arg(__con_args__,const char*);
 const char* mode = va_arg(__con_args__,const char*);
 
-call_parent_default_ctor_static(this,yaooc_ifstream);
+call_default_ctor_static(this,yaooc_ifstream);
 
 
       M(this,open,fname,mode);
@@ -40,8 +57,8 @@ yaooc_ifstream_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_ifstream_class_table_t yaooc_ifstream_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_istream_class_table,
-.type_name_ = (const char*) "yaooc_ifstream_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_istream_class_table,
+.type_name_ = (const char*)"yaooc_ifstream_t",
 .swap = (void(*)(pointer,pointer)) yaooc_ifstream_swap,
 .eof = (bool(*)(const_pointer)) yaooc_ifstream_eof,
 .seek = (bool(*)(pointer,size_t,int)) yaooc_ifstream_seek,
@@ -56,24 +73,6 @@ yaooc_ifstream_class_table_t yaooc_ifstream_class_table ={
 .open = (void(*)(pointer,const char*,const char*)) yaooc_ifstream_open,
 .close = (void(*)(pointer)) yaooc_ifstream_close,
 };
-void yaooc_ifstream_default_ctor(pointer __pthis__)
-{
-yaooc_ifstream_pointer this=__pthis__;(void)this;
-call_parent_default_ctor_static(this,yaooc_ifstream);
-
-
-
-      yaooc_base_stream_default_ctor(this);
-    
-}
-void yaooc_ifstream_dtor(pointer __pthis__)
-{
-yaooc_ifstream_pointer this=__pthis__;(void)this;
-
-
-      M(this,close);
-    
-}
 const type_info_t __yaooc_ifstream_ti = {
 .min_flag_=0,
 .pod_flag_=0,
@@ -89,13 +88,30 @@ const type_info_t __yaooc_ifstream_ti = {
 .parent_=&__yaooc_istream_ti
 };
 const type_info_t* const yaooc_ifstream_ti=&__yaooc_ifstream_ti;
-void yaooc_ofstream_ctor_fname_mode(pointer __pthis__,va_list __con_args__)
+void yaooc_ofstream_default_ctor(pointer __pthis__)
 {
-yaooc_ofstream_pointer this=__pthis__;
+yaooc_ofstream_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_ofstream);
+
+
+
+      yaooc_base_stream_default_ctor(this);
+    
+}
+void yaooc_ofstream_dtor(pointer __pthis__)
+{
+yaooc_ofstream_pointer this=__pthis__;(void)this;
+
+
+      M(this,close);
+    
+}
+void yaooc_ofstream_ctor_fname_mode(pointer __pthis,va_list __con_args__){
+yaooc_ofstream_pointer this=__pthis;(void)this;
 const char* fname = va_arg(__con_args__,const char*);
 const char* mode = va_arg(__con_args__,const char*);
 
-call_parent_default_ctor_static(this,yaooc_ofstream);
+call_default_ctor_static(this,yaooc_ofstream);
 
 
       M(this,open,fname,mode);
@@ -130,8 +146,8 @@ yaooc_ofstream_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_ofstream_class_table_t yaooc_ofstream_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_ostream_class_table,
-.type_name_ = (const char*) "yaooc_ofstream_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_ostream_class_table,
+.type_name_ = (const char*)"yaooc_ofstream_t",
 .swap = (void(*)(pointer,pointer)) yaooc_ofstream_swap,
 .eof = (bool(*)(const_pointer)) yaooc_ofstream_eof,
 .seek = (bool(*)(pointer,size_t,int)) yaooc_ofstream_seek,
@@ -146,24 +162,6 @@ yaooc_ofstream_class_table_t yaooc_ofstream_class_table ={
 .open = (void(*)(pointer,const char*,const char*)) yaooc_ofstream_open,
 .close = (void(*)(pointer)) yaooc_ofstream_close,
 };
-void yaooc_ofstream_default_ctor(pointer __pthis__)
-{
-yaooc_ofstream_pointer this=__pthis__;(void)this;
-call_parent_default_ctor_static(this,yaooc_ofstream);
-
-
-
-      yaooc_base_stream_default_ctor(this);
-    
-}
-void yaooc_ofstream_dtor(pointer __pthis__)
-{
-yaooc_ofstream_pointer this=__pthis__;(void)this;
-
-
-      M(this,close);
-    
-}
 const type_info_t __yaooc_ofstream_ti = {
 .min_flag_=0,
 .pod_flag_=0,

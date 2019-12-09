@@ -1,5 +1,4 @@
 #include <yaooc/exception.h>
-
 #include <yaooc/garbage_bag.h>
 #include <stdio.h>
 #include <string.h>
@@ -14,12 +13,52 @@ typedef pthread_t yaooc_exception_thread_t;
 #endif
 
 
-void yaooc_exception_ctor_v(pointer __pthis__,va_list __con_args__)
+void yaooc_exception_default_ctor(pointer __pthis__)
 {
-yaooc_exception_pointer this=__pthis__;
+yaooc_exception_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_exception);
+
+
+
+      this->what_=NULL;
+    
+}
+void yaooc_exception_dtor(pointer __pthis__)
+{
+yaooc_exception_pointer this=__pthis__;(void)this;
+
+
+      if(this->what_)
+        FREE(this->what_);
+    
+}
+void yaooc_exception_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_exception_pointer this=__pthis__;(void)this;
+yaooc_exception_const_pointer src=__psrc__;(void)src;
+
+call_default_ctor_static(this,yaooc_exception);
+
+
+      yaooc_exception_default_ctor(this);
+      yaooc_exception_assign(this,src);
+    
+}
+void yaooc_exception_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_exception_pointer this=__pthis__;(void)this;
+yaooc_exception_const_pointer src=__psrc__;(void)src;
+
+
+      yaooc_exception_dtor(this);
+      this->what_ = src->what_ ? STRDUP(src->what_) : NULL;
+    
+}
+void yaooc_exception_ctor_v(pointer __pthis,va_list __con_args__){
+yaooc_exception_pointer this=__pthis;(void)this;
 const char* fmt = va_arg(__con_args__,const char*);
 #define args __con_args__
-call_parent_default_ctor_static(this,yaooc_exception);
+call_default_ctor_static(this,yaooc_exception);
 
 
       va_list args2;
@@ -45,52 +84,11 @@ yaooc_exception_const_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_exception_class_table_t yaooc_exception_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-.type_name_ = (const char*) "yaooc_exception_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_exception_t",
 .swap = (void(*)(pointer,pointer)) yaooc_exception_swap,
 .what = (const char*(*)(const_pointer)) yaooc_exception_what,
 };
-void yaooc_exception_default_ctor(pointer __pthis__)
-{
-yaooc_exception_pointer this=__pthis__;(void)this;
-call_parent_default_ctor_static(this,yaooc_exception);
-
-
-
-      this->what_=NULL;
-    
-}
-void yaooc_exception_dtor(pointer __pthis__)
-{
-yaooc_exception_pointer this=__pthis__;(void)this;
-
-
-      if(this->what_)
-        FREE(this->what_);
-    
-}
-void yaooc_exception_copy_ctor(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_exception_pointer this=__pthis__;(void)this;
-yaooc_exception_const_pointer src=__psrc__;(void)src;
-
-call_parent_default_ctor_static(this,yaooc_exception);
-
-
-      yaooc_exception_default_ctor(this);
-      yaooc_exception_assign(this,src);
-    
-}
-void yaooc_exception_assign(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_exception_pointer this=__pthis__;(void)this;
-yaooc_exception_const_pointer src=__psrc__;(void)src;
-
-
-      yaooc_exception_dtor(this);
-      this->what_ = src->what_ ? STRDUP(src->what_) : NULL;
-    
-}
 const type_info_t __yaooc_exception_ti = {
 .min_flag_=0,
 .pod_flag_=0,
@@ -106,7 +104,6 @@ const type_info_t __yaooc_exception_ti = {
 .parent_=&__yaooc_object_ti
 };
 const type_info_t* const yaooc_exception_ti=&__yaooc_exception_ti;
-
 typedef struct yaooc_jmpbuf_s yaooc_jmpbuf_t;
 struct yaooc_jmpbuf_s {
   jmp_buf jb_;
@@ -123,10 +120,10 @@ struct yaooc_exception_thread_jmpbuf_node_s {
 
 
 #if defined(_WIN32) && !defined(__YAOOC_USE_PTHREADS)
-static CRITICAL_SECTION exception_mutex;
+static CRITICAL_SECTION exception_mutex; 
 void init_exceptions() { InitializeCriticalSection(&exception_mutex); }
 #else
-static pthread_mutex_t exception_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t exception_mutex  = PTHREAD_MUTEX_INITIALIZER;
 void init_exceptions() { }
 #endif
 
@@ -187,7 +184,18 @@ yaooc_exception_thread_jmpbuf_node_t* yaooc_exception_thread_jmpbuf_find_or_crea
   yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(tid);
   return current ? current : yaooc_exception_thread_node_create_thread_list(tid);
 }
-# 226 "exception.yoc"
+
+
+
+
+
+
+
+
+
+
+
+
 void yaooc_exception_thread_list_remove_exception_thread(yaooc_exception_thread_t tid)
 {
   yaooc_exception_thread_jmpbuf_node_t* current=yaooc_exception_thread_jmpbuf_head;
@@ -201,14 +209,14 @@ void yaooc_exception_thread_list_remove_exception_thread(yaooc_exception_thread_
 #endif
       if(previous) {
         previous->next_=current->next_;
-        if(current->next_ ==NULL) {
+        if(current->next_ ==NULL) { 
           yaooc_exception_thread_jmpbuf_tail=previous;
         }
       } else {
-
+        
         yaooc_exception_thread_jmpbuf_head=current->next_;
         if(current->next_ == NULL) {
-
+          
           yaooc_exception_thread_jmpbuf_head=yaooc_exception_thread_jmpbuf_tail=NULL;
         }
       }
@@ -227,7 +235,20 @@ void yaooc_exception_thread_list_remove_exception_thread(yaooc_exception_thread_
 }
 
 yaooc_jmpbuf_t* yaooc_current_jmpbuf();
-# 279 "exception.yoc"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 jmp_buf* yaooc_jmpbuf_new()
 {
   yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_find_or_create_exception_thread(yaooc_current_thread_id());
@@ -279,8 +300,8 @@ static void yaooc_exception_terminate(yaooc_exception_pointer e)
 void __throw__(pointer e)
 {
   yaooc_exception_thread_jmpbuf_node_t* node=yaooc_exception_thread_jmpbuf_list_find_jmpbuf(yaooc_current_thread_id());
-  if(node != NULL) {
-
+  if(node != NULL) { 
+    
 
 
     while(node->current_jmpbuf_ != NULL && node->current_jmpbuf_->exception_thrown_ != NULL) {
@@ -290,7 +311,7 @@ void __throw__(pointer e)
     }
   }
   if(node ==NULL || node->current_jmpbuf_ == NULL)
-    yaooc_exception_terminate(e);
+    yaooc_exception_terminate(e); 
   node->current_jmpbuf_->exception_thrown_=e;
   longjmp(node->current_jmpbuf_->jb_,1);
 }
@@ -362,8 +383,8 @@ yaooc_exception_pointer yaooc_exception_current_exception_thrown()
 
 
 yaooc_stream_exception_class_table_t yaooc_stream_exception_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-.type_name_ = (const char*) "yaooc_stream_exception_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_exception_class_table,
+.type_name_ = (const char*)"yaooc_stream_exception_t",
 .swap = (void(*)(pointer,pointer)) yaooc_stream_exception_swap,
 .what = (const char*(*)(const_pointer)) yaooc_stream_exception_what,
 };
@@ -382,7 +403,6 @@ const type_info_t __yaooc_stream_exception_ti = {
 .parent_=&__yaooc_exception_ti
 };
 const type_info_t* const yaooc_stream_exception_ti=&__yaooc_stream_exception_ti;
-
 void throw_stream_exception(pointer p,const char* what)
 {
   THROW(new_ctor(yaooc_stream_exception,yaooc_stream_exception_ctor_v,"No %s method for %s type",
@@ -391,8 +411,8 @@ void throw_stream_exception(pointer p,const char* what)
 
 
 yaooc_array_container_exception_class_table_t yaooc_array_container_exception_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-.type_name_ = (const char*) "yaooc_array_container_exception_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_exception_class_table,
+.type_name_ = (const char*)"yaooc_array_container_exception_t",
 .swap = (void(*)(pointer,pointer)) yaooc_array_container_exception_swap,
 .what = (const char*(*)(const_pointer)) yaooc_array_container_exception_what,
 };
@@ -411,10 +431,10 @@ const type_info_t __yaooc_array_container_exception_ti = {
 .parent_=&__yaooc_exception_ti
 };
 const type_info_t* const yaooc_array_container_exception_ti=&__yaooc_array_container_exception_ti;
-
 void throw_yaooc_array_container_exception(pointer p,const char* what)
 {
   THROW(new_ctor(yaooc_array_container_exception,yaooc_array_container_exception_ctor_v,"%s",
         what,((yaooc_object_class_table_t*)(((yaooc_object_pointer)p)->class_table_))->type_name_));
 }
+
 

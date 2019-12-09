@@ -236,7 +236,7 @@ int main(int argc,char* argv[])
           char* uc_root=gb_save(yaooc_upcase(root));
           M(&h_strm,printf,"#ifndef __%s_INCLUDED__\n"
                           "#define __%s_INCLUDED__\n\n",uc_root,uc_root);
-          l = M(&definition_directory,size)+strlen(root)+7; // header_directory + "/" + root + ".yod"
+          l = M(&definition_directory,size)+strlen(root)+7; // definition_directory + "/" + root + ".yod"
           char* yod_fname=gb_new_array(char,l);
           *yod_fname=0;
           if(M(&definition_directory,size)>0) {
@@ -246,11 +246,11 @@ int main(int argc,char* argv[])
           strcat(yod_fname,root);
           strcat(yod_fname,".yod");
           M(&yod_strm,open,yod_fname,"w");
-          M(&yod_strm,printf,"#ifndef __%s_YOD_INCLUDED__\n"
-                          "#define __%s_YOD_INCLUDED__\n\n",uc_root,uc_root);
+          M(&yod_strm,printf,"%%ifndef __%s_YOD_INCLUDED__\n"
+                          "%%define __%s_YOD_INCLUDED__\n\n",uc_root,uc_root);
 
           if(strcmp(root,"object")!=0)
-            M(&yod_strm,printf,"#include <yaooc/object.yod>\n");
+            M(&yod_strm,printf,"%%include <yaooc/object.yod>\n");
           char* source_fname=gb_new_array(char,strlen(root)+3);
           strcpy(source_fname,root);
           strcat(source_fname,".c");
@@ -272,7 +272,7 @@ int main(int argc,char* argv[])
               M(section,print_to_source,&c_strm);
               M(section,print_to_yod,&yod_strm);
             }
-  //          M(cout,printf,"%s %d\n",M(&((yaoocpp_class_pointer)(*k))->name_,c_str),((yaoocpp_class_pointer)(*k))->defined_in_top_level_file_);
+//            M(cout,printf,"%s %d\n",M(&section->name_,c_str),section->defined_in_top_level_file_);
           }
 //          M(cout,printf,"%zu mixins defined\n",M(&parser.mixins_,size));
           CFOR_EACH(k,&parser.mixins_) {
@@ -282,7 +282,7 @@ int main(int argc,char* argv[])
             }
           }
           M(&h_strm,printf,"\n#endif\n");
-          M(&yod_strm,printf,"\n#endif\n");
+          M(&yod_strm,printf,"\n%%endif\n");
 
           M(&h_strm,close);
           M(&c_strm,close);

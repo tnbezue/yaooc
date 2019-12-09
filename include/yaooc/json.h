@@ -35,8 +35,8 @@ yaooc_class_instance(yaooc_json_exception) {
 
 yaooc_class(yaooc_json_exception);
 #define yaooc_json_exception_ctor_v yaooc_exception_ctor_v
- void yaooc_json_exception_swap(pointer,pointer);
- const char* yaooc_json_exception_what(const_pointer);
+#define yaooc_json_exception_swap yaooc_exception_swap
+#define yaooc_json_exception_what yaooc_exception_what
 yaooc_class_table(yaooc_json_value) {
   yaooc_object_class_table_t;
 void (*virtual_dtor)(pointer);
@@ -56,7 +56,7 @@ void yaooc_json_value_dtor(pointer);
 void yaooc_json_value_copy_ctor(pointer,const_pointer);
 void yaooc_json_value_assign(pointer,const_pointer);
 int yaooc_json_value_rich_compare(const_pointer,const_pointer);
- void yaooc_json_value_swap(pointer,pointer);
+#define yaooc_json_value_swap yaooc_object_swap
  void yaooc_json_value_virtual_dtor(pointer);
  void yaooc_json_value_virtual_assign(pointer,const_pointer);
  int yaooc_json_value_virtual_rich_compare(const_pointer,const_pointer);
@@ -73,7 +73,7 @@ yaooc_class(yaooc_json_null);
 void yaooc_json_null_default_ctor(pointer);
 void yaooc_json_null_assign(pointer,const_pointer);
 int yaooc_json_null_rich_compare(const_pointer,const_pointer);
- void yaooc_json_null_swap(pointer,pointer);
+#define yaooc_json_null_swap yaooc_json_value_swap
  void yaooc_json_null_virtual_dtor(pointer);
  void yaooc_json_null_virtual_assign(pointer,const_pointer);
  int yaooc_json_null_virtual_rich_compare(const_pointer,const_pointer);
@@ -91,7 +91,7 @@ void yaooc_json_bool_default_ctor(pointer);
 void yaooc_json_bool_assign(pointer,const_pointer);
 int yaooc_json_bool_rich_compare(const_pointer,const_pointer);
 void yaooc_json_bool_ctor_bool(pointer,va_list);
- void yaooc_json_bool_swap(pointer,pointer);
+#define yaooc_json_bool_swap yaooc_json_value_swap
  void yaooc_json_bool_virtual_dtor(pointer);
  void yaooc_json_bool_virtual_assign(pointer,const_pointer);
  int yaooc_json_bool_virtual_rich_compare(const_pointer,const_pointer);
@@ -109,7 +109,7 @@ void yaooc_json_integer_default_ctor(pointer);
 void yaooc_json_integer_assign(pointer,const_pointer);
 int yaooc_json_integer_rich_compare(const_pointer,const_pointer);
 void yaooc_json_integer_ctor_int(pointer,va_list);
- void yaooc_json_integer_swap(pointer,pointer);
+#define yaooc_json_integer_swap yaooc_json_value_swap
  void yaooc_json_integer_virtual_dtor(pointer);
  void yaooc_json_integer_virtual_assign(pointer,const_pointer);
  int yaooc_json_integer_virtual_rich_compare(const_pointer,const_pointer);
@@ -127,7 +127,7 @@ void yaooc_json_real_default_ctor(pointer);
 void yaooc_json_real_assign(pointer,const_pointer);
 int yaooc_json_real_rich_compare(const_pointer,const_pointer);
 void yaooc_json_real_ctor_int(pointer,va_list);
- void yaooc_json_real_swap(pointer,pointer);
+#define yaooc_json_real_swap yaooc_json_value_swap
  void yaooc_json_real_virtual_dtor(pointer);
  void yaooc_json_real_virtual_assign(pointer,const_pointer);
  int yaooc_json_real_virtual_rich_compare(const_pointer,const_pointer);
@@ -146,7 +146,7 @@ void yaooc_json_string_dtor(pointer);
 void yaooc_json_string_assign(pointer,const_pointer);
 int yaooc_json_string_rich_compare(const_pointer,const_pointer);
 void yaooc_json_string_ctor_ccs(pointer,va_list);
- void yaooc_json_string_swap(pointer,pointer);
+#define yaooc_json_string_swap yaooc_json_value_swap
  void yaooc_json_string_virtual_dtor(pointer);
  void yaooc_json_string_virtual_assign(pointer,const_pointer);
  int yaooc_json_string_virtual_rich_compare(const_pointer,const_pointer);
@@ -166,7 +166,7 @@ void yaooc_json_array_default_ctor(pointer);
 void yaooc_json_array_dtor(pointer);
 void yaooc_json_array_assign(pointer,const_pointer);
 int yaooc_json_array_rich_compare(const_pointer,const_pointer);
- void yaooc_json_array_swap(pointer,pointer);
+#define yaooc_json_array_swap yaooc_json_value_swap
  void yaooc_json_array_virtual_dtor(pointer);
  void yaooc_json_array_virtual_assign(pointer,const_pointer);
  int yaooc_json_array_virtual_rich_compare(const_pointer,const_pointer);
@@ -186,7 +186,7 @@ void yaooc_json_object_default_ctor(pointer);
 void yaooc_json_object_dtor(pointer);
 void yaooc_json_object_assign(pointer,const_pointer);
 int yaooc_json_object_rich_compare(const_pointer,const_pointer);
- void yaooc_json_object_swap(pointer,pointer);
+#define yaooc_json_object_swap yaooc_json_value_swap
  void yaooc_json_object_virtual_dtor(pointer);
  void yaooc_json_object_virtual_assign(pointer,const_pointer);
  int yaooc_json_object_virtual_rich_compare(const_pointer,const_pointer);

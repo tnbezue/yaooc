@@ -1,14 +1,9 @@
-#ifndef __PARSER_INCLUDED__
-#define __PARSER_INCLUDED__
-
-
-#include <yaooc/base_parser.h>
-
-
-#include <yaooc/exception.h>
-
+#ifndef __OUT2_INCLUDED__
+#define __OUT2_INCLUDED__
 
 #include <yaooc/string.h>
+#include <yaooc/base_parser.h>
+#include <yaooc/exception.h>
 #include "components.h"
 
 
@@ -26,18 +21,17 @@
 
 yaooc_class_table(yaoocpp_parser) {
   yaooc_base_parser_class_table_t;
-  void (*parse_file)(pointer,const char*);
+void (*parse_file)(pointer,const char*);
 };
 #define yaoocpp_parser_parent_class_table ((yaooc_base_parser_class_table_t*)(yaoocpp_parser_class_table.parent_class_table_))
 
 yaooc_class_instance(yaoocpp_parser) {
   yaooc_base_parser_class_instance_t;
-  yaoocpp_item_pointer_vector_t sections_;
-  yaoocpp_item_pointer_vector_t mixins_;
+yaoocpp_item_pointer_vector_t sections_;
+yaoocpp_item_pointer_vector_t mixins_;
 };
 
 yaooc_class(yaoocpp_parser);
-
 void yaoocpp_parser_default_ctor(pointer);
 void yaoocpp_parser_dtor(pointer);
 void yaoocpp_parser_copy_ctor(pointer,const_pointer);
@@ -66,36 +60,36 @@ void yaoocpp_parser_assign(pointer,const_pointer);
 #define yaoocpp_parser_string_until_chrs yaooc_base_parser_string_until_chrs
 #define yaoocpp_parser_string_while_chrs yaooc_base_parser_string_while_chrs
 #define yaoocpp_parser_string_until_eol yaooc_base_parser_string_until_eol
-bool yaoocpp_parser_whitespace(pointer,yaooc_token_t*);
+ bool yaoocpp_parser_whitespace(pointer,yaooc_token_t*);
 #define yaoocpp_parser_string_within_matching_chr yaooc_base_parser_string_within_matching_chr
 #define yaoocpp_parser_result yaooc_base_parser_result
-void yaoocpp_parser_parse_file(pointer,const char*);
-bool yaoocpp_parser_line_directive(pointer);
-bool yaoocpp_parser_header_directory(pointer);
-bool yaoocpp_parser_header(pointer,yaoocpp_section_t**);
-bool yaoocpp_parser_source(pointer,yaoocpp_section_t**);
-bool yaoocpp_parser_class_forward(pointer,yaoocpp_section_t**);
-bool yaoocpp_parser_class_definition(pointer,yaoocpp_section_t**);
-bool yaoocpp_parser_sub_section(pointer,yaoocpp_item_pointer_vector_t*,bool);
-bool yaoocpp_parser_variable(pointer,yaoocpp_variable_t**,bool);
-bool yaoocpp_parser_method(pointer,yaoocpp_method_t**);
-bool yaoocpp_parser_get_parent_name(pointer,char**);
-bool yaoocpp_parser_set_parent(pointer,const char*,const yaoocpp_struct_t**);
-bool yaoocpp_parser_type_info(pointer,yaoocpp_struct_t*);
-bool yaoocpp_parser_constructor_initializers(pointer,yaoocpp_item_pointer_vector_t*);
-bool yaoocpp_parser_default_constructor(pointer,yaoocpp_struct_t*,bool);
-bool yaoocpp_parser_destructor(pointer,yaoocpp_struct_t*);
-bool yaoocpp_parser_copy_constructor(pointer,yaoocpp_struct_t*,bool);
-bool yaoocpp_parser_assignment(pointer,yaoocpp_struct_t*);
-bool yaoocpp_parser_rich_compare(pointer,yaoocpp_struct_t*);
-bool yaoocpp_parser_to_stream(pointer,yaoocpp_struct_t*);
-bool yaoocpp_parser_from_stream(pointer,yaoocpp_struct_t*);
-bool yaoocpp_parser_include(pointer,yaoocpp_struct_t*);
-bool yaoocpp_parser_va_argument(pointer,yaoocpp_argument_t**);
-bool yaoocpp_parser_argument(pointer,yaoocpp_argument_t**);
-bool yaoocpp_parser_arguments(pointer,yaoocpp_item_pointer_vector_t*);
-bool yaoocpp_parser_constructor(pointer,yaoocpp_struct_t*);
-bool yaoocpp_parser_mixin(pointer,yaoocpp_mixin_t**);
+ void yaoocpp_parser_parse_file(pointer,const char*);
+ bool yaoocpp_parser_line_directive(pointer);
+ bool yaoocpp_parser_header_directory(pointer);
+ bool yaoocpp_parser_header(pointer,yaoocpp_section_t**);
+ bool yaoocpp_parser_source(pointer,yaoocpp_section_t**);
+ bool yaoocpp_parser_class_forward(pointer,yaoocpp_section_t**);
+ bool yaoocpp_parser_class_definition(pointer,yaoocpp_section_t**);
+ bool yaoocpp_parser_sub_section(pointer,yaoocpp_item_pointer_vector_t*,bool);
+ bool yaoocpp_parser_variable(pointer,yaoocpp_variable_t**,bool);
+ bool yaoocpp_parser_method(pointer,yaoocpp_method_t**);
+ bool yaoocpp_parser_get_parent_name(pointer,char**);
+ bool yaoocpp_parser_set_parent(pointer,const char*,const yaoocpp_struct_t**);
+ bool yaoocpp_parser_type_info(pointer,yaoocpp_struct_t*);
+ bool yaoocpp_parser_constructor_initializers(pointer,yaoocpp_item_pointer_vector_t*);
+ bool yaoocpp_parser_default_constructor(pointer,yaoocpp_struct_t*,bool);
+ bool yaoocpp_parser_destructor(pointer,yaoocpp_struct_t*);
+ bool yaoocpp_parser_copy_constructor(pointer,yaoocpp_struct_t*,bool);
+ bool yaoocpp_parser_assignment(pointer,yaoocpp_struct_t*);
+ bool yaoocpp_parser_rich_compare(pointer,yaoocpp_struct_t*);
+ bool yaoocpp_parser_to_stream(pointer,yaoocpp_struct_t*);
+ bool yaoocpp_parser_from_stream(pointer,yaoocpp_struct_t*);
+ bool yaoocpp_parser_include(pointer,yaoocpp_struct_t*);
+ bool yaoocpp_parser_va_argument(pointer,yaoocpp_argument_t**);
+ bool yaoocpp_parser_argument(pointer,yaoocpp_argument_t**);
+ bool yaoocpp_parser_arguments(pointer,yaoocpp_item_pointer_vector_t*);
+ bool yaoocpp_parser_constructor(pointer,yaoocpp_struct_t*);
+ bool yaoocpp_parser_mixin(pointer,yaoocpp_mixin_t**);
 yaooc_class_table(yaoocpp_parser_exception) {
   yaooc_exception_class_table_t;
 };
@@ -106,7 +100,6 @@ yaooc_class_instance(yaoocpp_parser_exception) {
 };
 
 yaooc_class(yaoocpp_parser_exception);
-
 #define yaoocpp_parser_exception_ctor_v yaooc_exception_ctor_v
 #define yaoocpp_parser_exception_swap yaooc_exception_swap
 #define yaoocpp_parser_exception_what yaooc_exception_what

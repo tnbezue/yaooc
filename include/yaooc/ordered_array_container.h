@@ -1,13 +1,11 @@
 #ifndef __ORDERED_ARRAY_CONTAINER_INCLUDED__
 #define __ORDERED_ARRAY_CONTAINER_INCLUDED__
 
-
 #include <yaooc/array_container.h>
 
-
 typedef struct {
- yaooc_private_iterator position_;
- bool found_;
+	yaooc_private_iterator position_;	
+	bool found_;			
 } yaooc_ordered_array_container_find_result_t;
 
 yaooc_class_table(yaooc_ordered_array_container) {
@@ -20,7 +18,6 @@ yaooc_class_instance(yaooc_ordered_array_container) {
 };
 
 yaooc_class(yaooc_ordered_array_container);
-
 #define yaooc_ordered_array_container_swap yaooc_array_container_swap
 #define yaooc_ordered_array_container_increase_capacity yaooc_array_container_increase_capacity
 #define yaooc_ordered_array_container_size_needed yaooc_array_container_size_needed
@@ -31,13 +28,13 @@ yaooc_class(yaooc_ordered_array_container);
 #define yaooc_ordered_array_container_end yaooc_array_container_end
 #define yaooc_ordered_array_container_cbegin yaooc_array_container_cbegin
 #define yaooc_ordered_array_container_cend yaooc_array_container_cend
-yaooc_ordered_array_container_find_result_t yaooc_ordered_array_container_find_protected(const_pointer,const_pointer);
-iterator yaooc_ordered_array_container_find(const_pointer,const_pointer);
-iterator yaooc_ordered_array_container_insert(pointer,const_iterator,const_pointer);
-iterator yaooc_ordered_array_container_insertn(pointer,const_iterator,size_t,const_pointer);
-iterator yaooc_ordered_array_container_insert_range(pointer,const_iterator,const_iterator,const_iterator);
-size_t yaooc_ordered_array_container_erase_value(pointer,const_pointer);
-void yaooc_ordered_array_container_resize_value(pointer,size_t,const_pointer);
-void yaooc_ordered_array_container_resize(pointer,size_t);
+ yaooc_ordered_array_container_find_result_t yaooc_ordered_array_container_find_protected(const_pointer,const_pointer);
+ iterator yaooc_ordered_array_container_find(const_pointer,const_pointer);
+ iterator yaooc_ordered_array_container_insert(pointer,const_iterator,const_pointer);
+ iterator yaooc_ordered_array_container_insertn(pointer,const_iterator,size_t,const_pointer);
+ iterator yaooc_ordered_array_container_insert_range(pointer,const_iterator,const_iterator,const_iterator);
+ size_t yaooc_ordered_array_container_erase_value(pointer,const_pointer);
+ void yaooc_ordered_array_container_resize_value(pointer,size_t,const_pointer);
+ void yaooc_ordered_array_container_resize(pointer,size_t);
 
 #endif

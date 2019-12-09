@@ -76,96 +76,87 @@ static int header_count=0;
 static int source_count=0;
 
 /*
-  Prefix C preproccessor statements (lines that begin with #) with '%'
-  Convert YAOOCPP entries (lines that begin with '%') to C preprocessor statements
+  Preprocess file using generic preprocessor (gpp)
 */
 #define LINE_LENGTH 1024
-static yaooc_string_t* preprocess(const char* file)
+static yaooc_string_t* read_file_into_string(const char* file)
 {
-  gb_init();
-  yaooc_string_t* contents=new(yaooc_string);
-  regex_t re_cpp_line,re_yaoocpp_line,re_yaoocpp_include;
-  if(regcomp(&re_cpp_line,"^\\s*#\\s*(.)",REG_EXTENDED) == 0 &&
-        regcomp(&re_yaoocpp_line,"^\\s*%\\s*(if|define|endif)\\s+",REG_EXTENDED) == 0 &&
-        regcomp(&re_yaoocpp_include,"^\\s*%\\s*(include)\\s+([<\"])([^\\.]+)\\.(yod|yoc)([>\"])",REG_EXTENDED) == 0) {
-    regmatch_t ov[7];
+  yaooc_string_t* f=NULL;
+  if(file) {
     yaooc_ifstream_t input;
     newp(&input,yaooc_ifstream);
     M(&input,open,file,"r");
     if(M(&input,good)) {
-      // Read file into memory.  Modifying certain directives so c preprocessor will ingore them
-      yaooc_string_t output;
-      newp(&output,yaooc_string);
-      M(&output,append,"# 1 \"");
-      M(&output,append,file);
-      M(&output,append,"\"\n");
-      char* line = gb_new_array(char,LINE_LENGTH);
+      char* line=new_array(char,LINE_LENGTH);
+      f=new(yaooc_string);
       while(!M(&input,eof)) {
-        *line=0;
-        M(&input,getstr,line,LINE_LENGTH);
-        if(regexec(&re_cpp_line,line,7,ov,0) == 0) {
-          M(&output,append,"%X#");
-          M(&output,append,line+ov[1].rm_so);
-        } else if(regexec(&re_yaoocpp_line,line,7,ov,0) == 0) {
-          M(&output,append,"#");
-          M(&output,append,line+ov[1].rm_so);
-        } else if(regexec(&re_yaoocpp_include,line,7,ov,0) == 0) {
-          M(&output,append,"#");
-          M(&output,append,line+ov[1].rm_so);
-          M(&output,append,"%header\n%X#include ");
-          M(&output,appendn,line+ov[2].rm_so,ov[2].rm_eo-ov[2].rm_so);
-          M(&output,appendn,line+ov[3].rm_so,ov[3].rm_eo-ov[3].rm_so);
-          M(&output,append,".h");
-          M(&output,appendn,line+ov[5].rm_so,ov[5].rm_eo-ov[5].rm_so);
-          M(&output,append,"\n%%\n");
-        } else
-          M(&output,append,line);
+        size_t n=M(&input,read,line,1,LINE_LENGTH);
+        M(f,appendn,line,n);
       }
-      M(&input,close);
-
-//      puts(M(&output,c_str));
-      yaooc_string_t cpp_command;
-      gb_newp(&cpp_command,yaooc_string);
-      M(&cpp_command,set,"cpp  -nostdinc -fdirectives-only");
-      if(M(&defines,size)>0) {
-        M(&cpp_command,append," ");
-        M(&cpp_command,append,M(&defines,c_str));
-      }
-      yaooc_string_vector_const_iterator id;
-      CFOR_EACH(id,&include_directories) {
-        M(&cpp_command,append," -I");
-        M(&cpp_command,append,M(id,c_str));
-      }
-//      puts(M(&cpp_command,c_str));
-//      puts(M(&output,c_str));
-      yaooc_string_t* se=new(yaooc_string);
-      int rc = command_pipe(M(&cpp_command,c_str),&output,contents,se);
-      deletep(&cpp_command,yaooc_string);
-      M(&output,set,M(contents,c_str));
-      if(rc == 0) {
-        rc = command_pipe("cpp -nostdinc -fpreprocessed",&output,contents,se);
-//        printf("rc: %d\noutput:\n%s\n",rc,M(contents,c_str));
-      } else {
-        puts(M(contents,c_str));
-        THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
-            "YAOOCPP encounter problem processing \"%s\". Error is: %s\n",file,M(se,c_str)));
-      }
-      deletep(&output,yaooc_string);
-      delete(se);
-      M(contents,gsub_,"\n%X#","\n#");
-    } else {
-      puts("File not found");
+      deletep(&input,yaooc_ifstream);
+      delete(line);
     }
-    deletep(&input,yaooc_ifstream);
-    regfree(&re_yaoocpp_line);
-    regfree(&re_cpp_line);
-    regfree(&re_yaoocpp_include);
-  } else {
-    printf("Failed compiling CPP line\n");
-    exit(3);
   }
+  return f;
+}
+
+void insert_includes(yaooc_string_t* s)
+{
+  regex_t re;
+  int ofs=0;
+  char* temp=new_array(char,1024);
+  strcpy(temp,"%header\n#include <");
+  if(regcomp(&re,"^\\s*%\\s*include\\s*<([^>]*)>[^\n]*\n",REG_EXTENDED) == 0) {
+    regmatch_t ov[2];
+    while(regexec(&re,M(s,c_str)+ofs,2,ov,0) == 0) {
+      sprintf(temp+18,"%.*sh>\n%%%%\n",ov[1].rm_eo-ov[1].rm_so-3,M(s,c_str)+ofs+ov[1].rm_so);
+      ofs+=ov[0].rm_eo;
+      M(s,insert,ofs,temp);
+      ofs+=strlen(temp);
+    }
+    regfree(&re);
+    M(s,gsub_,"\\\n","\\\\\n"); // escape continuation line
+  }
+  delete(temp);
+}
+
+static yaooc_string_t* preprocess(const char* file)
+{
+  gb_init();
+  yaooc_string_t* contents=read_file_into_string(file);
+  if(!contents)
+    THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+            "Error reading file \"%s\".",file));
+  insert_includes(contents);
+  yaooc_string_t gpp_command;
+  gb_newp(&gpp_command,yaooc_string);
+  M(&gpp_command,set,"gpp --nostdinc --includemarker \"# % \\\"%\\\" %\"");
+  M(&gpp_command,append," -n -U \"\" \"\" \"(\" \",\" \")\" \"(\" \")\" \"%\" \"\"");
+  M(&gpp_command,append," -M \"\\n\\w%\\w\" \"\\n\" \" \" \" \" \"\\n\" \"\" \"\"");
+  M(&gpp_command,append," +c \"/*\" \"*/\" +c \"//\" \"\\n\" +c \"\\\\\\n\" \"\"");
+  M(&gpp_command,append," +s \"\\\"\" \"\\\"\" \"\\\\\" +s \"'\" \"'\" \"\\\\\"");
+  if(M(&defines,size)>0) {
+    M(&gpp_command,append," ");
+    M(&gpp_command,append,M(&defines,c_str));
+  }
+  yaooc_string_vector_const_iterator id;
+  CFOR_EACH(id,&include_directories) {
+    M(&gpp_command,append," -I");
+    M(&gpp_command,append,M(id,c_str));
+  }
+  yaooc_string_t* so=new(yaooc_string);
+  yaooc_string_t* se=new(yaooc_string);
+  if(command_pipe(M(&gpp_command,c_str),contents,so,se) != 0) {
+    fprintf(stdout,"%s\n",M(so,c_str));
+    fprintf(stderr,"%s\n",M(se,c_str));
+    THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
+            "Error preprocessing file \"%s\".",file));
+  }
+  deletep(&gpp_command,yaooc_string);
+  delete(contents);
+  delete(se);
   gb_exit();
-  return contents;
+  return so;
 }
 
 %class yaoocpp_parser : yaooc_base_parser {
@@ -192,6 +183,7 @@ static yaooc_string_t* preprocess(const char* file)
     {
       strcpy(yaoocpp_parser_current_file,fname);
       yaooc_string_t* result = preprocess(fname);
+      M(result,gsub_,"stdin",fname);
 //      puts(M(result,c_str));
       M(this,set_parse_string,M(result,c_str));
       yaooc_token_t r;
@@ -205,7 +197,7 @@ static yaooc_string_t* preprocess(const char* file)
         } else if(yaoocpp_parser_class_definition(this,&current_section)) {
           M(&this->sections_,push_back,make_dynamic_pointer(current_section));
           delete(current_section);
-        } else if(yaoocpp_parser_header_directory(this)) {
+        } else if(yaoocpp_parser_prefix_directory(this)) {
 //          M(&this->sections_,push_back,(pointer)&current_section);
 //          delete(current_section);
         } else if(yaoocpp_parser_header(this,(pointer)&current_section)) {
@@ -260,7 +252,12 @@ static yaooc_string_t* preprocess(const char* file)
             if(*this->current_pos_ != 0) {
               strncpy(yaoocpp_parser_file_being_parsed,pos,this->current_pos_-pos);
               yaoocpp_parser_file_being_parsed[this->current_pos_-pos]=0;
-              yaoocpp_parser_is_top_level=strcmp(yaoocpp_parser_current_file,yaoocpp_parser_file_being_parsed) == 0;
+              if(strcmp(yaoocpp_parser_file_being_parsed,"stdin") == 0) {
+                yaoocpp_parser_is_top_level=true;
+                strcpy(yaoocpp_parser_file_being_parsed,yaoocpp_parser_current_file);
+              } else
+                yaoocpp_parser_is_top_level=false;
+//              yaoocpp_parser_is_top_level=strcmp(yaoocpp_parser_current_file,yaoocpp_parser_file_being_parsed) == 0;
               for(;*this->current_pos_!='\n' && *this->current_pos_!=0;this->current_pos_++);
               yaooc_base_parser_whitespace(this,&temp);
               return RULE_SUCCESS(this);
@@ -271,7 +268,7 @@ static yaooc_string_t* preprocess(const char* file)
       return RULE_FAIL(this);
     }
 
-    bool header_directory()
+    bool prefix_directory()
     {
       RULE_START(this);
       yaooc_token_t temp,dirname;
@@ -279,7 +276,7 @@ static yaooc_string_t* preprocess(const char* file)
         // Save line number.  If after next token, the line number has changed,
         // then only spaces follows directive -- an error
         int saved_line_no=this->line_no_;
-        if(M(this,str,"header_directory",&temp)) {
+        if(M(this,str,"prefix_directory",&temp)) {
           if(saved_line_no == this->line_no_) {
             if(M(this,double_quoted_string,&dirname) || M(this,bare_string,&dirname)) {
               M(&yaoocpp_header_prefix,setn,dirname.beg_,dirname.end_-dirname.beg_);
@@ -324,30 +321,36 @@ static yaooc_string_t* preprocess(const char* file)
 
     bool source(yaoocpp_section_t** section)
     {
-      regex_t re;
-//      yaooc_token_t t;
-      if(regcomp(&re,"%\\s*(class|struct|union|header|mixin|header_directory)\\s+",REG_EXTENDED)==0) {
-        regmatch_t ov[3];
-        const char* ptr;
-        if(regexec(&re,this->current_pos_,3,ov,0)==0) {
-          ptr=this->current_pos_+ov[0].rm_so;
-        } else {
-          ptr=this->current_pos_+strlen(this->current_pos_);
-        }
-        yaoocpp_source_t* ss = new(yaoocpp_source);
-        char name[16];
-        sprintf(name,"source_%03d",source_count++);
-        M(&ss->name_,set,name);
-        size_t n = ptr-this->current_pos_;
-        M(&ss->content_,setn,this->current_pos_,n);
-        ss->defined_in_top_level_file_=true;
-        *section = (yaoocpp_section_t*)ss;
-        yaooc_base_parser_skip(this,n);
-        regfree(&re);
+      regex_t re,re2;
+      regcomp(&re,"^%\\s*(class|struct|union|header|mixin|prefix_directory)\\s+",REG_EXTENDED|REG_NEWLINE);
+      regcomp(&re2,"^#\\s*[0-9]+",REG_EXTENDED|REG_NEWLINE);
+      regmatch_t ov[3];
+      const char* ptr;
+      if(regexec(&re,this->current_pos_,3,ov,0)==0) {
+        ptr=this->current_pos_+ov[0].rm_so;
       } else {
-        printf("Regex compilation failed failed");
-        exit(-1);
+        ptr=this->current_pos_+strlen(this->current_pos_);
       }
+      const char* ptr2;
+      if(regexec(&re2,this->current_pos_,3,ov,0)==0) {
+        ptr2=this->current_pos_+ov[0].rm_so;
+      } else {
+        ptr2=this->current_pos_+strlen(this->current_pos_);
+      }
+      if(ptr2 < ptr)
+        ptr=ptr2;
+      yaoocpp_source_t* ss = new(yaoocpp_source);
+      char name[16];
+      sprintf(name,"source_%03d",source_count++);
+      M(&ss->name_,set,name);
+      size_t n = ptr-this->current_pos_;
+      M(&ss->content_,setn,this->current_pos_,n);
+      ss->defined_in_top_level_file_=true;
+      *section = (yaoocpp_section_t*)ss;
+      yaooc_base_parser_skip(this,n);
+      regfree(&re);
+      yaooc_token_t t;
+      M(this,whitespace,&t);
       return true;
     }
 
@@ -1023,11 +1026,13 @@ static yaooc_string_t* preprocess(const char* file)
         M(&(*mixin)->name_,setn,mixin_name.beg_,mixin_name.end_-mixin_name.beg_);
         if(LBRACE(t)) {
           while(true) {
-            if(!yaoocpp_parser_default_constructor(this,(yaoocpp_struct_t*)*mixin,false))
+            if(!yaoocpp_parser_type_info(this,(yaoocpp_struct_t*)*mixin))
+              break;
+/*            if(!yaoocpp_parser_default_constructor(this,(yaoocpp_struct_t*)*mixin,false))
               if(!yaoocpp_parser_destructor(this,(yaoocpp_struct_t*)*mixin))
                 if(!yaoocpp_parser_copy_constructor(this,(yaoocpp_struct_t*)*mixin,false))
                   if(!yaoocpp_parser_assignment(this,(yaoocpp_struct_t*)*mixin))
-                    break;
+                    break;*/
           }
           while(true) {
             if(TABLE(t)) {

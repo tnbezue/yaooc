@@ -57,7 +57,7 @@ yaooc_json_value_const_pointer src=__psrc__;(void)src;
 
 
     if(this->type_ == JSON_UNDEFINED) {
-
+      
       switch(src->type_) {
         case JSON_UNDEFINED:
           break;
@@ -111,7 +111,7 @@ yaooc_json_value_const_pointer rhs=__prhs__;(void)rhs;
     if(lhs->type_ == JSON_UNDEFINED) {
       if(rhs->type_ == JSON_UNDEFINED)
         return 0;
-      return -1;
+      return -1; 
     }
     return M(lhs,virtual_rich_compare,rhs);
   
@@ -165,7 +165,7 @@ const type_info_t __yaooc_json_value_ti = {
 .rich_compare_=yaooc_json_value_rich_compare,
 .to_stream_=NULL,
 .from_stream_=NULL,
-.default_ctor_=NULL,
+.default_ctor_=yaooc_json_value_default_ctor,
 .dtor_=yaooc_json_value_dtor,
 .copy_ctor_=yaooc_json_value_copy_ctor,
 .assign_=yaooc_json_value_assign,
@@ -189,7 +189,7 @@ yaooc_json_null_pointer this=__pthis__;(void)this;
 yaooc_json_null_const_pointer src=__psrc__;(void)src;
 
 
-
+    
     if(src->type_!=JSON_NULL)
       THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json null to json null"));
   
@@ -199,15 +199,15 @@ int yaooc_json_null_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 yaooc_json_null_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_json_null_const_pointer rhs=__prhs__;(void)rhs;
 
-
+    
     if(lhs->type_==JSON_NULL) {
       if(rhs->type_==JSON_NULL)
         return 0;
       if(rhs->type_==JSON_UNDEFINED)
-        return 1;
+        return 1; 
     } else if(rhs->type_==JSON_NULL) {
       if(lhs->type_==JSON_UNDEFINED)
-        return -1;
+        return -1; 
     }
     THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to JSON_NULL"));
     return 0;
@@ -263,7 +263,7 @@ const type_info_t __yaooc_json_null_ti = {
 .rich_compare_=yaooc_json_null_rich_compare,
 .to_stream_=NULL,
 .from_stream_=NULL,
-.default_ctor_=NULL,
+.default_ctor_=yaooc_json_null_default_ctor,
 .dtor_=NULL,
 .copy_ctor_=NULL,
 .assign_=yaooc_json_null_assign,
@@ -288,7 +288,7 @@ yaooc_json_bool_pointer this=__pthis__;(void)this;
 yaooc_json_bool_const_pointer src=__psrc__;(void)src;
 
 
-
+    
     if(src->type_==JSON_BOOL)
       this->bool_=src->bool_;
     THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Attempt to assign non json bool to json bool"));
@@ -299,15 +299,15 @@ int yaooc_json_bool_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 yaooc_json_bool_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_json_bool_const_pointer rhs=__prhs__;(void)rhs;
 
-
+    
     if(lhs->type_==JSON_BOOL) {
       if(rhs->type_==JSON_BOOL)
         return lhs->bool_<rhs->bool_;
       if(rhs->type_==JSON_UNDEFINED)
-        return 1;
+        return 1; 
     } else if(rhs->type_==JSON_BOOL) {
       if(lhs->type_==JSON_UNDEFINED)
-        return -1;
+        return -1; 
     }
     THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to JSON_BOOL"));
     return 0;
@@ -373,7 +373,7 @@ const type_info_t __yaooc_json_bool_ti = {
 .rich_compare_=yaooc_json_bool_rich_compare,
 .to_stream_=NULL,
 .from_stream_=NULL,
-.default_ctor_=NULL,
+.default_ctor_=yaooc_json_bool_default_ctor,
 .dtor_=NULL,
 .copy_ctor_=NULL,
 .assign_=yaooc_json_bool_assign,
@@ -408,7 +408,7 @@ int yaooc_json_integer_rich_compare(const_pointer __plhs__,const_pointer __prhs_
 yaooc_json_integer_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_json_integer_const_pointer rhs=__prhs__;(void)rhs;
 
-
+    
     if(lhs->type_==JSON_INTEGER) {
       if(rhs->type_==JSON_INTEGER) {
         if(lhs->int_<rhs->int_)
@@ -418,10 +418,10 @@ yaooc_json_integer_const_pointer rhs=__prhs__;(void)rhs;
         return 0;
       }
       if(rhs->type_==JSON_UNDEFINED)
-        return 1;
+        return 1; 
     } else if(rhs->type_==JSON_INTEGER) {
       if(lhs->type_==JSON_UNDEFINED)
-        return -1;
+        return -1; 
     }
     THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json integer"));
     return 0;
@@ -487,7 +487,7 @@ const type_info_t __yaooc_json_integer_ti = {
 .rich_compare_=yaooc_json_integer_rich_compare,
 .to_stream_=NULL,
 .from_stream_=NULL,
-.default_ctor_=NULL,
+.default_ctor_=yaooc_json_integer_default_ctor,
 .dtor_=NULL,
 .copy_ctor_=NULL,
 .assign_=yaooc_json_integer_assign,
@@ -522,7 +522,7 @@ int yaooc_json_real_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 yaooc_json_real_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_json_real_const_pointer rhs=__prhs__;(void)rhs;
 
-
+    
     if(lhs->type_==JSON_REAL) {
       if(rhs->type_==JSON_REAL) {
         if(lhs->real_<rhs->real_)
@@ -532,10 +532,10 @@ yaooc_json_real_const_pointer rhs=__prhs__;(void)rhs;
         return 0;
       }
       if(rhs->type_==JSON_UNDEFINED)
-        return 1;
+        return 1; 
     } else if(rhs->type_==JSON_REAL) {
       if(lhs->type_==JSON_UNDEFINED)
-        return -1;
+        return -1; 
     }
     THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json real"));
     return 0;
@@ -601,7 +601,7 @@ const type_info_t __yaooc_json_real_ti = {
 .rich_compare_=yaooc_json_real_rich_compare,
 .to_stream_=NULL,
 .from_stream_=NULL,
-.default_ctor_=NULL,
+.default_ctor_=yaooc_json_real_default_ctor,
 .dtor_=NULL,
 .copy_ctor_=NULL,
 .assign_=yaooc_json_real_assign,
@@ -648,23 +648,23 @@ int yaooc_json_string_rich_compare(const_pointer __plhs__,const_pointer __prhs__
 yaooc_json_string_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_json_string_const_pointer rhs=__prhs__;(void)rhs;
 
-
+    
     if(lhs->type_==JSON_STRING) {
       if(rhs->type_==JSON_STRING) {
         if(lhs->string_ == NULL) {
           if(rhs->string_ == NULL)
-            return 0;
-          return -1;
+            return 0; 
+          return -1; 
         }
         if(rhs->string_ == NULL)
           return 1;
         return strcmp(lhs->string_,rhs->string_);
       }
       if(rhs->type_==JSON_UNDEFINED)
-        return 1;
+        return 1; 
     } else if(rhs->type_==JSON_STRING) {
       if(lhs->type_==JSON_UNDEFINED)
-        return -1;
+        return -1; 
     }
     THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json string"));
     return 0;
@@ -731,7 +731,7 @@ const type_info_t __yaooc_json_string_ti = {
 .rich_compare_=yaooc_json_string_rich_compare,
 .to_stream_=NULL,
 .from_stream_=NULL,
-.default_ctor_=NULL,
+.default_ctor_=yaooc_json_string_default_ctor,
 .dtor_=yaooc_json_string_dtor,
 .copy_ctor_=NULL,
 .assign_=yaooc_json_string_assign,
@@ -778,16 +778,16 @@ int yaooc_json_array_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 yaooc_json_array_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_json_array_const_pointer rhs=__prhs__;(void)rhs;
 
-
+    
     if(lhs->type_==JSON_ARRAY) {
       if(rhs->type_==JSON_ARRAY) {
         return op_rich_compare_static(lhs,rhs,yaooc_json_value_array);
       }
       if(rhs->type_==JSON_UNDEFINED)
-        return 1;
+        return 1; 
     } else if(rhs->type_==JSON_ARRAY) {
       if(lhs->type_==JSON_UNDEFINED)
-        return -1;
+        return -1; 
     }
     THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json array"));
     return 0;
@@ -844,7 +844,7 @@ const type_info_t __yaooc_json_array_ti = {
 .rich_compare_=yaooc_json_array_rich_compare,
 .to_stream_=NULL,
 .from_stream_=NULL,
-.default_ctor_=NULL,
+.default_ctor_=yaooc_json_array_default_ctor,
 .dtor_=yaooc_json_array_dtor,
 .copy_ctor_=NULL,
 .assign_=yaooc_json_array_assign,
@@ -891,16 +891,16 @@ int yaooc_json_object_rich_compare(const_pointer __plhs__,const_pointer __prhs__
 yaooc_json_object_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_json_object_const_pointer rhs=__prhs__;(void)rhs;
 
-
+    
     if(lhs->type_==JSON_OBJECT) {
       if(rhs->type_==JSON_OBJECT) {
         return 0;
       }
       if(rhs->type_==JSON_UNDEFINED)
-        return 1;
+        return 1; 
     } else if(rhs->type_==JSON_OBJECT) {
       if(lhs->type_==JSON_UNDEFINED)
-        return -1;
+        return -1; 
     }
     THROW(new_ctor(yaooc_json_exception,yaooc_json_exception_ctor_v,"Invalid comparison to json object"));
     return 0;
@@ -957,7 +957,7 @@ const type_info_t __yaooc_json_object_ti = {
 .rich_compare_=yaooc_json_object_rich_compare,
 .to_stream_=NULL,
 .from_stream_=NULL,
-.default_ctor_=NULL,
+.default_ctor_=yaooc_json_object_default_ctor,
 .dtor_=yaooc_json_object_dtor,
 .copy_ctor_=NULL,
 .assign_=yaooc_json_object_assign,

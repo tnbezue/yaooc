@@ -102,6 +102,7 @@ yaooc_rbnode_pointer this=__pthis__;(void)this;
 void yaooc_rbnode_default_ctor(pointer __pthis__)
 {
 yaooc_rbnode_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_rbnode);
 
 
 
@@ -178,25 +179,25 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
       if (this->root_ == NULL) {
           this->root_ = node;
       } else {
-          yaooc_rbnode_t head = { .link_[0]=NULL,.link_[1]=NULL, .color_=BLACK, .index_=0 };
-          yaooc_rbnode_t *g, *t;
-          yaooc_rbnode_t *p, *q;
+          yaooc_rbnode_t head = { .link_[0]=NULL,.link_[1]=NULL, .color_=BLACK, .index_=0 }; 
+          yaooc_rbnode_t *g, *t;       
+          yaooc_rbnode_t *p, *q;       
           int dir = 0, last = 0;
 
-
+          
           t = &head;
           g = p = NULL;
           q = t->link_[1] = this->root_;
 
-
+          
           while (true) {
               if (q == NULL) {
 
-
+                  
                   p->link_[dir] = q = node;
               } else if (yaooc_rbnode_is_red(q->link_[0]) && yaooc_rbnode_is_red(q->link_[1])) {
 
-
+                  
                   q->color_=RED;
                   q->link_[0]->color_=BLACK;
                   q->link_[1]->color_=BLACK;
@@ -204,7 +205,7 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
 
               if (yaooc_rbnode_is_red(q) && yaooc_rbnode_is_red(p)) {
 
-
+                  
                   int dir2 = t->link_[1] == g;
                   if (q == p->link_[last]) {
                       t->link_[dir2] = yaooc_rbnode_rotate(g, !last);
@@ -213,8 +214,8 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
                   }
               }
 
-
-
+              
+              
               int rc=__op_rich_compare__(AT(this,q->index_),AT(this,node->index_),get_rich_compare(TYPE_INFO(this)));
               if(rc == 0)
                 break;
@@ -222,7 +223,7 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
               last = dir;
               dir = rc < 0;
 
-
+              
               if (g != NULL) {
                   t = g;
               }
@@ -231,11 +232,11 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
               q = q->link_[dir];
           }
 
-
+          
           this->root_ = head.link_[1];
       }
 
-
+      
       this->root_->color_ = BLACK;
     
 #undef PM
@@ -248,22 +249,22 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
 #define PM(method,...) CTM((*yaooc_rbtree_index_array_container_parent_class_table),this,method,## __VA_ARGS__)
 
 
-        yaooc_rbnode_t head = { .link_[0]=NULL,.link_[1]=NULL, .color_=BLACK, .index_=0 };
-        yaooc_rbnode_t *q, *p, *g;
-        yaooc_rbnode_t *f = NULL;
+        yaooc_rbnode_t head = { .link_[0]=NULL,.link_[1]=NULL, .color_=BLACK, .index_=0 }; 
+        yaooc_rbnode_t *q, *p, *g; 
+        yaooc_rbnode_t *f = NULL;  
         int dir = 1;
 
-
+        
         q = &head;
         g = p = NULL;
         q->link_[1] = this->root_;
 
-
-
+        
+        
         while (q->link_[dir] != NULL) {
             int last = dir;
 
-
+            
             g = p, p = q;
             q = q->link_[dir];
 
@@ -271,13 +272,13 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
 
             dir = rc < 0;
 
-
-
+            
+            
             if (rc == 0) {
                 f = q;
             }
 
-
+            
             if (!yaooc_rbnode_is_red(q) && !yaooc_rbnode_is_red(q->link_[dir])) {
                 if (yaooc_rbnode_is_red(q->link_[!dir])) {
                     p = p->link_[last] = yaooc_rbnode_rotate(q, dir);
@@ -286,7 +287,7 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
                     if (s) {
                         if (!yaooc_rbnode_is_red(s->link_[!last]) && !yaooc_rbnode_is_red(s->link_[last])) {
 
-
+                            
                             p->color_ = BLACK;
                             s->color_ = RED;
                             q->color_ = RED;
@@ -298,7 +299,7 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
                                 g->link_[dir2] = yaooc_rbnode_rotate(p, last);
                             }
 
-
+                            
                             q->color_ = g->link_[dir2]->color_=RED;
                             g->link_[dir2]->link_[0]->color_=BLACK;
                             g->link_[dir2]->link_[1]->color_=BLACK;
@@ -308,7 +309,7 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
             }
         }
 
-
+        
         if (f) {
             unsigned int tmp = f->index_;
             f->index_ = q->index_;
@@ -322,10 +323,10 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
             q = NULL;
         }
 
-
+        
         this->root_ = head.link_[1];
 
-
+        
         if (this->root_ != NULL) {
             this->root_->color_=BLACK;
         }
@@ -391,7 +392,7 @@ iterator yaooc_rbtree_index_array_container_insert(pointer __pthis__,const_itera
 {
 yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
 
-
+      
       if(yaooc_rbtree_index_array_container_find(this,value) == END(this)) {
         yaooc_array_container_insert(this,END(this),value);
         yaooc_rbtree_index_array_container_insert_node(this,SIZE(this)-1);
@@ -403,7 +404,7 @@ iterator yaooc_rbtree_index_array_container_insertn(pointer __pthis__,const_iter
 {
 yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
 
-
+      
       return yaooc_rbtree_index_array_container_insert(this,END(this),value);
     
 }
@@ -469,7 +470,7 @@ yaooc_rbtree_index_array_container_pointer this=__pthis__;(void)this;
 
       if(n < M(this,size))
         yaooc_rbtree_index_array_container_erase_range(this,((yaooc_private_const_iterator)BEGIN(this))+n*TYPE_SIZE(this),END(this));
-      else if(n > M(this,size))
+      else if(n > M(this,size)) 
         yaooc_rbtree_index_array_container_insert(this,END(this),value);
     
 }

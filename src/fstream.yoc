@@ -15,7 +15,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 %include <yaooc/stream.yod>
-%header_directory yaooc
+%prefix_directory yaooc
 
 
 %class yaooc_ifstream : yaooc_istream

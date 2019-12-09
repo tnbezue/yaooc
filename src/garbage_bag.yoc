@@ -1,5 +1,5 @@
 %include <yaooc/array_container.yod>
-%header_directory yaooc
+%prefix_directory yaooc
 
 typedef yaooc_garbage_bag_item_t* yaooc_garbage_bag_iterator;
 typedef const yaooc_garbage_bag_item_t* yaooc_garbage_bag_const_iterator;
@@ -40,6 +40,9 @@ typedef const yaooc_garbage_bag_item_t* yaooc_garbage_bag_const_iterator;
       yaooc_garbage_bag_del_all(this);
     }
 
+    yaooc_garbage_bag(src) = delete;
+
+    operator=(src) = delete;
   table:
     pointer add(pointer obj)
     {

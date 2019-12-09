@@ -1,8 +1,17 @@
 #include <yaooc/stream.h>
-
 #include <string.h>
 
 
+void yaooc_base_stream_default_ctor(pointer __pthis__)
+{
+yaooc_base_stream_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_base_stream);
+
+
+
+      this->handle_=NULL;
+    
+}
 void yaooc_base_stream_set_handle(pointer __pthis__,FILE* h)
 {
 yaooc_base_stream_pointer this=__pthis__;(void)this;
@@ -59,24 +68,14 @@ yaooc_base_stream_const_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_base_stream_class_table_t yaooc_base_stream_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-.type_name_ = (const char*) "yaooc_base_stream_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_base_stream_t",
 .swap = (void(*)(pointer,pointer)) yaooc_base_stream_swap,
 .eof = (bool(*)(const_pointer)) yaooc_base_stream_eof,
 .seek = (bool(*)(pointer,size_t,int)) yaooc_base_stream_seek,
 .tell = (size_t(*)(const_pointer)) yaooc_base_stream_tell,
 .good = (bool(*)(const_pointer)) yaooc_base_stream_good,
 };
-void yaooc_base_stream_default_ctor(pointer __pthis__)
-{
-yaooc_base_stream_pointer this=__pthis__;(void)this;
-call_parent_default_ctor_static(this,yaooc_base_stream);
-
-
-
-      this->handle_=NULL;
-    
-}
 const type_info_t __yaooc_base_stream_ti = {
 .min_flag_=0,
 .pod_flag_=0,
@@ -92,6 +91,16 @@ const type_info_t __yaooc_base_stream_ti = {
 .parent_=&__yaooc_object_ti
 };
 const type_info_t* const yaooc_base_stream_ti=&__yaooc_base_stream_ti;
+void yaooc_istream_default_ctor(pointer __pthis__)
+{
+yaooc_istream_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_istream);
+
+
+
+      yaooc_base_stream_default_ctor(this);
+    
+}
 void yaooc_istream_stream(pointer __pthis__,...)
 {
 yaooc_istream_pointer this=__pthis__;(void)this;
@@ -186,8 +195,8 @@ yaooc_istream_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_istream_class_table_t yaooc_istream_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_base_stream_class_table,
-.type_name_ = (const char*) "yaooc_istream_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_base_stream_class_table,
+.type_name_ = (const char*)"yaooc_istream_t",
 .swap = (void(*)(pointer,pointer)) yaooc_istream_swap,
 .eof = (bool(*)(const_pointer)) yaooc_istream_eof,
 .seek = (bool(*)(pointer,size_t,int)) yaooc_istream_seek,
@@ -200,16 +209,6 @@ yaooc_istream_class_table_t yaooc_istream_class_table ={
 .read = (size_t(*)(pointer,void*,size_t,size_t)) yaooc_istream_read,
 .getstr = (char*(*)(pointer,char*,size_t)) yaooc_istream_getstr,
 };
-void yaooc_istream_default_ctor(pointer __pthis__)
-{
-yaooc_istream_pointer this=__pthis__;(void)this;
-call_parent_default_ctor_static(this,yaooc_istream);
-
-
-
-      yaooc_base_stream_default_ctor(this);
-    
-}
 const type_info_t __yaooc_istream_ti = {
 .min_flag_=0,
 .pod_flag_=0,
@@ -225,6 +224,16 @@ const type_info_t __yaooc_istream_ti = {
 .parent_=&__yaooc_base_stream_ti
 };
 const type_info_t* const yaooc_istream_ti=&__yaooc_istream_ti;
+void yaooc_ostream_default_ctor(pointer __pthis__)
+{
+yaooc_ostream_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_ostream);
+
+
+
+      yaooc_base_stream_default_ctor(this);
+    
+}
 void yaooc_ostream_stream(pointer __pthis__,...)
 {
 yaooc_ostream_pointer this=__pthis__;(void)this;
@@ -238,7 +247,7 @@ va_list args; va_start(args,__pthis__);
         memory_header_t* smh=get_memory_header(ptr);
         to_stream to_s = get_to_stream(smh->type_info_);
         if(to_s) {
-          if(smh->n_elem_==(size_t)-1) {
+          if(smh->n_elem_==(size_t)-1) { 
             if(smh->type_info_==yaooc_ccs_ti) {
               ptr=va_arg(args,const char*);
               to_s(ptr,this);
@@ -260,11 +269,11 @@ va_list args; va_start(args,__pthis__);
             } else if(smh->type_info_==size_ti) {
               ulong_t v=va_arg(args,size_t);
               to_s(&v,this);
-            } else {
+            } else { 
               ptr = va_arg(args,pointer);
               to_s(ptr,this);
             }
-          } else {
+          } else { 
             to_s(ptr,this);
           }
         } else {
@@ -338,8 +347,8 @@ yaooc_ostream_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_ostream_class_table_t yaooc_ostream_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_base_stream_class_table,
-.type_name_ = (const char*) "yaooc_ostream_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_base_stream_class_table,
+.type_name_ = (const char*)"yaooc_ostream_t",
 .swap = (void(*)(pointer,pointer)) yaooc_ostream_swap,
 .eof = (bool(*)(const_pointer)) yaooc_ostream_eof,
 .seek = (bool(*)(pointer,size_t,int)) yaooc_ostream_seek,
@@ -352,16 +361,6 @@ yaooc_ostream_class_table_t yaooc_ostream_class_table ={
 .putstr = (int(*)(pointer,const char*)) yaooc_ostream_putstr,
 .putchr = (int(*)(pointer,int)) yaooc_ostream_putchr,
 };
-void yaooc_ostream_default_ctor(pointer __pthis__)
-{
-yaooc_ostream_pointer this=__pthis__;(void)this;
-call_parent_default_ctor_static(this,yaooc_ostream);
-
-
-
-      yaooc_base_stream_default_ctor(this);
-    
-}
 const type_info_t __yaooc_ostream_ti = {
 .min_flag_=0,
 .pod_flag_=0,
@@ -377,18 +376,17 @@ const type_info_t __yaooc_ostream_ti = {
 .parent_=&__yaooc_base_stream_ti
 };
 const type_info_t* const yaooc_ostream_ti=&__yaooc_ostream_ti;
-
 #define POD_TO_FROM_STREAM(N,FMT) \
 void N ## _to_stream(const_pointer p,pointer s) \
 { \
- yaooc_ostream_pointer strm=s; \
- M(strm,printf,FMT,*(N ## _t*) p); \
+	yaooc_ostream_pointer strm=s; \
+	M(strm,printf,FMT,*(N ## _t*) p); \
 }\
 \
 void N ## _from_stream(pointer p,pointer s) \
 { \
- yaooc_istream_pointer strm=s; \
- M(strm,scanf,FMT,p);\
+	yaooc_istream_pointer strm=s; \
+	M(strm,scanf,FMT,p);\
 }
 
 POD_TO_FROM_STREAM(char,"%c")
@@ -408,14 +406,14 @@ POD_TO_FROM_STREAM(ulong,"%llu")
 
 void double_to_stream(const_pointer p,pointer s)
 {
- yaooc_ostream_pointer strm=s;
- M(strm,printf,"%lg",*(double*) p);
+	yaooc_ostream_pointer strm=s;
+	M(strm,printf,"%lg",*(double*) p);
 }
 
 void double_from_stream(pointer p,pointer s)
 {
- yaooc_istream_pointer strm=s;
- M(strm,scanf,"%lg",p);
+	yaooc_istream_pointer strm=s;
+	M(strm,scanf,"%lg",p);
 }
 
 
@@ -423,14 +421,14 @@ POD_TO_FROM_STREAM(size,"%zu")
 
 void yaooc_ccs_to_stream(const_pointer p,pointer s)
 {
- yaooc_ostream_pointer strm=s;
- M(strm,printf,"%s",p);
+	yaooc_ostream_pointer strm=s;
+	M(strm,printf,"%s",p);
 }
 
 void yaooc_ccs_from_stream(pointer p,pointer s)
 {
- yaooc_istream_pointer strm=s;
- M(strm,scanf,"%s",p);
+	yaooc_istream_pointer strm=s;
+	M(strm,scanf,"%s",p);
 }
 
 static yaooc_istream_t __cin = { .class_table_=&yaooc_istream_class_table,.handle_=NULL };
@@ -443,8 +441,8 @@ yaooc_ostream_pointer cerr = &__cerr;
 __attribute__((constructor))
 void init_streams()
 {
- __cin.handle_ = stdin;
- __cout.handle_ = stdout;
- __cerr.handle_ = stderr;
+	__cin.handle_ = stdin;
+	__cout.handle_ = stdout;
+	__cerr.handle_ = stderr;
 }
 

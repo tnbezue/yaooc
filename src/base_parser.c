@@ -1,5 +1,4 @@
 #include <yaooc/base_parser.h>
-
 #include <yaooc/base_parser.h>
 #include <string.h>
 #include <ctype.h>
@@ -11,7 +10,7 @@
 const min_type_info_t __parser_position_ti = {
 .min_flag_=1,
 .pod_flag_=0,
-.type_size_=sizeof(parser_position_t)
+.type_size_=sizeof(parser_position_t),
 };
 const type_info_t* const parser_position_ti=(const type_info_t* const)&__parser_position_ti;
 char* yaooc_token_raw_text(const_pointer __pthis__)
@@ -41,8 +40,8 @@ yaooc_token_const_pointer this=__pthis__;(void)this;
           if(*inp == '\\') {
             inp++;
             switch(*inp) {
-              case 0:
-                *out='\\';
+              case 0: 
+                *out='\\'; 
                 finished=true;
                 break;
 
@@ -81,7 +80,7 @@ yaooc_token_const_pointer this=__pthis__;(void)this;
                 *out=*inp;
                 break;
 
-              default:
+              default:  
                 *out++='\\';
                 *out=*inp;
             }
@@ -99,14 +98,34 @@ yaooc_token_const_pointer this=__pthis__;(void)this;
 const min_type_info_t __yaooc_token_ti = {
 .min_flag_=1,
 .pod_flag_=0,
-.type_size_=sizeof(yaooc_token_t)
+.type_size_=sizeof(yaooc_token_t),
 };
 const type_info_t* const yaooc_token_ti=(const type_info_t* const)&__yaooc_token_ti;
-
 STACK_IMPLEMENTATION(parser_position,parser_position_stack);
 
 
 
+void yaooc_base_parser_default_ctor(pointer __pthis__)
+{
+yaooc_base_parser_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_base_parser);
+
+
+
+      this->parse_string_=NULL;
+      this->current_pos_=NULL;
+      this->stack_=new(parser_position_stack);
+      this->line_no_=1;
+    
+}
+void yaooc_base_parser_dtor(pointer __pthis__)
+{
+yaooc_base_parser_pointer this=__pthis__;(void)this;
+
+
+      delete(this->stack_);
+    
+}
 int yaooc_base_parser_next_chr(pointer __pthis__)
 {
 yaooc_base_parser_pointer this=__pthis__;(void)this;
@@ -334,7 +353,7 @@ yaooc_base_parser_pointer this=__pthis__;(void)this;
       *r=yaooc_default_token(this);
       int l=strlen(str);
       if(l>0 && strncmp(this->current_pos_,str,l)==0) {
-
+        
         if(!isalnum(*(this->current_pos_+l))) {
           yaooc_base_parser_skip(this,l);
           r->end_=this->current_pos_;
@@ -470,7 +489,7 @@ yaooc_base_parser_pointer this=__pthis__;(void)this;
       yaooc_token_t fraction=yaooc_default_token(this);
       if(yaooc_base_parser_peek(this)=='.') {
         has_decimal=true;
-
+    
         yaooc_base_parser_next_chr(this);
         M(this,digits,&fraction);
       }
@@ -480,10 +499,10 @@ yaooc_base_parser_pointer this=__pthis__;(void)this;
           yaooc_token_t exp;
           M(this,integer,&exp);
           if(exp.end_) {
-            r->end_=exp.end_;
+            r->end_=exp.end_; 
           }
         } else {
-
+          
 
 
           if(((whole.end_ && has_decimal) || fraction.end_) &&
@@ -539,7 +558,7 @@ yaooc_base_parser_pointer this=__pthis__;(void)this;
         pov=ov;
       }
       int rc = regexec(re,this->current_pos_,n_ov,pov,match_opts);
-      if(rc == 0 && pov[0].rm_so == 0) {
+      if(rc == 0 && pov[0].rm_so == 0) {  
         yaooc_base_parser_skip(this,pov[0].rm_eo);
         r->end_=yaooc_base_parser_current_pos(this);
         M(this,whitespace,&ws);
@@ -621,7 +640,7 @@ yaooc_base_parser_pointer this=__pthis__;(void)this;
             break;
           yaooc_base_parser_next_chr(this);
         }
-
+    
         r->end_=this->current_pos_;
         M(this,whitespace,&ws);
       }
@@ -641,7 +660,7 @@ yaooc_base_parser_pointer this=__pthis__;(void)this;
       *r=yaooc_default_token(this);
       size_t n=strcspn(this->current_pos_,chrs);
       if(n>0) {
-        yaooc_base_parser_skip(this,n);
+        yaooc_base_parser_skip(this,n); 
         r->end_=yaooc_base_parser_current_pos(this);
         M(this,whitespace,&ws);
       }
@@ -680,7 +699,7 @@ yaooc_base_parser_pointer this=__pthis__;(void)this;
       yaooc_token_t ws;
       *r=yaooc_default_token(this);
       yaooc_base_parser_string_until_chrs(this,"\r\n",r);
-
+      
 
 
 
@@ -759,8 +778,8 @@ yaooc_base_parser_const_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_base_parser_class_table_t yaooc_base_parser_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-.type_name_ = (const char*) "yaooc_base_parser_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_base_parser_t",
 .swap = (void(*)(pointer,pointer)) yaooc_base_parser_swap,
 .set_parse_string = (void(*)(pointer,const char*)) yaooc_base_parser_set_parse_string,
 .rule_start = (void(*)(pointer)) yaooc_base_parser_rule_start,
@@ -789,27 +808,6 @@ yaooc_base_parser_class_table_t yaooc_base_parser_class_table ={
 .string_within_matching_chr = (bool(*)(pointer,char,char,yaooc_token_t*)) yaooc_base_parser_string_within_matching_chr,
 .result = (bool(*)(const_pointer)) yaooc_base_parser_result,
 };
-void yaooc_base_parser_default_ctor(pointer __pthis__)
-{
-yaooc_base_parser_pointer this=__pthis__;(void)this;
-call_parent_default_ctor_static(this,yaooc_base_parser);
-
-
-
-      this->parse_string_=NULL;
-      this->current_pos_=NULL;
-      this->stack_=new(parser_position_stack);
-      this->line_no_=1;
-    
-}
-void yaooc_base_parser_dtor(pointer __pthis__)
-{
-yaooc_base_parser_pointer this=__pthis__;(void)this;
-
-
-      delete(this->stack_);
-    
-}
 const type_info_t __yaooc_base_parser_ti = {
 .min_flag_=0,
 .pod_flag_=0,

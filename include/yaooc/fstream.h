@@ -1,13 +1,12 @@
 #ifndef __FSTREAM_INCLUDED__
 #define __FSTREAM_INCLUDED__
 
-
 #include <yaooc/stream.h>
 
 yaooc_class_table(yaooc_ifstream) {
   yaooc_istream_class_table_t;
-  void (*open)(pointer,const char*,const char*);
-  void (*close)(pointer);
+void (*open)(pointer,const char*,const char*);
+void (*close)(pointer);
 };
 #define yaooc_ifstream_parent_class_table ((yaooc_istream_class_table_t*)(yaooc_ifstream_class_table.parent_class_table_))
 
@@ -16,7 +15,6 @@ yaooc_class_instance(yaooc_ifstream) {
 };
 
 yaooc_class(yaooc_ifstream);
-
 void yaooc_ifstream_default_ctor(pointer);
 void yaooc_ifstream_dtor(pointer);
 void yaooc_ifstream_ctor_fname_mode(pointer,va_list);
@@ -31,12 +29,12 @@ void yaooc_ifstream_ctor_fname_mode(pointer,va_list);
 #define yaooc_ifstream_vscanf yaooc_istream_vscanf
 #define yaooc_ifstream_read yaooc_istream_read
 #define yaooc_ifstream_getstr yaooc_istream_getstr
-void yaooc_ifstream_open(pointer,const char*,const char*);
-void yaooc_ifstream_close(pointer);
+ void yaooc_ifstream_open(pointer,const char*,const char*);
+ void yaooc_ifstream_close(pointer);
 yaooc_class_table(yaooc_ofstream) {
   yaooc_ostream_class_table_t;
-  void (*open)(pointer,const char*,const char*);
-  void (*close)(pointer);
+void (*open)(pointer,const char*,const char*);
+void (*close)(pointer);
 };
 #define yaooc_ofstream_parent_class_table ((yaooc_ostream_class_table_t*)(yaooc_ofstream_class_table.parent_class_table_))
 
@@ -45,7 +43,6 @@ yaooc_class_instance(yaooc_ofstream) {
 };
 
 yaooc_class(yaooc_ofstream);
-
 void yaooc_ofstream_default_ctor(pointer);
 void yaooc_ofstream_dtor(pointer);
 void yaooc_ofstream_ctor_fname_mode(pointer,va_list);
@@ -60,7 +57,7 @@ void yaooc_ofstream_ctor_fname_mode(pointer,va_list);
 #define yaooc_ofstream_write yaooc_ostream_write
 #define yaooc_ofstream_putstr yaooc_ostream_putstr
 #define yaooc_ofstream_putchr yaooc_ostream_putchr
-void yaooc_ofstream_open(pointer,const char*,const char*);
-void yaooc_ofstream_close(pointer);
+ void yaooc_ofstream_open(pointer,const char*,const char*);
+ void yaooc_ofstream_close(pointer);
 
 #endif

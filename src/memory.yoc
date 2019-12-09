@@ -16,11 +16,11 @@
 */
 
 %include <yaooc/object.yod>
-%header_directory yaooc
+%prefix_directory yaooc
 
 /*
-  Dynamic memory type is meant to used in a container (VECTOR). It allows different
-  types of dynamically allocated objects to be stored.  If containers will be searched (yaooc_find),
+  Dynamic memory type is meant to used in a container (VECTOR). It allows pointers
+  of dynamically allocated objects to be stored.  If containers will be searched (yaooc_find),
   then each object should have a common virtual base.
 */
 
@@ -39,7 +39,14 @@
     {
       return op_rich_compare(lhs->ptr_,rhs->ptr_);
     }
-
+    operator>>(ostrm)
+    {
+      M(ostrm,stream,this->ptr_,NULL);
+    }
+    operator<<(istrm)
+    {
+      M(istrm,stream,this->ptr_,NULL);
+    }
     yaooc_dynamic_pointer_ctor_ptr(const_pointer p) { yaooc_dynamic_pointer_copy_ctor(this,p);  }
   instance:
     void* ptr_;
@@ -61,7 +68,9 @@ void T ## _static_pointer_default_ctor(pointer); \
 void T ## _static_pointer_dtor(pointer); \
 void T ## _static_pointer_copy_ctor(pointer,const_pointer); \
 void T ## _static_pointer_assign(pointer,const_pointer); \
-int T ## _static_pointer_rich_compare(const_pointer,const_pointer);
+int T ## _static_pointer_rich_compare(const_pointer,const_pointer); \
+void T ## _static_pointer_to_stream(const_pointer,pointer); \
+void T ## _static_pointer_from_stream(pointer,pointer);
 
 #define yaooc_static_pointer_implementation(T) \
 void T ## _static_pointer_default_ctor(pointer p) \
@@ -82,9 +91,9 @@ void T ## _static_pointer_copy_ctor(pointer p,const_pointer s) \
   T ## _static_pointer_pointer this=p; \
   T ## _static_pointer_const_pointer src=s; \
   if(src->ptr_ != NULL) { \
-    this->ptr_=MALLOC(src->ptr_->class_table_->this_ti->type_size_); \
+    this->ptr_=MALLOC(src->ptr_->class_table_->__this_ti__->type_size_); \
     __newp_array_copy_static(this->ptr_, \
-          src->ptr_->class_table_->this_ti,src->ptr_,1); \
+          src->ptr_->class_table_->__this_ti__,src->ptr_,1); \
   } else { \
     this->ptr_=NULL; \
   }\
@@ -101,7 +110,19 @@ int T ## _static_pointer_rich_compare(const_pointer l,const_pointer r) \
   T ## _static_pointer_const_pointer rhs=r; \
   return T ## _rich_compare(lhs->ptr_,rhs->ptr_); \
 }\
-DEFINE_TYPE_INFO(T ## _static_pointer,Y,Y,Y,Y,Y,N,N,N,NULL)
+void T ## _static_pointer_to_stream(const_pointer p,ostream_pointer os) \
+{ \
+  T ## _static_pointer_const_pointer this=p; \
+  to_stream ts = get_to_stream(this->ptr_->class_table_->__this_ti__); \
+  if(ts) ts(this->ptr_,os); \
+} \
+void T ## _static_pointer_from_stream(const_pointer p,istream_pointer is) \
+{ \
+  T ## _static_pointer_const_pointer this=p; \
+  from_stream fs = get_to_stream(this->ptr_->class_table_->__this_ti__); \
+  if(fs) fs(this->ptr_,is); \
+} \
+DEFINE_TYPE_INFO(T ## _static_pointer,Y,Y,Y,Y,Y,Y,Y,N,NULL)
 
 // A static pointer looks the same as a dynamic pointer
 #define make_static_pointer(p) (void*)make_dynamic_pointer(p)

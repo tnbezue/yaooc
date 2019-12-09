@@ -1,12 +1,46 @@
 #include <yaooc/file.h>
-
 #include <string.h>
 #include <sys/stat.h>
 
 
-void yaooc_file_ctor_name(pointer __pthis__,va_list __con_args__)
+void yaooc_file_default_ctor(pointer __pthis__)
 {
-yaooc_file_pointer this=__pthis__;
+yaooc_file_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_file);
+
+
+this->file_=NULL;
+
+}
+void yaooc_file_dtor(pointer __pthis__)
+{
+yaooc_file_pointer this=__pthis__;(void)this;
+
+if(this->file_!=NULL) delete(this->file_);
+
+}
+void yaooc_file_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_file_pointer this=__pthis__;(void)this;
+yaooc_file_const_pointer src=__psrc__;(void)src;
+
+
+call_default_ctor_static(this,yaooc_file);
+assign_static(this,src,yaooc_file);
+
+}
+void yaooc_file_assign(pointer __pthis__,const_pointer __psrc__)
+{
+yaooc_file_pointer this=__pthis__;(void)this;
+yaooc_file_const_pointer src=__psrc__;(void)src;
+
+
+      yaooc_file_dtor(this);
+      this->file_ = src->file_ ? STRDUP(src->file_) : NULL;
+    
+}
+void yaooc_file_ctor_name(pointer __pthis,va_list __con_args__){
+yaooc_file_pointer this=__pthis;(void)this;
 const char* fname = va_arg(__con_args__,const char*);
 
 call_parent_default_ctor_static(this,yaooc_file);
@@ -323,8 +357,8 @@ yaooc_file_const_pointer this=__pthis__;(void)this;
 #undef super
 }
 yaooc_file_class_table_t yaooc_file_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-.type_name_ = (const char*) "yaooc_file_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_file_t",
 .swap = (void(*)(pointer,pointer)) yaooc_file_swap,
 .exists = (bool(*)(const_pointer)) yaooc_file_exists,
 .dev = (dev_t(*)(const_pointer)) yaooc_file_dev,
@@ -344,42 +378,6 @@ yaooc_file_class_table_t yaooc_file_class_table ={
 .islink = (bool(*)(const_pointer)) yaooc_file_islink,
 .issock = (bool(*)(const_pointer)) yaooc_file_issock,
 };
-void yaooc_file_default_ctor(pointer __pthis__)
-{
-yaooc_file_pointer this=__pthis__;(void)this;
-
-
-call_parent_default_ctor_static(this,yaooc_file);
-this->file_=NULL;
-
-}
-void yaooc_file_dtor(pointer __pthis__)
-{
-yaooc_file_pointer this=__pthis__;(void)this;
-
-if(this->file_!=NULL) delete(this->file_);
-
-}
-void yaooc_file_copy_ctor(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_file_pointer this=__pthis__;(void)this;
-yaooc_file_const_pointer src=__psrc__;(void)src;
-
-
-call_default_ctor_static(this,yaooc_file);
-assign_static(this,src,yaooc_file);
-
-}
-void yaooc_file_assign(pointer __pthis__,const_pointer __psrc__)
-{
-yaooc_file_pointer this=__pthis__;(void)this;
-yaooc_file_const_pointer src=__psrc__;(void)src;
-
-
-      yaooc_file_dtor(this);
-      this->file_ = src->file_ ? STRDUP(src->file_) : NULL;
-    
-}
 const type_info_t __yaooc_file_ti = {
 .min_flag_=0,
 .pod_flag_=0,

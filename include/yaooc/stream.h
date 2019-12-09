@@ -1,43 +1,40 @@
 #ifndef __STREAM_INCLUDED__
 #define __STREAM_INCLUDED__
 
-
 #include <yaooc/object.h>
-
 
 #include <stdio.h>
 void throw_stream_exception(pointer,const char*);
 
 yaooc_class_table(yaooc_base_stream) {
   yaooc_object_class_table_t;
-  bool (*eof)(const_pointer);
-  bool (*seek)(pointer,size_t,int);
-  size_t (*tell)(const_pointer);
-  bool (*good)(const_pointer);
+bool (*eof)(const_pointer);
+bool (*seek)(pointer,size_t,int);
+size_t (*tell)(const_pointer);
+bool (*good)(const_pointer);
 };
 #define yaooc_base_stream_parent_class_table ((yaooc_object_class_table_t*)(yaooc_base_stream_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_base_stream) {
-  FILE* handle_;
+FILE* handle_;
 };
 
 yaooc_class(yaooc_base_stream);
-
 void yaooc_base_stream_default_ctor(pointer);
 #define yaooc_base_stream_swap yaooc_object_swap
-bool yaooc_base_stream_eof(const_pointer);
-bool yaooc_base_stream_seek(pointer,size_t,int);
-size_t yaooc_base_stream_tell(const_pointer);
-bool yaooc_base_stream_good(const_pointer);
-void yaooc_base_stream_set_handle(pointer,FILE*);
+ bool yaooc_base_stream_eof(const_pointer);
+ bool yaooc_base_stream_seek(pointer,size_t,int);
+ size_t yaooc_base_stream_tell(const_pointer);
+ bool yaooc_base_stream_good(const_pointer);
+ void yaooc_base_stream_set_handle(pointer,FILE*);
 yaooc_class_table(yaooc_istream) {
   yaooc_base_stream_class_table_t;
-  void (*stream)(pointer,...);
-  int (*peek)(pointer);
-  int (*scanf)(pointer,const char*,...);
-  int (*vscanf)(pointer,const char*,va_list);
-  size_t (*read)(pointer,void*,size_t,size_t);
-  char* (*getstr)(pointer,char*,size_t);
+void (*stream)(pointer,...);
+int (*peek)(pointer);
+int (*scanf)(pointer,const char*,...);
+int (*vscanf)(pointer,const char*,va_list);
+size_t (*read)(pointer,void*,size_t,size_t);
+char* (*getstr)(pointer,char*,size_t);
 };
 #define yaooc_istream_parent_class_table ((yaooc_base_stream_class_table_t*)(yaooc_istream_class_table.parent_class_table_))
 
@@ -46,27 +43,26 @@ yaooc_class_instance(yaooc_istream) {
 };
 
 yaooc_class(yaooc_istream);
-
 void yaooc_istream_default_ctor(pointer);
 #define yaooc_istream_swap yaooc_base_stream_swap
 #define yaooc_istream_eof yaooc_base_stream_eof
 #define yaooc_istream_seek yaooc_base_stream_seek
 #define yaooc_istream_tell yaooc_base_stream_tell
 #define yaooc_istream_good yaooc_base_stream_good
-void yaooc_istream_stream(pointer,...);
-int yaooc_istream_peek(pointer);
-int yaooc_istream_scanf(pointer,const char*,...);
-int yaooc_istream_vscanf(pointer,const char*,va_list);
-size_t yaooc_istream_read(pointer,void*,size_t,size_t);
-char* yaooc_istream_getstr(pointer,char*,size_t);
+ void yaooc_istream_stream(pointer,...);
+ int yaooc_istream_peek(pointer);
+ int yaooc_istream_scanf(pointer,const char*,...);
+ int yaooc_istream_vscanf(pointer,const char*,va_list);
+ size_t yaooc_istream_read(pointer,void*,size_t,size_t);
+ char* yaooc_istream_getstr(pointer,char*,size_t);
 yaooc_class_table(yaooc_ostream) {
   yaooc_base_stream_class_table_t;
-  void (*stream)(pointer,...);
-  int (*printf)(pointer,const char*,...);
-  int (*vprintf)(pointer,const char*,va_list);
-  size_t (*write)(pointer,const void*,size_t,size_t);
-  int (*putstr)(pointer,const char*);
-  int (*putchr)(pointer,int);
+void (*stream)(pointer,...);
+int (*printf)(pointer,const char*,...);
+int (*vprintf)(pointer,const char*,va_list);
+size_t (*write)(pointer,const void*,size_t,size_t);
+int (*putstr)(pointer,const char*);
+int (*putchr)(pointer,int);
 };
 #define yaooc_ostream_parent_class_table ((yaooc_base_stream_class_table_t*)(yaooc_ostream_class_table.parent_class_table_))
 
@@ -75,20 +71,18 @@ yaooc_class_instance(yaooc_ostream) {
 };
 
 yaooc_class(yaooc_ostream);
-
 void yaooc_ostream_default_ctor(pointer);
 #define yaooc_ostream_swap yaooc_base_stream_swap
 #define yaooc_ostream_eof yaooc_base_stream_eof
 #define yaooc_ostream_seek yaooc_base_stream_seek
 #define yaooc_ostream_tell yaooc_base_stream_tell
 #define yaooc_ostream_good yaooc_base_stream_good
-void yaooc_ostream_stream(pointer,...);
-int yaooc_ostream_printf(pointer,const char*,...);
-int yaooc_ostream_vprintf(pointer,const char*,va_list);
-size_t yaooc_ostream_write(pointer,const void*,size_t,size_t);
-int yaooc_ostream_putstr(pointer,const char*);
-int yaooc_ostream_putchr(pointer,int);
-
+ void yaooc_ostream_stream(pointer,...);
+ int yaooc_ostream_printf(pointer,const char*,...);
+ int yaooc_ostream_vprintf(pointer,const char*,va_list);
+ size_t yaooc_ostream_write(pointer,const void*,size_t,size_t);
+ int yaooc_ostream_putstr(pointer,const char*);
+ int yaooc_ostream_putchr(pointer,int);
 extern yaooc_istream_pointer cin;
 extern yaooc_ostream_pointer cout;
 extern yaooc_ostream_pointer cerr;

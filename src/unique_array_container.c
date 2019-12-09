@@ -30,7 +30,7 @@ yaooc_unique_array_container_pointer this=__pthis__;(void)this;
         if(index == (size_t)-1)
           index=INDEX(this,temp);
       }
-
+      
 
 
       return AT(this,index==(size_t)-1 ? SIZE(this) : index);
@@ -57,8 +57,8 @@ yaooc_unique_array_container_pointer this=__pthis__;(void)this;
     
 }
 yaooc_unique_array_container_class_table_t yaooc_unique_array_container_class_table ={
-.parent_class_table_ = (const class_table_t*) &yaooc_array_container_class_table,
-.type_name_ = (const char*) "yaooc_unique_array_container_t",
+.parent_class_table_ = (const class_table_t*)&yaooc_array_container_class_table,
+.type_name_ = (const char*)"yaooc_unique_array_container_t",
 .swap = (void(*)(pointer,pointer)) yaooc_unique_array_container_swap,
 .increase_capacity = (bool(*)(pointer,size_t)) yaooc_unique_array_container_increase_capacity,
 .size_needed = (size_t(*)(const_pointer,size_t)) yaooc_unique_array_container_size_needed,
