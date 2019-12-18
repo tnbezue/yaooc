@@ -183,7 +183,7 @@ static yaooc_string_t* preprocess(const char* file)
     {
       strcpy(yaoocpp_parser_current_file,fname);
       yaooc_string_t* result = preprocess(fname);
-      M(result,gsub_,"stdin",fname);
+//      M(result,gsub_,"stdin",fname);
 //      puts(M(result,c_str));
       M(this,set_parse_string,M(result,c_str));
       yaooc_token_t r;
@@ -206,8 +206,11 @@ static yaooc_string_t* preprocess(const char* file)
         } else if(yaoocpp_parser_mixin(this,&mixin)) {
           M(&this->mixins_,push_back,make_dynamic_pointer(mixin));
           delete(mixin);
-//        } else if(yaoocpp_parser_definition_directory(this)) {
-//          M(&this->sections_,push_back,(pointer)&current_section);
+        } else if(yaoocpp_parser_line_directive(this,&current_section)) {
+          if(current_section != NULL) {
+            M(&this->sections_,push_back,make_dynamic_pointer(current_section));
+            delete(current_section);
+          }
         } else if(*this->current_pos_ != 0) {
           yaoocpp_parser_source(this,&current_section);
           M(&this->sections_,push_back,make_dynamic_pointer(current_section));
@@ -218,7 +221,7 @@ static yaooc_string_t* preprocess(const char* file)
       }
       delete(result);
     }
-
+/*
     bool whitespace(yaooc_token_t* r)
     {
       *r = yaooc_default_token(this);
@@ -235,9 +238,11 @@ static yaooc_string_t* preprocess(const char* file)
       r->end_=yaooc_base_parser_current_pos(this);
       return r->beg_ != r->end_;
     }
+  */
   adjunct:
-    bool line_directive()
+    bool line_directive(yaoocpp_section_t** section)
     {
+      *section=NULL;
       RULE_START(this);
       if(*this->current_pos_ == '#') {
         this->current_pos_+=2;  // the "#" and the space following it
@@ -252,7 +257,22 @@ static yaooc_string_t* preprocess(const char* file)
             if(*this->current_pos_ != 0) {
               strncpy(yaoocpp_parser_file_being_parsed,pos,this->current_pos_-pos);
               yaoocpp_parser_file_being_parsed[this->current_pos_-pos]=0;
-              if(strcmp(yaoocpp_parser_file_being_parsed,"stdin") == 0) {
+              /*
+                If at top level, this is a first level include file
+              */
+              if(yaoocpp_parser_is_top_level) {
+                yaoocpp_header_t* hs= new(yaoocpp_header);
+                char name[16];
+                sprintf(name,"header_%03d",header_count++);
+                M(&hs->name_,set,name);
+                 // assume yod file
+                M(&hs->content_,set,"#include <");
+                M(&hs->content_,appendn,yaoocpp_parser_file_being_parsed,strlen(yaoocpp_parser_file_being_parsed)-3);
+                M(&hs->content_,append,"h>");
+                hs->defined_in_top_level_file_=true;
+                *section = (yaoocpp_section_t*)hs;
+                yaoocpp_parser_is_top_level=false;
+              } else if(strcmp(yaoocpp_parser_file_being_parsed,"stdin") == 0) {
                 yaoocpp_parser_is_top_level=true;
                 strcpy(yaoocpp_parser_file_being_parsed,yaoocpp_parser_current_file);
               } else

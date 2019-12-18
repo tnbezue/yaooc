@@ -1,9 +1,11 @@
-#ifndef __OUT2_INCLUDED__
-#define __OUT2_INCLUDED__
+#ifndef __PARSER_INCLUDED__
+#define __PARSER_INCLUDED__
+
+#include <yaooc/base_parser.h>
+
+#include <yaooc/exception.h>
 
 #include <yaooc/string.h>
-#include <yaooc/base_parser.h>
-#include <yaooc/exception.h>
 #include "components.h"
 
 
@@ -60,12 +62,12 @@ void yaoocpp_parser_assign(pointer,const_pointer);
 #define yaoocpp_parser_string_until_chrs yaooc_base_parser_string_until_chrs
 #define yaoocpp_parser_string_while_chrs yaooc_base_parser_string_while_chrs
 #define yaoocpp_parser_string_until_eol yaooc_base_parser_string_until_eol
- bool yaoocpp_parser_whitespace(pointer,yaooc_token_t*);
+#define yaoocpp_parser_whitespace yaooc_base_parser_whitespace
 #define yaoocpp_parser_string_within_matching_chr yaooc_base_parser_string_within_matching_chr
 #define yaoocpp_parser_result yaooc_base_parser_result
  void yaoocpp_parser_parse_file(pointer,const char*);
- bool yaoocpp_parser_line_directive(pointer);
- bool yaoocpp_parser_header_directory(pointer);
+ bool yaoocpp_parser_line_directive(pointer,yaoocpp_section_t**);
+ bool yaoocpp_parser_prefix_directory(pointer);
  bool yaoocpp_parser_header(pointer,yaoocpp_section_t**);
  bool yaoocpp_parser_source(pointer,yaoocpp_section_t**);
  bool yaoocpp_parser_class_forward(pointer,yaoocpp_section_t**);

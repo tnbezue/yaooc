@@ -1,26 +1,5 @@
 #include "parser.h"
 
-#ifndef __OBJECT_YOD_INCLUDED__
-#define __OBJECT_YOD_INCLUDED__
-
-
-#endif
-
-
-char yaoocpp_parser_current_file[PATH_MAX];
-char yaoocpp_parser_file_being_parsed[PATH_MAX];
-bool yaoocpp_parser_is_top_level=false;
-yaooc_string_t yaoocpp_header_prefix = YAOOC_STRING_STATIC_DEFAULT_CTOR;
-extern yaooc_string_t defines;
-extern yaooc_string_vector_t include_directories;
-
-
-
-static int header_count=0;
-static int source_count=0;
-
-
-// Keyword tokens
 #define CLASS(term) YAOOC_PARSER_TRY_RULE(this,M(this,chr,'%',&term) && M(this,str,"class",&term))
 #define STRUCT(term) YAOOC_PARSER_TRY_RULE(this,M(this,chr,'%',&term) && M(this,str,"struct",&term))
 #define UNION(term) YAOOC_PARSER_TRY_RULE(this,M(this,chr,'%',&term) &&  M(this,str,"union",&term))
@@ -29,7 +8,7 @@ static int source_count=0;
 #define INSTANCE(term) (M(this,str,"instance",&term) && M(this,chr,':',&term))
 #define ADJUNCT(term) (M(this,str,"adjunct",&term) && M(this,chr,':',&term))
 #define PRIVATE(term) (M(this,str,"private",&term) && M(this,chr,':',&term))
-//#define STATIC(term) (M(this,str,"static",&term) && M(this,chr,'%',&term))
+
 #define __CONST__(term) M(this,str,"const",&term)
 #define OPERATOR(term) M(this,str,"operator",&term)
 #define COMMA(term) M(this,chr,',',&term)
@@ -47,10 +26,20 @@ static int source_count=0;
 #define IS_DELETE(t) (strncmp(t.beg_,"delete",6)==0)
 #define IS_DEFAULT(t) (strncmp(t.beg_,"default",7)==0)
 
+char yaoocpp_parser_current_file[PATH_MAX]; 
+char yaoocpp_parser_file_being_parsed[PATH_MAX]; 
+bool yaoocpp_parser_is_top_level=false; 
+yaooc_string_t yaoocpp_header_prefix = YAOOC_STRING_STATIC_DEFAULT_CTOR;
+extern yaooc_string_t defines;
+extern yaooc_string_vector_t include_directories;
 
-/*
-  Preprocess file using generic preprocessor (gpp)
-*/
+
+
+static int header_count=0;
+static int source_count=0;
+
+
+
 
 #define LINE_LENGTH 1024
 static yaooc_string_t* read_file_into_string(const char* file)
@@ -80,7 +69,7 @@ void insert_includes(yaooc_string_t* s)
   int ofs=0;
   char* temp=new_array(char,1024);
   strcpy(temp,"%header\n#include <");
-  if(regcomp(&re,"^\\s*%\\s*include\\s*<([^>]*)>[^\n]*\n",REG_EXTENDED|REG_NEWLINE) == 0) {
+  if(regcomp(&re,"^\\s*%\\s*include\\s*<([^>]*)>[^\n]*\n",REG_EXTENDED) == 0) {
     regmatch_t ov[2];
     while(regexec(&re,M(s,c_str)+ofs,2,ov,0) == 0) {
       sprintf(temp+18,"%.*sh>\n%%%%\n",ov[1].rm_eo-ov[1].rm_so-3,M(s,c_str)+ofs+ov[1].rm_so);
@@ -89,7 +78,7 @@ void insert_includes(yaooc_string_t* s)
       ofs+=strlen(temp);
     }
     regfree(&re);
-    M(s,gsub_,"\\\n","\\\\\n");
+    M(s,gsub_,"\\\n","\\\\\n"); 
   }
   delete(temp);
 }
@@ -104,7 +93,7 @@ static yaooc_string_t* preprocess(const char* file)
   insert_includes(contents);
   yaooc_string_t gpp_command;
   gb_newp(&gpp_command,yaooc_string);
-  M(&gpp_command,set,"gpp --includemarker \"# % \\\"%\\\" %\"");
+  M(&gpp_command,set,"gpp --nostdinc --includemarker \"# % \\\"%\\\" %\"");
   M(&gpp_command,append," -n -U \"\" \"\" \"(\" \",\" \")\" \"(\" \")\" \"%\" \"\"");
   M(&gpp_command,append," -M \"\\n\\w%\\w\" \"\\n\" \" \" \" \" \"\\n\" \"\" \"\"");
   M(&gpp_command,append," +c \"/*\" \"*/\" +c \"//\" \"\\n\" +c \"\\\\\\n\" \"\"");
@@ -144,7 +133,7 @@ call_parent_default_ctor_static(this,yaoocpp_parser);
       yaooc_base_parser_default_ctor(this);
       newp(&this->sections_,yaoocpp_item_pointer_vector);
       newp(&this->mixins_,yaoocpp_item_pointer_vector);
-
+    
 }
 void yaoocpp_parser_dtor(pointer __pthis__)
 {
@@ -153,7 +142,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
 
       deletep(&this->sections_,yaoocpp_item_pointer_vector);
       deletep(&this->mixins_,yaoocpp_item_pointer_vector);
-
+    
 }
 void yaoocpp_parser_copy_ctor(pointer __pthis__,const_pointer __psrc__)
 {
@@ -175,30 +164,46 @@ assign_static(&this->sections_,&src->sections_,yaoocpp_item_pointer_vector);
 assign_static(&this->mixins_,&src->mixins_,yaoocpp_item_pointer_vector);
 
 }
-bool yaoocpp_parser_line_directive(pointer __pthis__)
+bool yaoocpp_parser_line_directive(pointer __pthis__,yaoocpp_section_t** section)
 {
 yaoocpp_parser_pointer this=__pthis__;(void)this;
 
+      *section=NULL;
       RULE_START(this);
       if(*this->current_pos_ == '#') {
-        this->current_pos_+=2;
+        this->current_pos_+=2;  
         yaooc_token_t temp;
         if(M(this,digits,&temp)) {
           this->line_no_=atoi(temp.beg_)-1;
           this->current_pos_++;
-          if(*this->current_pos_ == '"') {
+          if(*this->current_pos_ == '"') {  
             this->current_pos_++;
             const char* pos=this->current_pos_;
             for(;*this->current_pos_!='"' && *this->current_pos_!=0;this->current_pos_++);
             if(*this->current_pos_ != 0) {
               strncpy(yaoocpp_parser_file_being_parsed,pos,this->current_pos_-pos);
               yaoocpp_parser_file_being_parsed[this->current_pos_-pos]=0;
-              if(strcmp(yaoocpp_parser_file_being_parsed,"stdin") == 0) {
+              
+
+
+              if(yaoocpp_parser_is_top_level) {
+                yaoocpp_header_t* hs= new(yaoocpp_header);
+                char name[16];
+                sprintf(name,"header_%03d",header_count++);
+                M(&hs->name_,set,name);
+                 
+                M(&hs->content_,set,"#include <");
+                M(&hs->content_,appendn,yaoocpp_parser_file_being_parsed,strlen(yaoocpp_parser_file_being_parsed)-3);
+                M(&hs->content_,append,"h>");
+                hs->defined_in_top_level_file_=true;
+                *section = (yaoocpp_section_t*)hs;
+                yaoocpp_parser_is_top_level=false;
+              } else if(strcmp(yaoocpp_parser_file_being_parsed,"stdin") == 0) {
                 yaoocpp_parser_is_top_level=true;
                 strcpy(yaoocpp_parser_file_being_parsed,yaoocpp_parser_current_file);
               } else
                 yaoocpp_parser_is_top_level=false;
-//              yaoocpp_parser_is_top_level=strcmp(yaoocpp_parser_current_file,yaoocpp_parser_file_being_parsed) == 0;
+
               for(;*this->current_pos_!='\n' && *this->current_pos_!=0;this->current_pos_++);
               yaooc_base_parser_whitespace(this,&temp);
               return RULE_SUCCESS(this);
@@ -207,7 +212,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_prefix_directory(pointer __pthis__)
 {
@@ -216,8 +221,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
       RULE_START(this);
       yaooc_token_t temp,dirname;
       if(M(this,chr,'%',&temp)) {
-
-
+        
+        
         int saved_line_no=this->line_no_;
         if(M(this,str,"prefix_directory",&temp)) {
           if(saved_line_no == this->line_no_) {
@@ -232,7 +237,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_header(pointer __pthis__,yaoocpp_section_t** section)
 {
@@ -262,25 +267,24 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         return RULE_SUCCESS(this);
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_source(pointer __pthis__,yaoocpp_section_t** section)
 {
 yaoocpp_parser_pointer this=__pthis__;(void)this;
 
       regex_t re,re2;
-
       regcomp(&re,"^%\\s*(class|struct|union|header|mixin|prefix_directory)\\s+",REG_EXTENDED|REG_NEWLINE);
       regcomp(&re2,"^#\\s*[0-9]+",REG_EXTENDED|REG_NEWLINE);
-      regmatch_t ov[5];
+      regmatch_t ov[3];
       const char* ptr;
-      if(regexec(&re,this->current_pos_,5,ov,0)==0) {
+      if(regexec(&re,this->current_pos_,3,ov,0)==0) {
         ptr=this->current_pos_+ov[0].rm_so;
       } else {
         ptr=this->current_pos_+strlen(this->current_pos_);
       }
       const char* ptr2;
-      if(regexec(&re2,this->current_pos_,5,ov,0)==0) {
+      if(regexec(&re2,this->current_pos_,3,ov,0)==0) {
         ptr2=this->current_pos_+ov[0].rm_so;
       } else {
         ptr2=this->current_pos_+strlen(this->current_pos_);
@@ -300,7 +304,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
       yaooc_token_t t;
       M(this,whitespace,&t);
       return true;
-
+    
 }
 bool yaoocpp_parser_class_forward(pointer __pthis__,yaoocpp_section_t** section)
 {
@@ -321,7 +325,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         return RULE_SUCCESS(this);
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_class_definition(pointer __pthis__,yaoocpp_section_t** section)
 {
@@ -400,7 +404,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_sub_section(pointer __pthis__,yaoocpp_item_pointer_vector_t* list,bool include_value)
 {
@@ -447,7 +451,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           break;
       }
       return true;
-
+    
 }
 bool yaoocpp_parser_variable(pointer __pthis__,yaoocpp_variable_t** var,bool include_value)
 {
@@ -459,7 +463,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
       *var=NULL;
       if(yaoocpp_parser_argument(this,&arg)) {
         *var = new(yaoocpp_variable);
-        assign_static(*var,arg,yaoocpp_argument);
+        assign_static(*var,arg,yaoocpp_argument);  
         delete(arg);
         int saved_line_no=this->line_no_;
         if(YAOOC_PARSER_TRY_RULE(this,EQUAL(t) && M(this,string_until_chrs,";",&val) && SEMICOLON(t))) {
@@ -470,11 +474,11 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           M(&(*var)->value_,setn,val.beg_,val.end_-val.beg_);
           return RULE_SUCCESS(this);
         } else if(SEMICOLON(t)) {
-
+          
           M(&(*var)->value_,set,"0");
           return RULE_SUCCESS(this);
         }
-      } else if(M(this,ident,&val) && SEMICOLON(t)) {
+      } else if(M(this,ident,&val) && SEMICOLON(t)) {  
         *var=new(yaoocpp_variable);
         M(&(*var)->type_,setn,val.beg_,val.end_-val.beg_);
         return RULE_SUCCESS(this);
@@ -482,7 +486,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
       if(*var != NULL)
         delete(*var);
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_method(pointer __pthis__,yaoocpp_method_t** method)
 {
@@ -512,7 +516,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_get_parent_name(pointer __pthis__,char** name)
 {
@@ -528,13 +532,13 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         return true;
       }
       return false;
-
+    
 }
 bool yaoocpp_parser_set_parent(pointer __pthis__,const char* parent_name,const yaoocpp_struct_t** parent)
 {
 yaoocpp_parser_pointer this=__pthis__;(void)this;
 
-
+      
       yaoocpp_item_t parent_item;
       newp(&parent_item,yaoocpp_item);
       M(&parent_item.name_,set,parent_name);
@@ -546,7 +550,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         *parent=NULL;
       deletep(&parent_item,yaoocpp_item);
       return *parent != NULL;
-
+    
 }
 bool yaoocpp_parser_type_info(pointer __pthis__,yaoocpp_struct_t* section)
 {
@@ -563,7 +567,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
                     if(!yaoocpp_parser_include(this,section))
                       ret=false;
       return ret;
-
+    
 }
 bool yaoocpp_parser_constructor_initializers(pointer __pthis__,yaoocpp_item_pointer_vector_t* list)
 {
@@ -591,8 +595,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       } while(COMMA(t));
       gb_exit();
-      return true;
-
+      return true;  
+    
 }
 bool yaoocpp_parser_default_constructor(pointer __pthis__,yaoocpp_struct_t* section,bool allow_initializers)
 {
@@ -614,7 +618,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
               "Constructor initializers not allowed here.  Near line %d\n",this->line_no_));
         }
         if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
-
+          
           M(&section->default_ctor_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
           return RULE_SUCCESS(this);
         } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
@@ -637,7 +641,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_destructor(pointer __pthis__,yaoocpp_struct_t* section)
 {
@@ -650,11 +654,11 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         M(&section->dtor_.name_,set,class_name);
 
         if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
-
+          
           M(&section->dtor_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
           return RULE_SUCCESS(this);
         } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
-
+          
           if(IS_DELETE(implementation)) {
             section->dtor_.form_=DELETE;
           } else if(IS_DEFAULT(implementation)) {
@@ -669,7 +673,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_copy_constructor(pointer __pthis__,yaoocpp_struct_t* section,bool allow_initializers)
 {
@@ -692,7 +696,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
               "Constructor initializers not allowed here.  Near line %d\n",this->line_no_));
         }
         if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
-
+          
           M(&section->copy_ctor_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
           return RULE_SUCCESS(this);
         } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
@@ -701,7 +705,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
                     "Error processing copy constructor for class %s\n"
                    "Cannot specify construction initializers and implementation method",class_name));
           }
-
+          
           if(IS_DELETE(implementation)) {
             section->copy_ctor_.form_=DELETE;
           } else if(IS_DEFAULT(implementation)) {
@@ -716,7 +720,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_assignment(pointer __pthis__,yaoocpp_struct_t* section)
 {
@@ -728,11 +732,11 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         M(&section->assign_.name_,set,M(&section->name_,c_str));
         M(&section->assign_,set_source_name,src_name.beg_,src_name.end_-src_name.beg_);
         if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
-
+          
           M(&section->assign_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
           return RULE_SUCCESS(this);
         } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
-
+          
           if(IS_DELETE(implementation)) {
             section->assign_.form_=DELETE;
           } else if(IS_DEFAULT(implementation)) {
@@ -747,7 +751,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_rich_compare(pointer __pthis__,yaoocpp_struct_t* section)
 {
@@ -761,7 +765,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         M(&section->rich_compare_,set_lhs_name,lhs_name.beg_,lhs_name.end_-lhs_name.beg_);
         M(&section->rich_compare_,set_rhs_name,rhs_name.beg_,rhs_name.end_-rhs_name.beg_);
         if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
-
+          
           M(&section->rich_compare_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
           return RULE_SUCCESS(this);
         } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
@@ -779,7 +783,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_to_stream(pointer __pthis__,yaoocpp_struct_t* section)
 {
@@ -792,7 +796,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
 
         M(&section->to_stream_,set_stream_name,strm_name.beg_,strm_name.end_-strm_name.beg_);
         if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
-
+          
           M(&section->to_stream_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
           return RULE_SUCCESS(this);
         } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
@@ -804,7 +808,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_from_stream(pointer __pthis__,yaoocpp_struct_t* section)
 {
@@ -817,7 +821,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
 
         M(&section->from_stream_,set_stream_name,strm_name.beg_,strm_name.end_-strm_name.beg_);
         if(YAOOC_PARSER_TRY_RULE(this,M(this,string_within_matching_chr,'{','}',&implementation))) {
-
+          
           M(&section->from_stream_,set_implementation,implementation.beg_,implementation.end_-implementation.beg_);
           return RULE_SUCCESS(this);
         } else if(EQUAL(t) && M(this,ident,&implementation) && SEMICOLON(t)) {
@@ -829,7 +833,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_include(pointer __pthis__,yaoocpp_struct_t* section)
 {
@@ -859,10 +863,10 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         if(SEMICOLON(t)) {
           return RULE_SUCCESS(this);
         }
+#undef mixin_vector
       }
       return RULE_FAIL(this);
-#undef mixin_vector
-
+    
 }
 bool yaoocpp_parser_va_argument(pointer __pthis__,yaoocpp_argument_t** arg)
 {
@@ -881,7 +885,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         return RULE_SUCCESS(this);
       }
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_argument(pointer __pthis__,yaoocpp_argument_t** arg)
 {
@@ -911,7 +915,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
             break;
         }
         if(M(&(*arg)->name_,size) > 0) {
-
+          
           while(M(this,string_within_matching_chr,'[',']',&t)) {
             M(&(*arg)->array_def_,append,"[");
             M(&(*arg)->array_def_,appendn,t.beg_,t.end_-t.beg_);
@@ -923,7 +927,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
       if(*arg != NULL)
         delete(*arg);
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_arguments(pointer __pthis__,yaoocpp_item_pointer_vector_t* args)
 {
@@ -941,10 +945,10 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
           delete(arg);
         } else
           break;
-        ret=true;
+        ret=true; 
       } while(COMMA(t));
       return ret;
-
+    
 }
 bool yaoocpp_parser_constructor(pointer __pthis__,yaoocpp_struct_t* section)
 {
@@ -958,7 +962,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
       if(M(this,ident,&con_name) && LPAREN(t)) {
         size_t l = yaooc_token_len(con_name);
         if(l > M(&section->name_,size) && strncmp(con_name.beg_,M(&section->name_,c_str),M(&section->name_,size))==0) {
-
+          
           yaoocpp_constructor_t* con=gb_new(yaoocpp_constructor);
           M(&con->name_,setn,con_name.beg_,l);
           if(yaooc_find(yaooc_dynamic_pointer,M(&section->constructors_,cbegin),M(&section->constructors_,cend),(pointer)&con)
@@ -994,7 +998,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
             THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
                 "Error parsing constructor at line number %d\n",saved_line_no));
           } else {
-
+            
             THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,
                   "Constructors must have at least 1 argument.\n"
                   "Constructor %.*s has zero arguments.\n",(int)l,con_name.beg_));
@@ -1003,7 +1007,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
       }
       gb_exit();
       return RULE_FAIL(this);
-
+    
 }
 bool yaoocpp_parser_mixin(pointer __pthis__,yaoocpp_mixin_t** mixin)
 {
@@ -1048,31 +1052,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       return RULE_FAIL(this);
-
-}
-bool yaoocpp_parser_whitespace(pointer __pthis__,yaooc_token_t* r)
-{
-yaoocpp_parser_pointer this=__pthis__;(void)this;
-#define super() yaoocpp_parser_parent_class_table->whitespace(this,r)
-#define PM(method,...) CTM((*yaoocpp_parser_parent_class_table),this,method,## __VA_ARGS__)
-
-
-      *r = yaooc_default_token(this);
-      yaooc_token_t temp;
-      bool rc=false;
-      while(true) {
-        rc = yaooc_base_parser_whitespace(this,&temp);
-        if(!rc) {
-          rc=yaoocpp_parser_line_directive(this);
-          if(!rc)
-            break;
-        }
-      }
-      r->end_=yaooc_base_parser_current_pos(this);
-      return r->beg_ != r->end_;
-
-#undef PM
-#undef super
+    
 }
 void yaoocpp_parser_parse_file(pointer __pthis__,const char* fname)
 {
@@ -1083,7 +1063,8 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
 
       strcpy(yaoocpp_parser_current_file,fname);
       yaooc_string_t* result = preprocess(fname);
-//      puts(M(result,c_str));
+
+
       M(this,set_parse_string,M(result,c_str));
       yaooc_token_t r;
       M(this,whitespace,&r);
@@ -1105,8 +1086,11 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         } else if(yaoocpp_parser_mixin(this,&mixin)) {
           M(&this->mixins_,push_back,make_dynamic_pointer(mixin));
           delete(mixin);
-
-
+        } else if(yaoocpp_parser_line_directive(this,&current_section)) {
+          if(current_section != NULL) {
+            M(&this->sections_,push_back,make_dynamic_pointer(current_section));
+            delete(current_section);
+          }
         } else if(*this->current_pos_ != 0) {
           yaoocpp_parser_source(this,&current_section);
           M(&this->sections_,push_back,make_dynamic_pointer(current_section));
@@ -1116,7 +1100,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         }
       }
       delete(result);
-
+    
 #undef PM
 #undef super
 }

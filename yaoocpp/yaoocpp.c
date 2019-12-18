@@ -236,7 +236,7 @@ int main(int argc,char* argv[])
           char* uc_root=gb_save(yaooc_upcase(root));
           M(&h_strm,printf,"#ifndef __%s_INCLUDED__\n"
                           "#define __%s_INCLUDED__\n\n",uc_root,uc_root);
-          l = M(&definition_directory,size)+strlen(root)+7; // definition_directory + "/" + root + ".yod"
+          l = M(&definition_directory,size)+strlen(root)+7; // header_directory + "/" + root + ".yod"
           char* yod_fname=gb_new_array(char,l);
           *yod_fname=0;
           if(M(&definition_directory,size)>0) {

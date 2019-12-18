@@ -1,11 +1,5 @@
 #include "components.h"
 
-#ifndef __OBJECT_YOD_INCLUDED__
-#define __OBJECT_YOD_INCLUDED__
-
-
-#endif
-
 void yaoocpp_item_default_ctor(pointer __pthis__)
 {
 yaoocpp_item_pointer this=__pthis__;(void)this;
@@ -1917,8 +1911,10 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
         "{\n%s_const_pointer %s=__plhs__;(void)%s;\n"
         "%s_const_pointer %s=__prhs__;(void)%s;\n"
         "%s\n"
+        "%s\n"
         "}\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->lhs_name_,c_str),M(&this->lhs_name_,c_str),
-        M(&this->name_,c_str),M(&this->rhs_name_,c_str),M(&this->rhs_name_,c_str),M(&this->implementation_,c_str));
+        M(&this->name_,c_str),M(&this->rhs_name_,c_str),M(&this->rhs_name_,c_str),
+        M(&this->mixin_text_,c_str),M(&this->implementation_,c_str));
       }
     
 }
@@ -1955,8 +1951,10 @@ void yaoocpp_rich_compare_add_mixin_text(pointer __pthis__,yaoocpp_mixin_const_p
 yaoocpp_rich_compare_pointer this=__pthis__;(void)this;
 
       if(M(&mixin->rich_compare_.implementation_,size)>0) {
-        if(this->form_ == DEFAULT)
+        if(this->form_ == DEFAULT) {
+          M(&this->name_,set,class_name);
           this->form_=IMPLEMENTATION_TEXT;
+        }
         if(this->form_==IMPLEMENTATION_TEXT) {
           M(&this->mixin_text_,append,"\n");
           M(&this->mixin_text_,append,M(&mixin->rich_compare_.implementation_,c_str));
@@ -2090,8 +2088,9 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
         "{\n%s_const_pointer this=__pthis__;(void)this;\n"
         "yaooc_ostream_pointer %s=__pstrm__;(void)%s;\n"
         "%s\n"
+        "%s\n"
         "}\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->strm_name_,c_str),M(&this->strm_name_,c_str),
-        M(&this->implementation_,c_str));
+        M(&this->mixin_text_,c_str),M(&this->implementation_,c_str));
       }
     
 }
@@ -2128,8 +2127,11 @@ void yaoocpp_to_stream_add_mixin_text(pointer __pthis__,yaoocpp_mixin_const_poin
 yaoocpp_to_stream_pointer this=__pthis__;(void)this;
 
       if(M(&mixin->to_stream_.implementation_,size)>0) {
-        if(this->form_ == DEFAULT)
+        if(this->form_ == DEFAULT) {
+          M(&this->name_,set,class_name);
+          M(&this->strm_name_,set,"ostrm");
           this->form_=IMPLEMENTATION_TEXT;
+        }
         if(this->form_==IMPLEMENTATION_TEXT) {
           M(&this->mixin_text_,append,"\n");
           M(&this->mixin_text_,append,M(&mixin->to_stream_.implementation_,c_str));
@@ -2215,8 +2217,9 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
         "{\n%s_pointer this=__pthis__;(void)this;\n"
         "yaooc_istream_pointer %s=__pstrm__;(void)%s;\n"
         "%s\n"
+        "%s\n"
         "}\n",M(&this->name_,c_str),M(&this->name_,c_str),M(&this->strm_name_,c_str),M(&this->strm_name_,c_str),
-        M(&this->implementation_,c_str));
+        M(&this->mixin_text_,c_str),M(&this->implementation_,c_str));
       }
     
 }
@@ -2253,8 +2256,11 @@ void yaoocpp_from_stream_add_mixin_text(pointer __pthis__,yaoocpp_mixin_const_po
 yaoocpp_from_stream_pointer this=__pthis__;(void)this;
 
       if(M(&mixin->from_stream_.implementation_,size)>0) {
-        if(this->form_ == DEFAULT)
+        if(this->form_ == DEFAULT) {
+          M(&this->name_,set,class_name);
+          M(&this->strm_name_,set,"istrm");
           this->form_=IMPLEMENTATION_TEXT;
+        }
         if(this->form_==IMPLEMENTATION_TEXT) {
           M(&this->mixin_text_,append,"\n");
           M(&this->mixin_text_,append,M(&mixin->from_stream_.implementation_,c_str));
@@ -3124,9 +3130,9 @@ yaoocpp_struct_pointer this=__pthis__;(void)this;
         yaoocpp_destructor_add_mixin_text(&this->dtor_,mixin,class_name,parent_class_name);
         yaoocpp_copy_constructor_add_mixin_text(&this->copy_ctor_,mixin,class_name,parent_class_name);
         yaoocpp_assignment_add_mixin_text(&this->assign_,mixin,class_name,parent_class_name);
-        yaoocpp_rich_compare_add_mixin_text(&this->assign_,mixin,class_name,parent_class_name);
-        yaoocpp_to_stream_add_mixin_text(&this->assign_,mixin,class_name,parent_class_name);
-        yaoocpp_from_stream_add_mixin_text(&this->assign_,mixin,class_name,parent_class_name);
+        yaoocpp_rich_compare_add_mixin_text(&this->rich_compare_,mixin,class_name,parent_class_name);
+        yaoocpp_to_stream_add_mixin_text(&this->to_stream_,mixin,class_name,parent_class_name);
+        yaoocpp_from_stream_add_mixin_text(&this->from_stream_,mixin,class_name,parent_class_name);
 
         yaoocpp_struct_add_mixin_members(this,&this->instance_,&mixin->instance_,false);
         yaoocpp_struct_add_mixin_members(this,&this->adjunct_,&mixin->adjunct_,false);
