@@ -107,7 +107,7 @@ int yaooc_regex_regexec(const regex_t* re,const char* subject,int ofs,size_t n_o
 }
 
 %class yaooc_regex_exception : yaooc_exception {
-		yaooc_regex_exception_ctor_v(const char* fmt) = yaooc_exception_ctor_v;
+		yaooc_regex_exception_ctor_v(int error_code,const char* fmt) = yaooc_exception_ctor_v;
 };
 
 %class yaooc_matchdata : yaooc_object {
@@ -269,7 +269,7 @@ int yaooc_regex_regexec(const regex_t* re,const char* subject,int ofs,size_t n_o
     {
       yaooc_regex_pattern_info_t rei;
       if(!yaooc_regex_parse_pattern(re_str,&rei)) {
-        THROW(new_ctor(yaooc_regex_exception,yaooc_regex_exception_ctor_v,"Invalid regular expression: %s",re_str));
+        THROW(new_ctor(yaooc_regex_exception,yaooc_regex_exception_ctor_v,61,"Invalid regular expression: %s",re_str));
       }
       yaooc_regex_set_pattern_flags(this,rei.pattern_,rei.flags_);
       FREE(rei.pattern_);

@@ -2,9 +2,7 @@
 #define __PARSER_INCLUDED__
 
 #include <yaooc/base_parser.h>
-
 #include <yaooc/exception.h>
-
 #include <yaooc/string.h>
 #include "components.h"
 
@@ -105,5 +103,6 @@ yaooc_class(yaoocpp_parser_exception);
 #define yaoocpp_parser_exception_ctor_v yaooc_exception_ctor_v
 #define yaoocpp_parser_exception_swap yaooc_exception_swap
 #define yaoocpp_parser_exception_what yaooc_exception_what
+#define yaoocpp_parser_exception_error_code yaooc_exception_error_code
 
 #endif

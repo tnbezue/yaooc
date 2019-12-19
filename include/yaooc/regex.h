@@ -2,9 +2,7 @@
 #define __REGEX_INCLUDED__
 
 #include <yaooc/object.h>
-
 #include <yaooc/exception.h>
-
 #include <yaooc/string.h>
 
 #ifdef __YAOOC_USE_TRE
@@ -57,6 +55,7 @@ yaooc_class(yaooc_regex_exception);
 #define yaooc_regex_exception_ctor_v yaooc_exception_ctor_v
 #define yaooc_regex_exception_swap yaooc_exception_swap
 #define yaooc_regex_exception_what yaooc_exception_what
+#define yaooc_regex_exception_error_code yaooc_exception_error_code
 yaooc_class_table(yaooc_matchdata) {
   yaooc_object_class_table_t;
 yaooc_string_pointer (*at)(const_pointer,size_t);

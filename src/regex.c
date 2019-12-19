@@ -104,6 +104,7 @@ yaooc_regex_exception_class_table_t yaooc_regex_exception_class_table ={
 .type_name_ = (const char*)"yaooc_regex_exception_t",
 .swap = (void(*)(pointer,pointer)) yaooc_regex_exception_swap,
 .what = (const char*(*)(const_pointer)) yaooc_regex_exception_what,
+.error_code = (int(*)(const_pointer)) yaooc_regex_exception_error_code,
 };
 const type_info_t __yaooc_regex_exception_ti = {
 .min_flag_=0,
@@ -426,7 +427,7 @@ call_default_ctor_static(this,yaooc_regex);
 
       yaooc_regex_pattern_info_t rei;
       if(!yaooc_regex_parse_pattern(re_str,&rei)) {
-        THROW(new_ctor(yaooc_regex_exception,yaooc_regex_exception_ctor_v,"Invalid regular expression: %s",re_str));
+        THROW(new_ctor(yaooc_regex_exception,yaooc_regex_exception_ctor_v,61,"Invalid regular expression: %s",re_str));
       }
       yaooc_regex_set_pattern_flags(this,rei.pattern_,rei.flags_);
       FREE(rei.pattern_);

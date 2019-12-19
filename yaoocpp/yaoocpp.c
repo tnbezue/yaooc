@@ -190,6 +190,7 @@ char* root_name(const char* fname)
 int main(int argc,char* argv[])
 {
   yaooc_init();
+  int ret_code=0;
 	gb_init();
   gb_newp(&include_directories,yaooc_string_vector);
 //  M(&include_directories,push_back,gb_new_ctor(yaooc_string,yaooc_string_ctor_ccs,""));
@@ -293,10 +294,12 @@ int main(int argc,char* argv[])
 //      }
 		} CATCH(yaoocpp_parser_exception,e) {
 			M(cerr,printf,"%s\n",M(e,what));
+      ret_code=M(e,error_code);
 //			exit(0);
 		} CATCH(yaooc_exception,e) {
 			M(e,what); // To avoid compiler warnings
 			M(cerr,printf,"Unknow exception occured\n");
+      ret_code=M(e,error_code);
 //			exit(0);
 		} ETRY
 	}
@@ -309,5 +312,5 @@ int main(int argc,char* argv[])
 //  deletep(&include_directories,yaooc_string);
   deletep(&output_file,yaooc_string);
   gb_exit();
-	return 0;
+	return ret_code;
 }
