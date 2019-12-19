@@ -52,3 +52,4 @@ void yaooc_pure_virtual(const char* method,const char* cls)
   abort();
 }
 
+

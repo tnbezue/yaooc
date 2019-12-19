@@ -1,0 +1,89 @@
+%ifndef __OBJECT_YOD_INCLUDED__
+%define __OBJECT_YOD_INCLUDED__
+
+%class yaooc_object {
+instance:
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) { }
+};
+%mixin polymorphic_base {
+~polymorphic_base(){
+
+    const type_info_t* ti=this->class_table_->__this_ti__;
+    while(ti != @CLASS@_ti)
+    {
+      if(ti->dtor_)
+        ti->dtor_(this);
+      ti=ti->parent_;
+    }
+  
+}
+polymorphic_base(src){
+
+    static _Thread_local bool active=false; 
+    if(!active) {
+      active=true;
+      copy_constructor copy_ctor=get_copy_ctor(this->class_table_->__this_ti__);
+      if(copy_ctor != @CLASS@_copy_ctor) {
+        copy_ctor(this,src);
+        active=false;
+        return;
+      }
+    }
+    active=false;
+  
+}
+operator=(src){
+
+    static _Thread_local bool active=false; 
+    if(!active) {
+      assignment assign_method=get_assignment(this->class_table_->__this_ti__);
+      if(assign_method != NULL) {
+        assign_method(this,src);
+        active=false;
+        return;
+      }
+    }
+    active=false;
+  
+}
+int operator<=>(lhs,rhs){
+
+    static bool active=false;
+    if(!active) {
+      rich_compare rc= get_rich_compare(lhs->class_table_->__this_ti__);
+      if(rc != NULL) {
+        int ret=rc(lhs,rhs);
+        active=false;
+        return ret;
+      }
+    }
+    active=false;
+  
+}
+operator<<(ostrm){
+
+    to_stream ts=get_to_stream(this->class_table_->__this_ti__);
+    if(ts != @CLASS@_to_stream) {
+      ts(this,ostrm);
+      return;
+    }
+  
+}
+operator>>(istrm){
+
+    from_stream fs=get_from_stream(this->class_table_->__this_ti__);
+    if(fs != @CLASS@_from_stream) {
+      fs(this,istrm);
+      return;
+    }
+  
+}
+instance:
+table:
+const type_info_t* __this_ti__=&__@CLASS@_ti;
+};
+
+%endif
