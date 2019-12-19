@@ -39,17 +39,21 @@ typedef pthread_t yaooc_exception_thread_t;
 		yaooc_exception()
     {
       this->what_=NULL;
+      this->error_code_=0;
     }
 
-    yaooc_exception_ctor_v(const char*fmt,...)
+    yaooc_exception_ctor_v(int err_code,const char*fmt,...)
     {
-      va_list args2;
-      va_copy(args2,args);
-      int size_needed=vsnprintf(NULL,0,fmt,args2);
-      va_end(args2);
-      if(size_needed > 0) {
-        this->what_=MALLOC(++size_needed);
-        vsnprintf(this->what_,size_needed,fmt,args);
+      this->error_code_=err_code;
+      if(fmt != NULL) {
+        va_list args2;
+        va_copy(args2,args);
+        int size_needed=vsnprintf(NULL,0,fmt,args2);
+        va_end(args2);
+        if(size_needed > 0) {
+          this->what_=MALLOC(++size_needed);
+          vsnprintf(this->what_,size_needed,fmt,args);
+        }
       }
     }
 
@@ -77,8 +81,13 @@ typedef pthread_t yaooc_exception_thread_t;
       return this->what_;
     }
 
+    int error_code() const
+    {
+      return this->error_code_;
+    }
 	instance:
 		char* what_;
+    int error_code_;
 };
 
 %header
@@ -432,23 +441,23 @@ yaooc_exception_pointer yaooc_exception_current_exception_thrown()
 
 %class yaooc_stream_exception : yaooc_exception
 {
-  yaooc_stream_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
+  yaooc_stream_exception_ctor_v(int error_code,const char* fmt,...) = yaooc_exception_ctor_v;
 };
 
 void throw_stream_exception(pointer p,const char* what)
 {
-  THROW(new_ctor(yaooc_stream_exception,yaooc_stream_exception_ctor_v,"No %s method for %s type",
+  THROW(new_ctor(yaooc_stream_exception,yaooc_stream_exception_ctor_v,21,"No %s method for %s type",
         what,((yaooc_object_class_table_t*)(((yaooc_object_pointer)p)->class_table_))->type_name_));
 }
 
 %class yaooc_array_container_exception : yaooc_exception
 {
-  yaooc_array_container_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
+  yaooc_array_container_exception_ctor_v(int error_code,const char* fmt,...) = yaooc_exception_ctor_v;
 };
 
 void throw_yaooc_array_container_exception(pointer p,const char* what)
 {
-  THROW(new_ctor(yaooc_array_container_exception,yaooc_array_container_exception_ctor_v,"%s",
+  THROW(new_ctor(yaooc_array_container_exception,yaooc_array_container_exception_ctor_v,32,"%s",
         what,((yaooc_object_class_table_t*)(((yaooc_object_pointer)p)->class_table_))->type_name_));
 }
 

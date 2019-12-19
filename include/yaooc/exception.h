@@ -2,17 +2,18 @@
 #define __EXCEPTION_INCLUDED__
 
 #include <yaooc/object.h>
-
 #include <setjmp.h>
 
 yaooc_class_table(yaooc_exception) {
   yaooc_object_class_table_t;
 const char* (*what)(const_pointer);
+int (*error_code)(const_pointer);
 };
 #define yaooc_exception_parent_class_table ((yaooc_object_class_table_t*)(yaooc_exception_class_table.parent_class_table_))
 
 yaooc_class_instance(yaooc_exception) {
 char* what_;
+int error_code_;
 };
 
 yaooc_class(yaooc_exception);
@@ -23,6 +24,7 @@ void yaooc_exception_assign(pointer,const_pointer);
 void yaooc_exception_ctor_v(pointer,va_list);
 #define yaooc_exception_swap yaooc_object_swap
  const char* yaooc_exception_what(const_pointer);
+ int yaooc_exception_error_code(const_pointer);
 void __yaooc_exception_handled__();
 
 jmp_buf* yaooc_jmpbuf_new();
@@ -101,6 +103,7 @@ yaooc_class(yaooc_stream_exception);
 #define yaooc_stream_exception_ctor_v yaooc_exception_ctor_v
 #define yaooc_stream_exception_swap yaooc_exception_swap
 #define yaooc_stream_exception_what yaooc_exception_what
+#define yaooc_stream_exception_error_code yaooc_exception_error_code
 yaooc_class_table(yaooc_array_container_exception) {
   yaooc_exception_class_table_t;
 };
@@ -114,5 +117,6 @@ yaooc_class(yaooc_array_container_exception);
 #define yaooc_array_container_exception_ctor_v yaooc_exception_ctor_v
 #define yaooc_array_container_exception_swap yaooc_exception_swap
 #define yaooc_array_container_exception_what yaooc_exception_what
+#define yaooc_array_container_exception_error_code yaooc_exception_error_code
 
 #endif

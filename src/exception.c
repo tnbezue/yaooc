@@ -21,6 +21,7 @@ call_parent_default_ctor_static(this,yaooc_exception);
 
 
       this->what_=NULL;
+      this->error_code_=0;
     
 }
 void yaooc_exception_dtor(pointer __pthis__)
@@ -56,18 +57,22 @@ yaooc_exception_const_pointer src=__psrc__;(void)src;
 }
 void yaooc_exception_ctor_v(pointer __pthis,va_list __con_args__){
 yaooc_exception_pointer this=__pthis;(void)this;
+int err_code = va_arg(__con_args__,int);
 const char* fmt = va_arg(__con_args__,const char*);
 #define args __con_args__
 call_default_ctor_static(this,yaooc_exception);
 
 
-      va_list args2;
-      va_copy(args2,args);
-      int size_needed=vsnprintf(NULL,0,fmt,args2);
-      va_end(args2);
-      if(size_needed > 0) {
-        this->what_=MALLOC(++size_needed);
-        vsnprintf(this->what_,size_needed,fmt,args);
+      this->error_code_=err_code;
+      if(fmt != NULL) {
+        va_list args2;
+        va_copy(args2,args);
+        int size_needed=vsnprintf(NULL,0,fmt,args2);
+        va_end(args2);
+        if(size_needed > 0) {
+          this->what_=MALLOC(++size_needed);
+          vsnprintf(this->what_,size_needed,fmt,args);
+        }
       }
     
 }
@@ -83,11 +88,24 @@ yaooc_exception_const_pointer this=__pthis__;(void)this;
 #undef PM
 #undef super
 }
+int yaooc_exception_error_code(const_pointer __pthis__)
+{
+yaooc_exception_const_pointer this=__pthis__;(void)this;
+#define super() yaooc_exception_parent_class_table->error_code(this)
+#define PM(method,...) CTM((*yaooc_exception_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return this->error_code_;
+    
+#undef PM
+#undef super
+}
 yaooc_exception_class_table_t yaooc_exception_class_table ={
 .parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
 .type_name_ = (const char*)"yaooc_exception_t",
 .swap = (void(*)(pointer,pointer)) yaooc_exception_swap,
 .what = (const char*(*)(const_pointer)) yaooc_exception_what,
+.error_code = (int(*)(const_pointer)) yaooc_exception_error_code,
 };
 const type_info_t __yaooc_exception_ti = {
 .min_flag_=0,
@@ -387,6 +405,7 @@ yaooc_stream_exception_class_table_t yaooc_stream_exception_class_table ={
 .type_name_ = (const char*)"yaooc_stream_exception_t",
 .swap = (void(*)(pointer,pointer)) yaooc_stream_exception_swap,
 .what = (const char*(*)(const_pointer)) yaooc_stream_exception_what,
+.error_code = (int(*)(const_pointer)) yaooc_stream_exception_error_code,
 };
 const type_info_t __yaooc_stream_exception_ti = {
 .min_flag_=0,
@@ -405,7 +424,7 @@ const type_info_t __yaooc_stream_exception_ti = {
 const type_info_t* const yaooc_stream_exception_ti=&__yaooc_stream_exception_ti;
 void throw_stream_exception(pointer p,const char* what)
 {
-  THROW(new_ctor(yaooc_stream_exception,yaooc_stream_exception_ctor_v,"No %s method for %s type",
+  THROW(new_ctor(yaooc_stream_exception,yaooc_stream_exception_ctor_v,21,"No %s method for %s type",
         what,((yaooc_object_class_table_t*)(((yaooc_object_pointer)p)->class_table_))->type_name_));
 }
 
@@ -415,6 +434,7 @@ yaooc_array_container_exception_class_table_t yaooc_array_container_exception_cl
 .type_name_ = (const char*)"yaooc_array_container_exception_t",
 .swap = (void(*)(pointer,pointer)) yaooc_array_container_exception_swap,
 .what = (const char*(*)(const_pointer)) yaooc_array_container_exception_what,
+.error_code = (int(*)(const_pointer)) yaooc_array_container_exception_error_code,
 };
 const type_info_t __yaooc_array_container_exception_ti = {
 .min_flag_=0,
@@ -433,7 +453,7 @@ const type_info_t __yaooc_array_container_exception_ti = {
 const type_info_t* const yaooc_array_container_exception_ti=&__yaooc_array_container_exception_ti;
 void throw_yaooc_array_container_exception(pointer p,const char* what)
 {
-  THROW(new_ctor(yaooc_array_container_exception,yaooc_array_container_exception_ctor_v,"%s",
+  THROW(new_ctor(yaooc_array_container_exception,yaooc_array_container_exception_ctor_v,32,"%s",
         what,((yaooc_object_class_table_t*)(((yaooc_object_pointer)p)->class_table_))->type_name_));
 }
 
