@@ -74,7 +74,7 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
             this->str[n]=0;
           }
         }
-    // Table members (available to all instances of my_string)
+    // Table members (shared by all instances of my_string)
       table:
         size_t npos = -1;
 
@@ -94,7 +94,7 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
           my_string_dtor(this);
           this->str = str==NULL ? NULL : strdup(str);
         }
-      // Instance members (available only to this instance)
+      // Instance members (unique to each instance)
       instance:
         char *str;
     };
