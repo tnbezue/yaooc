@@ -1,0 +1,146 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+%include <yaooc/base_parser.yod>
+%include <yaooc/exception.yod>
+%prefix_directory yaooc
+
+%header
+typedef enum { VAR_NONE, VAR_CHAR, VAR_UCHAR, VAR_SHORT, VAR_USHORT, VAR_INT, VAR_UINT, VAR_LONG, VAR_ULONG,
+			VAR_DOUBLE,VAR_CHAR_PTR,VAR_VOID_PTR,VAR_OBJECT_PTR} yaooc_variant_type_t;
+typedef union {
+  char ch_;
+  unsigned char uch_;
+  short sh_;
+  unsigned short ush_;
+  int int_;
+  unsigned int uint_;
+  long long long_;
+  unsigned long long ulong_;
+  double dbl_;
+  char* chr_ptr_;
+  void* void_ptr_;
+  yaooc_object_t* obj_ptr_;
+} __variant_t;
+%%
+
+#include <string.h>
+
+%class yaooc_variant {
+
+  yaooc_variant()
+  {
+    this->type_=VAR_NONE;
+    this->chr_ptr_=NULL;
+  }
+
+  ~yaooc_variant()
+  {
+    switch(this->type_) {
+
+      case VAR_NONE:
+      case VAR_CHAR:
+      case VAR_UCHAR:
+      case VAR_SHORT:
+      case VAR_USHORT:
+      case VAR_INT:
+      case VAR_UINT:
+      case VAR_LONG:
+      case VAR_ULONG:
+      case VAR_DOUBLE:
+        break;
+
+      case VAR_CHAR_PTR:
+      case VAR_VOID_PTR:
+        FREE(this->chr_ptr_);
+        break;
+
+      case VAR_OBJECT_PTR:
+        delete(this->obj_ptr_);
+        break;
+    }
+    this->type_=VAR_NONE;
+    this->chr_ptr_=NULL;
+  }
+
+  operator=(src) {
+    M(this,set,src->type_,M(src,value));
+  }
+
+  instance:
+    __variant_t;
+    yaooc_variant_type_t type_;
+
+  table:
+    void swap(pointer o)
+    {
+      yaooc_variant_t* other=o;
+      SWAP(yaooc_variant_type_t,this->type_,this->type_);
+      SWAP(double,this->dbl_,other->dbl_);
+    }
+
+    void set(yaooc_variant_type_t t, const void* value)
+    {
+      yaooc_variant_dtor(this);
+      switch(t) {
+        case VAR_NONE:
+          break;
+
+        case VAR_CHAR:
+        case VAR_UCHAR:
+          this->ch_=*(const char*)value;
+          break;
+
+        case VAR_SHORT:
+        case VAR_USHORT:
+          this->sh_=*(const short*)value;
+          break;
+
+        case VAR_INT:
+        case VAR_UINT:
+          this->int_=*(const int*)value;
+          break;
+
+        case VAR_LONG:
+        case VAR_ULONG:
+          this->long_=*(const long long*)value;
+          break;
+
+        case VAR_DOUBLE:
+          this->dbl_=*(const double*)value;
+          break;
+
+        case VAR_CHAR_PTR:
+          this->chr_ptr_=STRDUP(value);
+          break;
+
+        case VAR_VOID_PTR:
+          this->void_ptr_=(void*)value;
+          break;
+
+        case VAR_OBJECT_PTR:
+          this->obj_ptr_=new_copy(value);
+          break;
+      }
+      this->type_=t;
+    }
+
+    const void* value() const
+    {
+      return this->chr_ptr_;
+    }
+};

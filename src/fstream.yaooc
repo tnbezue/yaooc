@@ -1,0 +1,91 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+%include <yaooc/stream.yod>
+%prefix_directory yaooc
+
+
+%class yaooc_ifstream : yaooc_istream
+{
+    yaooc_ifstream()
+    {
+      yaooc_base_stream_default_ctor(this);
+    }
+
+    ~yaooc_ifstream()
+    {
+      M(this,close);
+    }
+
+    yaooc_ifstream(src) = delete;
+    operator=(src) = delete;
+
+    yaooc_ifstream_ctor_fname_mode(const char* fname,const char* mode)
+    {
+      M(this,open,fname,mode);
+    }
+
+  table:
+    void open(const char* fname,const char* mode)
+    {
+      M(this,close);
+      this->handle_=fopen(fname,mode);
+    }
+
+    void close()
+    {
+      if(this->handle_) {
+        fclose(this->handle_);
+        this->handle_=NULL;
+      }
+    }
+};
+
+%class yaooc_ofstream : yaooc_ostream
+{
+    yaooc_ofstream()
+    {
+      yaooc_base_stream_default_ctor(this);
+    }
+    ~yaooc_ofstream()
+    {
+      M(this,close);
+    }
+
+    yaooc_ofstream(src) = delete;
+    operator=(src) = delete;
+    yaooc_ofstream_ctor_fname_mode(const char* fname,const char* mode)
+    {
+      M(this,open,fname,mode);
+    }
+
+  table:
+
+    void open(const char* fname,const char* mode)
+    {
+      M(this,close);
+      this->handle_=fopen(fname,mode);
+    }
+
+    void close()
+    {
+      if(this->handle_) {
+        fclose(this->handle_);
+        this->handle_=NULL;
+      }
+    }
+
+};

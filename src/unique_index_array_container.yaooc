@@ -1,0 +1,81 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+%prefix_directory yaooc
+%include <yaooc/index_array_container.yod>
+
+%class yaooc_unique_index_array_container {
+
+
+adjunct:
+
+    iterator insert(const_iterator pos,const_pointer value)
+    {
+      return yaooc_unique_index_array_container_insert_range(this,pos,value,((yaooc_private_const_pointer)value)+TYPE_SIZE(this));
+    }
+
+    iterator insertn(const_iterator pos,size_t n,const_pointer value)
+    {
+      /*
+        Unique, so can only insert 1
+      */
+      return yaooc_unique_index_array_container_insert_range(this,pos,value,((yaooc_private_const_pointer)value)+TYPE_SIZE(this));
+    }
+
+    iterator insert_range(const_iterator pos,const_iterator f,const_iterator l)
+    {
+      size_t n = DISTANCE(TYPE_INFO(this),f,l);
+      size_t idx=INDEX(this,pos);
+      yaooc_index_array_container_increase_capacity(this,n);
+      yaooc_private_const_iterator first=f;
+      yaooc_private_const_iterator last=l;
+      yaooc_private_iterator ipos=AT(this,idx);
+      size_t fpos=-1;
+      for(;first < last;first+=TYPE_SIZE(this)) {
+        yaooc_index_array_container_find_result_t fr=yaooc_index_array_container_find_protected(this,first);
+        if(!fr.found_) {
+          size_t cur_size=SIZE(this);
+          yaooc_index_array_container_insert_index(this,fr.lower_index_,1,idx,cur_size);
+          yaooc_array_container_insert_space(this,AT(this,idx),1);
+          __newp_array_copy_static(ipos,TYPE_INFO(this),first,1);
+          idx++;
+          ipos+=TYPE_SIZE(this);
+        }
+        if(fpos == (size_t)-1)
+          fpos=fr.lower_index_;
+      }
+      return AT(this,fpos == (size_t)-1 ? SIZE(this) : fpos);
+    }
+
+    void yaooc_unique_index_array_container_resize(size_t n)
+    {
+      pointer temp=__new_array(TYPE_INFO(this),1);
+      yaooc_unique_index_array_container_resize_value(this,1,temp);
+    }
+
+    void resize_value(size_t n,const_pointer value)
+    {
+      if(n<SIZE(this)) {
+        yaooc_index_array_container_erase_range(this,AT(this,n),END(this));
+      } else {
+        yaooc_unique_index_array_container_insert_range(this,END(this),value,((yaooc_private_const_pointer)value)+TYPE_SIZE(this));
+      }
+    }
+
+
+
+};

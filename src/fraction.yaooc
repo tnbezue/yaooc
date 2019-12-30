@@ -1,0 +1,166 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+%include <yaooc/object.yod>
+%include <yaooc/exception.yod>
+%prefix_directory yaooc
+
+%header
+#include <yaooc/macros.h>
+#include <yaooc/stream.h>
+#include <yaooc/string.h>
+int yaooc_fraction_gcd(int,int);
+%%
+#include <math.h>
+
+int yaooc_fraction_gcd(int a,int b)
+{
+  int t;
+  while(b!=0) {
+    t = b;
+    b = a % b;
+    a = t;
+  }
+  return a;
+}
+
+%class yaooc_fraction {
+
+  yaooc_fraction()
+  {
+    this->numerator_=0;
+    this->denominator_=1;
+  }
+
+  instance:
+    int numerator_;
+    int denominator_;
+
+  table:
+
+    void swap(pointer o)
+    {
+      yaooc_fraction_t* other=o;
+      SWAP(int,this->numerator_,other->numerator_);
+      SWAP(int,this->denominator_,other->denominator_);
+    }
+
+    void set(int n,int d)
+    {
+      int divisor=yaooc_fraction_gcd(n,d);
+      this->numerator_=n/divisor;
+      this->denominator_=d/divisor;
+    }
+
+    void set_mixed(int w,int n,int d)
+    {
+      M(this,set,w*d+(w<0 ? -1 : 1)*n,d);
+    }
+
+    void set_double(double d)
+    {
+      int hm2=0,hm1=1,km2=1,km1=0,h=0,k=0;
+      double v = d;
+      while(true) {
+        int a=v;
+        h=a*hm1 + hm2;
+        k=a*km1 + km2;
+        if(fabs(d - (double)h/(double)k) < yaooc_fraction_epsilon)
+          break;
+        v = 1.0/(v -a);
+        hm2=hm1;
+        hm1=h;
+        km2=km1;
+        km1=k;
+      }
+      if(k<0) {
+        k=-k;
+        h=-h;
+      }
+      this->numerator_=h;
+      this->denominator_=k;
+    }
+
+    void plus(yaooc_fraction_t* other)
+    {
+      M(this,set,this->numerator_*other->denominator_ + other->numerator_*this->denominator_,
+          this->denominator_*other->denominator_);
+    }
+
+    void minus(yaooc_fraction_t* other)
+    {
+      M(this,set,this->numerator_*other->denominator_ - other->numerator_*this->denominator_,
+        this->denominator_*other->denominator_);
+    }
+
+    void times(yaooc_fraction_t* other)
+    {
+      M(this,set,this->numerator_*other->numerator_,this->denominator_*other->denominator_);
+    }
+
+    void divided_by(yaooc_fraction_t* other)
+    {
+      M(this,set,this->numerator_*other->denominator_,this->denominator_*other->numerator_);
+    }
+
+    double to_double() const
+    {
+      return (double)this->numerator_/(double)this->denominator_;
+    }
+
+  adjunct:
+    double epsilon=5e-7;
+
+};
+
+%header
+yaooc_fraction_t yaooc_fraction_plus_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2);
+yaooc_fraction_t yaooc_fraction_minus_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2);
+yaooc_fraction_t yaooc_fraction_times_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2);
+yaooc_fraction_t yaooc_fraction_divided_by_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2);
+
+#define YAOOC_FRACTION_STATIC_DEFAULT_CTOR { .class_table_ = &yaooc_fraction_class_table, \
+    .numerator_=0 , .denominator_ = 1 }
+%%
+
+yaooc_fraction_t yaooc_fraction_plus_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2)
+{
+  yaooc_fraction_t f=f1;
+  M(&f,plus,&f2);
+  return f;
+}
+
+yaooc_fraction_t yaooc_fraction_minus_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2)
+{
+  yaooc_fraction_t f=f1;
+  M(&f,minus,&f2);
+  return f;
+}
+
+yaooc_fraction_t yaooc_fraction_times_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2)
+{
+  yaooc_fraction_t f=f1;
+  M(&f,times,&f2);
+  return f;
+}
+
+yaooc_fraction_t yaooc_fraction_divided_by_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2)
+{
+  yaooc_fraction_t f=f1;
+  M(&f,divided_by,&f2);
+  return f;
+}

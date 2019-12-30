@@ -1,0 +1,71 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+%prefix_directory yaooc
+%include <yaooc/ordered_array_container.yod>
+
+#include <stdio.h>
+#include <stdlib.h>
+
+%class yaooc_unique_ordered_array_container : yaooc_ordered_array_container {
+
+  adjunct:
+    iterator insert(const_iterator pos,const_pointer value)
+    {
+      yaooc_ordered_array_container_find_result_t ret=yaooc_ordered_array_container_find_protected(this,value);
+      size_t ofs=INDEX(this,ret.position_);
+      if(!ret.found_) {
+        yaooc_array_container_insertn(this,ret.position_,1,value);
+      }
+      return AT(this,ofs);
+    }
+
+    iterator insertn(const_iterator pos,size_t n,const_pointer val)
+    {
+      return yaooc_unique_ordered_array_container_insert(this,pos,val); // unique, only insert 1
+    }
+
+    iterator insert_range(const_iterator pos,const_iterator f,const_iterator l)
+    {
+      yaooc_private_iterator first=(yaooc_private_iterator)f;
+      yaooc_private_iterator last=(yaooc_private_iterator)l;
+      size_t index=(size_t)-1;
+      for(;first!=last;first+=TYPE_SIZE(this)) {
+        iterator temp=yaooc_unique_ordered_array_container_insert(this,pos,first);
+        if(index == (size_t)-1)
+          index=INDEX(this,temp);
+      }
+      return AT(this,index == (size_t)-1 ? SIZE(this) : index);
+    }
+
+    void resize_value(size_t n,const_pointer value)
+    {
+      if(n < SIZE(this)) {
+        yaooc_array_container_erase_range(this,AT(this,n),END(this));
+      } else if (n > SIZE(this)) {
+        yaooc_unique_ordered_array_container_insertn(this,END(this),1,value);
+      }
+    }
+
+    void resize(size_t n)
+    {
+      pointer temp=__new_array(TYPE_INFO(this),1);
+      yaooc_unique_ordered_array_container_resize_value(this,1,temp);
+      delete(temp);
+    }
+
+};

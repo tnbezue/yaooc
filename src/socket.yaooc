@@ -1,0 +1,454 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+%include <yaooc/object.yod>
+%include <yaooc/exception.yod>
+%prefix_directory yaooc
+
+%class yaooc_socket_exception : yaooc_exception {
+  yaooc_socket_exception_ctor_v(int err_code,const char* fmt,...) = yaooc_exception_ctor_v;
+};
+
+%header
+#include <yaooc/ipaddress.h>
+
+#include <string.h>
+#include <unistd.h>
+#ifdef __WIN32__
+# include <winsock2.h>         // for socket(), connect(), send(), and recv()
+# include <ws2tcpip.h>
+  typedef int socklen_t;
+#else
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+# include <sys/types.h>
+# include <sys/socket.h>      // for socket(), connect(), send(), and recv()
+# include <sys/ioctl.h>
+# include <netdb.h>           // for gethostbyname()
+# include <arpa/inet.h>       // for sockaddr_in and inet_addr()
+#endif
+
+#ifdef _WIN32
+void yaooc_socket_startup();
+void yaooc_socket_cleanup();
+#else
+#define yaooc_socket_startup()
+#define yaooc_socket_cleanup()
+#endif
+%%
+
+#ifdef _WIN32
+void yaooc_socket_startup()
+{
+	WORD wVersionRequested;
+	WSADATA wsaData;
+	wVersionRequested = MAKEWORD(2, 2);				// Request Winsock v2.2
+	WSAStartup(wVersionRequested, &wsaData);  // Load Winsock DLL
+}
+
+void yaooc_socket_cleanup() { WSACleanup(); }
+
+#else
+#include <poll.h>
+#endif
+
+%class yaooc_socket {
+
+    yaooc_socket()
+    {
+      THROW(new_ctor(yaooc_socket_exception,yaooc_socket_exception_ctor_v,21,"Creating a instance of Socket is not allowed"));
+    }
+
+    ~yaooc_socket()
+    {
+      M(this,close);
+    }
+
+    yaooc_socket(src) = delete;
+
+    operator=(src) = delete;
+
+  instance:
+    int sock_fd_;
+
+  table:
+
+    void close()
+    {
+      if(this->sock_fd_ >= 0) {
+        close(this->sock_fd_);
+        this->sock_fd_=-1;
+      }
+    }
+
+    int send(const char* str)
+    {
+      return str == NULL ? 0 : M(this,sendn,str,strlen(str));
+    }
+
+    int sendn(const void* buffer, size_t n)
+    {
+      int ret=-1;
+      if(this->sock_fd_ > 0) {
+        ret=sendto(this->sock_fd_,buffer,n,0,NULL,0);
+      }
+      return ret;
+    }
+
+    int poll(int timeout_ms)
+    {
+      int ret=0;
+      if(this->sock_fd_ >=0) {
+        struct pollfd pfd;
+        pfd.fd = this->sock_fd_;
+        pfd.events = POLLIN|POLLOUT|POLLHUP|POLLERR|POLLNVAL;
+        pfd.revents = 0;
+#ifdef _WIN32
+        ret = WSAPoll(&pfd,1,timeout_ms);
+#else
+        ret = poll(&pfd,1,timeout_ms);
+#endif
+      }
+      return ret;
+    }
+
+    int recv(void* buffer, int n)
+    {
+      int ret=0;
+      if(this->sock_fd_ >= 0)
+        ret = recvfrom(this->sock_fd_,(char*)buffer,n,0,NULL,0);
+      return ret;
+    }
+
+    int blocking()
+    {
+      if(this->sock_fd_>=0)  {
+#ifdef	__WIN32__
+        u_long flag=0;
+        return ioctlsocket(this->sock_fd_,FIONBIO,&flag);
+#else
+        uint32_t flag=0;
+        return ioctl(this->sock_fd_,FIONBIO,&flag);
+#endif
+      }
+      return -1;
+    }
+
+    int non_blocking()
+    {
+      if(this->sock_fd_>=0)  {
+#ifdef	__WIN32__
+        u_long flag=1;
+        return ioctlsocket(this->sock_fd_,FIONBIO,&flag);
+#else
+        uint32_t flag=1;
+        return ioctl(this->sock_fd_,FIONBIO,&flag);
+#endif
+      }
+      return -1;
+    }
+
+    int async()
+    {
+      if(this->sock_fd_>=0) {
+#ifdef	__WIN32__
+        return 0;
+#else
+        int flag = 1;
+        pid_t pid = getpid();
+        if(ioctl(this->sock_fd_,FIOSETOWN,&pid) != -1)
+          return ioctl(this->sock_fd_,FIOASYNC,&flag);
+#endif
+      }
+      return -1;
+    }
+
+    int sync()
+    {
+      if(this->sock_fd_>=0) {
+#ifdef	__WIN32__
+        return 0;
+#else
+        int flag = 0;
+        pid_t pid = getpid();
+        if(ioctl(this->sock_fd_,FIOSETOWN,&pid) != -1)
+          return ioctl(this->sock_fd_,FIOASYNC,&flag);
+#endif
+      }
+      return -1;
+    }
+
+    void debug(bool v)
+    {
+      int option_value = v ? 1 : 0;
+      yaooc_socket_setsockopt(this,SOL_SOCKET,SO_DEBUG,&option_value,sizeof(int));
+    }
+
+    void reuseaddr(bool v)
+    {
+      int option_value = v ? 1 : 0;
+      yaooc_socket_setsockopt(this,SOL_SOCKET,SO_REUSEADDR,&option_value,sizeof(int));
+   }
+
+    void keepalive(int option_value)
+    {
+      yaooc_socket_setsockopt(this,SOL_SOCKET,SO_REUSEADDR,&option_value,sizeof(int));
+    }
+
+    bool is_open() const
+    {
+      return this->sock_fd_>=0;
+    }
+
+    yaooc_ipaddress_pointer get_local_ip() const
+    {
+      yaooc_ipaddress_pointer ret=new(yaooc_ipaddress);
+      if(this->sock_fd_>=0) {
+        struct sockaddr_storage ss = {0};
+        socklen_t sockaddrlen = sizeof(ss);
+        if(getsockname(this->sock_fd_, (struct sockaddr*)&ss, &sockaddrlen) == 0) {
+          ret->type_=ss.ss_family;
+          memcpy(ret->buf_,&((struct sockaddr_in *)&ss)->sin_addr,ret->type_==AF_INET?4:16);
+        }
+      }
+      return ret;
+    }
+
+    unsigned int get_local_port() const
+    {
+      unsigned int ret=-1;
+      if(this->sock_fd_>=0) {
+        struct sockaddr_storage ss = {0};
+        socklen_t sockaddrlen = sizeof(ss);
+        if(getsockname(this->sock_fd_, (struct sockaddr*)&ss, &sockaddrlen) >= 0) {
+          switch(ss.ss_family) {
+            case AF_INET:
+              ret = ((struct sockaddr_in *)&ss)->sin_port;
+              break;
+
+            case AF_INET6:
+              ret = ((struct sockaddr_in6 *)&ss)->sin6_port;
+              break;
+          }
+        }
+      }
+      return ret;
+    }
+
+    yaooc_ipaddress_pointer get_foreign_ip() const
+    {
+      yaooc_ipaddress_pointer ret=new(yaooc_ipaddress);
+      if(this->sock_fd_>=0) {
+        struct sockaddr_storage ss = {0};
+        socklen_t sockaddrlen = sizeof(ss);
+        if(getpeername(this->sock_fd_, (struct sockaddr*)&ss, &sockaddrlen) == 0) {
+          ret->type_=ss.ss_family;
+          memcpy(ret->buf_,&((struct sockaddr_in *)&ss)->sin_addr,ret->type_==AF_INET?4:16);
+        }
+      }
+      return ret;
+    }
+
+    unsigned int get_remote_port() const
+    {
+      unsigned int ret=-1;
+      if(this->sock_fd_>=0) {
+        struct sockaddr_storage ss = {0};
+        socklen_t sockaddrlen = sizeof(ss);
+        if(getpeername(this->sock_fd_, (struct sockaddr*)&ss, &sockaddrlen) >= 0) {
+          switch(ss.ss_family) {
+            case AF_INET:
+              ret = ((struct sockaddr_in *)&ss)->sin_port;
+              break;
+
+            case AF_INET6:
+              ret = ((struct sockaddr_in6 *)&ss)->sin6_port;
+              break;
+          }
+        }
+      }
+      return ret;
+    }
+
+  adjunct:
+    int setsockopt(int level,int option_name,const void* option_value,socklen_t option_len)
+    {
+      return this->sock_fd_ == -1 ? 0 : setsockopt(this->sock_fd_,level,option_name,option_value,option_len);
+    }
+};
+
+static void yaooc_socket_ctor_private(pointer p,va_list args)
+{
+  yaooc_socket_t* this=p;
+  this->sock_fd_=-1;
+}
+
+%class yaooc_tcp_socket : yaooc_socket {
+
+    yaooc_tcp_socket() : yaooc_socket_ctor_private(NULL)
+    {
+      this->sock_fd_=-1;
+    }
+
+    yaooc_tcp_socket(src) = delete;
+
+    operator=(src) = delete;
+
+    yaooc_tcp_socket_ctor_host_port(const char* host,unsigned int port) : yaooc_tcp_socket()
+    {
+      M(this,connect_port,host,port);
+    }
+
+    yaooc_tcp_socket_ctor_host_service(const char* host,const char* service) : yaooc_tcp_socket()
+    {
+      M(this,connect_service,host,service);
+    }
+
+  table:
+    void connect_port(const char* host, unsigned int port)
+    {
+      char port_str[32];
+      sprintf(port_str,"%u",port);
+      M(this,connect_service,host,port_str);
+    }
+
+    void connect_service(const char* host, const char* service)
+    {
+      struct addrinfo hints;
+      struct addrinfo *result, *rp;
+      memset(&hints, 0, sizeof(struct addrinfo));
+      hints.ai_family = AF_UNSPEC;
+      hints.ai_socktype = SOCK_STREAM;
+      hints.ai_flags = 0;
+      hints.ai_protocol = 0;
+      if(getaddrinfo(host, service, &hints, &result) == 0) {
+        for(rp=result;rp!=NULL;rp=rp->ai_next) {
+          this->sock_fd_=socket(rp->ai_family, rp->ai_socktype,rp->ai_protocol);
+          if(this->sock_fd_>=0) {
+            if (connect(this->sock_fd_, rp->ai_addr, rp->ai_addrlen) != -1)
+              break;
+            close(this->sock_fd_);
+          }
+        }
+        freeaddrinfo(result);
+      }
+    }
+};
+
+%class yaooc_tcp_socket_server : yaooc_socket {
+
+    yaooc_tcp_socket_server() : yaooc_socket_ctor_private(NULL)
+    {
+      this->sock_fd_=-1;
+    }
+
+    yaooc_tcp_socket_server(src) = delete;
+
+    operator=(src) = delete;
+
+    yaooc_tcp_socket_server_ctor_service_n(const char* service,unsigned int n)
+    {
+      M(this,listen_service,service,n);
+    }
+
+    yaooc_tcp_socket_server_ctor_port_n(unsigned int port,unsigned int n)
+    {
+      M(this,listen_port,port,n);
+    }
+
+  table:
+    void listen_service(const char* service, unsigned int max_connections)
+    {
+      struct addrinfo hints;
+      struct addrinfo *result, *rp;
+
+      memset(&hints, 0, sizeof(struct addrinfo));
+      hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+      hints.ai_socktype = SOCK_STREAM; /* Datagram socket */
+      hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
+      hints.ai_protocol = 0;          /* Any protocol */
+      hints.ai_canonname = NULL;
+      hints.ai_addr = NULL;
+      hints.ai_next = NULL;
+      if(getaddrinfo(NULL, service, &hints, &result)==0) {
+        for (rp = result; rp != NULL; rp = rp->ai_next) {
+          printf("Trying %d AF_INET%s\n",rp->ai_family,(rp->ai_family == AF_INET ? "" : "6"));
+          this->sock_fd_ = socket(rp->ai_family, rp->ai_socktype,rp->ai_protocol);
+          if(this->sock_fd_>=0) {
+            if (bind(this->sock_fd_, rp->ai_addr, rp->ai_addrlen) == 0) {
+              if (listen(this->sock_fd_, max_connections) == 0)
+                break;
+            }
+          }
+          close(this->sock_fd_);
+        }
+        if(rp==NULL) {
+          puts("not listening");
+        }
+      } else {
+        puts("Get addrinfo failed");
+      }
+    }
+
+    void listen_port(unsigned int port, unsigned int max_connections)
+    {
+      char port_str[32];
+      sprintf(port_str,"%u",port);
+      M(this,listen_service,port_str,max_connections);
+    }
+
+    yaooc_tcp_socket_pointer accept()
+    {
+      yaooc_tcp_socket_pointer ret=new(yaooc_tcp_socket);
+      if(this->sock_fd_>=0) {
+        ret->sock_fd_=accept(this->sock_fd_, NULL, NULL);
+      }
+      return ret;
+    }
+};
+
+%class yaooc_udp_socket : yaooc_socket {
+
+    yaooc_udp_socket()
+    {
+      this->sock_fd_=-1;
+    }
+
+    yaooc_udp_socket(src) = delete;
+
+    operator=(src) = delete;
+
+    yaooc_udp_socket_ctor_host_port(const char* host,unsigned int port)
+    {
+    }
+
+  table:
+    void broadcast(bool v)
+    {
+      int option_value = v ? 1 : 0;
+      yaooc_socket_setsockopt(this,SOL_SOCKET,SO_BROADCAST,&option_value,sizeof(int));
+    }
+
+    void connect_service(const char* host, const char* service)
+    {
+    }
+
+    void connect_port(const char* host, unsigned int port)
+    {
+    }
+};

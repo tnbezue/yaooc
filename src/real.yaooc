@@ -1,0 +1,57 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+%prefix_directory yaooc
+%include <yaooc/object.yod>
+
+#include <math.h>
+
+%class yaooc_real : yaooc_object {
+
+  int operator<=>(lhs,rhs)
+  {
+    double diff=lhs->value_-rhs->value_;
+    if(fabs(diff) < 1e-8)
+      return 0;
+    if(diff < 0)
+      return -1;
+    return 1;
+  }
+
+  yaooc_real_ctor_real(double v) : yaooc_object(),value_(v)
+  {
+  }
+
+  instance:
+    double value_;
+
+  table:
+    void swap(pointer o)
+    {
+      yaooc_real_pointer other=o;
+      SWAP(double,this->value_,other->value_);
+    }
+
+    void set(double v)
+    {
+      this->value_=v;
+    }
+
+    double get() const { return this->value_; }
+
+
+};

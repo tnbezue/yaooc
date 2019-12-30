@@ -1,0 +1,491 @@
+%include <yaooc/array_container.yod>
+%prefix_directory yaooc
+
+%header
+typedef char* yaooc_string_iterator;
+typedef const char* yaooc_string_const_iterator;
+
+#include <yaooc/vector.h>
+
+yaooc_class_forward(yaooc_regex);
+yaooc_class_forward(yaooc_string_vector);
+void yaooc_string_sub_(pointer,const char* pat,const char* repl_str);
+void yaooc_string_sub_re_(pointer,yaooc_regex_const_pointer re,const char* repl_str);
+void yaooc_string_gsub_(pointer,const char* pat,const char* str);
+void yaooc_string_gsub_re_(pointer,yaooc_regex_const_pointer re,const char* pat);
+bool yaooc_string_match(const_pointer,const char* pat);
+bool yaooc_string_match_re(const_pointer,yaooc_regex_const_pointer re);
+yaooc_string_vector_pointer yaooc_string_split(const_pointer,const char* str,size_t max);
+yaooc_string_vector_pointer yaooc_string_split_re(const_pointer,yaooc_regex_const_pointer re,size_t max);
+
+%%
+
+#include <yaooc/stream.h>
+#include <string.h>
+#include <ctype.h>
+
+const char* yaooc_whitespace=" \t\r\n";
+
+static const void *yaooc_string_memrmem(const void *ptr, size_t size, const void *pat, size_t patsize)
+{
+	const char *p;
+
+	if(ptr != NULL && pat != NULL) {
+
+		/* Special cases */
+		if (size < patsize)
+			return NULL;
+		if (patsize == 0)
+			return ptr;
+
+		for (p = (const char*)ptr + size - patsize ; size >= patsize; --p, --size)
+			if(*p == *(const char*)pat)
+				if (memcmp(p, pat, patsize) == 0) // adding 1 to p and pat maybe slower
+					return p;
+	}
+	return NULL;
+}
+
+#ifndef HAVE_MEMRCHR
+static void* yaooc_string_memrchr(const void* buf,int c,size_t spos)
+{
+	const char* ptr = (const char*)buf+spos-1;
+	while(ptr >= (const char*)buf) {
+		if(*ptr == c)
+			return (void*)ptr;
+		ptr--;
+	}
+	return NULL;
+}
+#else
+#define yaooc_string_memrchr memrchr
+#endif
+
+%class yaooc_string : yaooc_array_container
+{
+    yaooc_string() : yaooc_array_container_ctor_ti(char_ti)
+    {
+      M(this,increase_capacity,1);
+      *END(this)=0;
+    }
+
+    yaooc_string(src) : yaooc_string()
+    {
+      yaooc_string_assign(this,src);
+    }
+
+    yaooc_string_ctor_ccs(const char* str) : yaooc_string()
+    {
+      if(str != NULL)
+        yaooc_string_insertn(this,0,str,strlen(str));
+    }
+
+    yaooc_string_ctor_ccs_n(const char* str, size_t n) : yaooc_string()
+    {
+      if(str != NULL)
+        yaooc_string_insertn(this,0,str,n);
+    }
+
+    yaooc_string_ctor_chr_n(int c,size_t n) : yaooc_string()
+    {
+      yaooc_string_insertn_chr(this,0,n,c);
+    }
+
+    operator=(src)
+    {
+      if(this->size_ > 0) {
+        this->size_=0;
+        *(this->array_)=0;
+      }
+      M(this,insertn,0,BEGIN(src),SIZE(src));
+    }
+
+    int operator<=>(lhs,rhs)
+    {
+      // yaooc_strings are never NULL, so can skip testing for NULL
+      return strcmp(lhs->array_,rhs->array_);
+    }
+
+		operator<<(ostrm)
+    {
+      M(ostrm,printf,"%s",this->array_);
+    }
+
+		operator>>(istrm)
+    {
+      M(this,clear);
+      char temp[256];
+      while(!M(istrm,eof)) {
+        M(istrm,scanf,"%255s",temp);
+        M(this,append,temp);
+        if(isspace(M(istrm,peek)))
+          break;
+      }
+    }
+
+  adjunct:
+    const size_t npos = -1;
+  table:
+    // Need extra byte for null character
+    size_t size_needed(size_t n) const
+    {
+      return n+1;
+    }
+
+    char* at(size_t pos)
+    {
+      return yaooc_array_container_at(this,pos);
+    }
+    void reserve(size_t n) = yaooc_array_container_reserve;
+
+    void insert(size_t ipos,const char* str)
+    {
+      if(str)
+        yaooc_string_insertn(this,ipos,str,strlen(str));
+    }
+
+    void insertn(size_t ipos,const char* str,size_t n)
+    {
+      if(str) {
+        ipos = ipos > SIZE(this) ? SIZE(this) : ipos;
+        size_t l = strnlen(str,n);
+        n=n>l ? l : n;
+
+        yaooc_array_container_insert_space(this,AT(this,ipos),n);
+        memcpy(AT(this,ipos),str,n);
+        *((yaooc_private_iterator)END(this))=0;
+      }
+    }
+
+    void insert_chr(size_t pos,char ch)
+    {
+      M(this,insertn_chr,pos,1,ch);
+    }
+
+    void insertn_chr(size_t pos,size_t count,char ch)
+    {
+      yaooc_private_iterator ret=yaooc_array_container_insert_space(this,AT(this,pos),count);
+      memset(ret,ch,count);
+      *((yaooc_private_iterator)END(this))=0;
+    }
+
+    void set(const char* str)
+    {
+      if(str) {
+        yaooc_string_setn(this,str,strlen(str));
+      } else {
+        this->size_=0;
+        *END(this)=0;
+      }
+    }
+
+    void setn(const char* str,size_t count)
+    {
+      M(this,replacen,0,this->size_,str,count);
+    }
+
+    void erase(size_t pos)
+    {
+      M(this,erasen,pos,1);
+    }
+
+    void erasen(size_t pos,size_t n)
+    {
+      if(pos < this->size_) {
+        if(n == yaooc_string_npos  || this->size_ < (pos+n))
+          n=this->size_-pos;
+        yaooc_array_container_erase_space(this,AT(this,pos),n);
+        *(END(this))=0;
+      }
+    }
+
+    void replace(size_t pos,size_t n,const char* str)
+    {
+      M(this,replacen,pos,n,str,str ? strlen(str) : 0);
+    }
+
+    void replacen(size_t pos,size_t n,const char* str,size_t count)
+    {
+      if(str) {
+        size_t l;
+        if(count > (l=strnlen(str,count))) count=l;
+      } else {
+        count = 0;
+      }
+      if(pos > this->size_) pos=this->size_;
+      if(n == yaooc_string_npos || this->size_ < (pos+n))
+        n=this->size_-pos;
+      yaooc_private_iterator dpos = yaooc_array_container_replace_space(this,AT(this,pos),AT(this,pos+n),count);
+      memcpy(dpos,str,count);
+      *((yaooc_private_iterator)END(this))=0;
+    }
+
+    void resize(size_t n)
+    {
+      M(this,resize_value,n,' ');
+    }
+
+    void resize_value(size_t n,char ch)
+    {
+      if(n < SIZE(this)) {
+        this->size_=n;
+      } else {
+        yaooc_string_insertn_chr(this,SIZE(this),n-SIZE(this),ch);
+      }
+      *(END(this))=0;
+    }
+
+    void shrink_to_fit() = yaooc_array_container_shrink_to_fit;
+
+    void append(const char* str)
+    {
+      if(str) {
+        M(this,insertn,SIZE(this),str,strlen(str));
+      }
+    }
+
+    void appendn(const char* str,size_t count)
+    {
+      if(str)
+        yaooc_string_insertn(this,SIZE(this),str,count);
+    }
+
+    yaooc_string_pointer substr(size_t ipos,size_t n) const
+    {
+      yaooc_string_pointer ret=new(yaooc_string);
+      if(ipos < this->size_) {
+        if(n>(this->size_-ipos))
+          n=this->size_-ipos;
+        yaooc_string_insertn(ret,0,this->array_+ipos,n);
+      }
+      return ret; //new_ctor(yaooc_string,yaooc_string_ctor_ccs_n,this->array_+pos,n);
+    }
+
+    yaooc_string_pointer upcase() const
+    {
+      yaooc_string_pointer ret=new_copy_static(yaooc_string,this);
+      M(ret,upcase_);
+      return ret;
+    }
+
+    void upcase_()
+    {
+      char* ptr=BEGIN(this);
+      for(;*ptr != 0;ptr++) {
+        if(islower(*ptr))
+          *ptr=toupper(*ptr);
+      }
+    }
+
+    yaooc_string_pointer downcase() const
+    {
+      yaooc_string_pointer ret=new_copy_static(yaooc_string,this);
+      M(ret,downcase_);
+      return ret;
+    }
+
+    void downcase_()
+    {
+      char* ptr=BEGIN(this);
+      for(;*ptr != 0;ptr++) {
+        if(isupper(*ptr))
+          *ptr=tolower(*ptr);
+      }
+    }
+
+    yaooc_string_pointer ltrim() const
+    {
+      yaooc_string_pointer ret=new_copy_static(yaooc_string,this);
+      M(ret,ltrim_);
+      return ret;
+    }
+
+    void ltrim_()
+    {
+      char* ptr=BEGIN(this);
+      for(;*ptr !=0;ptr++) {// && strchr(yaooc_whitespace,*ptr)) ptr++;
+        const char* ws;
+        for(ws=yaooc_whitespace;*ws!=0;ws++)
+          if(*ptr == *ws)
+            break;
+        if(*ws==0)
+          break;
+      }
+      if(*ptr==0) { // Entire string was whitespace
+        this->size_=0;
+        this->array_[0]=0;
+      } else {
+        this->size_=END(this)-ptr;
+        memmove(this->array_,ptr,this->size_+1);
+      }
+    }
+
+    yaooc_string_pointer rtrim() const
+    {
+      yaooc_string_pointer ret=new_copy_static(yaooc_string,this);
+      M(ret,rtrim_);
+      return ret;
+    }
+
+    void rtrim_()
+    {
+      char* ptr=this->array_+this->size_-1;
+      char* beg=this->array_;
+      for(;ptr>=beg;ptr--) {// && strchr(yaooc_whitespace,*ptr)) ptr++;
+        const char* ws;
+        for(ws=yaooc_whitespace;*ws!=0;ws++)
+          if(*ptr == *ws)
+            break;
+        if(*ws==0) // No whitespace
+          break;
+      }
+      if(ptr<beg) { // Entire string was whitespace
+        this->size_=0;
+        this->array_[0]=0;
+      } else {
+        this->size_=ptr-beg+1;
+        this->array_[this->size_]=0;
+      }
+    }
+
+    yaooc_string_pointer trim() const
+    {
+      yaooc_string_pointer ret=new_copy_static(yaooc_string,this);
+      M(ret,trim_);
+      return ret;
+    }
+
+    void trim_()
+    {
+      M(this,rtrim_);
+      M(this,ltrim_);
+    }
+
+		yaooc_string_pointer sub(const char* pat,const char* str) const
+    {
+      yaooc_string_pointer ret=new_copy_static(yaooc_string,this);
+      M(ret,sub_,pat,str);
+      return ret;
+    }
+
+    // Methods that require a regular expression will be defined in the regex module
+		void sub_(const char* pat,const char* repl_str) = yaooc_string_sub_;
+
+    yaooc_string_pointer sub_re(yaooc_regex_const_pointer re,const char* repl_str) const
+    {
+      yaooc_string_pointer ret=new_copy_static(yaooc_string,this);
+      M(ret,sub_re_,re,repl_str);
+      return ret;
+    }
+
+		void sub_re_(yaooc_regex_const_pointer re,const char* repl_str) = yaooc_string_sub_re_;
+
+		yaooc_string_pointer gsub(const char* pat,const char* repl_str) const
+    {
+      yaooc_string_pointer ret=new_copy_static(yaooc_string,this);
+      M(ret,gsub_,pat,repl_str);
+      return ret;
+    }
+
+		void gsub_(const char* pat,const char* str) = yaooc_string_gsub_;
+
+		yaooc_string_pointer gsub_re(yaooc_regex_const_pointer re,const char* repl_str) const
+    {
+      yaooc_string_pointer ret=new_copy_static(yaooc_string,this);
+      M(ret,gsub_re_,re,repl_str);
+      return ret;
+    }
+
+		void gsub_re_(yaooc_regex_const_pointer re,const char* pat) = yaooc_string_gsub_re_;
+		bool match(const char* pat) const = yaooc_string_match;
+		bool match_re(yaooc_regex_const_pointer re) const = yaooc_string_match_re;
+
+
+    bool starts_with(const char* str) const
+    {
+      bool ret=false;
+      if(str) {
+        ret = strncmp(BEGIN(this),str,strlen(str))==0;
+      }
+      return ret;
+    }
+
+    bool ends_with(const char* str) const
+    {
+      bool ret=false;
+      if(str && this->size_ > 0) {
+        int l = strlen(str);
+        if(l > 0 && l<=this->size_) {
+          char* ptr=END(this)-l;
+          ret=strcmp(ptr,str)==0;
+        }
+      }
+      return ret;
+    }
+
+    void clear()
+    {
+      this->size_=0;
+      *this->array_=0;
+    }
+
+    size_t findstr(const char* str,size_t pos)
+    {
+      size_t ret=yaooc_string_npos;
+      if(this->size_ > 0 && pos < this->size_) {
+        char* ptr=strstr(BEGIN(this)+pos,str);
+        if(ptr)
+          ret=ptr-BEGIN(this);
+      }
+      return ret;
+    }
+
+    size_t rfindstr(const char* str,size_t pos)
+    {
+      size_t ret=yaooc_string_npos;
+      if(this->size_ > 0 && str) {
+        if(pos >= this->size_)
+          pos=this->size_;
+        const char* ptr = yaooc_string_memrmem(BEGIN(this),pos,str,strlen(str));
+        if(ptr)
+          ret=ptr-BEGIN(this);
+      }
+      return ret;
+    }
+
+    size_t findchr(char ch,size_t pos)
+    {
+      size_t ret=yaooc_string_npos;
+      if(this->size_ > 0 && pos < this->size_) {
+        const char* ptr=strchr(BEGIN(this)+pos,ch);
+        if(ptr)
+          ret=ptr-BEGIN(this);
+      }
+      return ret;
+    }
+
+    size_t rfindchr(char ch,size_t pos)
+    {
+      size_t ret=yaooc_string_npos;
+      if(this->size_ > 0) {
+        if(pos >= this->size_)
+          pos=this->size_;
+        const char* ptr = yaooc_string_memrchr(BEGIN(this),ch,pos);
+        if(ptr)
+          ret=ptr-BEGIN(this);
+      }
+      return ret;
+    }
+
+    yaooc_string_vector_pointer split(const char* str,size_t max) const = yaooc_string_split;
+    yaooc_string_vector_pointer split_re(yaooc_regex_const_pointer re,size_t max) const = yaooc_string_split_re;
+    const char* c_str() const = yaooc_array_container_begin;
+};
+
+%header
+VECTOR_DEFINITION(yaooc_string,yaooc_string_vector);
+#define YAOOC_STRING_STATIC_DEFAULT_CTOR { .class_table_ = &yaooc_string_class_table, \
+    .array_=NULL,.type_info_=(const type_info_t*)&__char_ti,.size_=0,.capacity_=0 }
+%%
+
+VECTOR_IMPLEMENTATION(yaooc_string,yaooc_string_vector);

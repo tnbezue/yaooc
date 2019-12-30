@@ -1,0 +1,281 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+%include <yaooc/object.yod>
+%include <yaooc/exception.yod>
+%prefix_directory yaooc
+
+%class yaooc_matrix_exception : yaooc_exception {
+  yaooc_matrix_exception_ctor_v(int error_code,const char* fmt,...) = yaooc_exception_ctor_v;
+};
+
+#include <string.h>
+
+%class yaooc_matrix;
+
+%header
+yaooc_matrix_pointer yaooc_matrix_identity(unsigned int rows);
+%%
+
+%class yaooc_matrix {
+
+    ~yaooc_matrix()
+    {
+      if(this->data_ != NULL) {
+        free(this->data_[0]);
+        free(this->data_);
+      }
+    }
+
+    yaooc_matrix(src) : yaooc_matrix()
+    {
+      assign_static(this,src,yaooc_matrix);
+    }
+
+    operator=(src)
+    {
+      yaooc_matrix_dtor(this);
+      if(src->data_) {
+        this->rows_=src->rows_;
+        this->cols_=src->cols_;
+        yaooc_matrix_allocate(this);
+        memcpy(this->data_[0],src->data_[0],this->rows_*this->cols_*sizeof(double));
+      } else
+        this->data_=NULL;
+    }
+
+    yaooc_matrix_ctor_rows_cols(unsigned int rows,unsigned int cols,double * data) : yaooc_matrix()
+    {
+      this->rows_=rows;
+      this->cols_=cols;
+      yaooc_matrix_allocate(this);
+      if(data) {
+        unsigned int r,c;
+        for(r=0;r<this->rows_;r++)
+          for(c=0;c<this->cols_;c++)
+            this->data_[r][c] = *data++;
+      }
+    }
+
+  instance:
+    double ** data_;
+    unsigned int rows_;
+    unsigned int cols_;
+
+  table:
+
+    void swap(pointer o)
+    {
+      yaooc_matrix_pointer other=o;
+      SWAP(unsigned int,this->rows_,other->rows_);
+      SWAP(unsigned int,this->cols_,other->cols_);
+      SWAP(double**,this->data_,other->data_);
+    }
+
+    double at(unsigned int r,unsigned int c)
+    {
+      return this->data_[r][c];
+    }
+
+    void set(unsigned int r,unsigned int c, double v)
+    {
+      this->data_[r][c]=v;
+    }
+
+    yaooc_matrix_pointer transpose() const
+    {
+      yaooc_matrix_pointer mat=new(yaooc_matrix);
+      mat->rows_=this->cols_;
+      mat->cols_=this->rows_;
+      yaooc_matrix_allocate(mat);
+      int r,c;
+      for(r=0;r<this->rows_;r++)
+        for(c=0;c<this->cols_;c++)
+          mat->data_[r][c] = this->data_[c][r];
+      return mat;
+    }
+
+    void transpose_()
+    {
+      yaooc_matrix_t* temp = M(this,transpose);
+      M(this,swap,temp);
+      delete(temp);
+    }
+
+    yaooc_matrix_pointer inverse() const
+    {
+      yaooc_matrix_pointer mat=new_copy_static(yaooc_matrix,this);
+      M(mat,inverse_);
+      return mat;
+    }
+
+    void inverse_()
+    {
+      if(this->rows_ != this->cols_)
+        THROW(new_ctor(yaooc_matrix_exception,yaooc_matrix_exception_ctor_v,
+              33,"Can't calculate inverse for non square matrix"));
+      yaooc_matrix_pointer identity = yaooc_matrix_identity(this->rows_);
+      unsigned int pivot,r,c;
+      for(pivot=0;pivot<this->rows_;pivot++) {
+        for(r=0;r<this->rows_;r++) {
+          if(pivot != r) {
+            double multiplier=-this->data_[r][pivot]/this->data_[pivot][pivot];
+            for(c=0;c<this->cols_;c++) {
+              this->data_[r][c]+=multiplier*this->data_[pivot][c];
+              identity->data_[r][c]+=multiplier*identity->data_[pivot][c];
+            }
+          }
+        }
+      }
+
+      for(pivot=0;pivot<this->rows_;pivot++) {
+        for(c=0;c<this->cols_;c++) {
+          identity->data_[pivot][c] /= this->data_[pivot][pivot];
+        }
+        this->data_[pivot][pivot] /= this->data_[pivot][pivot];
+      }
+      M(this,swap,identity);
+      delete(identity);
+
+    }
+
+    yaooc_matrix_pointer times(yaooc_matrix_const_pointer mat) const
+    {
+      if(this->cols_ != mat->rows_)
+        THROW(new_ctor(yaooc_matrix_exception,yaooc_matrix_exception_ctor_v,33,
+              "Cols of first matrix not equals rows of second matrix for matrix multiplication"));
+      yaooc_matrix_pointer ret = new_ctor(yaooc_matrix,yaooc_matrix_ctor_rows_cols,this->rows_,mat->cols_,NULL);
+      unsigned int r,r2,c,c2;
+      for(r=0;r<ret->rows_;r++) {
+        for(c=0;c<ret->cols_;c++) {
+          double sum=0;
+          for(r2=0,c2=0;c2<this->cols_;r2++,c2++)
+            sum += this->data_[r][c2]*mat->data_[r2][c];
+          ret->data_[r][c]=sum;
+        }
+      }
+      return ret;
+    }
+
+/*    void times_(yaooc_matrix_const_pointer mat)
+    {
+      if(this->cols_
+    }
+*/
+    yaooc_matrix_pointer plus(yaooc_matrix_const_pointer mat) const
+    {
+      yaooc_matrix_pointer ret=new_copy_static(yaooc_matrix,this);
+      M(ret,plus_,mat);
+      return ret;
+    }
+
+    void plus_(yaooc_matrix_const_pointer mat)
+    {
+      if(this->rows_ != mat->rows_ || this->cols_ != mat->cols_)
+        THROW(new_ctor(yaooc_matrix_exception,yaooc_matrix_exception_ctor_v,33,"Rows/cols not equal for matrix addition"));
+      int i,j;
+      for(i=0;i<this->rows_;i++)
+        for(j=0;j<this->cols_;j++)
+          this->data_[i][j] += mat->data_[i][j];
+    }
+
+    yaooc_matrix_pointer minus(yaooc_matrix_const_pointer mat) const
+    {
+      yaooc_matrix_pointer ret=new_copy_static(yaooc_matrix,this);
+      M(ret,minus_,mat);
+      return ret;
+    }
+
+    void minus_(yaooc_matrix_const_pointer mat)
+    {
+      if(this->rows_ != mat->rows_ || this->cols_ != mat->cols_)
+        THROW(new_ctor(yaooc_matrix_exception,yaooc_matrix_exception_ctor_v,33,"Rows/cols not equal for matrix subtraction"));
+      int i,j;
+      for(i=0;i<this->rows_;i++)
+        for(j=0;j<this->cols_;j++)
+          this->data_[i][j] -= mat->data_[i][j];
+    }
+
+    double determinant() const
+    {
+      double ret=0.0;
+      if(this->rows_ == this->cols_) {
+        if(this->rows_==2) {
+          ret=this->data_[0][0]*this->data_[1][1] - this->data_[1][0]*this->data_[0][1];
+        } else {
+          int sign=1;
+          unsigned int c;
+          ret=0;
+          for(c=0;c<this->cols_;c++) {
+            yaooc_matrix_t* sub=M(this,sub_matrix,0,c);
+            ret = ret + sign*(this->data_[0][c])*M(sub,determinant);
+            delete(sub);
+            sign=-sign;
+          }
+        }
+      } else {
+        THROW(new_ctor(yaooc_matrix_exception,yaooc_matrix_exception_ctor_v,33,"Cannot computer determinant of non squae matrix"));
+      }
+      return ret;
+    }
+
+    /*
+      Create sub matrix by eliminating indicated row and col
+    */
+    yaooc_matrix_pointer sub_matrix(unsigned int row,unsigned int col) const
+    {
+      yaooc_matrix_t* ret=new_ctor(yaooc_matrix,yaooc_matrix_ctor_rows_cols,this->rows_-1,this->cols_-1);
+      unsigned int r,c,ir,ic;
+      ir=0;
+      for(r=0;r<this->rows_;r++) {
+        if(r!= row) {
+          ic=0;
+          for(c=0;c<this->cols_;c++) {
+            if(c != col)
+              ret->data_[ir][ic++]=this->data_[r][c];
+          }
+          ir++;
+        }
+      }
+      return ret;
+    }
+
+  adjunct:
+    void allocate()
+    {
+      int r;
+      this->data_=(double**)MALLOC(this->rows_*sizeof(double*));
+      this->data_[0]=(double*)MALLOC(this->rows_*this->cols_*sizeof(double));
+      for(r=1;r<this->rows_;r++) {
+        this->data_[r]=this->data_[r-1]+this->cols_;
+      }
+    }
+
+};
+
+yaooc_matrix_pointer yaooc_matrix_identity(unsigned int rows)
+{
+  yaooc_matrix_pointer mat=new(yaooc_matrix);
+  mat->rows_=mat->cols_=rows;
+  yaooc_matrix_allocate(mat);
+  memset(mat->data_[0],0,rows*rows*sizeof(double));
+  unsigned int r;
+  for(r=0;r<rows;r++)
+    mat->data_[r][r] = 1.0;
+  return mat;
+}
+

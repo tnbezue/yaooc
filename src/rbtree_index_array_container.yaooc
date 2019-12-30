@@ -1,0 +1,412 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+%prefix_directory yaooc
+
+%include <yaooc/array_container.yod>
+%header
+typedef enum { BLACK=0, RED } yaooc_rbnode_color_t;
+//#define yaooc_rbnode_is_red(node) !yaooc_rbnode_is_black(node)
+#define yaooc_rbnode_create(index) new_ctor(yaooc_rbnode,yaooc_rbnode_ctor_index,index)
+%%
+%class yaooc_rbtree_index_array_container;
+
+%struct yaooc_rbnode {
+  yaooc_rbnode()
+  {
+    this->link_[0]=this->link_[1]=NULL;
+    this->index_=0; this->color_=BLACK;
+  }
+
+  ~yaooc_rbnode()
+  {
+    if(this) {
+      delete(this->link_[0]);
+      delete(this->link_[1]);
+    }
+  }
+
+  operator=(src)
+  {
+
+  }
+
+  yaooc_rbnode_ctor_index(unsigned int index) : yaooc_rbnode()
+  {
+    this->index_=index;
+    this->color_=RED;
+  }
+
+  instance:
+    yaooc_rbnode_t* link_[2];  // 0 left, 1 right
+    yaooc_rbnode_color_t color_;
+    unsigned int index_;
+
+  private:
+    bool is_red() const
+    {
+      return this && this->color_==RED;
+    }
+
+    const yaooc_rbnode_t* find_node(yaooc_rbtree_index_array_container_const_pointer rbtree,const_pointer value) const
+    {
+      if(this) {
+//        fprintf(stderr,"Compareing %d %d\n",*(const int*)AT(rbtree,this->index_),*(const int*)value);
+        int rc=__op_rich_compare__(value,AT(rbtree,this->index_),get_rich_compare(TYPE_INFO(rbtree)));
+//        fprintf(stderr,"RC is %d\n",rc);
+        if(rc == 0)
+          return this;
+        if(rc < 0)
+          return yaooc_rbnode_find_node(this->link_[0],rbtree,value);
+        else
+          return yaooc_rbnode_find_node(this->link_[1],rbtree,value);
+      }
+      return NULL;
+    }
+
+    yaooc_rbnode_t* rotate(int dir)
+    {
+      yaooc_rbnode_t *result = NULL;
+      if (this) {
+          result = this->link_[!dir];
+          this->link_[!dir] = result->link_[dir];
+          result->link_[dir] = this;
+          this->color_=RED;
+          result->color_=BLACK;
+      }
+      return result;
+    }
+
+    yaooc_rbnode_t* rotate2(int dir)
+    {
+      yaooc_rbnode_t *result = NULL;
+      if (this) {
+          this->link_[!dir] = yaooc_rbnode_rotate(this->link_[!dir], !dir);
+          result = yaooc_rbnode_rotate(this, dir);
+      }
+      return result;
+    }
+
+    // For indexes greater than index, decrement by n. Terminate when remaining indexes is zero
+    void decrement_index(unsigned int index,unsigned int n,unsigned int* remaining)
+    {
+      if(this) {
+        if(this->index_ > index) {
+          this->index_ -= n;
+          (*remaining)--;
+        }
+        if(*remaining == 0)
+          return;
+        yaooc_rbnode_decrement_index(this->link_[0],index,n,remaining);
+        if(*remaining == 0)
+          return;
+        yaooc_rbnode_decrement_index(this->link_[1],index,n,remaining);
+      }
+    }
+};
+
+%class yaooc_rbtree_index_array_container : yaooc_array_container {
+
+    yaooc_rbtree_index_array_container() = delete;
+
+    ~yaooc_rbtree_index_array_container()
+    {
+      delete(this->root_);
+    }
+
+    yaooc_rbtree_index_array_container(src) : yaooc_rbtree_index_array_container_ctor_ti(TYPE_INFO(src))
+    {
+      assign_static(this,src,yaooc_rbtree_index_array_container);
+    }
+
+    operator=(src)
+    {
+      yaooc_array_container_assign(this,src);
+      delete(this->root_);
+      this->root_=NULL;
+      size_t i;
+      for(i=0;i!=M(src,size);i++) {
+        yaooc_rbtree_index_array_container_insert_node(this,i);
+      }
+    }
+
+    yaooc_rbtree_index_array_container_ctor_ti(const type_info_t* ti) :
+      yaooc_array_container_ctor_ti(ti)
+    {
+      this->root_=NULL;
+    }
+
+  table:
+    void swap(pointer o)
+    {
+      yaooc_rbtree_index_array_container_pointer other=0;
+      SWAP(yaooc_rbnode_t*,this->root_,other->root_);
+    }
+
+  instance:
+    yaooc_rbnode_t *root_;
+
+  adjunct:
+
+    iterator find(const_pointer value)
+    {
+      const yaooc_rbnode_t* node=yaooc_rbnode_find_node(this->root_,this,value);
+      return node ? AT(this,node->index_) : END(this);
+    }
+
+    iterator insert(const_iterator pos,const_pointer value)
+    {
+      // Pos ignored, insertions at end
+      if(yaooc_rbtree_index_array_container_find(this,value) == END(this)) {
+        yaooc_array_container_insert(this,END(this),value);
+        yaooc_rbtree_index_array_container_insert_node(this,SIZE(this)-1);
+      }
+      return SIZE(this) > 0 ? AT(this,this->size_-1) : AT(this,0);
+    }
+
+    iterator insertn(const_iterator pos,size_t n,const_pointer value)
+    {
+      // rbtree is has unique values. Only insert 1
+      return yaooc_rbtree_index_array_container_insert(this,END(this),value);
+    }
+
+    iterator insert_range(const_iterator pos,const_iterator f,const_iterator l)
+    {
+      yaooc_private_const_iterator first=f;
+      yaooc_private_const_iterator last=l;
+      for(;first!=last;first+=TYPE_SIZE(this)) {
+        yaooc_rbtree_index_array_container_insert(this,END(this),first);
+      }
+      return SIZE(this) > 0 ? AT(this,this->size_-1) : AT(this,0);
+    }
+
+    iterator erase(const_iterator pos)
+    {
+      return yaooc_rbtree_index_array_container_erase_range(this,pos,((yaooc_private_const_pointer)pos)+TYPE_SIZE(this));
+    }
+
+    iterator erase_range(const_iterator f,const_iterator l)
+    {
+      size_t start_idx=DISTANCE(TYPE_INFO(this),BEGIN(this),f);
+      size_t end_idx=DISTANCE(TYPE_INFO(this),BEGIN(this),l);
+      unsigned int n = end_idx-start_idx;
+      unsigned int remaining=SIZE(this)-end_idx;
+      size_t idx;
+      for(idx=start_idx;idx<end_idx;idx++)
+        yaooc_rbtree_index_array_container_erase_node(this,idx);
+      yaooc_rbnode_decrement_index(this->root_,start_idx,n,&remaining);
+      return yaooc_array_container_erase_range(this,f,l);
+    }
+
+    size_t erase_value(const_pointer value)
+    {
+      size_t ret=0;
+      const_iterator pos=yaooc_rbtree_index_array_container_find(this,value);
+      if(pos != M(this,cend)) {
+        yaooc_rbtree_index_array_container_erase(this,pos);
+        ret=1;
+      }
+      return ret;
+    }
+
+    iterator at(size_t i) const = yaooc_array_container_at;
+
+    void shrink_to_fit() = yaooc_array_container_shrink_to_fit;
+
+    void reserve(size_t n) = yaooc_array_container_reserve;
+
+    void resize(size_t n)
+    {
+      pointer temp=__new_array(TYPE_INFO(this),1);
+      yaooc_rbtree_index_array_container_resize_value(this,n,temp);
+      delete(temp);
+    }
+
+    void resize_value(size_t n,const_pointer value)
+    {
+      if(n < M(this,size))
+        yaooc_rbtree_index_array_container_erase_range(this,((yaooc_private_const_iterator)BEGIN(this))+n*TYPE_SIZE(this),END(this));
+      else if(n > M(this,size)) // Unique container, can only add one
+        yaooc_rbtree_index_array_container_insert(this,END(this),value);
+    }
+
+    void clear()
+    {
+      yaooc_array_container_clear(this);
+      delete(this->root_);
+      this->root_=NULL;
+    }
+
+  private:
+/*    const yaooc_rbnode_t* find_node(const_pointer value) const
+    {
+      return yaooc_rbnode_find_node(this->root_,this,value);
+    }
+*/
+    void insert_node(int idx)
+    {
+      yaooc_rbnode_t* node=yaooc_rbnode_create(idx);
+      if (this->root_ == NULL) {
+          this->root_ = node;
+      } else {
+          yaooc_rbnode_t head = { .link_[0]=NULL,.link_[1]=NULL, .color_=BLACK, .index_=0 }; // False tree root
+          yaooc_rbnode_t *g, *t;       // Grandparent & parent
+          yaooc_rbnode_t *p, *q;       // Iterator & parent
+          int dir = 0, last = 0;
+
+          // Set up our helpers
+          t = &head;
+          g = p = NULL;
+          q = t->link_[1] = this->root_;
+
+          // Search down the tree for a place to insert
+          while (true) {
+              if (q == NULL) {
+
+                  // Insert node at the first null link_.
+                  p->link_[dir] = q = node;
+              } else if (yaooc_rbnode_is_red(q->link_[0]) && yaooc_rbnode_is_red(q->link_[1])) {
+
+                  // Simple red violation: color flip
+                  q->color_=RED;
+                  q->link_[0]->color_=BLACK;
+                  q->link_[1]->color_=BLACK;
+              }
+
+              if (yaooc_rbnode_is_red(q) && yaooc_rbnode_is_red(p)) {
+
+                  // Hard red violation: rotations necessary
+                  int dir2 = t->link_[1] == g;
+                  if (q == p->link_[last]) {
+                      t->link_[dir2] = yaooc_rbnode_rotate(g, !last);
+                  } else {
+                      t->link_[dir2] = yaooc_rbnode_rotate2(g, !last);
+                  }
+              }
+
+              // Stop working if we inserted a node. This
+              // check also disallows duplicates in the tree
+              int rc=__op_rich_compare__(AT(this,q->index_),AT(this,node->index_),get_rich_compare(TYPE_INFO(this)));
+              if(rc == 0)
+                break;
+
+              last = dir;
+              dir = rc < 0;
+
+              // Move the helpers down
+              if (g != NULL) {
+                  t = g;
+              }
+
+              g = p, p = q;
+              q = q->link_[dir];
+          }
+
+          // Update the root (it may be different)
+          this->root_ = head.link_[1];
+      }
+
+      // Make the root black for simplified logic
+      this->root_->color_ = BLACK;
+    }
+
+    void erase_node(int index)
+    {
+        yaooc_rbnode_t head = { .link_[0]=NULL,.link_[1]=NULL, .color_=BLACK, .index_=0 }; // False tree root
+        yaooc_rbnode_t *q, *p, *g; // Helpers
+        yaooc_rbnode_t *f = NULL;  // Found item
+        int dir = 1;
+
+        // Set up our helpers
+        q = &head;
+        g = p = NULL;
+        q->link_[1] = this->root_;
+
+        // Search and push a red node down
+        // to fix red violations as we go
+        while (q->link_[dir] != NULL) {
+            int last = dir;
+
+            // Move the helpers down
+            g = p, p = q;
+            q = q->link_[dir];
+
+            int rc=__op_rich_compare__(AT(this,q->index_),AT(this,index),get_rich_compare(TYPE_INFO(this)));
+
+            dir = rc < 0;
+
+            // Save the node with matching value and keep
+            // going; we'll do removal tasks at the end
+            if (rc == 0) {
+                f = q;
+            }
+
+            // Push the red node down with rotations and color flips
+            if (!yaooc_rbnode_is_red(q) && !yaooc_rbnode_is_red(q->link_[dir])) {
+                if (yaooc_rbnode_is_red(q->link_[!dir])) {
+                    p = p->link_[last] = yaooc_rbnode_rotate(q, dir);
+                } else if (!yaooc_rbnode_is_red(q->link_[!dir])) {
+                    yaooc_rbnode_t *s = p->link_[!last];
+                    if (s) {
+                        if (!yaooc_rbnode_is_red(s->link_[!last]) && !yaooc_rbnode_is_red(s->link_[last])) {
+
+                            // Color flip
+                            p->color_ = BLACK;
+                            s->color_ = RED;
+                            q->color_ = RED;
+                        } else {
+                            int dir2 = g->link_[1] == p;
+                            if (yaooc_rbnode_is_red(s->link_[last])) {
+                                g->link_[dir2] = yaooc_rbnode_rotate2(p, last);
+                            } else if (yaooc_rbnode_is_red(s->link_[!last])) {
+                                g->link_[dir2] = yaooc_rbnode_rotate(p, last);
+                            }
+
+                            // Ensure correct coloring
+                            q->color_ = g->link_[dir2]->color_=RED;
+                            g->link_[dir2]->link_[0]->color_=BLACK;
+                            g->link_[dir2]->link_[1]->color_=BLACK;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Replace and remove the saved node
+        if (f) {
+            unsigned int tmp = f->index_;
+            f->index_ = q->index_;
+            q->index_ = tmp;
+
+            p->link_[p->link_[1] == q] = q->link_[q->link_[0] == NULL];
+
+/*            if (node_cb) {
+                node_cb(self, q);
+            }*/
+            q = NULL;
+        }
+
+        // Update the root (it may be different)
+        this->root_ = head.link_[1];
+
+        // Make the root black for simplified logic
+        if (this->root_ != NULL) {
+            this->root_->color_=BLACK;
+        }
+
+
+    }
+};

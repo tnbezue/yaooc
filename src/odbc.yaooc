@@ -1,0 +1,484 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+%include <yaooc/object.yod>
+%include <yaooc/exception.yod>
+%prefix_directory yaooc
+
+%class yaooc_odbc_exception : yaooc_exception {
+  yaooc_odbc_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
+};
+
+%header
+#include <yaooc/map.h>
+#include <yaooc/string.h>
+#include <yaooc/exception.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include <sql.h>
+#include <sqlext.h>
+MINI_MAP_DEFINITION(yaooc_string,yaooc_string,map_odbc_string_string);
+%%
+
+MINI_MAP_IMPLEMENTATION(yaooc_string,yaooc_string,map_odbc_string_string);
+
+%class yaooc_odbc_environment {
+
+    yaooc_odbc_environment()
+    {
+      // only one handle needed per application.
+      if(yaooc_odbc_environment_henv_ == SQL_NULL_HANDLE) {
+        /* Allocate an environment handle */
+        if(SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &yaooc_odbc_environment_henv_) == SQL_SUCCESS) {
+          /* We want ODBC 3 support */
+          if(SQLSetEnvAttr(yaooc_odbc_environment_henv_, SQL_ATTR_ODBC_VERSION, (void *) SQL_OV_ODBC3, 0) != SQL_SUCCESS) {
+            yaooc_odbc_environment_dtor(this);
+            yaooc_odbc_environment_henv_=SQL_NULL_HANDLE;
+          }
+        }
+      } else {
+        /* ** FIX ME ** should throw exception */
+        puts("Only one ODBC environment allowed");
+        exit(1);
+      }
+    }
+
+    ~yaooc_odbc_environment()
+    {
+      if(yaooc_odbc_environment_henv_ != SQL_NULL_HANDLE)
+        SQLFreeHandle(SQL_HANDLE_ENV,yaooc_odbc_environment_henv_);
+    }
+
+    yaooc_odbc_environment(src)=delete;
+    operator=(src)=delete;
+  adjunct:
+    SQLHENV henv_ = SQL_NULL_HANDLE;
+
+    map_odbc_string_string_t* get_drivers()
+    {
+      map_odbc_string_string_t *drivers = new(map_odbc_string_string);
+      SQLCHAR driver[256];
+      SQLCHAR attr[256];
+      SQLSMALLINT driver_ret;
+      SQLSMALLINT attr_ret;
+      yaooc_string_t key,value;
+      newp(&key,yaooc_string);
+      newp(&value,yaooc_string);
+      SQLRETURN ret = SQLDrivers(yaooc_odbc_environment_henv_,SQL_FETCH_FIRST,
+            driver, sizeof(driver), &driver_ret,
+            attr, sizeof(attr), &attr_ret);
+      while(SQL_SUCCEEDED(ret)) {
+        M(&key,set,(const char*)driver);
+        M(&value,set,(const char*)attr);
+        M(drivers,insert,&key,&value);
+        //  if (ret == SQL_SUCCESS_WITH_INFO) printf("\tdata truncation\n");
+          ret = SQLDrivers(yaooc_odbc_environment_henv_,SQL_FETCH_NEXT,
+            driver, sizeof(driver), &driver_ret,
+            attr, sizeof(attr), &attr_ret);
+      }
+      deletep(&key,yaooc_string);
+      deletep(&value,yaooc_string);
+      return drivers;
+    }
+
+    map_odbc_string_string_t* get_sources()
+    {
+      map_odbc_string_string_t* sources = new(map_odbc_string_string);
+      char dsn[256];
+      char desc[256];
+      yaooc_string_t key,value;
+      newp(&key,yaooc_string);
+      newp(&value,yaooc_string);
+      SQLSMALLINT dsn_ret;
+      SQLSMALLINT desc_ret;
+      SQLRETURN ret = SQLDataSources(yaooc_odbc_environment_henv_,SQL_FETCH_FIRST,(SQLCHAR*)dsn, sizeof(dsn),
+              &dsn_ret,(SQLCHAR*)desc, sizeof(desc), &desc_ret);
+
+      while(SQL_SUCCEEDED(ret)) {
+    //		printf("%s - %s\n", dsn, desc);
+        M(&key,set,dsn);
+        M(&value,set,desc);
+        M(sources,insert,&key,&value);
+    //		(*sources)[string_t(reinterpret_cast<char*>(dsn))]=desc;
+    //		if (ret == SQL_SUCCESS_WITH_INFO) printf("\tdata truncation\n");
+        ret = SQLDataSources(yaooc_odbc_environment_henv_,SQL_FETCH_NEXT,(SQLCHAR*)dsn, sizeof(dsn),
+              &dsn_ret,(SQLCHAR*)desc, sizeof(desc), &desc_ret);
+      }
+      deletep(&key,yaooc_string);
+      deletep(&value,yaooc_string);
+      return sources;
+    }
+
+
+};
+
+%class yaooc_odbc_statement {
+
+    yaooc_odbc_statement()
+    {
+      /* Statements are only created from connection */
+      THROW(new_ctor(yaooc_odbc_exception,yaooc_odbc_exception_ctor_v,"ODBC statement can only be created from connection"));
+    }
+
+    ~yaooc_odbc_statement()
+    {
+      if(this->statement_handle_ != SQL_NULL_HANDLE) {
+        SQLCloseCursor(this->statement_handle_);
+        SQLFreeHandle(SQL_HANDLE_STMT,this->statement_handle_);
+        this->statement_handle_ = SQL_NULL_HANDLE;
+      }
+    }
+
+    yaooc_odbc_statement(src) = delete;
+    operator=(src)=delete;
+
+  instance:
+    SQLHSTMT statement_handle_;
+    unsigned int icol_;
+  table:
+    bool bindcol_chr(char* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(char),SQL_C_STINYINT);
+    }
+
+    bool bindcol_uchr(unsigned char* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(unsigned char),SQL_C_UTINYINT);
+    }
+
+    bool bindcol_short(short* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(short),SQL_C_SSHORT);
+    }
+
+    bool bindcol_ushort(unsigned short* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(unsigned short),SQL_C_USHORT);
+    }
+
+    bool bindcol_int(int* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(int),SQL_C_SLONG);
+    }
+
+    bool bindcol_uint(unsigned int* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(unsigned int),SQL_C_ULONG);
+    }
+
+    bool bindcol_long(long long* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(long long),SQL_C_SBIGINT);
+    }
+
+    bool bindcol_ulong(unsigned long long* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(unsigned long long),SQL_C_UBIGINT);
+    }
+
+    bool bindcol_dbl(double* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(double),SQL_C_DOUBLE);
+    }
+
+    bool bindcol_str(char* v, SQLLEN l)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,l,SQL_C_CHAR);
+    }
+
+    bool bindcol_blob(void* v, SQLLEN l)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,l,SQL_C_BINARY);
+    }
+
+    bool bindcol_time(TIME_STRUCT* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(TIME_STRUCT),SQL_C_TYPE_TIME);
+    }
+
+    bool bindcol_date(DATE_STRUCT* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(DATE_STRUCT),SQL_C_TYPE_DATE);
+    }
+
+    bool bindcol_ts(TIMESTAMP_STRUCT* v)
+    {
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(TIMESTAMP_STRUCT),SQL_C_TYPE_TIMESTAMP);
+    }
+
+    bool bindparam_chr(char* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(char),SQL_C_STINYINT);
+    }
+
+    bool bindparam_uchr(unsigned char* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(unsigned char),SQL_C_UTINYINT);
+    }
+
+    bool bindparam_short(short* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(short),SQL_C_SSHORT);
+    }
+
+    bool bindparam_ushort(unsigned short* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(unsigned short),SQL_C_USHORT);
+    }
+
+    bool bindparam_int(int* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(int),SQL_C_SLONG);
+    }
+
+    bool bindparam_uint(unsigned int* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(unsigned int),SQL_C_ULONG);
+    }
+
+    bool bindparam_long(long long* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(long long),SQL_C_SBIGINT);
+    }
+
+    bool bindparam_ulong(unsigned long long* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(unsigned long long),SQL_C_UBIGINT);
+    }
+
+    bool bindparam_dbl(double* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(double),SQL_C_DOUBLE);
+    }
+
+    bool bindparam_str(char* v, SQLLEN l)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,l,SQL_C_CHAR);
+    }
+
+    bool bindparam_blob(void* v, SQLLEN l)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,l,SQL_C_BINARY);
+    }
+
+    bool bindparam_time(TIME_STRUCT* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(TIME_STRUCT),SQL_C_TYPE_TIME);
+    }
+
+    bool bindparam_date(DATE_STRUCT* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(DATE_STRUCT),SQL_C_TYPE_DATE);
+    }
+
+    bool bindparam_ts(TIMESTAMP_STRUCT* v)
+    {
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(TIMESTAMP_STRUCT),SQL_C_TYPE_TIMESTAMP);
+    }
+
+    bool fetch()
+    {
+      SQLRETURN ret = SQLFetch(this->statement_handle_);
+      /*debug(1) {
+        printf("Fetch: %d\n",ret);
+        printf("Fetch handle: %p\n",statement_handle_);
+        SQLCHAR state[256];
+        SQLCHAR msg[256];
+        SQLINTEGER err_ptr;
+        SQLSMALLINT text_len;
+        SQLGetDiagRec(SQL_HANDLE_STMT,statement_handle_,1,state,&err_ptr,msg,256,&text_len);
+        printf("%s %d %s %d\n",state,err_ptr,msg,text_len);
+      }*/
+      return ret == SQL_SUCCESS;
+    }
+    bool execute()
+    {
+      SQLRETURN ret = SQLExecute(this->statement_handle_); // == SQL_SUCCESS;
+      /*debug(1) {
+        printf("Execute: %d\n",ret);
+        printf("Execute handle: %p\n",statement_handle_);
+        SQLCHAR state[256];
+        SQLCHAR msg[256];
+        SQLINTEGER err_ptr;
+        SQLSMALLINT text_len;
+        SQLGetDiagRec(SQL_HANDLE_STMT,statement_handle_,1,state,&err_ptr,msg,256,&text_len);
+        printf("%s %d %s %d\n",state,err_ptr,msg,text_len);
+      }*/
+      return ret==SQL_SUCCESS;
+    }
+
+  adjunct:
+    bool bindcol(void* data,SQLLEN column_size,SQLSMALLINT c_data_type)
+    {
+      return SQLBindCol(this->statement_handle_,this->icol_++,c_data_type,data,column_size,NULL) == SQL_SUCCESS;
+    }
+
+    bool bindparam(void* data,SQLLEN column_size,SQLSMALLINT c_data_type)
+    {
+      return SQLBindParameter(this->statement_handle_,this->icol_++,SQL_PARAM_INPUT,c_data_type,SQL_DEFAULT,
+              column_size,0,data,column_size,NULL) == SQL_SUCCESS;
+    }
+
+  private:
+    void set_handle(SQLHSTMT h)
+    {
+      this->statement_handle_=h;
+    }
+};
+
+/*
+  Private constructor for statement.  Used by odbc connection
+*/
+static void yaooc_odbc_statement_ctor_private(pointer p,va_list args)
+{
+  yaooc_odbc_statement_pointer this=p;
+  this->statement_handle_ = SQL_NULL_HANDLE;
+	this->icol_=1;
+}
+
+%class yaooc_odbc_connection {
+    yaooc_odbc_connection()
+    {
+      this->connection_handle_ = SQL_NULL_HANDLE;
+    }
+
+    ~yaooc_odbc_connection()
+    {
+      M(this,disconnect);
+    }
+
+    yaooc_odbc_connection(src) = delete;
+
+    operator=(src) = delete;
+
+    yaooc_odbc_connection_ctor_connect_str(const char* connect_str) : yaooc_odbc_connection()
+    {
+      M(this,connect,connect_str);
+    }
+
+  instance:
+    SQLHDBC connection_handle_;
+
+  table:
+    yaooc_odbc_statement_t* exec_direct(const char* str)
+    {
+      yaooc_odbc_statement_t *stmt = new_ctor(yaooc_odbc_statement,yaooc_odbc_statement_ctor_private,NULL);
+      SQLHSTMT handle;
+      if(SQL_SUCCEEDED(SQLAllocHandle(SQL_HANDLE_STMT, this->connection_handle_, &handle))) {
+        SQLRETURN rc= SQLExecDirect(handle,(SQLCHAR*)str,SQL_NTS);
+        /*debug(1) {
+          printf("%d\n",rc);
+        }*/
+        if(SQL_SUCCEEDED(rc)) {
+          /*debug(1) {
+            printf("Exec direct succeeded. Set statement handle handle: %p\n",handle);
+          }*/
+          yaooc_odbc_statement_set_handle(stmt,handle);
+        } else {
+    /*			SQLCHAR* state=new SQLCHAR[256];
+          SQLCHAR* msg=new SQLCHAR[256];
+          SQLINTEGER err_ptr;
+          SQLSMALLINT text_len;
+          SQLGetDiagRec(SQL_HANDLE_STMT,handle,1,state,&err_ptr,msg,256,&text_len);
+          printf("%s %d %s %d\n",state,err_ptr,msg,text_len);*/
+          SQLCloseCursor(handle);
+          SQLFreeHandle(SQL_HANDLE_STMT,handle);
+        }
+      }
+      return stmt;
+    }
+
+    yaooc_odbc_statement_t* prepare(const char* str)
+    {
+      yaooc_odbc_statement_t *stmt = new_ctor(yaooc_odbc_statement,yaooc_odbc_statement_ctor_private,NULL);
+      SQLHSTMT handle;
+      if(SQL_SUCCEEDED(SQLAllocHandle(SQL_HANDLE_STMT, this->connection_handle_, &handle))) {
+        SQLRETURN rc= SQLPrepare(handle,(SQLCHAR*)str,SQL_NTS);
+        /*debug(1) {
+          printf("%d\n",rc);
+        }*/
+        if(SQL_SUCCEEDED(rc)) {
+          /*debug(1) {
+            printf("Prepare handle: %p\n",handle);
+          }*/
+          yaooc_odbc_statement_set_handle(stmt,handle);
+        } else {
+          /*SQLCHAR* state=new SQLCHAR[256];
+          SQLCHAR* msg=new SQLCHAR[256];
+          SQLINTEGER err_ptr;
+          SQLSMALLINT text_len;
+          SQLGetDiagRec(SQL_HANDLE_STMT,handle,1,state,&err_ptr,msg,256,&text_len);
+          printf("%s %d %s %d\n",state,err_ptr,msg,text_len);*/
+          SQLCloseCursor(handle);
+          SQLFreeHandle(SQL_HANDLE_STMT,handle);
+        }
+      }
+      return stmt;
+    }
+
+    void connect(const char* str)
+    {
+      M(this,disconnect);
+      SQLRETURN rc = SQLAllocHandle(SQL_HANDLE_DBC, yaooc_odbc_environment_henv_, &this->connection_handle_);
+      if(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO) {
+        yaooc_odbc_connection_auto_commit(this,false); // autocommit off by default
+        rc=SQLDriverConnect(this->connection_handle_, NULL, (SQLCHAR*)str, SQL_NTS,
+            NULL, 0, NULL, SQL_DRIVER_NOPROMPT);
+      }
+    /*	debug(DEBUG_CONNECTION) {
+        rc == SQL_SUCCESS ? puts("Connected") : puts("Failed connect");
+      }*/
+      if(rc != SQL_SUCCESS) {
+    /*		SQLCHAR state[256];
+        SQLCHAR msg[256];
+        SQLINTEGER err_ptr;
+        SQLSMALLINT text_len;
+        SQLGetDiagRec(SQL_HANDLE_DBC,connection_handle_,1,state,&err_ptr,msg,256,&text_len);
+        printf("%s %d %s %d\n",state,err_ptr,msg,text_len);*/
+        M(this,disconnect);
+      }
+    }
+
+    void disconnect()
+    {
+      if(this->connection_handle_ != SQL_NULL_HANDLE) {
+        M(this,commit);
+        SQLDisconnect(this->connection_handle_);
+        SQLFreeHandle(SQL_HANDLE_DBC, this->connection_handle_);
+        this->connection_handle_=SQL_NULL_HANDLE;
+      }
+    }
+
+    void auto_commit(bool on)
+    {
+      if(this->connection_handle_ != SQL_NULL_HANDLE)
+        SQLSetConnectAttr(this->connection_handle_,SQL_ATTR_AUTOCOMMIT, (SQLPOINTER)(long)(on ? SQL_TRUE : SQL_FALSE), 0);
+    }
+
+    void commit()
+    {
+      if(this->connection_handle_ != SQL_NULL_HANDLE)
+        SQLEndTran(SQL_HANDLE_DBC,this->connection_handle_,SQL_COMMIT);
+    }
+
+    void rollback()
+    {
+      if(this->connection_handle_ != SQL_NULL_HANDLE)
+        SQLEndTran(SQL_HANDLE_DBC,this->connection_handle_,SQL_ROLLBACK);
+    }
+};
