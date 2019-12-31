@@ -16,7 +16,7 @@
 */
 
 %prefix_directory yaooc
-%include <yaooc/ordered_array_container.yod>
+%include <yaooc/ordered_array_container.yaooh>
 
 #include <stdio.h>
 #include <stdlib.h>

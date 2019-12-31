@@ -2,7 +2,6 @@
 #define __COMPONENTS_INCLUDED__
 
 #include <yaooc/object.h>
-
 #include <yaooc/vector.h>
 #include <yaooc/string.h>
 #include <yaooc/memory.h>
@@ -66,7 +65,7 @@ void (*print_adjunct_implementation)(const_pointer,ostream_pointer,const char*,c
 void (*print_private_prototype)(const_pointer,ostream_pointer,const char*,const char*);
 void (*print_private_implementation)(const_pointer,ostream_pointer,const char*,const char*);
 void (*print_class_table_entry)(const_pointer,ostream_pointer,const char*,const char*);
-void (*print_yod_definition)(const_pointer,ostream_pointer,bool);
+void (*print_yaooh_definition)(const_pointer,ostream_pointer,bool);
 };
 #define yaoocpp_member_item_parent_class_table ((yaoocpp_argument_class_table_t*)(yaoocpp_member_item_class_table.parent_class_table_))
 
@@ -89,7 +88,7 @@ void yaoocpp_member_item_assign(pointer,const_pointer);
  void yaoocpp_member_item_print_private_prototype(const_pointer,ostream_pointer,const char*,const char*);
  void yaoocpp_member_item_print_private_implementation(const_pointer,ostream_pointer,const char*,const char*);
  void yaoocpp_member_item_print_class_table_entry(const_pointer,ostream_pointer,const char*,const char*);
- void yaoocpp_member_item_print_yod_definition(const_pointer,ostream_pointer,bool);
+ void yaoocpp_member_item_print_yaooh_definition(const_pointer,ostream_pointer,bool);
 yaooc_class_table(yaoocpp_variable) {
   yaoocpp_member_item_class_table_t;
 };
@@ -115,7 +114,7 @@ void yaoocpp_variable_assign(pointer,const_pointer);
  void yaoocpp_variable_print_private_prototype(const_pointer,ostream_pointer,const char*,const char*);
  void yaoocpp_variable_print_private_implementation(const_pointer,ostream_pointer,const char*,const char*);
  void yaoocpp_variable_print_class_table_entry(const_pointer,ostream_pointer,const char*,const char*);
- void yaoocpp_variable_print_yod_definition(const_pointer,ostream_pointer,bool);
+ void yaoocpp_variable_print_yaooh_definition(const_pointer,ostream_pointer,bool);
  void yaoocpp_variable_print(const_pointer,ostream_pointer,const char*,const char*,const char*,bool);
 yaooc_class_table(yaoocpp_method) {
   yaoocpp_member_item_class_table_t;
@@ -149,7 +148,7 @@ void yaoocpp_method_assign(pointer,const_pointer);
  void yaoocpp_method_print_private_prototype(const_pointer,ostream_pointer,const char*,const char*);
  void yaoocpp_method_print_private_implementation(const_pointer,ostream_pointer,const char*,const char*);
  void yaoocpp_method_print_class_table_entry(const_pointer,ostream_pointer,const char*,const char*);
- void yaoocpp_method_print_yod_definition(const_pointer,ostream_pointer,bool);
+ void yaoocpp_method_print_yaooh_definition(const_pointer,ostream_pointer,bool);
  size_t yaoocpp_method_argument_count(const_pointer);
  void yaoocpp_method_set_implementation(pointer,const char*,size_t);
  void yaoocpp_method_set_implemented_as(pointer,const char*,size_t);
@@ -248,7 +247,7 @@ yaooc_class(yaoocpp_default_constructor);
  void yaoocpp_default_constructor_add_mixin_text(pointer,yaoocpp_mixin_const_pointer,const char*,const char*);
  void yaoocpp_default_constructor_print_implementation(const_pointer,ostream_pointer,const char*);
  void yaoocpp_default_constructor_print_type_info_entry(const_pointer,ostream_pointer);
- void yaoocpp_default_constructor_print_yod_definition(const_pointer,ostream_pointer,bool);
+ void yaoocpp_default_constructor_print_yaooh_definition(const_pointer,ostream_pointer,bool);
 yaooc_class_table(yaoocpp_destructor) {
   yaoocpp_type_info_class_table_t;
 };
@@ -270,7 +269,7 @@ yaooc_class(yaoocpp_destructor);
  void yaoocpp_destructor_add_mixin_text(pointer,yaoocpp_mixin_const_pointer,const char*,const char*);
  void yaoocpp_destructor_print_implementation(const_pointer,ostream_pointer,const char*);
  void yaoocpp_destructor_print_type_info_entry(const_pointer,ostream_pointer);
- void yaoocpp_destructor_print_yod_definition(const_pointer,ostream_pointer,bool);
+ void yaoocpp_destructor_print_yaooh_definition(const_pointer,ostream_pointer,bool);
 yaooc_class_table(yaoocpp_copy_constructor) {
   yaoocpp_constructor_base_class_table_t;
 void (*set_source_name)(pointer,const char*,size_t);
@@ -299,7 +298,7 @@ void yaoocpp_copy_constructor_assign(pointer,const_pointer);
  void yaoocpp_copy_constructor_add_mixin_text(pointer,yaoocpp_mixin_const_pointer,const char*,const char*);
  void yaoocpp_copy_constructor_print_implementation(const_pointer,ostream_pointer,const char*);
  void yaoocpp_copy_constructor_print_type_info_entry(const_pointer,ostream_pointer);
- void yaoocpp_copy_constructor_print_yod_definition(const_pointer,ostream_pointer,bool);
+ void yaoocpp_copy_constructor_print_yaooh_definition(const_pointer,ostream_pointer,bool);
 yaooc_class_table(yaoocpp_assignment) {
   yaoocpp_copy_constructor_class_table_t;
 };
@@ -322,7 +321,7 @@ yaooc_class(yaoocpp_assignment);
  void yaoocpp_assignment_add_mixin_text(pointer,yaoocpp_mixin_const_pointer,const char*,const char*);
  void yaoocpp_assignment_print_implementation(const_pointer,ostream_pointer,const char*);
  void yaoocpp_assignment_print_type_info_entry(const_pointer,ostream_pointer);
- void yaoocpp_assignment_print_yod_definition(const_pointer,ostream_pointer,bool);
+ void yaoocpp_assignment_print_yaooh_definition(const_pointer,ostream_pointer,bool);
 yaooc_class_table(yaoocpp_rich_compare) {
   yaoocpp_type_info_class_table_t;
 void (*set_lhs_name)(pointer,const char*,size_t);
@@ -352,7 +351,7 @@ void yaoocpp_rich_compare_assign(pointer,const_pointer);
  void yaoocpp_rich_compare_resolve(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer);
  void yaoocpp_rich_compare_print_implementation(const_pointer,ostream_pointer,const char*);
  void yaoocpp_rich_compare_print_type_info_entry(const_pointer,ostream_pointer);
- void yaoocpp_rich_compare_print_yod_definition(const_pointer,ostream_pointer,bool);
+ void yaoocpp_rich_compare_print_yaooh_definition(const_pointer,ostream_pointer,bool);
  void yaoocpp_rich_compare_add_mixin_text(pointer,yaoocpp_mixin_const_pointer,const char*,const char*);
 yaooc_class_table(yaoocpp_to_stream) {
   yaoocpp_type_info_class_table_t;
@@ -380,7 +379,7 @@ void yaoocpp_to_stream_assign(pointer,const_pointer);
  void yaoocpp_to_stream_resolve(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer);
  void yaoocpp_to_stream_print_implementation(const_pointer,ostream_pointer,const char*);
  void yaoocpp_to_stream_print_type_info_entry(const_pointer,ostream_pointer);
- void yaoocpp_to_stream_print_yod_definition(const_pointer,ostream_pointer,bool);
+ void yaoocpp_to_stream_print_yaooh_definition(const_pointer,ostream_pointer,bool);
  void yaoocpp_to_stream_add_mixin_text(pointer,yaoocpp_mixin_const_pointer,const char*,const char*);
 yaooc_class_table(yaoocpp_from_stream) {
   yaoocpp_to_stream_class_table_t;
@@ -402,7 +401,7 @@ yaooc_class(yaoocpp_from_stream);
  void yaoocpp_from_stream_resolve(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer);
  void yaoocpp_from_stream_print_implementation(const_pointer,ostream_pointer,const char*);
  void yaoocpp_from_stream_print_type_info_entry(const_pointer,ostream_pointer);
- void yaoocpp_from_stream_print_yod_definition(const_pointer,ostream_pointer,bool);
+ void yaoocpp_from_stream_print_yaooh_definition(const_pointer,ostream_pointer,bool);
  void yaoocpp_from_stream_add_mixin_text(pointer,yaoocpp_mixin_const_pointer,const char*,const char*);
 yaooc_class_table(yaoocpp_constructor) {
   yaoocpp_constructor_base_class_table_t;
@@ -430,14 +429,14 @@ void yaoocpp_constructor_assign(pointer,const_pointer);
  void yaoocpp_constructor_print_implementation(const_pointer,ostream_pointer,const char*);
  size_t yaoocpp_constructor_argument_count(const_pointer);
  void yaoocpp_constructor_resolve(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer);
- void yaoocpp_constructor_print_yod_definition(const_pointer,ostream_pointer,bool);
+ void yaoocpp_constructor_print_yaooh_definition(const_pointer,ostream_pointer,bool);
  void yaoocpp_constructor_print_args_type(const_pointer,ostream_pointer);
  void yaoocpp_constructor_print_args_type_name(const_pointer,ostream_pointer);
 yaooc_class_table(yaoocpp_section) {
   yaoocpp_item_class_table_t;
 void (*print_to_header)(const_pointer,ostream_pointer);
 void (*print_to_source)(const_pointer,ostream_pointer);
-void (*print_to_yod)(const_pointer,ostream_pointer);
+void (*print_to_yaooh)(const_pointer,ostream_pointer);
 void (*resolve)(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer);
 void (*add_mixins)(pointer,yaoocpp_item_pointer_vector_const_pointer);
 };
@@ -457,7 +456,7 @@ void yaoocpp_section_assign(pointer,const_pointer);
 #define yaoocpp_section_set_line_no yaoocpp_item_set_line_no
  void yaoocpp_section_print_to_header(const_pointer,ostream_pointer);
  void yaoocpp_section_print_to_source(const_pointer,ostream_pointer);
- void yaoocpp_section_print_to_yod(const_pointer,ostream_pointer);
+ void yaoocpp_section_print_to_yaooh(const_pointer,ostream_pointer);
  void yaoocpp_section_resolve(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer);
  void yaoocpp_section_add_mixins(pointer,yaoocpp_item_pointer_vector_const_pointer);
 yaooc_class_table(yaoocpp_header) {
@@ -479,7 +478,7 @@ void yaoocpp_header_assign(pointer,const_pointer);
 #define yaoocpp_header_set_line_no yaoocpp_section_set_line_no
  void yaoocpp_header_print_to_header(const_pointer,ostream_pointer);
 #define yaoocpp_header_print_to_source yaoocpp_section_print_to_source
-#define yaoocpp_header_print_to_yod yaoocpp_section_print_to_yod
+#define yaoocpp_header_print_to_yaooh yaoocpp_section_print_to_yaooh
 #define yaoocpp_header_resolve yaoocpp_section_resolve
 #define yaoocpp_header_add_mixins yaoocpp_section_add_mixins
 yaooc_class_table(yaoocpp_source) {
@@ -496,7 +495,7 @@ yaooc_class(yaoocpp_source);
 #define yaoocpp_source_set_line_no yaoocpp_header_set_line_no
  void yaoocpp_source_print_to_header(const_pointer,ostream_pointer);
  void yaoocpp_source_print_to_source(const_pointer,ostream_pointer);
-#define yaoocpp_source_print_to_yod yaoocpp_header_print_to_yod
+#define yaoocpp_source_print_to_yaooh yaoocpp_header_print_to_yaooh
 #define yaoocpp_source_resolve yaoocpp_header_resolve
 #define yaoocpp_source_add_mixins yaoocpp_header_add_mixins
 yaooc_class_table(yaoocpp_struct) {
@@ -535,7 +534,7 @@ void yaoocpp_struct_assign(pointer,const_pointer);
 #define yaoocpp_struct_set_line_no yaoocpp_section_set_line_no
  void yaoocpp_struct_print_to_header(const_pointer,ostream_pointer);
  void yaoocpp_struct_print_to_source(const_pointer,ostream_pointer);
- void yaoocpp_struct_print_to_yod(const_pointer,ostream_pointer);
+ void yaoocpp_struct_print_to_yaooh(const_pointer,ostream_pointer);
 #define yaoocpp_struct_resolve yaoocpp_section_resolve
  void yaoocpp_struct_add_mixins(pointer,yaoocpp_item_pointer_vector_const_pointer);
  void yaoocpp_struct_inherit(pointer);
@@ -576,7 +575,7 @@ void yaoocpp_class_assign(pointer,const_pointer);
 #define yaoocpp_class_set_line_no yaoocpp_struct_set_line_no
  void yaoocpp_class_print_to_header(const_pointer,ostream_pointer);
  void yaoocpp_class_print_to_source(const_pointer,ostream_pointer);
- void yaoocpp_class_print_to_yod(const_pointer,ostream_pointer);
+ void yaoocpp_class_print_to_yaooh(const_pointer,ostream_pointer);
 #define yaoocpp_class_resolve yaoocpp_struct_resolve
  void yaoocpp_class_add_mixins(pointer,yaoocpp_item_pointer_vector_const_pointer);
  void yaoocpp_class_inherit(pointer);
@@ -604,7 +603,7 @@ yaooc_class(yaoocpp_union);
 #define yaoocpp_union_set_line_no yaoocpp_class_set_line_no
  void yaoocpp_union_print_to_header(const_pointer,ostream_pointer);
 #define yaoocpp_union_print_to_source yaoocpp_class_print_to_source
-#define yaoocpp_union_print_to_yod yaoocpp_class_print_to_yod
+#define yaoocpp_union_print_to_yaooh yaoocpp_class_print_to_yaooh
 #define yaoocpp_union_resolve yaoocpp_class_resolve
 #define yaoocpp_union_add_mixins yaoocpp_class_add_mixins
 #define yaoocpp_union_inherit yaoocpp_class_inherit
@@ -627,7 +626,7 @@ yaooc_class(yaoocpp_mixin);
 #define yaoocpp_mixin_set_line_no yaoocpp_class_set_line_no
  void yaoocpp_mixin_print_to_header(const_pointer,ostream_pointer);
  void yaoocpp_mixin_print_to_source(const_pointer,ostream_pointer);
- void yaoocpp_mixin_print_to_yod(const_pointer,ostream_pointer);
+ void yaoocpp_mixin_print_to_yaooh(const_pointer,ostream_pointer);
 #define yaoocpp_mixin_resolve yaoocpp_class_resolve
 #define yaoocpp_mixin_add_mixins yaoocpp_class_add_mixins
 #define yaoocpp_mixin_inherit yaoocpp_class_inherit

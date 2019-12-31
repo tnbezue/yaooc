@@ -16,7 +16,7 @@
 */
 
 %prefix_directory yaooc
-%include <yaooc/object.yod>
+%include <yaooc/object.yaooh>
 
 #include <math.h>
 

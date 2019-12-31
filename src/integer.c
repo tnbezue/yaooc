@@ -38,6 +38,7 @@ int yaooc_integer_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 yaooc_integer_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_integer_const_pointer rhs=__prhs__;(void)rhs;
 
+
     if(lhs->value_<rhs->value_)
       return -1;
     if(lhs->value_>rhs->value_)
@@ -50,6 +51,7 @@ void yaooc_integer_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__)
 yaooc_integer_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
 
+
     M(ostrm,printf,"%" PRId64,this->value_);
   
 }
@@ -57,6 +59,7 @@ void yaooc_integer_from_stream(pointer __pthis__,ostream_pointer __pstrm__)
 {
 yaooc_integer_pointer this=__pthis__;(void)this;
 yaooc_istream_pointer istrm=__pstrm__;(void)istrm;
+
 
     M(istrm,scanf,"%" SCNd64,&this->value_);
   

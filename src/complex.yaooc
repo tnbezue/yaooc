@@ -17,7 +17,7 @@
 
 %prefix_directory yaooc
 
-%include <yaooc/object.yod>
+%include <yaooc/object.yaooh>
 
 %header
 #include <yaooc/stream.h>

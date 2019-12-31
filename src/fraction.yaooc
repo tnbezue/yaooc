@@ -15,8 +15,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-%include <yaooc/object.yod>
-%include <yaooc/exception.yod>
+%include <yaooc/object.yaooh>
+%include <yaooc/exception.yaooh>
 %prefix_directory yaooc
 
 %header

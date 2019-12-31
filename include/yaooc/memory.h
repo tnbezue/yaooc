@@ -2,7 +2,6 @@
 #define __MEMORY_INCLUDED__
 
 #include <yaooc/object.h>
-
 yaooc_struct(yaooc_dynamic_pointer) {
 void* ptr_;
 };

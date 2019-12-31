@@ -212,3 +212,31 @@ const type_info_t __yaooc_fraction_ti = {
 .parent_=&__yaooc_object_ti
 };
 const type_info_t* const yaooc_fraction_ti=&__yaooc_fraction_ti;
+yaooc_fraction_t yaooc_fraction_plus_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2)
+{
+  yaooc_fraction_t f=f1;
+  M(&f,plus,&f2);
+  return f;
+}
+
+yaooc_fraction_t yaooc_fraction_minus_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2)
+{
+  yaooc_fraction_t f=f1;
+  M(&f,minus,&f2);
+  return f;
+}
+
+yaooc_fraction_t yaooc_fraction_times_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2)
+{
+  yaooc_fraction_t f=f1;
+  M(&f,times,&f2);
+  return f;
+}
+
+yaooc_fraction_t yaooc_fraction_divided_by_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2)
+{
+  yaooc_fraction_t f=f1;
+  M(&f,divided_by,&f2);
+  return f;
+}
+

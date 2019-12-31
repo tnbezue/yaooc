@@ -1,4 +1,4 @@
-%include <yaooc/array_container.yod>
+%include <yaooc/array_container.yaooh>
 %prefix_directory yaooc
 
 typedef yaooc_garbage_bag_item_t* yaooc_garbage_bag_iterator;

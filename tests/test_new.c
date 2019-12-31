@@ -1,19 +1,4 @@
-/*
-		Copyright (C) 2016-2018  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+#include "test_new.h"
 
 #include <stdio.h>
 #include <stdio.h>
@@ -21,7 +6,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <yaooc/new.h>
 #include "test_harness.h"
 
 void test_type_sizes()
@@ -37,69 +21,100 @@ void test_type_sizes()
 #endif
 }
 
-int base_x=0;
-yaooc_struct(demo) {
-	int x;
+
+static  int demo_temp=0;
+void demo_default_ctor(pointer __pthis__)
+{
+demo_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,demo);
+
+
+
+      this->x =demo_temp++;
+      if(optr) optr+=sprintf(optr,"DC%d",this->x);
+    
+}
+void demo_dtor(pointer __pthis__)
+{
+demo_pointer this=__pthis__;(void)this;
+
+
+      if(optr) optr+=sprintf(optr,"DT%d",this->x);
+    
+}
+void demo_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+demo_pointer this=__pthis__;(void)this;
+demo_const_pointer src=__psrc__;(void)src;
+
+call_default_ctor_static(this,demo);
+
+
+      if(optr) optr+=sprintf(optr,"CC%d",src->x);
+      demo_assign(this,src); 
+    
+}
+void demo_assign(pointer __pthis__,const_pointer __psrc__)
+{
+demo_pointer this=__pthis__;(void)this;
+demo_const_pointer src=__psrc__;(void)src;
+
+
+      this->x=src->x;
+      if(optr) optr+=sprintf(optr,"AS%d",this->x);
+    
+}
+int demo_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+demo_const_pointer lhs=__plhs__;(void)lhs;
+demo_const_pointer rhs=__prhs__;(void)rhs;
+
+      int rc = (lhs->x > rhs->x) - (lhs->x < rhs->x);
+      if(optr) optr+=sprintf(optr,"%d<=>%d = %d",lhs->x,rhs->x,rc);
+      return rc;
+    
+}
+void demo_ctor_int(pointer __pthis,va_list __con_args__){
+demo_pointer this=__pthis;(void)this;
+int x = va_arg(__con_args__,int);
+
+call_default_ctor_static(this,demo);
+
+
+      this->x = x;
+      if(optr) optr+=sprintf(optr,"CT%d",this->x);
+    
+}
+const type_info_t __demo_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(demo_t),
+.rich_compare_=demo_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=demo_default_ctor,
+.dtor_=demo_dtor,
+.copy_ctor_=demo_copy_ctor,
+.assign_=demo_assign,
+.class_table_=NULL,
+.parent_=NULL
 };
-
-void demo_default_ctor(pointer p)
-{
-	demo_pointer this=p;
-	this->x=base_x++;
-	if(optr) optr+=sprintf(optr,"DC%d",this->x);
-}
-
-void demo_dtor(pointer p)
-{
-	if(optr) optr+=sprintf(optr,"DT%d",((demo_const_pointer)p)->x);
-}
-
-void demo_assign(pointer dst,const_pointer src)
-{
-	((demo_pointer)dst)->x=((demo_const_pointer)src)->x;
-	if(optr) optr+=sprintf(optr,"AS%d",((demo_const_pointer)src)->x);
-}
-
-void demo_copy_ctor(pointer dst,const_pointer src)
-{
-  if(optr) optr+=sprintf(optr,"CC%d",((demo_const_pointer)src)->x);
-  demo_default_ctor(dst);
-  demo_assign(dst,src);
-}
-
-int demo_rich_compare(const_pointer v1,const_pointer v2)
-{
-	if(optr) optr+=sprintf(optr,"%d<%d",((demo_const_pointer)v1)->x,((demo_const_pointer)v2)->x);
-	return ((demo_const_pointer)v1)->x - ((demo_const_pointer)v2)->x;
-}
-
-DEFINE_TYPE_INFO(demo,Y,Y,Y,Y,Y,N,N,N,NULL);
-
-/*
-  Demo constructor that takes a integer as an argument
-*/
-void demo_ctor_int(pointer p,va_list args)
-{
-	demo_pointer this=p;
-	this->x=va_arg(args,int);
-	if(optr) optr+=sprintf(optr,"CT%d",this->x);
-}
-
+const type_info_t* const demo_ti=(const type_info_t* const)&__demo_ti;
 void test_new_delete()
 {
 	optr=output;
 	demo_pointer d1 = new(demo);
 	TESTCASE("New/delete");
-	TEST("Default ctor called",strcmp(output,"DC0")==0);
+	TEST("Initialize with default ctor",strcmp(output,"DC0")==0);
 	optr=output;
 	delete(d1);
 	TEST("Dtor called",strcmp(output,"DT0")==0);
 	optr=output;
 	demo_pointer d1a=new_ctor(demo,demo_ctor_int,99);
-	TEST("Non default ctor called",strcmp(output,"CT99")==0);
+	TEST("Initialize with non default ctor -- will use default ctor first",strcmp(output,"DC1CT99")==0);
 	optr=output;
 	demo_pointer d2=new_copy(d1a);
-	TEST("Copy ctor (calls default and assign)",strcmp(output,"CC99DC1AS99")==0);
+	TEST("Copy ctor (calls default and assign)",strcmp(output,"DC2CC99AS99")==0);
 	optr=output;
 	delete(d1a);
 	delete(d2);
@@ -108,7 +123,7 @@ void test_new_delete()
 	TESTCASE("Placement new");
 	demo_t d3;
 
-	base_x=25;
+	demo_temp=25;
 	optr=output;
 	newp(&d3,demo);
 	TEST("Default ctor called",strcmp(output,"DC25")==0);
@@ -120,7 +135,7 @@ void test_new_delete()
 typedef const demo_t* demo_array_const_iterator;
 void test_new_delete_array()
 {
-	base_x=0;
+	demo_temp=0;
 	optr=output;
 	demo_pointer d1 = new_array(demo,5);
 	TESTCASE("New/delete Array");
@@ -139,12 +154,12 @@ void test_new_delete_array()
 	demo_array_const_iterator iter;
 	for(iter=d1a;iter!=d1a+5;iter++)
 		TEST("Value is 127",iter->x == 127);
-	TEST("Ctor called for each",strcmp(output,"CT127CT127CT127CT127CT127") ==0);
+	TEST("Ctor called for each",strcmp(output,"DC5CT127DC6CT127DC7CT127DC8CT127DC9CT127") ==0);
 	delete(d1a);
 
 	demo_t d2[5];
 	optr=output;
-	base_x=0;
+	demo_temp=0;
 	newp_array(d2,demo,5);
 	TESTCASE("New/delete Array");
 	TEST("Default ctor called",strcmp(output,"DC0DC1DC2DC3DC4")==0);
@@ -156,12 +171,11 @@ void test_new_delete_array()
 	optr=output;
 	deletep_array(d2,demo,5);
 	TEST("Dtor called for each",strcmp(output,"DT0DT1DT2DT3DT4") ==0);
-
 	optr=output;
 	newp_array_ctor(d2,demo,5,demo_ctor_int,256);
 	for(iter=d2;iter!=d2+5;iter++)
 		TEST("Value is 256",iter->x == 256);
-	TEST("Ctor called for each",strcmp(output,"CT256CT256CT256CT256CT256") ==0);
+	TEST("Ctor called for each",strcmp(output,"DC5CT256DC6CT256DC7CT256DC8CT256DC9CT256") ==0);
 	optr=output;
 	deletep_array(d2,demo,5);
 	TEST("Dtor called for each",strcmp(output,"DT256DT256DT256DT256DT256") ==0);
@@ -221,139 +235,220 @@ void test_copy()
 	delete(dy);
 }
 
-yaooc_struct(base) {
-	int x;
+
+void base_default_ctor(pointer __pthis__)
+{
+base_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,base);
+
+
+
+      this->x = 0;
+      if(optr) optr+=sprintf(optr,"BDC0");
+    
+}
+void base_dtor(pointer __pthis__)
+{
+base_pointer this=__pthis__;(void)this;
+
+
+      if(optr) optr+=sprintf(optr,"BDT%d",this->x);
+    
+}
+void base_copy_ctor(pointer __pthis__,const_pointer __psrc__)
+{
+base_pointer this=__pthis__;(void)this;
+base_const_pointer src=__psrc__;(void)src;
+
+call_default_ctor_static(this,base);
+
+
+      if(optr) optr+=sprintf(optr,"BCC%d-%d",this->x,src->x);
+      base_assign(this,src);
+    
+}
+void base_assign(pointer __pthis__,const_pointer __psrc__)
+{
+base_pointer this=__pthis__;(void)this;
+base_const_pointer src=__psrc__;(void)src;
+
+
+      this->x=src->x;
+      if(optr) optr+=sprintf(optr,"BAS%d-%d",this->x,src->x);
+    
+}
+int base_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
+{
+base_const_pointer lhs=__plhs__;(void)lhs;
+base_const_pointer rhs=__prhs__;(void)rhs;
+
+      if(optr) optr+=sprintf(optr,"BLTC%d-%d",lhs->x,rhs->x);
+      return lhs->x - rhs->x;
+    
+}
+void base_ctor_int(pointer __pthis,va_list __con_args__){
+base_pointer this=__pthis;(void)this;
+int x = va_arg(__con_args__,int);
+
+call_default_ctor_static(this,base);
+
+
+      if(optr) optr+=sprintf(optr,"BCTI%d",x);
+      this->x=x;
+    
+}
+const type_info_t __base_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(base_t),
+.rich_compare_=base_rich_compare,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=base_default_ctor,
+.dtor_=base_dtor,
+.copy_ctor_=base_copy_ctor,
+.assign_=base_assign,
+.class_table_=NULL,
+.parent_=NULL
 };
-
-void base_default_ctor(pointer p)
+const type_info_t* const base_ti=(const type_info_t* const)&__base_ti;
+void derived_default_ctor(pointer __pthis__)
 {
-  ((base_t*)p)->x = 0;
-  if(optr) optr+=sprintf(optr,"BDC0");
-}
+derived_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,derived);
 
-void base_dtor(pointer p)
+
+
+      if(optr) optr+=sprintf(optr,"DDC0");
+      this->y = 0;
+    
+}
+void derived_dtor(pointer __pthis__)
 {
-  if(optr) optr+=sprintf(optr,"BDT%d",((base_t*)p)->x);
-}
+derived_pointer this=__pthis__;(void)this;
 
-void base_assign(pointer dst,const_pointer src) {
-  if(optr) optr+=sprintf(optr,"BAS%d-%d",((const base_t*)dst)->x,((const base_t*)src)->x);
-  ((base_t*)dst)->x = ((const base_t*)src)->x;
+
+      if(optr) optr+=sprintf(optr,"DDT%d",this->y);
+    
 }
-void base_copy_ctor(pointer dst,const_pointer src)
+void derived_copy_ctor(pointer __pthis__,const_pointer __psrc__)
 {
-  base_default_ctor(dst);
-  if(optr) optr+=sprintf(optr,"BCC%d-%d",((const base_t*)dst)->x,((const base_t*)src)->x);
-  base_assign(dst,src);
-}
+derived_pointer this=__pthis__;(void)this;
+derived_const_pointer src=__psrc__;(void)src;
 
-int base_rich_compare(const_pointer v1,const_pointer v2)
+call_default_ctor_static(this,derived);
+
+
+      if(optr) optr+=sprintf(optr,"DCC%d:%d-%d:%d",this->x,this->y,src->x,src->y);
+      derived_assign(this,src); 
+    
+}
+void derived_assign(pointer __pthis__,const_pointer __psrc__)
 {
-  if(optr) optr+=sprintf(optr,"BLTC%d-%d",((const base_t*)v1)->x,((const base_t*)v2)->x);
-  return ((const base_t*)v1)->x - ((const base_t*)v2)->x;
-}
-DEFINE_TYPE_INFO(base,Y,Y,Y,Y,Y,N,N,N,NULL);
+derived_pointer this=__pthis__;(void)this;
+derived_const_pointer src=__psrc__;(void)src;
 
-void base_ctor_int(pointer p,va_list args)
+
+      if(optr) optr+=sprintf(optr,"DAS%d:%d-%d:%d",this->x,this->y,src->x,src->y);
+      base_assign(this,src);
+      this->y = src->y;
+    
+}
+void derived_ctor_int_int(pointer __pthis,va_list __con_args__){
+derived_pointer this=__pthis;(void)this;
+int x = va_arg(__con_args__,int);
+int y = va_arg(__con_args__,int);
+
+call_constructor(this,base_ctor_int,x);
+this->y=y;
+
+
+      if(optr) optr+=sprintf(optr,"DCTII%d",y);
+    
+}
+const type_info_t __derived_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(derived_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=derived_default_ctor,
+.dtor_=derived_dtor,
+.copy_ctor_=derived_copy_ctor,
+.assign_=derived_assign,
+.class_table_=NULL,
+.parent_=&__base_ti};
+const type_info_t* const derived_ti=(const type_info_t* const)&__derived_ti;
+void derived2_default_ctor(pointer __pthis__)
 {
-  int x=va_arg(args,int);
-  if(optr) optr+=sprintf(optr,"BCTI%d",x);
-  ((base_t*)p)->x=x;
+derived2_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,derived2);
+
+
+
+      if(optr) optr+=sprintf(optr,"D2DC0");
+      this->z=0;
+    
 }
-
-yaooc_struct(derived) {
-	base_t;
-	int y;
-};
-
-void derived_default_ctor(pointer p)
+void derived2_dtor(pointer __pthis__)
 {
-  if(optr) optr+=sprintf(optr,"DDC0");
-  base_default_ctor(p);
-  ((derived_t*)p)->y = 0;
-}
+derived2_pointer this=__pthis__;(void)this;
 
-void derived_dtor(pointer p)
+
+      if(optr) optr+=sprintf(optr,"D2DT%d",this->z);
+    
+}
+void derived2_copy_ctor(pointer __pthis__,const_pointer __psrc__)
 {
-  if(optr) optr+=sprintf(optr,"DDT%d",((derived_t*)p)->y);
+derived2_pointer this=__pthis__;(void)this;
+derived2_const_pointer src=__psrc__;(void)src;
+
+call_default_ctor_static(this,derived2);
+
+
+      if(optr) optr+=sprintf(optr,"D2CC%d:%d:%d-%d:%d:%d",this->x,this->y,this->z,src->x,src->y,src->z);
+      derived2_assign(this,src);
+    
 }
-void derived_assign(pointer dst,const_pointer src)
+void derived2_assign(pointer __pthis__,const_pointer __psrc__)
 {
-  if(optr) optr+=sprintf(optr,"DAS%d:%d-%d:%d",((const derived_t*)dst)->x,((const derived_t*)dst)->y,
-          ((const derived_t*)src)->x,((const derived_t*)src)->y);
-  base_assign(dst,src);
-  ((derived_t*)dst)->y=((const derived_t*)src)->y;
+derived2_pointer this=__pthis__;(void)this;
+derived2_const_pointer src=__psrc__;(void)src;
+
+
+      if(optr) optr+=sprintf(optr,"D2AS%d:%d:%d-%d:%d:%d",this->x,this->y,this->z,src->x,src->y,src->z);
+      derived_assign(this,src);
+      this->z = src->z;
+    
 }
+void derived2_ctor_int_int_int(pointer __pthis,va_list __con_args__){
+derived2_pointer this=__pthis;(void)this;
+int x = va_arg(__con_args__,int);
+int y = va_arg(__con_args__,int);
+int z = va_arg(__con_args__,int);
 
-void derived_copy_ctor(pointer dst,const_pointer src)
-{
-  /*
-    Parent DTOR automatically called so no need to call from here
-  */
-  if(optr) optr+=sprintf(optr,"DCC%d:%d-%d:%d",((const derived_t*)dst)->x,((const derived_t*)dst)->y,
-          ((const derived_t*)src)->x,((const derived_t*)src)->y);
-  derived_default_ctor(dst);
-  derived_assign(dst,src);
+call_constructor(this,derived_ctor_int_int,x,y);
+
+
+      if(optr) optr+=sprintf(optr,"D2CTIII%d",z);
+      this->z=z;
+    
 }
-
-DEFINE_TYPE_INFO(derived,Y,Y,Y,Y,N,N,N,N,base);
-
-void derived_ctor_int_int(pointer p,va_list args)
-{
-  int x=va_arg(args,int);
-  int y=va_arg(args,int);
-  if(optr) optr+=sprintf(optr,"DCTII%d",y);
-  call_constructor(p,base_ctor_int,x);
-  ((derived_t*)p)->y=y;
-}
-
-yaooc_struct(derived2) {
-	derived_t;
-	int z;
-};
-
-void derived2_default_ctor(pointer p)
-{
-  if(optr) optr+=sprintf(optr,"D2DC0");
-  derived_default_ctor(p);
-  ((derived2_t*)p)->z = 0;
-}
-
-void derived2_dtor(pointer p)
-{
-  if(optr) optr+=sprintf(optr,"D2DT%d",((derived2_t*)p)->z);
-}
-
-void derived2_assign(pointer dst,const_pointer src)
-{
-  if(optr) optr+=sprintf(optr,"D2AS%d:%d:%d-%d%d%d",
-        ((const derived2_t*)dst)->x,((const derived2_t*)dst)->y,((const derived2_t*)dst)->z,
-        ((const derived2_t*)src)->x,((const derived2_t*)src)->y,((const derived2_t*)src)->z);
-  derived_assign(dst,src);
-  ((derived2_t*)dst)->z = ((const derived2_t*)src)->z;
-}
-
-void derived2_copy_ctor(pointer dst,const_pointer src)
-{
-  if(optr) optr+=sprintf(optr,"D2CC%d:%d:%d-%d%d%d",
-        ((const derived2_t*)dst)->x,((const derived2_t*)dst)->y,((const derived2_t*)dst)->z,
-        ((const derived2_t*)src)->x,((const derived2_t*)src)->y,((const derived2_t*)src)->z);
-  derived2_default_ctor(dst);
-  derived2_assign(dst,src);
-}
-
-DEFINE_TYPE_INFO(derived2,Y,Y,Y,Y,N,N,N,N,derived);
-
-void derived2_ctor_int_int_int(pointer p,va_list args)
-{
-  int x=va_arg(args,int);
-  int y=va_arg(args,int);
-  int z=va_arg(args,int);
-  if(optr) optr+=sprintf(optr,"D2CTIII%d",z);
-  call_constructor(p,derived_ctor_int_int,x,y);
-  ((derived2_t*)p)->z=z;
-}
-
+const type_info_t __derived2_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(derived2_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=derived2_default_ctor,
+.dtor_=derived2_dtor,
+.copy_ctor_=derived2_copy_ctor,
+.assign_=derived2_assign,
+.class_table_=NULL,
+.parent_=&__derived_ti};
+const type_info_t* const derived2_ti=(const type_info_t* const)&__derived2_ti;
 void test_derived_dtor()
 {
   TESTCASE("Default ctor");
@@ -363,11 +458,10 @@ void test_derived_dtor()
 
   optr=output;
 	derived_t* d=new(derived);
-  TEST("output is: DDC0BDC0",strcmp(output,"DDC0BDC0")==0);
-
+  TEST("output is: BDC0DDC0",strcmp(output,"BDC0DDC0")==0);
   optr=output;
 	derived2_t* d2=new(derived2);
-  TEST("output is: D2DC0DDC0BDC0",strcmp(output,"D2DC0DDC0BDC0")==0);
+  TEST("output is: BDC0DDC0D2DC0",strcmp(output,"BDC0DDC0D2DC0")==0);
 
   TESTCASE("Destructor");
   optr=output;
@@ -385,15 +479,15 @@ void test_derived_dtor()
   TESTCASE("CONSTRUCTOR")
   optr=output;
   b=new_ctor(base,base_ctor_int,10);
-  TEST("output is: BCTI10",strcmp(output,"BCTI10")==0);
+  TEST("output is: BDC0BCTI10",strcmp(output,"BDC0BCTI10")==0);
 
   optr=output;
   d=new_ctor(derived,derived_ctor_int_int,15,20);
-  TEST("output is: DCTII20BCTI15",strcmp(output,"DCTII20BCTI15")==0);
+  TEST("output is: BDC0BCTI15DCTII20",strcmp(output,"BDC0BCTI15DCTII20")==0);
 
   optr=output;
   d2=new_ctor(derived2,derived2_ctor_int_int_int,30,40,50);
-  TEST("output is: D2CTIII50DCTII40BCTI30",strcmp(output,"D2CTIII50DCTII40BCTI30")==0);
+  TEST("output is: BDC0BCTI30DCTII40D2CTIII50",strcmp(output,"BDC0BCTI30DCTII40D2CTIII50")==0);
 
   DELETE_LIST(b,d,d2);
 }
@@ -429,14 +523,15 @@ void test_renew()
 	base_t* temp=new_ctor(base,base_ctor_int,12);
 	optr=output;
 	b=renew_array_copy(b,10,temp);
-	TEST("5 objects added (copied) to end",strcmp(output,"BDC0BCC0-12BAS0-12BDC0BCC0-12BAS0-12BDC0BCC0-12BAS0-12BDC0BCC0-12BAS0-12BDC0BCC0-12BAS0-12")==0);
+	TEST("5 objects added (copied) to end",strcmp(output,"BDC0BCC0-12BAS12-12BDC0BCC0-12BAS12-12BDC0BCC0-12BAS12-12BDC0BCC0-12BAS12-12BDC0BCC0-12BAS12-12")==0);
 	TEST("Size is 10",get_n_elem(b)==10);
 	print_base_array(b);
 	TEST("Values 5 zeros and 5 12's",strcmp(output,"0 0 0 0 0 12 12 12 12 12 ")==0);
 
 	optr=output;
 	b=renew_array_ctor(b,15,base_ctor_int,33);
-	TEST("5 objects added (constructed) to end",strcmp(output,"BCTI33BCTI33BCTI33BCTI33BCTI33")==0);
+  puts(output);
+	TEST("5 objects added (constructed) to end",strcmp(output,"BDC0BCTI33BDC0BCTI33BDC0BCTI33BDC0BCTI33BDC0BCTI33")==0);
 	TEST("Size is 15",get_n_elem(b)==15);
 	print_base_array(b);
 	TEST("Values 5 zeros, 5 12's, and 5 33's",strcmp(output,"0 0 0 0 0 12 12 12 12 12 33 33 33 33 33 ")==0);
@@ -459,3 +554,4 @@ test_function tests[]=
 };
 
 STD_MAIN(tests)
+

@@ -1,20 +1,27 @@
-/*
-		Copyright (C) 2016-2018  by Terry N Bezue
+#include "test_exception.h"
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
+demo_exception_class_table_t demo_exception_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_exception_class_table,
+.type_name_ = (const char*)"demo_exception_t",
+.swap = (void(*)(pointer,pointer)) demo_exception_swap,
+.what = (const char*(*)(const_pointer)) demo_exception_what,
+.error_code = (int(*)(const_pointer)) demo_exception_error_code,
+};
+const type_info_t __demo_exception_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(demo_exception_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &demo_exception_class_table,
+.parent_=&__yaooc_exception_ti
+};
+const type_info_t* const demo_exception_ti=&__demo_exception_ti;
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -22,62 +29,36 @@
 #include <stddef.h>
 #include <yaooc/exception.h>
 #include <yaooc/pointer_bag.h>
+
 #include "test_harness.h"
 #include "demo_def.h"
 
-yaooc_class_table(demo_exception)
-{
-  yaooc_exception_class_table_t;
+
+
+
+
+demo2_exception_class_table_t demo2_exception_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_exception_class_table,
+.type_name_ = (const char*)"demo2_exception_t",
+.swap = (void(*)(pointer,pointer)) demo2_exception_swap,
+.what = (const char*(*)(const_pointer)) demo2_exception_what,
+.error_code = (int(*)(const_pointer)) demo2_exception_error_code,
 };
-
-yaooc_class_instance(demo_exception)
-{
-  yaooc_exception_class_instance_t;
+const type_info_t __demo2_exception_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(demo2_exception_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &demo2_exception_class_table,
+.parent_=&__yaooc_exception_ti
 };
-
-yaooc_class(demo_exception);
-
-
-demo_exception_class_table_t demo_exception_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .type_name_ = (const char*) "demo_exception_t",
-  .swap = (void(*) (pointer,pointer)) yaooc_object_swap,
-  .what = (const char*(*) (const_pointer)) yaooc_exception_what,
-
-};
-#define demo_exception_ctor_v yaooc_exception_ctor_v
-DEFINE_TYPE_INFO(demo_exception,N,N,N,N,N,N,N,Y,yaooc_exception);
-
-
-/*  *** */
-
-yaooc_class_table(demo2_exception)
-{
-  yaooc_exception_class_table_t;
-};
-
-yaooc_class_instance(demo2_exception)
-{
-  yaooc_exception_class_instance_t;
-};
-
-yaooc_class(demo2_exception);
-
-demo2_exception_class_table_t demo2_exception_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .type_name_ = (const char*) "demo2_exception_t",
-  .swap = (void(*) (pointer,pointer)) yaooc_object_swap,
-  .what = (const char*(*) (const_pointer)) yaooc_exception_what,
-};
-
-DEFINE_TYPE_INFO(demo2_exception,N,N,N,N,N,N,N,Y,yaooc_exception);
-
-#define demo2_exception_ctor_v yaooc_exception_ctor_v
-
-
-/* **** */
+const type_info_t* const demo2_exception_ti=&__demo2_exception_ti;
 #if 0
 yaooc_class_table(uncaught_exception)
 {
@@ -102,7 +83,7 @@ DEFINE_TYPE_INFO(uncaught_exception,N,N,N,N,N,N,N,Y,yaooc_exception);
 
 #define uncaugh_exception_ctor_v yaooc_exception_ctor_v
 #endif
-/*  ****  */
+
 char *path=output;
 void sub(int x)
 {
@@ -111,15 +92,14 @@ void sub(int x)
     strcat(path,":TRY_SUB");
     if(x==1) {
       strcat(path,":THROW1_SUB");
-      THROW(new_ctor(demo_exception,demo_exception_ctor_v,"Inner Catch Level 1"));
+      THROW(new_ctor(demo_exception,demo_exception_ctor_v,x,"Inner Catch Level 1"));
     } else if(x==2) {
       strcat(path,":THROW2_SUB");
-      THROW(new_ctor(demo2_exception,demo2_exception_ctor_v,"Catch Level 2"));
+      THROW(new_ctor(demo2_exception,demo2_exception_ctor_v,x,"Catch Level 2"));
     }
   }
   CATCH(demo_exception,e)
   {
-    (void)e;
     strcat(path,":CATCH1_SUB");
   }
   ETRY
@@ -156,10 +136,9 @@ void test_basic()
         THROW(new(yaooc_exception));
       }
     } CATCH(yaooc_exception,ye) {
-      (void)ye;
       strcat(path,":CATCH_YE");
     } ETRY
-//    printf("%d -- %s\n",i,path);
+
     TEST(results1[i].desc,strcmp(results1[i].path,path)==0);
   }
 
@@ -185,16 +164,16 @@ void test_multi_catch()
     TRY
     {
       strcpy(path,"TRY_L1");
-      // at i==0 no throws or catches -- normal flow
+      
       if(i==1) {
         strcat(path,":THROW_1");
         THROW(new(demo_exception));
       } else if(i==2) {
         strcat(path,":THROW_2");
-        THROW(new_ctor(demo2_exception,demo2_exception_ctor_v,"Catch Level 2"));
+        THROW(new_ctor(demo2_exception,demo2_exception_ctor_v,i,"Catch Level 2"));
       } else if(i==3) {
         strcat(path,":THROW_YE");
-        THROW(new_ctor(yaooc_exception,yaooc_exception_ctor_v,"Catch Level 2"));
+        THROW(new_ctor(yaooc_exception,yaooc_exception_ctor_v,i,"Catch Level 2"));
       } else if(i==4) {
         sub(1);
       } else if(i==5)
@@ -204,21 +183,18 @@ void test_multi_catch()
     }
     CATCH(demo_exception,e)
     {
-      (void)e;
       strcat(path,":CATCH_1");
     }
     CATCH(demo2_exception,e)
     {
-      (void)e;
       strcat(path,":CATCH_2");
     }
     CATCH(yaooc_exception,e)
     {
-      (void)e;
       strcat(path,":CATCH_YE");
     }
     ETRY
-//    printf("%d -- %s\n",i,path);
+
     TEST(results2[i].desc,strcmp(results2[i].path,path)==0);
   }
 }
@@ -249,7 +225,7 @@ void test_nested()
   int i;
   int n = ARRAY_SIZE(results3);
   for(i=0;i<n;i++) {
-    TRY { /* TL1 */
+    TRY { 
       strcpy(path,"TRY_L1");
       if(i==1) {
         strcat(path,":THROW_L1_1");
@@ -262,7 +238,7 @@ void test_nested()
         THROW(new(yaooc_exception));
       } else if(i>3) {
         TRY {
-          // i==4 goes to end of try
+          
           strcat(path,":TRY_L2");
           if(i==5) {
             strcat(path,":THROW_L2_1");
@@ -276,14 +252,12 @@ void test_nested()
           }
           strcat(path,":END_TRY_L2");
         } CATCH(demo_exception,ed) {
-          (void)ed;
           strcat(path,":CATCH_L2_1");
         } CATCH(demo2_exception,ed2) {
-          (void)ed2;
           strcat(path,":CATCH_L2_2");
-          TRY { /* Try level 3 */
+          TRY { 
             strcat(path,":TRY_L3");
-            // i=6 continues to end of this catch block
+            
             if(i>=7) {
               strcat(path,":THROW_L3");
               THROW(new(demo_exception));
@@ -291,7 +265,6 @@ void test_nested()
             strcat(path,":END_TRY_L3");
           } CATCH(demo_exception,aed) {
             strcat(path,":CATCH_L3_1");
-            (void)aed;
             if(i==8) {
               strcat(path,":THROW_L3_YE");
               THROW(new(yaooc_exception));
@@ -302,23 +275,19 @@ void test_nested()
           strcat(path,":END_CATCH_L2_2");
         } CATCH(yaooc_exception,yye) {
           strcat(path,":CATCH_L2_YE");
-          (void)yye;
         }
         ETRY
       }
       strcat(path,":END_TRY_L1");
     } CATCH(demo_exception,ed) {
-			(void)ed;
       strcat(path,":CATCH_L1_1");
     } CATCH(demo2_exception,ed2) {
-			(void)ed2;
       strcat(path,":CATCH_L1_2");
     } CATCH(yaooc_exception,yye) {
       strcat(path,":CATCH_L1_YE");
-			(void)yye;
     }
     ETRY
-//    printf("%d -- %s\n",i,path);
+
     TEST(results3[i].desc,strcmp(results3[i].path,path)==0);
   }
 }
@@ -327,13 +296,11 @@ void test_throw_without_catch()
 {
   printf("Throwing uncaught exeption. Program will terminate\n");
   TRY {
-    THROW(new_ctor(yaooc_exception,yaooc_exception_ctor_v,"This exception is not caught"));
+    THROW(new_ctor(yaooc_exception,yaooc_exception_ctor_v,0,"This exception is not caught"));
   }
   CATCH(demo2_exception,e) {
-    (void)e;
   }
   CATCH(demo_exception,e) {
-    (void)e;
   } ETRY
 }
 
@@ -346,3 +313,4 @@ test_function tests[]=
 };
 
 STD_MAIN(tests)
+

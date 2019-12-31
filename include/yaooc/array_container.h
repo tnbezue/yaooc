@@ -2,7 +2,6 @@
 #define __ARRAY_CONTAINER_INCLUDED__
 
 #include <yaooc/object.h>
-
 #include <yaooc/algorithm.h>
 #include <yaooc/stream.h>
 void throw_yaooc_array_container_exception(pointer,const char*);

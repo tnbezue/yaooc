@@ -44,6 +44,7 @@ void yaooc_complex_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__)
 yaooc_complex_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
 
+
       M(ostrm,printf,"(%lg %c %lgi)",this->real_,(this->imag_ < 0 ? '-' : '+'),fabs(this->imag_));
     
 }

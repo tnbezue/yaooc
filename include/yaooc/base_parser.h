@@ -2,7 +2,6 @@
 #define __BASE_PARSER_INCLUDED__
 
 #include <yaooc/object.h>
-
 #include <yaooc/stack.h>
 #ifdef __YAOOC_USE_TRE__
 #include <tre/regex.h>

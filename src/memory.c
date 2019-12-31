@@ -39,6 +39,7 @@ int yaooc_dynamic_pointer_rich_compare(const_pointer __plhs__,const_pointer __pr
 yaooc_dynamic_pointer_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_dynamic_pointer_const_pointer rhs=__prhs__;(void)rhs;
 
+
       return op_rich_compare(lhs->ptr_,rhs->ptr_);
     
 }
@@ -47,6 +48,7 @@ void yaooc_dynamic_pointer_to_stream(const_pointer __pthis__,ostream_pointer __p
 yaooc_dynamic_pointer_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer istrm=__pstrm__;(void)istrm;
 
+
       M(istrm,stream,this->ptr_,NULL);
     
 }
@@ -54,6 +56,7 @@ void yaooc_dynamic_pointer_from_stream(pointer __pthis__,ostream_pointer __pstrm
 {
 yaooc_dynamic_pointer_pointer this=__pthis__;(void)this;
 yaooc_istream_pointer ostrm=__pstrm__;(void)ostrm;
+
 
       M(ostrm,stream,this->ptr_,NULL);
     
@@ -129,6 +132,7 @@ int yaooc_unique_pointer_rich_compare(const_pointer __plhs__,const_pointer __prh
 {
 yaooc_unique_pointer_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_unique_pointer_const_pointer rhs=__prhs__;(void)rhs;
+
 
       if(lhs->ptr_==rhs->ptr_)
         return 0;
@@ -296,6 +300,7 @@ int yaooc_shared_pointer_rich_compare(const_pointer __plhs__,const_pointer __prh
 {
 yaooc_shared_pointer_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_shared_pointer_const_pointer rhs=__prhs__;(void)rhs;
+
 
     return op_rich_compare(M(lhs,get),M(rhs,get));
   

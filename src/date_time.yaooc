@@ -15,7 +15,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 %prefix_directory yaooc
-%include <yaooc/object.yod>
+%include <yaooc/object.yaooh>
 
 %header
 #include <yaooc/string.h>

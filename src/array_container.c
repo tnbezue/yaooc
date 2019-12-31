@@ -68,6 +68,7 @@ int yaooc_array_container_rich_compare(const_pointer __plhs__,const_pointer __pr
 yaooc_array_container_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_array_container_const_pointer rhs=__prhs__;(void)rhs;
 
+
       size_t n=M(lhs,size)<M(rhs,size) ? M(lhs,size) : M(rhs,size);
       size_t i;
       rich_compare rich_cmp=get_rich_compare(TYPE_INFO(lhs));
@@ -88,6 +89,7 @@ void yaooc_array_container_to_stream(const_pointer __pthis__,ostream_pointer __p
 {
 yaooc_array_container_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
+
 
       yaooc_private_const_iterator i;
       to_stream to_stream_method=get_to_stream(TYPE_INFO(this));

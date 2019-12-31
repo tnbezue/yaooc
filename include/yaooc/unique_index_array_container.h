@@ -2,7 +2,6 @@
 #define __UNIQUE_INDEX_ARRAY_CONTAINER_INCLUDED__
 
 #include <yaooc/index_array_container.h>
-
 yaooc_class_table(yaooc_unique_index_array_container) {
   yaooc_object_class_table_t;
 };

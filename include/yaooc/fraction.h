@@ -2,7 +2,6 @@
 #define __FRACTION_INCLUDED__
 
 #include <yaooc/object.h>
-
 #include <yaooc/exception.h>
 #include <yaooc/macros.h>
 #include <yaooc/stream.h>
@@ -42,5 +41,13 @@ void yaooc_fraction_assign(pointer,const_pointer);
  void yaooc_fraction_divided_by(pointer,yaooc_fraction_t*);
  double yaooc_fraction_to_double(const_pointer);
 extern  double yaooc_fraction_epsilon;
+yaooc_fraction_t yaooc_fraction_plus_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2);
+yaooc_fraction_t yaooc_fraction_minus_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2);
+yaooc_fraction_t yaooc_fraction_times_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2);
+yaooc_fraction_t yaooc_fraction_divided_by_fraction(yaooc_fraction_t f1,yaooc_fraction_t f2);
+
+#define YAOOC_FRACTION_STATIC_DEFAULT_CTOR { .class_table_ = &yaooc_fraction_class_table, \
+    .numerator_=0 , .denominator_ = 1 }
+
 
 #endif

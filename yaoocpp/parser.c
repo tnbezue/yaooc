@@ -28,6 +28,7 @@
 
 char yaoocpp_parser_current_file[PATH_MAX]; 
 char yaoocpp_parser_file_being_parsed[PATH_MAX]; 
+
 bool yaoocpp_parser_is_top_level=false; 
 yaooc_string_t yaoocpp_header_prefix = YAOOC_STRING_STATIC_DEFAULT_CTOR;
 extern yaooc_string_t defines;
@@ -65,22 +66,22 @@ static yaooc_string_t* read_file_into_string(const char* file)
 
 void insert_includes(yaooc_string_t* s)
 {
-  regex_t re;
-  int ofs=0;
-  char* temp=new_array(char,1024);
-  strcpy(temp,"%header\n#include <");
-  if(regcomp(&re,"^\\s*%\\s*include\\s*<([^>]*)>[^\n]*\n",REG_EXTENDED) == 0) {
-    regmatch_t ov[2];
-    while(regexec(&re,M(s,c_str)+ofs,2,ov,0) == 0) {
-      sprintf(temp+18,"%.*sh>\n%%%%\n",ov[1].rm_eo-ov[1].rm_so-3,M(s,c_str)+ofs+ov[1].rm_so);
-      ofs+=ov[0].rm_eo;
-      M(s,insert,ofs,temp);
-      ofs+=strlen(temp);
-    }
-    regfree(&re);
+
+
+
+
+
+
+
+
+
+
+
+
+
     M(s,gsub_,"\\\n","\\\\\n"); 
-  }
-  delete(temp);
+
+
 }
 
 static yaooc_string_t* preprocess(const char* file)
@@ -90,7 +91,21 @@ static yaooc_string_t* preprocess(const char* file)
   if(!contents)
     THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,71,
             "Error reading file \"%s\".",file));
-  insert_includes(contents);
+
+  M(contents,gsub_,"\\\n","\\\\\n"); 
+  const char* tmp_ptr=getenv("TMP");
+  if(tmp_ptr == NULL)
+#ifdef WIN32_
+#else
+    tmp_ptr="/tmp";
+#endif
+  char* tmp_file=new_array(char,PATH_MAX);
+  strcpy(tmp_file,tmp_ptr);
+  strcat(tmp_file,"/yocXXXXXX");
+  int tmp_handle=mkstemp(tmp_file);
+
+  write(tmp_handle,M(contents,c_str),M(contents,size));
+  close(tmp_handle);
   yaooc_string_t gpp_command;
   gb_newp(&gpp_command,yaooc_string);
   M(&gpp_command,set,"gpp --nostdinc --includemarker \"# % \\\"%\\\" %\"");
@@ -107,19 +122,34 @@ static yaooc_string_t* preprocess(const char* file)
     M(&gpp_command,append," -I");
     M(&gpp_command,append,M(id,c_str));
   }
-  yaooc_string_t* so=new(yaooc_string);
-  yaooc_string_t* se=new(yaooc_string);
-  if(command_pipe(M(&gpp_command,c_str),contents,so,se) != 0) {
-    fprintf(stdout,"%s\n",M(so,c_str));
-    fprintf(stderr,"%s\n",M(se,c_str));
-    THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,71,
-            "Error preprocessing file \"%s\".",file));
+  M(&gpp_command,append," < ");
+  M(&gpp_command,append,tmp_file);
+
+  M(contents,clear);
+  FILE*cmd_pipe=popen(M(&gpp_command,c_str),"r");
+  if(cmd_pipe) {
+    char* buffer=gb_new_array(char,1024);
+    while(!feof(cmd_pipe)) {
+      size_t n = fread(buffer,1,1024,cmd_pipe);
+      M(contents,appendn,buffer,n);
+    }
   }
-  deletep(&gpp_command,yaooc_string);
-  delete(contents);
-  delete(se);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   gb_exit();
-  return so;
+  return contents;
 }
 
 

@@ -5,7 +5,7 @@
 #include <yaooc/exception.h>
 #include <yaooc/string.h>
 
-#ifdef __YAOOC_USE_TRE
+#ifdef __YAOOC_USE_TRE__
 #include <tre/regex.h>
 #else
 #include <regex.h>

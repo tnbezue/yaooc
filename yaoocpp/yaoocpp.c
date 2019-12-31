@@ -54,7 +54,7 @@ void print_help(const char* pgm)
   M(cout,printf,"Syntax: %s [ -h | --help ]\n",pgm);
   M(cout,printf,"        %s [ -v | --version ]\n",pgm);
   M(cout,printf,"        %s [ [ -I | --include ] path ] [ -Dmacro[=value] ] [ [ -hd | --header-directory ] path ]"
-                " [ [ -dd | --definition-directory ] path ] file.yoc\n",pgm);
+                " [ [ -dd | --definition-directory ] path ] file.yaooc\n",pgm);
   M(cout,printf,"Where:\n");
   M(cout,printf,"  -h|--help -- prints this help\n");
   M(cout,printf,"  -v|--version -- prints version information\n");
@@ -64,7 +64,7 @@ void print_help(const char* pgm)
                 " Default is current directory.\n");
   M(cout,printf,"  -dd|--definition-directory -- Specified directory to which stripped definition file is written."
                 " Default is same directory as header directory.\n");
-  M(cout,printf,"  file.yoc -- File to preprocesses.\n");
+  M(cout,printf,"  file.yaooc -- File to preprocesses.\n");
 }
 
 void print_version()
@@ -208,10 +208,10 @@ int main(int argc,char* argv[])
   CFOR_EACH(id,&include_directories) {
     printf("  X%sX\n",M(id,c_str));
   }*/
-  yaooc_ofstream_t h_strm,c_strm,yod_strm;
+  yaooc_ofstream_t h_strm,c_strm,yaooh_strm;
   newp(&h_strm,yaooc_ofstream);
   newp(&c_strm,yaooc_ofstream);
-  newp(&yod_strm,yaooc_ofstream);
+  newp(&yaooh_strm,yaooc_ofstream);
   if(iarg < argc) {
 		TRY {
 //			for(i=optind;i<argc;i++) {
@@ -237,21 +237,21 @@ int main(int argc,char* argv[])
           char* uc_root=gb_save(yaooc_upcase(root));
           M(&h_strm,printf,"#ifndef __%s_INCLUDED__\n"
                           "#define __%s_INCLUDED__\n\n",uc_root,uc_root);
-          l = M(&definition_directory,size)+strlen(root)+7; // header_directory + "/" + root + ".yod"
-          char* yod_fname=gb_new_array(char,l);
-          *yod_fname=0;
+          l = M(&definition_directory,size)+strlen(root)+10; // header_directory + "/" + root + ".yaooh"
+          char* yaooh_fname=gb_new_array(char,l);
+          *yaooh_fname=0;
           if(M(&definition_directory,size)>0) {
-            strcpy(yod_fname,M(&definition_directory,c_str));
-            strcat(yod_fname,"/");
+            strcpy(yaooh_fname,M(&definition_directory,c_str));
+            strcat(yaooh_fname,"/");
           }
-          strcat(yod_fname,root);
-          strcat(yod_fname,".yod");
-          M(&yod_strm,open,yod_fname,"w");
-          M(&yod_strm,printf,"%%ifndef __%s_YOD_INCLUDED__\n"
-                          "%%define __%s_YOD_INCLUDED__\n\n",uc_root,uc_root);
+          strcat(yaooh_fname,root);
+          strcat(yaooh_fname,".yaooh");
+          M(&yaooh_strm,open,yaooh_fname,"w");
+          M(&yaooh_strm,printf,"%%ifndef __%s_YAOOH_INCLUDED__\n"
+                          "%%define __%s_YAOOH_INCLUDED__\n\n",uc_root,uc_root);
 
           if(strcmp(root,"object")!=0)
-            M(&yod_strm,printf,"%%include <yaooc/object.yod>\n");
+            M(&yaooh_strm,printf,"%%include <yaooc/object.yaooh>\n");
           char* source_fname=gb_new_array(char,strlen(root)+3);
           strcpy(source_fname,root);
           strcat(source_fname,".c");
@@ -271,7 +271,7 @@ int main(int argc,char* argv[])
 //              printf("Section %s of type %s\n",M(&section->name_,c_str),section->class_table_->type_name_);
               M(section,print_to_header,&h_strm);
               M(section,print_to_source,&c_strm);
-              M(section,print_to_yod,&yod_strm);
+              M(section,print_to_yaooh,&yaooh_strm);
             }
 //            M(cout,printf,"%s %d\n",M(&section->name_,c_str),section->defined_in_top_level_file_);
           }
@@ -279,15 +279,15 @@ int main(int argc,char* argv[])
           CFOR_EACH(k,&parser.mixins_) {
             yaoocpp_mixin_const_pointer mixin=(yaoocpp_mixin_const_pointer)k->ptr_;
             if(mixin->defined_in_top_level_file_) {
-              M(mixin,print_to_yod,&yod_strm);
+              M(mixin,print_to_yaooh,&yaooh_strm);
             }
           }
           M(&h_strm,printf,"\n#endif\n");
-          M(&yod_strm,printf,"\n%%endif\n");
+          M(&yaooh_strm,printf,"\n%%endif\n");
 
           M(&h_strm,close);
           M(&c_strm,close);
-          M(&yod_strm,close);
+          M(&yaooh_strm,close);
 //          delete(&parser.sections_);
         }
         deletep(&parser,yaoocpp_parser);
@@ -305,7 +305,7 @@ int main(int argc,char* argv[])
 	}
   deletep(&h_strm,yaooc_ofstream);
   deletep(&c_strm,yaooc_ofstream);
-  deletep(&yod_strm,yaooc_ofstream);
+  deletep(&yaooh_strm,yaooc_ofstream);
   deletep(&header_directory,yaooc_string);
   deletep(&definition_directory,yaooc_string);
 //  deletep(&cpp,yaooc_string);

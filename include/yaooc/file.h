@@ -2,7 +2,6 @@
 #define __FILE_INCLUDED__
 
 #include <yaooc/object.h>
-
 #include <yaooc/stream.h>
 #include <fcntl.h>
 #ifdef _WIN32

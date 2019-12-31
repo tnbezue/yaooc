@@ -16,8 +16,8 @@
 */
 
 %prefix_directory yaooc
-%include <yaooc/object.yod>
-%include <yaooc/exception.yod>
+%include <yaooc/object.yaooh>
+%include <yaooc/exception.yaooh>
 %header
 #include <yaooc/stream.h>
 #include <yaooc/vector.h>

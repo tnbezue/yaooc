@@ -1,608 +1,841 @@
-/*
-		Copyright (C) 2016-2019  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-/* Begin YAOOCPP output */
-
 #include <yaooc/odbc.h>
-#include <stdio.h>
-
+yaooc_odbc_exception_class_table_t yaooc_odbc_exception_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_exception_class_table,
+.type_name_ = (const char*)"yaooc_odbc_exception_t",
+.swap = (void(*)(pointer,pointer)) yaooc_odbc_exception_swap,
+.what = (const char*(*)(const_pointer)) yaooc_odbc_exception_what,
+.error_code = (int(*)(const_pointer)) yaooc_odbc_exception_error_code,
+};
+const type_info_t __yaooc_odbc_exception_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_odbc_exception_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=NULL,
+.dtor_=NULL,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_odbc_exception_class_table,
+.parent_=&__yaooc_exception_ti
+};
+const type_info_t* const yaooc_odbc_exception_ti=&__yaooc_odbc_exception_ti;
 MINI_MAP_IMPLEMENTATION(yaooc_string,yaooc_string,map_odbc_string_string);
 
-/* Type Info implemmentation for yaooc_odbc_exception */
-/* Constructors implementation for yaooc_odbc_exception */
 
-/* Private methods implementation for yaooc_odbc_exception */
-
-/* Protected implementation for yaooc_odbc_exception */
-
-/* Table implementation for yaooc_odbc_exception */
-
-/* Class table definition for yaooc_odbc_exception */
-yaooc_odbc_exception_class_table_t yaooc_odbc_exception_class_table =
+void yaooc_odbc_environment_default_ctor(pointer __pthis__)
 {
-  .parent_class_table_ = (const class_table_t*) &yaooc_exception_class_table,
-  .type_name_ = (const char*) "yaooc_odbc_exception_t",
-  .swap = (void(*)(pointer, pointer)) yaooc_odbc_exception_swap,
-  .what = (const char*(*)(const_pointer)) yaooc_odbc_exception_what,
+yaooc_odbc_environment_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_odbc_environment);
+
+
+
+      
+      if(yaooc_odbc_environment_henv_ == SQL_NULL_HANDLE) {
+        
+        if(SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &yaooc_odbc_environment_henv_) == SQL_SUCCESS) {
+          
+          if(SQLSetEnvAttr(yaooc_odbc_environment_henv_, SQL_ATTR_ODBC_VERSION, (void *) SQL_OV_ODBC3, 0) != SQL_SUCCESS) {
+            yaooc_odbc_environment_dtor(this);
+            yaooc_odbc_environment_henv_=SQL_NULL_HANDLE;
+          }
+        }
+      } else {
+        
+        puts("Only one ODBC environment allowed");
+        exit(1);
+      }
+    
+}
+void yaooc_odbc_environment_dtor(pointer __pthis__)
+{
+yaooc_odbc_environment_pointer this=__pthis__;(void)this;
+
+
+      if(yaooc_odbc_environment_henv_ != SQL_NULL_HANDLE)
+        SQLFreeHandle(SQL_HANDLE_ENV,yaooc_odbc_environment_henv_);
+    
+}
+ SQLHENV yaooc_odbc_environment_henv_=SQL_NULL_HANDLE;
+map_odbc_string_string_t* yaooc_odbc_environment_get_drivers(pointer __pthis__)
+{
+yaooc_odbc_environment_pointer this=__pthis__;(void)this;
+
+      map_odbc_string_string_t *drivers = new(map_odbc_string_string);
+      SQLCHAR driver[256];
+      SQLCHAR attr[256];
+      SQLSMALLINT driver_ret;
+      SQLSMALLINT attr_ret;
+      yaooc_string_t key,value;
+      newp(&key,yaooc_string);
+      newp(&value,yaooc_string);
+      SQLRETURN ret = SQLDrivers(yaooc_odbc_environment_henv_,SQL_FETCH_FIRST,
+            driver, sizeof(driver), &driver_ret,
+            attr, sizeof(attr), &attr_ret);
+      while(SQL_SUCCEEDED(ret)) {
+        M(&key,set,(const char*)driver);
+        M(&value,set,(const char*)attr);
+        M(drivers,insert,&key,&value);
+        
+          ret = SQLDrivers(yaooc_odbc_environment_henv_,SQL_FETCH_NEXT,
+            driver, sizeof(driver), &driver_ret,
+            attr, sizeof(attr), &attr_ret);
+      }
+      deletep(&key,yaooc_string);
+      deletep(&value,yaooc_string);
+      return drivers;
+    
+}
+map_odbc_string_string_t* yaooc_odbc_environment_get_sources(pointer __pthis__)
+{
+yaooc_odbc_environment_pointer this=__pthis__;(void)this;
+
+      map_odbc_string_string_t* sources = new(map_odbc_string_string);
+      char dsn[256];
+      char desc[256];
+      yaooc_string_t key,value;
+      newp(&key,yaooc_string);
+      newp(&value,yaooc_string);
+      SQLSMALLINT dsn_ret;
+      SQLSMALLINT desc_ret;
+      SQLRETURN ret = SQLDataSources(yaooc_odbc_environment_henv_,SQL_FETCH_FIRST,(SQLCHAR*)dsn, sizeof(dsn),
+              &dsn_ret,(SQLCHAR*)desc, sizeof(desc), &desc_ret);
+
+      while(SQL_SUCCEEDED(ret)) {
+    
+        M(&key,set,dsn);
+        M(&value,set,desc);
+        M(sources,insert,&key,&value);
+    
+    
+        ret = SQLDataSources(yaooc_odbc_environment_henv_,SQL_FETCH_NEXT,(SQLCHAR*)dsn, sizeof(dsn),
+              &dsn_ret,(SQLCHAR*)desc, sizeof(desc), &desc_ret);
+      }
+      deletep(&key,yaooc_string);
+      deletep(&value,yaooc_string);
+      return sources;
+    
+}
+yaooc_odbc_environment_class_table_t yaooc_odbc_environment_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_odbc_environment_t",
+.swap = (void(*)(pointer,pointer)) yaooc_odbc_environment_swap,
 };
-
-/* Type info structure for yaooc_odbc_exception */
-DEFINE_TYPE_INFO(yaooc_odbc_exception,N,N,N,N,N,N,N,Y,yaooc_exception);
-
-
-/* Private variables implementation for yaooc_odbc_environment */
-static SQLHENV yaooc_odbc_environment_henv_ = SQL_NULL_HANDLE;
-
-/* Private methods prototypes for yaooc_odbc_environment */
-
-/* Type Info implemmentation for yaooc_odbc_environment */
-void yaooc_odbc_environment_default_ctor(pointer p)
-{
-  yaooc_odbc_environment_pointer this=p;
-	// only one handle needed per application.
-  if(yaooc_odbc_environment_henv_ == SQL_NULL_HANDLE) {
-		/* Allocate an environment handle */
-		if(SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &yaooc_odbc_environment_henv_) == SQL_SUCCESS) {
-			/* We want ODBC 3 support */
-			if(SQLSetEnvAttr(yaooc_odbc_environment_henv_, SQL_ATTR_ODBC_VERSION, (void *) SQL_OV_ODBC3, 0) != SQL_SUCCESS) {
-				yaooc_odbc_environment_dtor(this);
-				yaooc_odbc_environment_henv_=SQL_NULL_HANDLE;
-			}
-		}
-	} else {
-    /* ** FIX ME ** should throw exception */
-    puts("Only one ODBC environment allowed");
-    exit(1);
-  }
-}
-
-void yaooc_odbc_environment_dtor(pointer p)
-{
-	if(yaooc_odbc_environment_henv_ != SQL_NULL_HANDLE)
-		SQLFreeHandle(SQL_HANDLE_ENV,yaooc_odbc_environment_henv_);
-}
-
-/* Constructors implementation for yaooc_odbc_environment */
-
-/* Private methods implementation for yaooc_odbc_environment */
-
-/* Protected implementation for yaooc_odbc_environment */
-yaooc_odbc_environment_t* yaooc_odbc_environment_current_environment(pointer p)
-{
-	return yaooc_odbc_environment_henv_;
-}
-
-map_odbc_string_string_t* yaooc_odbc_environment_get_drivers(pointer p)
-{
-	map_odbc_string_string_t *drivers = new(map_odbc_string_string);
-	SQLCHAR driver[256];
-	SQLCHAR attr[256];
-	SQLSMALLINT driver_ret;
-	SQLSMALLINT attr_ret;
-	yaooc_string_t key,value;
-	newp(&key,yaooc_string);
-	newp(&value,yaooc_string);
-	SQLRETURN ret = SQLDrivers(yaooc_odbc_environment_henv_,SQL_FETCH_FIRST,
-				driver, sizeof(driver), &driver_ret,
-				attr, sizeof(attr), &attr_ret);
-	while(SQL_SUCCEEDED(ret)) {
-		M(&key,set,(const char*)driver);
-		M(&value,set,(const char*)attr);
-		M(drivers,insert,&key,&value);
-//		if (ret == SQL_SUCCESS_WITH_INFO) printf("\tdata truncation\n");
-			ret = SQLDrivers(yaooc_odbc_environment_henv_,SQL_FETCH_NEXT,
-				driver, sizeof(driver), &driver_ret,
-				attr, sizeof(attr), &attr_ret);
-  }
-	deletep(&key,yaooc_string);
-	deletep(&value,yaooc_string);
-	return drivers;
-}
-
-map_odbc_string_string_t* yaooc_odbc_environment_get_sources(pointer p)
-{
-	map_odbc_string_string_t* sources = new(map_odbc_string_string);
-	char dsn[256];
-	char desc[256];
-	yaooc_string_t key,value;
-	newp(&key,yaooc_string);
-	newp(&value,yaooc_string);
-	SQLSMALLINT dsn_ret;
-	SQLSMALLINT desc_ret;
-	SQLRETURN ret = SQLDataSources(yaooc_odbc_environment_henv_,SQL_FETCH_FIRST,(SQLCHAR*)dsn, sizeof(dsn),
-					&dsn_ret,(SQLCHAR*)desc, sizeof(desc), &desc_ret);
-
-	while(SQL_SUCCEEDED(ret)) {
-//		printf("%s - %s\n", dsn, desc);
-		M(&key,set,dsn);
-		M(&value,set,desc);
-		M(sources,insert,&key,&value);
-//		(*sources)[string_t(reinterpret_cast<char*>(dsn))]=desc;
-//		if (ret == SQL_SUCCESS_WITH_INFO) printf("\tdata truncation\n");
-		ret = SQLDataSources(yaooc_odbc_environment_henv_,SQL_FETCH_NEXT,(SQLCHAR*)dsn, sizeof(dsn),
-					&dsn_ret,(SQLCHAR*)desc, sizeof(desc), &desc_ret);
-	}
-	deletep(&key,yaooc_string);
-	deletep(&value,yaooc_string);
-	return sources;
-}
-
-
-/* Table implementation for yaooc_odbc_environment */
-SQLHENV yaooc_odbc_environment_env(pointer p)
-{
-	return yaooc_odbc_environment_henv_;
-}
-
-
-/* Class table definition for yaooc_odbc_environment */
-yaooc_odbc_environment_class_table_t yaooc_odbc_environment_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_odbc_environment_t",
-  .swap = (void(*)(pointer, pointer)) yaooc_odbc_environment_swap,
-  .env = (SQLHENV(*)(pointer)) yaooc_odbc_environment_env,
+const type_info_t __yaooc_odbc_environment_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_odbc_environment_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_odbc_environment_default_ctor,
+.dtor_=yaooc_odbc_environment_dtor,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_odbc_environment_class_table,
+.parent_=&__yaooc_object_ti
 };
-
-/* Type info structure for yaooc_odbc_environment */
-DEFINE_TYPE_INFO(yaooc_odbc_environment,Y,Y,N,N,N,N,N,Y,yaooc_object);
-
-/* Private variables implementation for yaooc_odbc_statement */
-
-/* Private methods prototypes for yaooc_odbc_statement */
-static void yaooc_odbc_statement_set_handle(pointer, SQLHSTMT);
-
-/* Type Info implemmentation for yaooc_odbc_statement */
-void yaooc_odbc_statement_default_ctor(pointer p)
+const type_info_t* const yaooc_odbc_environment_ti=&__yaooc_odbc_environment_ti;
+static void yaooc_odbc_statement_set_handle(pointer,SQLHSTMT);
+static void yaooc_odbc_statement_set_handle(pointer __pthis__,SQLHSTMT h)
 {
-	/* This should throw an exception.  Statements are only created from connection */
-	THROW(new_ctor(yaooc_odbc_exception,yaooc_odbc_exception_ctor_v,"ODBC statement can only be created from connection"));
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->set_handle(this,h)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      this->statement_handle_=h;
+    
+#undef PM
+#undef super
 }
-
-void yaooc_odbc_statement_private_ctor(pointer p,va_list args)
+void yaooc_odbc_statement_default_ctor(pointer __pthis__)
 {
-	/* This should throw an exception.  Statements are only created from connection */
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_odbc_statement);
+
+
+
+      
+      THROW(new_ctor(yaooc_odbc_exception,yaooc_odbc_exception_ctor_v,"ODBC statement can only be created from connection"));
+    
+}
+void yaooc_odbc_statement_dtor(pointer __pthis__)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+
+
+      if(this->statement_handle_ != SQL_NULL_HANDLE) {
+        SQLCloseCursor(this->statement_handle_);
+        SQLFreeHandle(SQL_HANDLE_STMT,this->statement_handle_);
+        this->statement_handle_ = SQL_NULL_HANDLE;
+      }
+    
+}
+bool yaooc_odbc_statement_bindcol(pointer __pthis__,void* data,SQLLEN column_size,SQLSMALLINT c_data_type)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+
+      return SQLBindCol(this->statement_handle_,this->icol_++,c_data_type,data,column_size,NULL) == SQL_SUCCESS;
+    
+}
+bool yaooc_odbc_statement_bindparam(pointer __pthis__,void* data,SQLLEN column_size,SQLSMALLINT c_data_type)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+
+      return SQLBindParameter(this->statement_handle_,this->icol_++,SQL_PARAM_INPUT,c_data_type,SQL_DEFAULT,
+              column_size,0,data,column_size,NULL) == SQL_SUCCESS;
+    
+}
+bool yaooc_odbc_statement_bindcol_chr(pointer __pthis__,char* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_chr(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(char),SQL_C_STINYINT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_uchr(pointer __pthis__,unsigned char* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_uchr(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(unsigned char),SQL_C_UTINYINT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_short(pointer __pthis__,short* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_short(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(short),SQL_C_SSHORT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_ushort(pointer __pthis__,unsigned short* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_ushort(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(unsigned short),SQL_C_USHORT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_int(pointer __pthis__,int* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_int(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(int),SQL_C_SLONG);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_uint(pointer __pthis__,unsigned int* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_uint(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(unsigned int),SQL_C_ULONG);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_long(pointer __pthis__,long long* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_long(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(long long),SQL_C_SBIGINT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_ulong(pointer __pthis__,unsigned long long* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_ulong(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(unsigned long long),SQL_C_UBIGINT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_dbl(pointer __pthis__,double* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_dbl(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(double),SQL_C_DOUBLE);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_str(pointer __pthis__,char* v,SQLLEN l)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_str(this,v,l)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,l,SQL_C_CHAR);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_blob(pointer __pthis__,void* v,SQLLEN l)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_blob(this,v,l)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,l,SQL_C_BINARY);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_time(pointer __pthis__,TIME_STRUCT* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_time(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(TIME_STRUCT),SQL_C_TYPE_TIME);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_date(pointer __pthis__,DATE_STRUCT* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_date(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(DATE_STRUCT),SQL_C_TYPE_DATE);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindcol_ts(pointer __pthis__,TIMESTAMP_STRUCT* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindcol_ts(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindcol(this,v,sizeof(TIMESTAMP_STRUCT),SQL_C_TYPE_TIMESTAMP);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_chr(pointer __pthis__,char* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_chr(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(char),SQL_C_STINYINT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_uchr(pointer __pthis__,unsigned char* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_uchr(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(unsigned char),SQL_C_UTINYINT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_short(pointer __pthis__,short* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_short(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(short),SQL_C_SSHORT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_ushort(pointer __pthis__,unsigned short* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_ushort(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(unsigned short),SQL_C_USHORT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_int(pointer __pthis__,int* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_int(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(int),SQL_C_SLONG);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_uint(pointer __pthis__,unsigned int* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_uint(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(unsigned int),SQL_C_ULONG);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_long(pointer __pthis__,long long* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_long(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(long long),SQL_C_SBIGINT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_ulong(pointer __pthis__,unsigned long long* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_ulong(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(unsigned long long),SQL_C_UBIGINT);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_dbl(pointer __pthis__,double* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_dbl(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(double),SQL_C_DOUBLE);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_str(pointer __pthis__,char* v,SQLLEN l)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_str(this,v,l)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,l,SQL_C_CHAR);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_blob(pointer __pthis__,void* v,SQLLEN l)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_blob(this,v,l)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,l,SQL_C_BINARY);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_time(pointer __pthis__,TIME_STRUCT* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_time(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(TIME_STRUCT),SQL_C_TYPE_TIME);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_date(pointer __pthis__,DATE_STRUCT* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_date(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(DATE_STRUCT),SQL_C_TYPE_DATE);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_bindparam_ts(pointer __pthis__,TIMESTAMP_STRUCT* v)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->bindparam_ts(this,v)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      return yaooc_odbc_statement_bindparam(this,v,sizeof(TIMESTAMP_STRUCT),SQL_C_TYPE_TIMESTAMP);
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_fetch(pointer __pthis__)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->fetch(this)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      SQLRETURN ret = SQLFetch(this->statement_handle_);
+      
+
+
+
+
+
+
+
+
+
+      return ret == SQL_SUCCESS;
+    
+#undef PM
+#undef super
+}
+bool yaooc_odbc_statement_execute(pointer __pthis__)
+{
+yaooc_odbc_statement_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_statement_parent_class_table->execute(this)
+#define PM(method,...) CTM((*yaooc_odbc_statement_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      SQLRETURN ret = SQLExecute(this->statement_handle_); 
+      
+
+
+
+
+
+
+
+
+
+      return ret==SQL_SUCCESS;
+    
+#undef PM
+#undef super
+}
+yaooc_odbc_statement_class_table_t yaooc_odbc_statement_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_odbc_statement_t",
+.swap = (void(*)(pointer,pointer)) yaooc_odbc_statement_swap,
+.bindcol_chr = (bool(*)(pointer,char*)) yaooc_odbc_statement_bindcol_chr,
+.bindcol_uchr = (bool(*)(pointer,unsigned char*)) yaooc_odbc_statement_bindcol_uchr,
+.bindcol_short = (bool(*)(pointer,short*)) yaooc_odbc_statement_bindcol_short,
+.bindcol_ushort = (bool(*)(pointer,unsigned short*)) yaooc_odbc_statement_bindcol_ushort,
+.bindcol_int = (bool(*)(pointer,int*)) yaooc_odbc_statement_bindcol_int,
+.bindcol_uint = (bool(*)(pointer,unsigned int*)) yaooc_odbc_statement_bindcol_uint,
+.bindcol_long = (bool(*)(pointer,long long*)) yaooc_odbc_statement_bindcol_long,
+.bindcol_ulong = (bool(*)(pointer,unsigned long long*)) yaooc_odbc_statement_bindcol_ulong,
+.bindcol_dbl = (bool(*)(pointer,double*)) yaooc_odbc_statement_bindcol_dbl,
+.bindcol_str = (bool(*)(pointer,char*,SQLLEN)) yaooc_odbc_statement_bindcol_str,
+.bindcol_blob = (bool(*)(pointer,void*,SQLLEN)) yaooc_odbc_statement_bindcol_blob,
+.bindcol_time = (bool(*)(pointer,TIME_STRUCT*)) yaooc_odbc_statement_bindcol_time,
+.bindcol_date = (bool(*)(pointer,DATE_STRUCT*)) yaooc_odbc_statement_bindcol_date,
+.bindcol_ts = (bool(*)(pointer,TIMESTAMP_STRUCT*)) yaooc_odbc_statement_bindcol_ts,
+.bindparam_chr = (bool(*)(pointer,char*)) yaooc_odbc_statement_bindparam_chr,
+.bindparam_uchr = (bool(*)(pointer,unsigned char*)) yaooc_odbc_statement_bindparam_uchr,
+.bindparam_short = (bool(*)(pointer,short*)) yaooc_odbc_statement_bindparam_short,
+.bindparam_ushort = (bool(*)(pointer,unsigned short*)) yaooc_odbc_statement_bindparam_ushort,
+.bindparam_int = (bool(*)(pointer,int*)) yaooc_odbc_statement_bindparam_int,
+.bindparam_uint = (bool(*)(pointer,unsigned int*)) yaooc_odbc_statement_bindparam_uint,
+.bindparam_long = (bool(*)(pointer,long long*)) yaooc_odbc_statement_bindparam_long,
+.bindparam_ulong = (bool(*)(pointer,unsigned long long*)) yaooc_odbc_statement_bindparam_ulong,
+.bindparam_dbl = (bool(*)(pointer,double*)) yaooc_odbc_statement_bindparam_dbl,
+.bindparam_str = (bool(*)(pointer,char*,SQLLEN)) yaooc_odbc_statement_bindparam_str,
+.bindparam_blob = (bool(*)(pointer,void*,SQLLEN)) yaooc_odbc_statement_bindparam_blob,
+.bindparam_time = (bool(*)(pointer,TIME_STRUCT*)) yaooc_odbc_statement_bindparam_time,
+.bindparam_date = (bool(*)(pointer,DATE_STRUCT*)) yaooc_odbc_statement_bindparam_date,
+.bindparam_ts = (bool(*)(pointer,TIMESTAMP_STRUCT*)) yaooc_odbc_statement_bindparam_ts,
+.fetch = (bool(*)(pointer)) yaooc_odbc_statement_fetch,
+.execute = (bool(*)(pointer)) yaooc_odbc_statement_execute,
+};
+const type_info_t __yaooc_odbc_statement_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_odbc_statement_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_odbc_statement_default_ctor,
+.dtor_=yaooc_odbc_statement_dtor,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_odbc_statement_class_table,
+.parent_=&__yaooc_object_ti
+};
+const type_info_t* const yaooc_odbc_statement_ti=&__yaooc_odbc_statement_ti;
+static void yaooc_odbc_statement_ctor_private(pointer p,va_list args)
+{
   yaooc_odbc_statement_pointer this=p;
   this->statement_handle_ = SQL_NULL_HANDLE;
 	this->icol_=1;
 }
 
-void yaooc_odbc_statement_dtor(pointer p)
+
+void yaooc_odbc_connection_default_ctor(pointer __pthis__)
 {
-  yaooc_odbc_statement_pointer this=p;
-	if(this->statement_handle_ != SQL_NULL_HANDLE) {
-		SQLCloseCursor(this->statement_handle_);
-		SQLFreeHandle(SQL_HANDLE_STMT,this->statement_handle_);
-		this->statement_handle_ = SQL_NULL_HANDLE;
-	}
+yaooc_odbc_connection_pointer this=__pthis__;(void)this;
+call_parent_default_ctor_static(this,yaooc_odbc_connection);
+
+
+
+      this->connection_handle_ = SQL_NULL_HANDLE;
+    
 }
-
-void yaooc_odbc_statement_assign(pointer p,const_pointer s)
+void yaooc_odbc_connection_dtor(pointer __pthis__)
 {
-  yaooc_odbc_statement_pointer this=p;
-  yaooc_odbc_statement_const_pointer src=s;
-  this->statement_handle_ = src->statement_handle_;
+yaooc_odbc_connection_pointer this=__pthis__;(void)this;
+
+
+      M(this,disconnect);
+    
 }
+void yaooc_odbc_connection_ctor_connect_str(pointer __pthis,va_list __con_args__){
+yaooc_odbc_connection_pointer this=__pthis;(void)this;
+const char* connect_str = va_arg(__con_args__,const char*);
 
-/* Constructors implementation for yaooc_odbc_statement */
+call_default_ctor_static(this,yaooc_odbc_connection);
 
-/* Private methods implementation for yaooc_odbc_statement */
-static void yaooc_odbc_statement_set_handle(pointer p,SQLHSTMT h)
-{
-  yaooc_odbc_statement_pointer this=p;
-	this->statement_handle_=h;
+
+      M(this,connect,connect_str);
+    
 }
-
-
-/* Protected implementation for yaooc_odbc_statement */
-bool yaooc_odbc_statement_bindcol(pointer p,void* data,SQLLEN column_size,SQLSMALLINT c_data_type)
+yaooc_odbc_statement_t* yaooc_odbc_connection_exec_direct(pointer __pthis__,const char* str)
 {
-  yaooc_odbc_statement_pointer this=p;
-	return SQLBindCol(this->statement_handle_,this->icol_++,c_data_type,data,column_size,NULL) == SQL_SUCCESS;
+yaooc_odbc_connection_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_connection_parent_class_table->exec_direct(this,str)
+#define PM(method,...) CTM((*yaooc_odbc_connection_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_odbc_statement_t *stmt = new_ctor(yaooc_odbc_statement,yaooc_odbc_statement_ctor_private,NULL);
+      SQLHSTMT handle;
+      if(SQL_SUCCEEDED(SQLAllocHandle(SQL_HANDLE_STMT, this->connection_handle_, &handle))) {
+        SQLRETURN rc= SQLExecDirect(handle,(SQLCHAR*)str,SQL_NTS);
+        
+
+
+        if(SQL_SUCCEEDED(rc)) {
+          
+
+
+          yaooc_odbc_statement_set_handle(stmt,handle);
+        } else {
+    
+
+
+
+
+
+          SQLCloseCursor(handle);
+          SQLFreeHandle(SQL_HANDLE_STMT,handle);
+        }
+      }
+      return stmt;
+    
+#undef PM
+#undef super
 }
-
-bool yaooc_odbc_statement_bindparam(pointer p,void* data,SQLLEN column_size,SQLSMALLINT c_data_type)
+yaooc_odbc_statement_t* yaooc_odbc_connection_prepare(pointer __pthis__,const char* str)
 {
-  yaooc_odbc_statement_pointer this=p;
-	return SQLBindParameter(this->statement_handle_,this->icol_++,SQL_PARAM_INPUT,c_data_type,SQL_DEFAULT,
-					column_size,0,data,column_size,NULL) == SQL_SUCCESS;
+yaooc_odbc_connection_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_connection_parent_class_table->prepare(this,str)
+#define PM(method,...) CTM((*yaooc_odbc_connection_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      yaooc_odbc_statement_t *stmt = new_ctor(yaooc_odbc_statement,yaooc_odbc_statement_ctor_private,NULL);
+      SQLHSTMT handle;
+      if(SQL_SUCCEEDED(SQLAllocHandle(SQL_HANDLE_STMT, this->connection_handle_, &handle))) {
+        SQLRETURN rc= SQLPrepare(handle,(SQLCHAR*)str,SQL_NTS);
+        
+
+
+        if(SQL_SUCCEEDED(rc)) {
+          
+
+
+          yaooc_odbc_statement_set_handle(stmt,handle);
+        } else {
+          
+
+
+
+
+
+          SQLCloseCursor(handle);
+          SQLFreeHandle(SQL_HANDLE_STMT,handle);
+        }
+      }
+      return stmt;
+    
+#undef PM
+#undef super
 }
-
-/* Table implementation for yaooc_odbc_statement */
-bool yaooc_odbc_statement_bindcol_chr(pointer p,char* v)
+void yaooc_odbc_connection_connect(pointer __pthis__,const char* str)
 {
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(char),SQL_C_STINYINT);
+yaooc_odbc_connection_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_connection_parent_class_table->connect(this,str)
+#define PM(method,...) CTM((*yaooc_odbc_connection_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      M(this,disconnect);
+      SQLRETURN rc = SQLAllocHandle(SQL_HANDLE_DBC, yaooc_odbc_environment_henv_, &this->connection_handle_);
+      if(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO) {
+        yaooc_odbc_connection_auto_commit(this,false); 
+        rc=SQLDriverConnect(this->connection_handle_, NULL, (SQLCHAR*)str, SQL_NTS,
+            NULL, 0, NULL, SQL_DRIVER_NOPROMPT);
+      }
+    
+
+
+      if(rc != SQL_SUCCESS) {
+    
+
+
+
+
+
+        M(this,disconnect);
+      }
+    
+#undef PM
+#undef super
 }
-
-bool yaooc_odbc_statement_bindcol_uchr(pointer p,unsigned char* v)
+void yaooc_odbc_connection_disconnect(pointer __pthis__)
 {
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(unsigned char),SQL_C_UTINYINT);
+yaooc_odbc_connection_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_connection_parent_class_table->disconnect(this)
+#define PM(method,...) CTM((*yaooc_odbc_connection_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->connection_handle_ != SQL_NULL_HANDLE) {
+        M(this,commit);
+        SQLDisconnect(this->connection_handle_);
+        SQLFreeHandle(SQL_HANDLE_DBC, this->connection_handle_);
+        this->connection_handle_=SQL_NULL_HANDLE;
+      }
+    
+#undef PM
+#undef super
 }
-
-bool yaooc_odbc_statement_bindcol_short(pointer p,short* v)
+void yaooc_odbc_connection_auto_commit(pointer __pthis__,bool on)
 {
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(short),SQL_C_SSHORT);
+yaooc_odbc_connection_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_connection_parent_class_table->auto_commit(this,on)
+#define PM(method,...) CTM((*yaooc_odbc_connection_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->connection_handle_ != SQL_NULL_HANDLE)
+        SQLSetConnectAttr(this->connection_handle_,SQL_ATTR_AUTOCOMMIT, (SQLPOINTER)(long)(on ? SQL_TRUE : SQL_FALSE), 0);
+    
+#undef PM
+#undef super
 }
-
-bool yaooc_odbc_statement_bindcol_ushort(pointer p,unsigned short* v)
+void yaooc_odbc_connection_commit(pointer __pthis__)
 {
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(unsigned short),SQL_C_USHORT);
+yaooc_odbc_connection_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_connection_parent_class_table->commit(this)
+#define PM(method,...) CTM((*yaooc_odbc_connection_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->connection_handle_ != SQL_NULL_HANDLE)
+        SQLEndTran(SQL_HANDLE_DBC,this->connection_handle_,SQL_COMMIT);
+    
+#undef PM
+#undef super
 }
-
-bool yaooc_odbc_statement_bindcol_int(pointer p,int* v)
+void yaooc_odbc_connection_rollback(pointer __pthis__)
 {
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(int),SQL_C_SLONG);
+yaooc_odbc_connection_pointer this=__pthis__;(void)this;
+#define super() yaooc_odbc_connection_parent_class_table->rollback(this)
+#define PM(method,...) CTM((*yaooc_odbc_connection_parent_class_table),this,method,## __VA_ARGS__)
+
+
+      if(this->connection_handle_ != SQL_NULL_HANDLE)
+        SQLEndTran(SQL_HANDLE_DBC,this->connection_handle_,SQL_ROLLBACK);
+    
+#undef PM
+#undef super
 }
-
-bool yaooc_odbc_statement_bindcol_uint(pointer p,unsigned int* v)
-{
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(unsigned int),SQL_C_ULONG);
-}
-
-bool yaooc_odbc_statement_bindcol_long(pointer p,long long* v)
-{
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(long long),SQL_C_SBIGINT);
-}
-
-bool yaooc_odbc_statement_bindcol_ulong(pointer p,unsigned long long* v)
-{
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(unsigned long long),SQL_C_UBIGINT);
-}
-
-bool yaooc_odbc_statement_bindcol_dbl(pointer p,double* v)
-{
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(double),SQL_C_DOUBLE);
-}
-
-bool yaooc_odbc_statement_bindcol_str(pointer p,char* v,SQLLEN l)
-{
-	return yaooc_odbc_statement_bindcol(p,v,l,SQL_C_CHAR);
-}
-
-bool yaooc_odbc_statement_bindcol_blob(pointer p,void* v,SQLLEN l)
-{
-	return yaooc_odbc_statement_bindcol(p,v,l,SQL_C_BINARY);
-}
-
-bool yaooc_odbc_statement_bindcol_time(pointer p,TIME_STRUCT* v)
-{
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(TIME_STRUCT),SQL_C_TYPE_TIME);
-}
-
-bool yaooc_odbc_statement_bindcol_date(pointer p,DATE_STRUCT* v)
-{
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(DATE_STRUCT),SQL_C_TYPE_DATE);
-}
-
-bool yaooc_odbc_statement_bindcol_ts(pointer p,TIMESTAMP_STRUCT* v)
-{
-	return yaooc_odbc_statement_bindcol(p,v,sizeof(TIMESTAMP_STRUCT),SQL_C_TYPE_TIMESTAMP);
-}
-///////
-
-bool yaooc_odbc_statement_bindparam_chr(pointer p,char* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(char),SQL_C_STINYINT);
-}
-
-bool yaooc_odbc_statement_bindparam_uchr(pointer p,unsigned char* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(unsigned char),SQL_C_UTINYINT);
-}
-
-bool yaooc_odbc_statement_bindparam_short(pointer p,short* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(short),SQL_C_SSHORT);
-}
-
-bool yaooc_odbc_statement_bindparam_ushort(pointer p,unsigned short* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(unsigned short),SQL_C_USHORT);
-}
-
-bool yaooc_odbc_statement_bindparam_int(pointer p,int* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(int),SQL_C_SLONG);
-}
-
-bool yaooc_odbc_statement_bindparam_uint(pointer p,unsigned int* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(unsigned int),SQL_C_ULONG);
-}
-
-bool yaooc_odbc_statement_bindparam_long(pointer p,long long* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(long long),SQL_C_SBIGINT);
-}
-
-bool yaooc_odbc_statement_bindparam_ulong(pointer p,unsigned long long* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(unsigned long long),SQL_C_UBIGINT);
-}
-
-bool yaooc_odbc_statement_bindparam_dbl(pointer p,double* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(double),SQL_C_DOUBLE);
-}
-
-bool yaooc_odbc_statement_bindparam_str(pointer p,char* v,SQLLEN l)
-{
-	return yaooc_odbc_statement_bindparam(p,v,l,SQL_C_CHAR);
-}
-
-bool yaooc_odbc_statement_bindparam_blob(pointer p,void* v,SQLLEN l)
-{
-	return yaooc_odbc_statement_bindparam(p,v,l,SQL_C_BINARY);
-}
-
-bool yaooc_odbc_statement_bindparam_time(pointer p,TIME_STRUCT* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(TIME_STRUCT),SQL_C_TYPE_TIME);
-}
-
-bool yaooc_odbc_statement_bindparam_date(pointer p,DATE_STRUCT* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(DATE_STRUCT),SQL_C_TYPE_DATE);
-}
-
-bool yaooc_odbc_statement_bindparam_ts(pointer p,TIMESTAMP_STRUCT* v)
-{
-	return yaooc_odbc_statement_bindparam(p,v,sizeof(TIMESTAMP_STRUCT),SQL_C_TYPE_TIMESTAMP);
-}
-
-bool yaooc_odbc_statement_fetch(pointer p)
-{
-  yaooc_odbc_statement_pointer this=p;
-	SQLRETURN ret = SQLFetch(this->statement_handle_); // == SQL_SUCCESS;
-/*	debug(1) {
-		printf("Fetch: %d\n",ret);
-		printf("Fetch handle: %p\n",statement_handle_);
-		SQLCHAR state[256];
-		SQLCHAR msg[256];
-		SQLINTEGER err_ptr;
-		SQLSMALLINT text_len;
-		SQLGetDiagRec(SQL_HANDLE_STMT,statement_handle_,1,state,&err_ptr,msg,256,&text_len);
-		printf("%s %d %s %d\n",state,err_ptr,msg,text_len);
-	}*/
-	return ret==SQL_SUCCESS;
-}
-
-bool yaooc_odbc_statement_execute(pointer p)
-{
-  yaooc_odbc_statement_pointer this=p;
-	SQLRETURN ret = SQLExecute(this->statement_handle_); // == SQL_SUCCESS;
-/*	debug(1) {
-		printf("Execute: %d\n",ret);
-		printf("Execute handle: %p\n",statement_handle_);
-		SQLCHAR state[256];
-		SQLCHAR msg[256];
-		SQLINTEGER err_ptr;
-		SQLSMALLINT text_len;
-		SQLGetDiagRec(SQL_HANDLE_STMT,statement_handle_,1,state,&err_ptr,msg,256,&text_len);
-		printf("%s %d %s %d\n",state,err_ptr,msg,text_len);
-	}*/
-	return ret==SQL_SUCCESS;
-}
-
-
-/* Class table definition for yaooc_odbc_statement */
-yaooc_odbc_statement_class_table_t yaooc_odbc_statement_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_odbc_statement_t",
-  .swap = (void(*)(pointer, pointer)) yaooc_odbc_statement_swap,
-  .bindcol_chr = (bool(*)(pointer, char*)) yaooc_odbc_statement_bindcol_chr,
-  .bindcol_uchr = (bool(*)(pointer, unsigned char*)) yaooc_odbc_statement_bindcol_uchr,
-  .bindcol_short = (bool(*)(pointer, short*)) yaooc_odbc_statement_bindcol_short,
-  .bindcol_ushort = (bool(*)(pointer, unsigned short*)) yaooc_odbc_statement_bindcol_ushort,
-  .bindcol_int = (bool(*)(pointer, int*)) yaooc_odbc_statement_bindcol_int,
-  .bindcol_uint = (bool(*)(pointer, unsigned int*)) yaooc_odbc_statement_bindcol_uint,
-  .bindcol_long = (bool(*)(pointer, long long*)) yaooc_odbc_statement_bindcol_long,
-  .bindcol_ulong = (bool(*)(pointer, unsigned long long*)) yaooc_odbc_statement_bindcol_ulong,
-  .bindcol_dbl = (bool(*)(pointer, double*)) yaooc_odbc_statement_bindcol_dbl,
-  .bindcol_str = (bool(*)(pointer, char*, SQLLEN)) yaooc_odbc_statement_bindcol_str,
-  .bindcol_blob = (bool(*)(pointer, void*, SQLLEN)) yaooc_odbc_statement_bindcol_blob,
-  .bindcol_time = (bool(*)(pointer, TIME_STRUCT*)) yaooc_odbc_statement_bindcol_time,
-  .bindcol_date = (bool(*)(pointer, DATE_STRUCT*)) yaooc_odbc_statement_bindcol_date,
-  .bindcol_ts = (bool(*)(pointer, TIMESTAMP_STRUCT*)) yaooc_odbc_statement_bindcol_ts,
-  .bindparam_chr = (bool(*)(pointer, char*)) yaooc_odbc_statement_bindparam_chr,
-  .bindparam_uchr = (bool(*)(pointer, unsigned char*)) yaooc_odbc_statement_bindparam_uchr,
-  .bindparam_short = (bool(*)(pointer, short*)) yaooc_odbc_statement_bindparam_short,
-  .bindparam_ushort = (bool(*)(pointer, unsigned short*)) yaooc_odbc_statement_bindparam_ushort,
-  .bindparam_int = (bool(*)(pointer, int*)) yaooc_odbc_statement_bindparam_int,
-  .bindparam_uint = (bool(*)(pointer, unsigned int*)) yaooc_odbc_statement_bindparam_uint,
-  .bindparam_long = (bool(*)(pointer, long long*)) yaooc_odbc_statement_bindparam_long,
-  .bindparam_ulong = (bool(*)(pointer, unsigned long long*)) yaooc_odbc_statement_bindparam_ulong,
-  .bindparam_dbl = (bool(*)(pointer, double*)) yaooc_odbc_statement_bindparam_dbl,
-  .bindparam_str = (bool(*)(pointer, char*, SQLLEN)) yaooc_odbc_statement_bindparam_str,
-  .bindparam_blob = (bool(*)(pointer, void*, SQLLEN)) yaooc_odbc_statement_bindparam_blob,
-  .bindparam_time = (bool(*)(pointer, TIME_STRUCT*)) yaooc_odbc_statement_bindparam_time,
-  .bindparam_date = (bool(*)(pointer, DATE_STRUCT*)) yaooc_odbc_statement_bindparam_date,
-  .bindparam_ts = (bool(*)(pointer, TIMESTAMP_STRUCT*)) yaooc_odbc_statement_bindparam_ts,
-  .fetch = (bool(*)(pointer)) yaooc_odbc_statement_fetch,
-  .execute = (bool(*)(pointer)) yaooc_odbc_statement_execute,
+yaooc_odbc_connection_class_table_t yaooc_odbc_connection_class_table ={
+.parent_class_table_ = (const class_table_t*)&yaooc_object_class_table,
+.type_name_ = (const char*)"yaooc_odbc_connection_t",
+.swap = (void(*)(pointer,pointer)) yaooc_odbc_connection_swap,
+.exec_direct = (yaooc_odbc_statement_t*(*)(pointer,const char*)) yaooc_odbc_connection_exec_direct,
+.prepare = (yaooc_odbc_statement_t*(*)(pointer,const char*)) yaooc_odbc_connection_prepare,
+.connect = (void(*)(pointer,const char*)) yaooc_odbc_connection_connect,
+.disconnect = (void(*)(pointer)) yaooc_odbc_connection_disconnect,
+.auto_commit = (void(*)(pointer,bool)) yaooc_odbc_connection_auto_commit,
+.commit = (void(*)(pointer)) yaooc_odbc_connection_commit,
+.rollback = (void(*)(pointer)) yaooc_odbc_connection_rollback,
 };
-
-/* Type info structure for yaooc_odbc_statement */
-DEFINE_TYPE_INFO(yaooc_odbc_statement,Y,Y,N,Y,N,N,N,Y,yaooc_object);
-
-/* Private variables implementation for yaooc_odbc_connection */
-
-/* Private methods prototypes for yaooc_odbc_connection */
-
-/* Type Info implemmentation for yaooc_odbc_connection */
-void yaooc_odbc_connection_default_ctor(pointer p)
-{
-  yaooc_odbc_connection_pointer this=p;
-  this->connection_handle_ = SQL_NULL_HANDLE;
-}
-
-void yaooc_odbc_connection_dtor(pointer p)
-{
-  yaooc_odbc_connection_pointer this=p;
-	yaooc_odbc_connection_disconnect(this);
-}
-
-/* Constructors implementation for yaooc_odbc_connection */
-void yaooc_odbc_connection_connect_str(pointer p,va_list args)
-{
-  yaooc_odbc_connection_pointer this=p;
-	const char* str= va_arg(args, const char*);
-	yaooc_odbc_connection_default_ctor(this);
-	yaooc_odbc_connection_connect(this,str);
-}
-
-
-/* Private methods implementation for yaooc_odbc_connection */
-
-/* Protected implementation for yaooc_odbc_connection */
-
-/* Table implementation for yaooc_odbc_connection */
-yaooc_odbc_statement_t* yaooc_odbc_connection_exec_direct(pointer p,const char* str)
-{
-	yaooc_odbc_connection_pointer this=p;
- 	yaooc_odbc_statement_t *stmt = new_ctor(yaooc_odbc_statement,yaooc_odbc_statement_private_ctor,NULL);
-	SQLHSTMT handle;
-	if(SQL_SUCCEEDED(SQLAllocHandle(SQL_HANDLE_STMT, this->connection_handle_, &handle))) {
-		SQLRETURN rc= SQLExecDirect(handle,(SQLCHAR*)str,SQL_NTS);
-		debug(1) {
-			printf("%d\n",rc);
-		}
-		if(SQL_SUCCEEDED(rc)) {
-			debug(1) {
-				printf("Exec direct succeeded. Set statement handle handle: %p\n",handle);
-			}
-			yaooc_odbc_statement_set_handle(stmt,handle);
-		} else {
-/*			SQLCHAR* state=new SQLCHAR[256];
-			SQLCHAR* msg=new SQLCHAR[256];
-			SQLINTEGER err_ptr;
-			SQLSMALLINT text_len;
-			SQLGetDiagRec(SQL_HANDLE_STMT,handle,1,state,&err_ptr,msg,256,&text_len);
-			printf("%s %d %s %d\n",state,err_ptr,msg,text_len);*/
-			SQLCloseCursor(handle);
-			SQLFreeHandle(SQL_HANDLE_STMT,handle);
-		}
-	}
-	return stmt;
-}
-
-yaooc_odbc_statement_t* yaooc_odbc_connection_prepare(pointer p,const char* str)
-{
-  yaooc_odbc_connection_pointer this=p;
- 	yaooc_odbc_statement_t *stmt = new_ctor(yaooc_odbc_statement,yaooc_odbc_statement_private_ctor,NULL);
-	SQLHSTMT handle;
-	if(SQL_SUCCEEDED(SQLAllocHandle(SQL_HANDLE_STMT, this->connection_handle_, &handle))) {
-		SQLRETURN rc= SQLPrepare(handle,(SQLCHAR*)str,SQL_NTS);
-		debug(1) {
-			printf("%d\n",rc);
-		}
-		if(SQL_SUCCEEDED(rc)) {
-			debug(1) {
-				printf("Prepare handle: %p\n",handle);
-			}
-			yaooc_odbc_statement_set_handle(stmt,handle);
-		} else {
-/*			SQLCHAR* state=new SQLCHAR[256];
-			SQLCHAR* msg=new SQLCHAR[256];
-			SQLINTEGER err_ptr;
-			SQLSMALLINT text_len;
-			SQLGetDiagRec(SQL_HANDLE_STMT,handle,1,state,&err_ptr,msg,256,&text_len);
-			printf("%s %d %s %d\n",state,err_ptr,msg,text_len);*/
-			SQLCloseCursor(handle);
-			SQLFreeHandle(SQL_HANDLE_STMT,handle);
-		}
-	}
-	return stmt;
-}
-
-void yaooc_odbc_connection_connect(pointer p,const char* str)
-{
-  yaooc_odbc_connection_pointer this=p;
-	yaooc_odbc_connection_disconnect(this);
-	SQLRETURN rc = SQLAllocHandle(SQL_HANDLE_DBC, yaooc_odbc_environment_henv_, &this->connection_handle_);
-	if(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO) {
-		yaooc_odbc_connection_auto_commit(this,false); // autocommit off by default
-		rc=SQLDriverConnect(this->connection_handle_, NULL, (SQLCHAR*)str, SQL_NTS,
-				NULL, 0, NULL, SQL_DRIVER_NOPROMPT);
-	}
-/*	debug(DEBUG_CONNECTION) {
-		rc == SQL_SUCCESS ? puts("Connected") : puts("Failed connect");
-	}*/
-	if(rc != SQL_SUCCESS) {
-/*		SQLCHAR state[256];
-		SQLCHAR msg[256];
-		SQLINTEGER err_ptr;
-		SQLSMALLINT text_len;
-		SQLGetDiagRec(SQL_HANDLE_DBC,connection_handle_,1,state,&err_ptr,msg,256,&text_len);
-		printf("%s %d %s %d\n",state,err_ptr,msg,text_len);*/
-		yaooc_odbc_connection_disconnect(this);
-	}
-}
-
-void yaooc_odbc_connection_disconnect(pointer p)
-{
-  yaooc_odbc_connection_pointer this=p;
-	if(this->connection_handle_ != SQL_NULL_HANDLE) {
-		yaooc_odbc_connection_commit(this);
-		SQLDisconnect(this->connection_handle_);
-		SQLFreeHandle(SQL_HANDLE_DBC, this->connection_handle_);
-		this->connection_handle_=SQL_NULL_HANDLE;
-	}
-}
-
-void yaooc_odbc_connection_auto_commit(pointer p,bool on)
-{
-  yaooc_odbc_connection_pointer this=p;
-	if(this->connection_handle_ != SQL_NULL_HANDLE)
-		SQLSetConnectAttr(this->connection_handle_,SQL_ATTR_AUTOCOMMIT, (SQLPOINTER)(long)(on ? SQL_TRUE : SQL_FALSE), 0);
-}
-
-void yaooc_odbc_connection_commit(pointer p)
-{
-  yaooc_odbc_connection_pointer this=p;
-	if(this->connection_handle_ != SQL_NULL_HANDLE)
-		SQLEndTran(SQL_HANDLE_DBC,this->connection_handle_,SQL_COMMIT);
-}
-
-void yaooc_odbc_connection_rollback(pointer p)
-{
-  yaooc_odbc_connection_pointer this=p;
-	if(this->connection_handle_ != SQL_NULL_HANDLE)
-		SQLEndTran(SQL_HANDLE_DBC,this->connection_handle_,SQL_ROLLBACK);
-}
-
-
-/* Class table definition for yaooc_odbc_connection */
-yaooc_odbc_connection_class_table_t yaooc_odbc_connection_class_table =
-{
-  .parent_class_table_ = (const class_table_t*) &yaooc_object_class_table,
-  .type_name_ = (const char*) "yaooc_odbc_connection_t",
-  .swap = (void(*)(pointer, pointer)) yaooc_odbc_connection_swap,
-  .exec_direct = (yaooc_odbc_statement_t*(*)(pointer, const char*)) yaooc_odbc_connection_exec_direct,
-  .prepare = (yaooc_odbc_statement_t*(*)(pointer, const char*)) yaooc_odbc_connection_prepare,
-  .connect = (void(*)(pointer, const char*)) yaooc_odbc_connection_connect,
-  .disconnect = (void(*)(pointer)) yaooc_odbc_connection_disconnect,
-  .auto_commit = (void(*)(pointer, bool)) yaooc_odbc_connection_auto_commit,
-  .commit = (void(*)(pointer)) yaooc_odbc_connection_commit,
-  .rollback = (void(*)(pointer)) yaooc_odbc_connection_rollback,
+const type_info_t __yaooc_odbc_connection_ti = {
+.min_flag_=0,
+.pod_flag_=0,
+.type_size_=sizeof(yaooc_odbc_connection_t),
+.rich_compare_=NULL,
+.to_stream_=NULL,
+.from_stream_=NULL,
+.default_ctor_=yaooc_odbc_connection_default_ctor,
+.dtor_=yaooc_odbc_connection_dtor,
+.copy_ctor_=NULL,
+.assign_=NULL,
+.class_table_=(const class_table_t*) &yaooc_odbc_connection_class_table,
+.parent_=&__yaooc_object_ti
 };
-
-/* Type info structure for yaooc_odbc_connection */
-DEFINE_TYPE_INFO(yaooc_odbc_connection,Y,Y,N,N,N,N,N,Y,yaooc_object);
-
-/* End YAOOCPP output */
-
+const type_info_t* const yaooc_odbc_connection_ti=&__yaooc_odbc_connection_ti;

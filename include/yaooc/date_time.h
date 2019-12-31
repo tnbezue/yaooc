@@ -2,7 +2,6 @@
 #define __DATE_TIME_INCLUDED__
 
 #include <yaooc/object.h>
-
 #include <yaooc/string.h>
 #include <yaooc/stream.h>
 

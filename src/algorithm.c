@@ -1,3 +1,19 @@
+/*
+		Copyright (C) 2016-2019  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 #include <yaooc/algorithm.h>
 #include <stdio.h>
 #include <string.h>
@@ -137,7 +153,7 @@ size_t __yaooc_count(const type_info_t* ti,const_iterator f,const_iterator l,con
       if(__op_eq__(first,value,rich_cmp))
         count++;
     }
-  } else { 
+  } else {
 		count=(last-first)/type_size;
 	}
 	return count;
@@ -165,11 +181,11 @@ iterator __yaooc_remove(const type_info_t*ti,iterator f,iterator l,const_pointer
   yaooc_private_iterator first=f;
   yaooc_private_iterator last=l;
   rich_compare rich_cmp=get_rich_compare(ti);
-  if(rich_cmp) {  
+  if(rich_cmp) {
   	size_t type_size=yaooc_sizeof(ti);
     while(first != last) {
       if(__op_eq__(first,value,rich_cmp)) {
-        
+
         yaooc_private_iterator temp=first+type_size;
         for(;temp!=last;temp+=type_size) {
           if(__op_ne__(temp,value,rich_cmp))
@@ -191,7 +207,7 @@ iterator __yaooc_remove_if(const type_info_t*ti,iterator f,iterator l,bool(*fun)
 	size_t type_size=yaooc_sizeof(ti);
   while(first != last) {
     if(fun(first)) {
-      
+
       yaooc_private_iterator temp=first+type_size;
       for(;temp!=last;temp+=type_size) {
         if(!fun(temp))
@@ -212,7 +228,7 @@ iterator __yaooc_remove_copy(const type_info_t*ti,const_iterator f,const_iterato
   yaooc_private_iterator dst=d;
   rich_compare rich_cmp=get_rich_compare(ti);
   assignment assign_func=get_assignment(ti);
-  if(rich_cmp) {  
+  if(rich_cmp) {
   	size_t type_size=yaooc_sizeof(ti);
   	for(;first != last;first+=type_size) {
       if(__op_ne__(first,value,rich_cmp)) {
@@ -280,9 +296,9 @@ const_iterator __yaooc_find_end(const type_info_t* ti,const_iterator f,const_ite
         break;
       }
     }
-  } else {  
+  } else {
     pos=last - (s_last-s_first);
-    if(pos < first) 
+    if(pos < first)
       pos=last;
   }
   return pos;
@@ -317,7 +333,7 @@ const_iterator __yaooc_search(const type_info_t* ti,const_iterator f,const_itera
   yaooc_private_const_iterator s_first=sf;
   yaooc_private_const_iterator s_last=sl;
 	size_t type_size=yaooc_sizeof(ti);
-  if(s_first != s_last) { 
+  if(s_first != s_last) {
     yaooc_private_const_iterator last_temp=first+(s_last-s_first);
     for(;first!=last && last_temp <= last;first+=type_size,last_temp+=type_size) {
       if(__yaooc_mismatch(ti,first,last_temp,sf,sl).first == last_temp)
@@ -326,4 +342,3 @@ const_iterator __yaooc_search(const type_info_t* ti,const_iterator f,const_itera
   }
   return last;
 }
-

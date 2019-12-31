@@ -38,6 +38,7 @@ int yaooc_date_time_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 yaooc_date_time_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_date_time_const_pointer rhs=__prhs__;(void)rhs;
 
+
       return lhs->time_ - rhs->time_;
     
 }
@@ -45,6 +46,7 @@ void yaooc_date_time_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__
 {
 yaooc_date_time_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
+
 
 
       struct tm* tm=localtime(&this->time_);

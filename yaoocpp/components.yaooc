@@ -1,4 +1,4 @@
-%include <yaooc/object.yod>
+%include <yaooc/object.yaooh>
 
 %header
 #include <yaooc/vector.h>
@@ -192,7 +192,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
 
     void print_class_table_entry(ostream_pointer ostrm,const char* class_name,const char* parent) const = 0;
 
-    void print_yod_definition(ostream_pointer ostrm,bool include_implementation) const = 0;
+    void print_yaooh_definition(ostream_pointer ostrm,bool include_implementation) const = 0;
 
 };
 
@@ -242,7 +242,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
       M(ostrm,printf,".%s = (%s%s)%s,\n",M(&this->name_,c_str),M(&this->type_,c_str),
             M(&this->array_def_,c_str),M(&this->value_,c_str));
     }
-    void print_yod_definition(ostream_pointer ostrm,bool include_default_value) const
+    void print_yaooh_definition(ostream_pointer ostrm,bool include_default_value) const
     {
       M(ostrm,printf,"%s %s%s",M(&this->type_,c_str),M(&this->name_,c_str),M(&this->array_def_,c_str));
       if(include_default_value)
@@ -306,7 +306,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
       yaoocpp_method_print_args_type(this,ostrm);
       M(ostrm,printf,")) %s_%s,\n",class_name,M(&this->name_,c_str));
     }
-    void print_yod_definition(ostream_pointer ostrm,bool include_implementation) const
+    void print_yaooh_definition(ostream_pointer ostrm,bool include_implementation) const
     {
       if(this->form_==IMPLEMENTATION_TEXT || this->form_==IMPLEMENTED_AS) {
         M(ostrm,printf,"%s %s(",M(&this->type_,c_str),M(&this->name_,c_str));
@@ -654,7 +654,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
       yaoocpp_type_info_print_entry(this,ostrm,"default_ctor");
     }
 
-    void print_yod_definition(ostream_pointer ostrm,bool include_implementation) const
+    void print_yaooh_definition(ostream_pointer ostrm,bool include_implementation) const
     {
       if(this->form_==IMPLEMENTATION_TEXT) {
         M(ostrm,printf,"%s(){",M(&this->name_,c_str));
@@ -744,7 +744,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
     {
       yaoocpp_type_info_print_entry(this,ostrm,"dtor");
     }
-    void print_yod_definition(ostream_pointer ostrm,bool include_implementation) const
+    void print_yaooh_definition(ostream_pointer ostrm,bool include_implementation) const
     {
       if(this->form_==IMPLEMENTATION_TEXT) {
         M(ostrm,printf,"~%s(){\n"
@@ -837,7 +837,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
     {
       yaoocpp_type_info_print_entry(this,ostrm,"copy_ctor");
     }
-    void print_yod_definition(ostream_pointer ostrm,bool include_implementation) const
+    void print_yaooh_definition(ostream_pointer ostrm,bool include_implementation) const
     {
       if(this->form_==IMPLEMENTATION_TEXT) {
             M(ostrm,printf,"%s(%s){\n"
@@ -940,7 +940,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
     {
       yaoocpp_type_info_print_entry(this,ostrm,"assign");
     }
-    void print_yod_definition(ostream_pointer ostrm,bool include_implementation) const
+    void print_yaooh_definition(ostream_pointer ostrm,bool include_implementation) const
     {
       if(this->form_==IMPLEMENTATION_TEXT) {
             M(ostrm,printf,"operator=(%s){\n"
@@ -1005,7 +1005,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
       yaoocpp_type_info_print_entry(this,ostrm,"rich_compare");
     }
 
-    void print_yod_definition(ostream_pointer ostrm,bool include_implementation) const
+    void print_yaooh_definition(ostream_pointer ostrm,bool include_implementation) const
     {
       if(this->form_==IMPLEMENTATION_TEXT) {
             M(ostrm,printf,"int operator<=>(%s,%s){\n"
@@ -1082,7 +1082,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
       yaoocpp_type_info_print_entry(this,ostrm,"to_stream");
     }
 
-    void print_yod_definition(ostream_pointer ostrm,bool include_implementation) const
+    void print_yaooh_definition(ostream_pointer ostrm,bool include_implementation) const
     {
       if(this->form_==IMPLEMENTATION_TEXT) {
             M(ostrm,printf,"operator<<(%s){\n"
@@ -1151,7 +1151,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
       yaoocpp_type_info_print_entry(this,ostrm,"from_stream");
     }
 
-    void print_yod_definition(ostream_pointer ostrm,bool include_implementation) const
+    void print_yaooh_definition(ostream_pointer ostrm,bool include_implementation) const
     {
       if(this->form_==IMPLEMENTATION_TEXT) {
             M(ostrm,printf,"operator>>(%s){\n"
@@ -1232,7 +1232,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
       yaoocpp_constructor_base_gen_initializers_text(this,class_name,parent_class_name,new_items,false);
     }
 
-    void print_yod_definition(ostream_pointer ostrm,bool include_implementation) const
+    void print_yaooh_definition(ostream_pointer ostrm,bool include_implementation) const
     {
       M(ostrm,printf,"%s(",M(&this->name_,c_str));
       M(ostrm,printf,")");
@@ -1266,7 +1266,7 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
     {
     }
 
-    void print_to_yod(ostream_pointer ostrm) const
+    void print_to_yaooh(ostream_pointer ostrm) const
     {
     }
 
@@ -1386,24 +1386,24 @@ typedef enum { INITIAL = 0 , INHERITED = 1, OVERRIDDEN = 2 } yaoocpp_member_item
       yaoocpp_struct_print_type_info_declaration(this,ostrm);
     }
 
-    void print_to_yod(ostream_pointer ostrm) const
+    void print_to_yaooh(ostream_pointer ostrm) const
     {
       M(ostrm,printf,"%%struct %s {\n",M(&this->name_,c_str));
-      yaoocpp_default_constructor_print_yod_definition(&this->default_ctor_,ostrm,false);
-      yaoocpp_destructor_print_yod_definition(&this->dtor_,ostrm,false);
-      yaoocpp_copy_constructor_print_yod_definition(&this->copy_ctor_,ostrm,false);
-      yaoocpp_assignment_print_yod_definition(&this->assign_,ostrm,false);
-      yaoocpp_rich_compare_print_yod_definition(&this->rich_compare_,ostrm,false);
-      yaoocpp_to_stream_print_yod_definition(&this->to_stream_,ostrm,false);
-      yaoocpp_from_stream_print_yod_definition(&this->from_stream_,ostrm,false);
+      yaoocpp_default_constructor_print_yaooh_definition(&this->default_ctor_,ostrm,false);
+      yaoocpp_destructor_print_yaooh_definition(&this->dtor_,ostrm,false);
+      yaoocpp_copy_constructor_print_yaooh_definition(&this->copy_ctor_,ostrm,false);
+      yaoocpp_assignment_print_yaooh_definition(&this->assign_,ostrm,false);
+      yaoocpp_rich_compare_print_yaooh_definition(&this->rich_compare_,ostrm,false);
+      yaoocpp_to_stream_print_yaooh_definition(&this->to_stream_,ostrm,false);
+      yaoocpp_from_stream_print_yaooh_definition(&this->from_stream_,ostrm,false);
       const yaoocpp_constructor_t* const* icon;
       CFOR_EACH(icon,&this->constructors_) {
-        yaoocpp_constructor_print_yod_definition(*icon,ostrm,false);
+        yaoocpp_constructor_print_yaooh_definition(*icon,ostrm,false);
       }
       const yaoocpp_member_item_t* const* item;
       M(ostrm,printf,"instance:\n");
       CFOR_EACH(item,&this->instance_) {
-        M(*item,print_yod_definition,ostrm,false);
+        M(*item,print_yaooh_definition,ostrm,false);
       }
       M(ostrm,printf,"};\n");
     }
@@ -1703,21 +1703,21 @@ typedef enum { DEFAULT_CTOR=0, DTOR, COPY_CTOR, ASSIGN, RICH_COMPARE, TO_STREAM,
       yaoocpp_class_print_type_info_declaration(this,ostrm);
     }
 
-    void print_to_yod(ostream_pointer ostrm) const
+    void print_to_yaooh(ostream_pointer ostrm) const
     {
       M(ostrm,printf,"%%class %s {\n",M(&this->name_,c_str));
-      yaoocpp_default_constructor_print_yod_definition(&this->default_ctor_,ostrm,false);
-      yaoocpp_destructor_print_yod_definition(&this->dtor_,ostrm,false);
-      yaoocpp_copy_constructor_print_yod_definition(&this->copy_ctor_,ostrm,false);
-      yaoocpp_assignment_print_yod_definition(&this->assign_,ostrm,false);
+      yaoocpp_default_constructor_print_yaooh_definition(&this->default_ctor_,ostrm,false);
+      yaoocpp_destructor_print_yaooh_definition(&this->dtor_,ostrm,false);
+      yaoocpp_copy_constructor_print_yaooh_definition(&this->copy_ctor_,ostrm,false);
+      yaoocpp_assignment_print_yaooh_definition(&this->assign_,ostrm,false);
       M(ostrm,printf,"instance:\n");
       const yaoocpp_member_item_t* const* i;
       CFOR_EACH(i,&this->instance_) {
-        M(*i,print_yod_definition,ostrm,false);
+        M(*i,print_yaooh_definition,ostrm,false);
       }
       M(ostrm,printf,"table:\n");
       CFOR_EACH(i,&this->table_) {
-        M(*i,print_yod_definition,ostrm,false);
+        M(*i,print_yaooh_definition,ostrm,false);
       }
       M(ostrm,printf,"};\n");
     }
@@ -1931,24 +1931,24 @@ typedef enum { DEFAULT_CTOR=0, DTOR, COPY_CTOR, ASSIGN, RICH_COMPARE, TO_STREAM,
     {
     }
 
-    void print_to_yod(ostream_pointer ostrm) const
+    void print_to_yaooh(ostream_pointer ostrm) const
     {
       M(ostrm,printf,"%%mixin %s {\n",M(&this->name_,c_str));
-      yaoocpp_default_constructor_print_yod_definition(&this->default_ctor_,ostrm,true);
-      yaoocpp_destructor_print_yod_definition(&this->dtor_,ostrm,true);
-      yaoocpp_copy_constructor_print_yod_definition(&this->copy_ctor_,ostrm,true);
-      yaoocpp_assignment_print_yod_definition(&this->assign_,ostrm,true);
-      yaoocpp_rich_compare_print_yod_definition(&this->rich_compare_,ostrm,true);
-      yaoocpp_to_stream_print_yod_definition(&this->to_stream_,ostrm,true);
-      yaoocpp_from_stream_print_yod_definition(&this->from_stream_,ostrm,true);
+      yaoocpp_default_constructor_print_yaooh_definition(&this->default_ctor_,ostrm,true);
+      yaoocpp_destructor_print_yaooh_definition(&this->dtor_,ostrm,true);
+      yaoocpp_copy_constructor_print_yaooh_definition(&this->copy_ctor_,ostrm,true);
+      yaoocpp_assignment_print_yaooh_definition(&this->assign_,ostrm,true);
+      yaoocpp_rich_compare_print_yaooh_definition(&this->rich_compare_,ostrm,true);
+      yaoocpp_to_stream_print_yaooh_definition(&this->to_stream_,ostrm,true);
+      yaoocpp_from_stream_print_yaooh_definition(&this->from_stream_,ostrm,true);
       M(ostrm,printf,"instance:\n");
       const yaoocpp_member_item_t* const* i;
       CFOR_EACH(i,&this->instance_) {
-        M(*i,print_yod_definition,ostrm,false);
+        M(*i,print_yaooh_definition,ostrm,false);
       }
       M(ostrm,printf,"table:\n");
       CFOR_EACH(i,&this->table_) {
-        M(*i,print_yod_definition,ostrm,true);
+        M(*i,print_yaooh_definition,ostrm,true);
       }
       M(ostrm,printf,"};\n");
     }

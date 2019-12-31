@@ -2,7 +2,6 @@
 #define __UNIQUE_ORDERED_ARRAY_CONTAINER_INCLUDED__
 
 #include <yaooc/ordered_array_container.h>
-
 yaooc_class_table(yaooc_unique_ordered_array_container) {
   yaooc_ordered_array_container_class_table_t;
 };

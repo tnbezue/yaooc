@@ -41,6 +41,7 @@ int yaooc_real_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 yaooc_real_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_real_const_pointer rhs=__prhs__;(void)rhs;
 
+
     double diff=lhs->value_-rhs->value_;
     if(fabs(diff) < 1e-8)
       return 0;

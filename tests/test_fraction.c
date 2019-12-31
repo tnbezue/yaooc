@@ -103,8 +103,8 @@ void test_fraction_plus_fraction()
         {-2,8,-6,8,-1,1}, {7,3,10,7,79,21}, {-5,7,25,35,0,1}};
   int n = ARRAY_SIZE(plus_data);
   int i;
-  yaooc_fraction_t f1 = YAOOC_FRACTION_DEF_INIT;
-  yaooc_fraction_t f2 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f1 = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
+  yaooc_fraction_t f2 = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
   yaooc_fraction_t f3;
   char msg[64];
   for(i=0;i<n;i++) {
@@ -124,8 +124,8 @@ void test_fraction_minus_fraction()
           {-2,8,-6,8,1,2}, {7,3,10,7,19,21}, {-5,7,25,35,-10,7}};
   int n = ARRAY_SIZE(minus_data);
   int i;
-  yaooc_fraction_t f1 = YAOOC_FRACTION_DEF_INIT;
-  yaooc_fraction_t f2 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f1 = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
+  yaooc_fraction_t f2 = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
   yaooc_fraction_t f3;
   char msg[64];
   for(i=0;i<n;i++) {
@@ -145,8 +145,8 @@ void test_fraction_times_fraction()
           {-2,8,-6,8,3,16}, {7,3,10,7,10,3}, {-5,7,25,35,-25,49}};
   int n = ARRAY_SIZE(times_data);
   int i;
-  yaooc_fraction_t f1 = YAOOC_FRACTION_DEF_INIT;
-  yaooc_fraction_t f2 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f1 = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
+  yaooc_fraction_t f2 = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
   yaooc_fraction_t f3;
   char msg[64];
   for(i=0;i<n;i++) {
@@ -166,8 +166,8 @@ void test_fraction_divided_by_fraction()
           {-2,8,-6,8,1,3}, {7,3,10,7,49,30}, {-5,7,25,35,-1,1}};
   int n = ARRAY_SIZE(divide_data);
   int i;
-  yaooc_fraction_t f1 = YAOOC_FRACTION_DEF_INIT;
-  yaooc_fraction_t f2 = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f1 = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
+  yaooc_fraction_t f2 = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
   yaooc_fraction_t f3;
   char msg[64];
   for(i=0;i<n;i++) {
@@ -313,13 +313,13 @@ void test_from_double()
   TESTCASE("Fraction from double")
   double from_double_input [] = { -2.25, -.25, 0.0, .25, 2.25, .3, .33, .333333333 };
   int from_double_output [][2] = { { -9,4} , { -1, 4}, { 0,1 }, {1,4}, {9,4} , {3,10}, {33,100}, {1,3}};
-  yaooc_fraction_t f = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
   int n=ARRAY_SIZE(from_double_input);
   int i;
   char msg[64];
   for(i=0;i<n;i++) {
-    sprintf(msg,"from_double(%lg)=(%d/%d)",from_double_input[i],from_double_output[i][0],from_double_output[i][1]);
-    M(&f,from_double,from_double_input[i]);
+    sprintf(msg,"set_double(%lg)=(%d/%d)",from_double_input[i],from_double_output[i][0],from_double_output[i][1]);
+    M(&f,set_double,from_double_input[i]);
     TEST(msg,R(f,from_double_output[i][0],from_double_output[i][1]));
   }
 }
@@ -335,7 +335,7 @@ void test_to_string()
   pb_init();
   for(i=0;i<n;i++) {
     sprintf(msg,"to_s(%d/%d) = \"%s\"",to_string_input[i][0],to_string_input[i][1],to_string_output[i]);
-    yaooc_fraction_t f = YAOOC_FRACTION_DEF_INIT;
+    yaooc_fraction_t f = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
     S(f,to_string_input[i][0],to_string_input[i][1]);
     yaooc_string_t* f_str = pb_save(M(&f,to_s));
     TEST(msg,strcmp(M(f_str,c_str),to_string_output[i])==0);
@@ -354,7 +354,7 @@ void test_to_mixed_string()
   char msg[64];
   for(i=0;i<n;i++) {
     sprintf(msg,"to_mixed_s(%d/%d) = \"%s\"",to_mixed_string_input[i][0],to_mixed_string_input[i][1],to_mixed_string_output[i]);
-    yaooc_fraction_t f = YAOOC_FRACTION_DEF_INIT;
+    yaooc_fraction_t f = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
     S(f,to_mixed_string_input[i][0],to_mixed_string_input[i][1]);
     yaooc_string_t* f_str = pb_save(M(&f,to_mixed_s));
     TEST(msg,strcmp(M(f_str,c_str),to_mixed_string_output[i])==0);
@@ -372,7 +372,7 @@ void test_to_stream()
   int n=ARRAY_SIZE(to_stream_input);
   int i;
   char msg[64];
-  yaooc_fraction_t f = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
   for(i=0;i<n;i++) {
     sprintf(msg,"to_stream(%d/%d) = \"%s\"",to_stream_input[i][0],to_stream_input[i][1],to_stream_output[i]);
     S(f,to_stream_input[i][0],to_stream_input[i][1]);
@@ -389,7 +389,7 @@ void test_from_stream()
   yaooc_istringstream_t* is=pb_new_ctor(yaooc_istringstream,yaooc_istringstream_ctor_ccs,"0 1 10/3 -3/4 -8 5/10 8/ 3");
   const char* from_stream_input[] = {"0", "1","10/3","-3/4","-8","5/10"};
   int from_stream_output[][2] = { {0,1}, {1,1}, {10,3}, {-3,4}, {-8,1}, {1,2}};
-  yaooc_fraction_t f = YAOOC_FRACTION_DEF_INIT;
+  yaooc_fraction_t f = YAOOC_FRACTION_STATIC_DEFAULT_CTOR;
   TESTCASE("From Stream")
 
   int n = ARRAY_SIZE(from_stream_input);

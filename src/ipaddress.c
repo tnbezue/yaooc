@@ -45,6 +45,7 @@ int yaooc_ipaddress_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 yaooc_ipaddress_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_ipaddress_const_pointer rhs=__prhs__;(void)rhs;
 
+
       return memcmp(lhs->buf_,rhs->buf_,lhs->type_==1 ? 4 : 16);
     
 }
@@ -52,6 +53,7 @@ void yaooc_ipaddress_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__
 {
 yaooc_ipaddress_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
+
 
       char temp[INET6_ADDRSTRLEN];
       switch(this->type_) {

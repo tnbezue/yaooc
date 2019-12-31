@@ -2,7 +2,6 @@
 #define __INTEGER_INCLUDED__
 
 #include <yaooc/object.h>
-
 #include <yaooc/stream.h>
 
 yaooc_class_table(yaooc_integer) {

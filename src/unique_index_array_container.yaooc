@@ -16,7 +16,7 @@
 */
 
 %prefix_directory yaooc
-%include <yaooc/index_array_container.yod>
+%include <yaooc/index_array_container.yaooh>
 
 %class yaooc_unique_index_array_container {
 

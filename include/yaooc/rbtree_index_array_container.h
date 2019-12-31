@@ -2,7 +2,6 @@
 #define __RBTREE_INDEX_ARRAY_CONTAINER_INCLUDED__
 
 #include <yaooc/array_container.h>
-
 typedef enum { BLACK=0, RED } yaooc_rbnode_color_t;
 
 #define yaooc_rbnode_create(index) new_ctor(yaooc_rbnode,yaooc_rbnode_ctor_index,index)

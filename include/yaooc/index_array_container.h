@@ -2,7 +2,6 @@
 #define __INDEX_ARRAY_CONTAINER_INCLUDED__
 
 #include <yaooc/array_container.h>
-
 #include <yaooc/uint24.h>
 typedef yaooc_uint24_t yaooc_index_array_container_index_t;
 typedef struct {

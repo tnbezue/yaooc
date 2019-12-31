@@ -15,8 +15,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-%include <yaooc/base_parser.yod>
-%include <yaooc/exception.yod>
+%include <yaooc/base_parser.yaooh>
+%include <yaooc/exception.yaooh>
 %prefix_directory yaooc
 
 %header

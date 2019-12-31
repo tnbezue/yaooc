@@ -2,7 +2,6 @@
 #define __REAL_INCLUDED__
 
 #include <yaooc/object.h>
-
 yaooc_class_table(yaooc_real) {
   yaooc_object_class_table_t;
 void (*set)(pointer,double);

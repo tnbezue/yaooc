@@ -17,7 +17,6 @@
 #include <yaooc/regex.h>
 #include <yaooc/garbage_bag.h>
 #include <yaooc/algorithm.h>
-#include <yaooc/thread.h>
 
 yaooc_class_table(yaoocpp_parser) {
   yaooc_base_parser_class_table_t;

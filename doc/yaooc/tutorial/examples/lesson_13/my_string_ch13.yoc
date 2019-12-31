@@ -50,6 +50,7 @@
     {
       M(ostrm,printf,"%s",this->str);
     }
+
 		operator>>(istrm)
     {
       char temp[256];
@@ -125,6 +126,7 @@
         newp(this,my_string);
         this->str = s ? strdup(s) : NULL;
       }
+
       // Return new string object created from substring of this string
       my_string_pointer substr(size_t beg,size_t n)
       {

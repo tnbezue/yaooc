@@ -81,6 +81,7 @@ int yaooc_string_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 yaooc_string_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_string_const_pointer rhs=__prhs__;(void)rhs;
 
+
       
       return strcmp(lhs->array_,rhs->array_);
     
@@ -90,6 +91,7 @@ void yaooc_string_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__)
 yaooc_string_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
 
+
       M(ostrm,printf,"%s",this->array_);
     
 }
@@ -97,6 +99,7 @@ void yaooc_string_from_stream(pointer __pthis__,ostream_pointer __pstrm__)
 {
 yaooc_string_pointer this=__pthis__;(void)this;
 yaooc_istream_pointer istrm=__pstrm__;(void)istrm;
+
 
       M(this,clear);
       char temp[256];

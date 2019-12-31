@@ -15,8 +15,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-%include <yaooc/base_parser.yod>
-%include <yaooc/exception.yod>
+%include <yaooc/base_parser.yaooh>
+%include <yaooc/exception.yaooh>
 
 %header
 #include <yaooc/string.h>
@@ -28,11 +28,11 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <regex.h>
 #include <yaooc/fstream.h>
 #include <yaooc/regex.h>
 #include <yaooc/garbage_bag.h>
 #include <yaooc/algorithm.h>
-#include <yaooc/thread.h>
 %%
 
 // Keyword tokens
@@ -294,7 +294,7 @@ static yaooc_string_t* preprocess(const char* file)
                 char name[16];
                 sprintf(name,"header_%03d",header_count++);
                 M(&hs->name_,set,name);
-                 // assume yod file
+                 // assume yaooh file
                 M(&hs->content_,set,"#include <");
                 M(&hs->content_,appendn,yaoocpp_parser_file_being_parsed,strlen(yaoocpp_parser_file_being_parsed)-3);
                 M(&hs->content_,append,"h>");

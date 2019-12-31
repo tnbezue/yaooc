@@ -2,7 +2,6 @@
 #define __FSTREAM_INCLUDED__
 
 #include <yaooc/stream.h>
-
 yaooc_class_table(yaooc_ifstream) {
   yaooc_istream_class_table_t;
 void (*open)(pointer,const char*,const char*);

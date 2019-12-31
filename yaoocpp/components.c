@@ -42,6 +42,7 @@ int yaoocpp_item_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 yaoocpp_item_const_pointer lhs=__plhs__;(void)lhs;
 yaoocpp_item_const_pointer rhs=__prhs__;(void)rhs;
 
+
       return yaooc_string_rich_compare(&lhs->name_,&rhs->name_);
     
 }
@@ -207,9 +208,9 @@ yaooc_pure_virtual("print_private_implementation","yaoocpp_member_item");exit(0)
 void yaoocpp_member_item_print_class_table_entry(const_pointer __pthis__,ostream_pointer __postrm,const char* class_name,const char* parent)
 {
 yaooc_pure_virtual("print_class_table_entry","yaoocpp_member_item");exit(0);}
-void yaoocpp_member_item_print_yod_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
+void yaoocpp_member_item_print_yaooh_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
 {
-yaooc_pure_virtual("print_yod_definition","yaoocpp_member_item");exit(0);}
+yaooc_pure_virtual("print_yaooh_definition","yaoocpp_member_item");exit(0);}
 yaoocpp_member_item_class_table_t yaoocpp_member_item_class_table ={
 .parent_class_table_ = (const class_table_t*)&yaoocpp_argument_class_table,
 .type_name_ = (const char*)"yaoocpp_member_item_t",
@@ -223,7 +224,7 @@ yaoocpp_member_item_class_table_t yaoocpp_member_item_class_table ={
 .print_private_prototype = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_member_item_print_private_prototype,
 .print_private_implementation = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_member_item_print_private_implementation,
 .print_class_table_entry = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_member_item_print_class_table_entry,
-.print_yod_definition = (void(*)(const_pointer,ostream_pointer,bool)) yaoocpp_member_item_print_yod_definition,
+.print_yaooh_definition = (void(*)(const_pointer,ostream_pointer,bool)) yaoocpp_member_item_print_yaooh_definition,
 };
 const type_info_t __yaoocpp_member_item_ti = {
 .min_flag_=0,
@@ -402,10 +403,10 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
 #undef PM
 #undef super
 }
-void yaoocpp_variable_print_yod_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_default_value)
+void yaoocpp_variable_print_yaooh_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_default_value)
 {
 yaoocpp_variable_const_pointer this=__pthis__;(void)this;
-#define super() yaoocpp_variable_parent_class_table->print_yod_definition(this,ostrm,include_default_value)
+#define super() yaoocpp_variable_parent_class_table->print_yaooh_definition(this,ostrm,include_default_value)
 #define PM(method,...) CTM((*yaoocpp_variable_parent_class_table),this,method,## __VA_ARGS__)
 
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
@@ -432,7 +433,7 @@ yaoocpp_variable_class_table_t yaoocpp_variable_class_table ={
 .print_private_prototype = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_variable_print_private_prototype,
 .print_private_implementation = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_variable_print_private_implementation,
 .print_class_table_entry = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_variable_print_class_table_entry,
-.print_yod_definition = (void(*)(const_pointer,ostream_pointer,bool)) yaoocpp_variable_print_yod_definition,
+.print_yaooh_definition = (void(*)(const_pointer,ostream_pointer,bool)) yaoocpp_variable_print_yaooh_definition,
 };
 const type_info_t __yaoocpp_variable_ti = {
 .min_flag_=0,
@@ -751,10 +752,10 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
 #undef PM
 #undef super
 }
-void yaoocpp_method_print_yod_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
+void yaoocpp_method_print_yaooh_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
 {
 yaoocpp_method_const_pointer this=__pthis__;(void)this;
-#define super() yaoocpp_method_parent_class_table->print_yod_definition(this,ostrm,include_implementation)
+#define super() yaoocpp_method_parent_class_table->print_yaooh_definition(this,ostrm,include_implementation)
 #define PM(method,...) CTM((*yaoocpp_method_parent_class_table),this,method,## __VA_ARGS__)
 
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
@@ -852,7 +853,7 @@ yaoocpp_method_class_table_t yaoocpp_method_class_table ={
 .print_private_prototype = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_method_print_private_prototype,
 .print_private_implementation = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_method_print_private_implementation,
 .print_class_table_entry = (void(*)(const_pointer,ostream_pointer,const char*,const char*)) yaoocpp_method_print_class_table_entry,
-.print_yod_definition = (void(*)(const_pointer,ostream_pointer,bool)) yaoocpp_method_print_yod_definition,
+.print_yaooh_definition = (void(*)(const_pointer,ostream_pointer,bool)) yaoocpp_method_print_yaooh_definition,
 .argument_count = (size_t(*)(const_pointer)) yaoocpp_method_argument_count,
 .set_implementation = (void(*)(pointer,const char*,size_t)) yaoocpp_method_set_implementation,
 .set_implemented_as = (void(*)(pointer,const char*,size_t)) yaoocpp_method_set_implemented_as,
@@ -1336,7 +1337,7 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
       yaoocpp_type_info_print_entry(this,ostrm,"default_ctor");
     
 }
-void yaoocpp_default_constructor_print_yod_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
+void yaoocpp_default_constructor_print_yaooh_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
 {
 yaoocpp_default_constructor_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
@@ -1456,7 +1457,7 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
       yaoocpp_type_info_print_entry(this,ostrm,"dtor");
     
 }
-void yaoocpp_destructor_print_yod_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
+void yaoocpp_destructor_print_yaooh_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
 {
 yaoocpp_destructor_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
@@ -1628,7 +1629,7 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
       yaoocpp_type_info_print_entry(this,ostrm,"copy_ctor");
     
 }
-void yaoocpp_copy_constructor_print_yod_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
+void yaoocpp_copy_constructor_print_yaooh_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
 {
 yaoocpp_copy_constructor_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
@@ -1790,7 +1791,7 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
       yaoocpp_type_info_print_entry(this,ostrm,"assign");
     
 }
-void yaoocpp_assignment_print_yod_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
+void yaoocpp_assignment_print_yaooh_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
 {
 yaoocpp_assignment_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
@@ -1927,7 +1928,7 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
       yaoocpp_type_info_print_entry(this,ostrm,"rich_compare");
     
 }
-void yaoocpp_rich_compare_print_yod_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
+void yaoocpp_rich_compare_print_yaooh_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
 {
 yaoocpp_rich_compare_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
@@ -2103,7 +2104,7 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
       yaoocpp_type_info_print_entry(this,ostrm,"to_stream");
     
 }
-void yaoocpp_to_stream_print_yod_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
+void yaoocpp_to_stream_print_yaooh_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
 {
 yaoocpp_to_stream_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
@@ -2232,7 +2233,7 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
       yaoocpp_type_info_print_entry(this,ostrm,"from_stream");
     
 }
-void yaoocpp_from_stream_print_yod_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
+void yaoocpp_from_stream_print_yaooh_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
 {
 yaoocpp_from_stream_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
@@ -2361,7 +2362,7 @@ yaoocpp_constructor_pointer this=__pthis__;(void)this;
       yaoocpp_constructor_base_gen_initializers_text(this,class_name,parent_class_name,new_items,false);
     
 }
-void yaoocpp_constructor_print_yod_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
+void yaoocpp_constructor_print_yaooh_definition(const_pointer __pthis__,ostream_pointer __postrm,bool include_implementation)
 {
 yaoocpp_constructor_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
@@ -2558,10 +2559,10 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
 #undef PM
 #undef super
 }
-void yaoocpp_section_print_to_yod(const_pointer __pthis__,ostream_pointer __postrm)
+void yaoocpp_section_print_to_yaooh(const_pointer __pthis__,ostream_pointer __postrm)
 {
 yaoocpp_section_const_pointer this=__pthis__;(void)this;
-#define super() yaoocpp_section_parent_class_table->print_to_yod(this,ostrm)
+#define super() yaoocpp_section_parent_class_table->print_to_yaooh(this,ostrm)
 #define PM(method,...) CTM((*yaoocpp_section_parent_class_table),this,method,## __VA_ARGS__)
 
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
@@ -2601,7 +2602,7 @@ yaoocpp_section_class_table_t yaoocpp_section_class_table ={
 .set_line_no = (void(*)(pointer,int)) yaoocpp_section_set_line_no,
 .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_section_print_to_header,
 .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_section_print_to_source,
-.print_to_yod = (void(*)(const_pointer,ostream_pointer)) yaoocpp_section_print_to_yod,
+.print_to_yaooh = (void(*)(const_pointer,ostream_pointer)) yaoocpp_section_print_to_yaooh,
 .resolve = (void(*)(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_section_resolve,
 .add_mixins = (void(*)(pointer,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_section_add_mixins,
 };
@@ -2676,7 +2677,7 @@ yaoocpp_header_class_table_t yaoocpp_header_class_table ={
 .set_line_no = (void(*)(pointer,int)) yaoocpp_header_set_line_no,
 .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_header_print_to_header,
 .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_header_print_to_source,
-.print_to_yod = (void(*)(const_pointer,ostream_pointer)) yaoocpp_header_print_to_yod,
+.print_to_yaooh = (void(*)(const_pointer,ostream_pointer)) yaoocpp_header_print_to_yaooh,
 .resolve = (void(*)(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_header_resolve,
 .add_mixins = (void(*)(pointer,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_header_add_mixins,
 };
@@ -2729,7 +2730,7 @@ yaoocpp_source_class_table_t yaoocpp_source_class_table ={
 .set_line_no = (void(*)(pointer,int)) yaoocpp_source_set_line_no,
 .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_source_print_to_header,
 .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_source_print_to_source,
-.print_to_yod = (void(*)(const_pointer,ostream_pointer)) yaoocpp_source_print_to_yod,
+.print_to_yaooh = (void(*)(const_pointer,ostream_pointer)) yaoocpp_source_print_to_yaooh,
 .resolve = (void(*)(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_source_resolve,
 .add_mixins = (void(*)(pointer,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_source_add_mixins,
 };
@@ -3075,31 +3076,31 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
 #undef PM
 #undef super
 }
-void yaoocpp_struct_print_to_yod(const_pointer __pthis__,ostream_pointer __postrm)
+void yaoocpp_struct_print_to_yaooh(const_pointer __pthis__,ostream_pointer __postrm)
 {
 yaoocpp_struct_const_pointer this=__pthis__;(void)this;
-#define super() yaoocpp_struct_parent_class_table->print_to_yod(this,ostrm)
+#define super() yaoocpp_struct_parent_class_table->print_to_yaooh(this,ostrm)
 #define PM(method,...) CTM((*yaoocpp_struct_parent_class_table),this,method,## __VA_ARGS__)
 
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
 
 
       M(ostrm,printf,"%%struct %s {\n",M(&this->name_,c_str));
-      yaoocpp_default_constructor_print_yod_definition(&this->default_ctor_,ostrm,false);
-      yaoocpp_destructor_print_yod_definition(&this->dtor_,ostrm,false);
-      yaoocpp_copy_constructor_print_yod_definition(&this->copy_ctor_,ostrm,false);
-      yaoocpp_assignment_print_yod_definition(&this->assign_,ostrm,false);
-      yaoocpp_rich_compare_print_yod_definition(&this->rich_compare_,ostrm,false);
-      yaoocpp_to_stream_print_yod_definition(&this->to_stream_,ostrm,false);
-      yaoocpp_from_stream_print_yod_definition(&this->from_stream_,ostrm,false);
+      yaoocpp_default_constructor_print_yaooh_definition(&this->default_ctor_,ostrm,false);
+      yaoocpp_destructor_print_yaooh_definition(&this->dtor_,ostrm,false);
+      yaoocpp_copy_constructor_print_yaooh_definition(&this->copy_ctor_,ostrm,false);
+      yaoocpp_assignment_print_yaooh_definition(&this->assign_,ostrm,false);
+      yaoocpp_rich_compare_print_yaooh_definition(&this->rich_compare_,ostrm,false);
+      yaoocpp_to_stream_print_yaooh_definition(&this->to_stream_,ostrm,false);
+      yaoocpp_from_stream_print_yaooh_definition(&this->from_stream_,ostrm,false);
       const yaoocpp_constructor_t* const* icon;
       CFOR_EACH(icon,&this->constructors_) {
-        yaoocpp_constructor_print_yod_definition(*icon,ostrm,false);
+        yaoocpp_constructor_print_yaooh_definition(*icon,ostrm,false);
       }
       const yaoocpp_member_item_t* const* item;
       M(ostrm,printf,"instance:\n");
       CFOR_EACH(item,&this->instance_) {
-        M(*item,print_yod_definition,ostrm,false);
+        M(*item,print_yaooh_definition,ostrm,false);
       }
       M(ostrm,printf,"};\n");
     
@@ -3247,7 +3248,7 @@ yaoocpp_struct_class_table_t yaoocpp_struct_class_table ={
 .set_line_no = (void(*)(pointer,int)) yaoocpp_struct_set_line_no,
 .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_struct_print_to_header,
 .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_struct_print_to_source,
-.print_to_yod = (void(*)(const_pointer,ostream_pointer)) yaoocpp_struct_print_to_yod,
+.print_to_yaooh = (void(*)(const_pointer,ostream_pointer)) yaoocpp_struct_print_to_yaooh,
 .resolve = (void(*)(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_struct_resolve,
 .add_mixins = (void(*)(pointer,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_struct_add_mixins,
 .inherit = (void(*)(pointer)) yaoocpp_struct_inherit,
@@ -3459,28 +3460,28 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
 #undef PM
 #undef super
 }
-void yaoocpp_class_print_to_yod(const_pointer __pthis__,ostream_pointer __postrm)
+void yaoocpp_class_print_to_yaooh(const_pointer __pthis__,ostream_pointer __postrm)
 {
 yaoocpp_class_const_pointer this=__pthis__;(void)this;
-#define super() yaoocpp_class_parent_class_table->print_to_yod(this,ostrm)
+#define super() yaoocpp_class_parent_class_table->print_to_yaooh(this,ostrm)
 #define PM(method,...) CTM((*yaoocpp_class_parent_class_table),this,method,## __VA_ARGS__)
 
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
 
 
       M(ostrm,printf,"%%class %s {\n",M(&this->name_,c_str));
-      yaoocpp_default_constructor_print_yod_definition(&this->default_ctor_,ostrm,false);
-      yaoocpp_destructor_print_yod_definition(&this->dtor_,ostrm,false);
-      yaoocpp_copy_constructor_print_yod_definition(&this->copy_ctor_,ostrm,false);
-      yaoocpp_assignment_print_yod_definition(&this->assign_,ostrm,false);
+      yaoocpp_default_constructor_print_yaooh_definition(&this->default_ctor_,ostrm,false);
+      yaoocpp_destructor_print_yaooh_definition(&this->dtor_,ostrm,false);
+      yaoocpp_copy_constructor_print_yaooh_definition(&this->copy_ctor_,ostrm,false);
+      yaoocpp_assignment_print_yaooh_definition(&this->assign_,ostrm,false);
       M(ostrm,printf,"instance:\n");
       const yaoocpp_member_item_t* const* i;
       CFOR_EACH(i,&this->instance_) {
-        M(*i,print_yod_definition,ostrm,false);
+        M(*i,print_yaooh_definition,ostrm,false);
       }
       M(ostrm,printf,"table:\n");
       CFOR_EACH(i,&this->table_) {
-        M(*i,print_yod_definition,ostrm,false);
+        M(*i,print_yaooh_definition,ostrm,false);
       }
       M(ostrm,printf,"};\n");
     
@@ -3563,7 +3564,7 @@ yaoocpp_class_class_table_t yaoocpp_class_class_table ={
 .set_line_no = (void(*)(pointer,int)) yaoocpp_class_set_line_no,
 .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_class_print_to_header,
 .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_class_print_to_source,
-.print_to_yod = (void(*)(const_pointer,ostream_pointer)) yaoocpp_class_print_to_yod,
+.print_to_yaooh = (void(*)(const_pointer,ostream_pointer)) yaoocpp_class_print_to_yaooh,
 .resolve = (void(*)(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_class_resolve,
 .add_mixins = (void(*)(pointer,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_class_add_mixins,
 .inherit = (void(*)(pointer)) yaoocpp_class_inherit,
@@ -3659,7 +3660,7 @@ yaoocpp_union_class_table_t yaoocpp_union_class_table ={
 .set_line_no = (void(*)(pointer,int)) yaoocpp_union_set_line_no,
 .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_union_print_to_header,
 .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_union_print_to_source,
-.print_to_yod = (void(*)(const_pointer,ostream_pointer)) yaoocpp_union_print_to_yod,
+.print_to_yaooh = (void(*)(const_pointer,ostream_pointer)) yaoocpp_union_print_to_yaooh,
 .resolve = (void(*)(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_union_resolve,
 .add_mixins = (void(*)(pointer,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_union_add_mixins,
 .inherit = (void(*)(pointer)) yaoocpp_union_inherit,
@@ -3710,31 +3711,31 @@ yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
 #undef PM
 #undef super
 }
-void yaoocpp_mixin_print_to_yod(const_pointer __pthis__,ostream_pointer __postrm)
+void yaoocpp_mixin_print_to_yaooh(const_pointer __pthis__,ostream_pointer __postrm)
 {
 yaoocpp_mixin_const_pointer this=__pthis__;(void)this;
-#define super() yaoocpp_mixin_parent_class_table->print_to_yod(this,ostrm)
+#define super() yaoocpp_mixin_parent_class_table->print_to_yaooh(this,ostrm)
 #define PM(method,...) CTM((*yaoocpp_mixin_parent_class_table),this,method,## __VA_ARGS__)
 
 yaooc_ostream_pointer ostrm=__postrm;(void)ostrm;
 
 
       M(ostrm,printf,"%%mixin %s {\n",M(&this->name_,c_str));
-      yaoocpp_default_constructor_print_yod_definition(&this->default_ctor_,ostrm,true);
-      yaoocpp_destructor_print_yod_definition(&this->dtor_,ostrm,true);
-      yaoocpp_copy_constructor_print_yod_definition(&this->copy_ctor_,ostrm,true);
-      yaoocpp_assignment_print_yod_definition(&this->assign_,ostrm,true);
-      yaoocpp_rich_compare_print_yod_definition(&this->rich_compare_,ostrm,true);
-      yaoocpp_to_stream_print_yod_definition(&this->to_stream_,ostrm,true);
-      yaoocpp_from_stream_print_yod_definition(&this->from_stream_,ostrm,true);
+      yaoocpp_default_constructor_print_yaooh_definition(&this->default_ctor_,ostrm,true);
+      yaoocpp_destructor_print_yaooh_definition(&this->dtor_,ostrm,true);
+      yaoocpp_copy_constructor_print_yaooh_definition(&this->copy_ctor_,ostrm,true);
+      yaoocpp_assignment_print_yaooh_definition(&this->assign_,ostrm,true);
+      yaoocpp_rich_compare_print_yaooh_definition(&this->rich_compare_,ostrm,true);
+      yaoocpp_to_stream_print_yaooh_definition(&this->to_stream_,ostrm,true);
+      yaoocpp_from_stream_print_yaooh_definition(&this->from_stream_,ostrm,true);
       M(ostrm,printf,"instance:\n");
       const yaoocpp_member_item_t* const* i;
       CFOR_EACH(i,&this->instance_) {
-        M(*i,print_yod_definition,ostrm,false);
+        M(*i,print_yaooh_definition,ostrm,false);
       }
       M(ostrm,printf,"table:\n");
       CFOR_EACH(i,&this->table_) {
-        M(*i,print_yod_definition,ostrm,true);
+        M(*i,print_yaooh_definition,ostrm,true);
       }
       M(ostrm,printf,"};\n");
     
@@ -3748,7 +3749,7 @@ yaoocpp_mixin_class_table_t yaoocpp_mixin_class_table ={
 .set_line_no = (void(*)(pointer,int)) yaoocpp_mixin_set_line_no,
 .print_to_header = (void(*)(const_pointer,ostream_pointer)) yaoocpp_mixin_print_to_header,
 .print_to_source = (void(*)(const_pointer,ostream_pointer)) yaoocpp_mixin_print_to_source,
-.print_to_yod = (void(*)(const_pointer,ostream_pointer)) yaoocpp_mixin_print_to_yod,
+.print_to_yaooh = (void(*)(const_pointer,ostream_pointer)) yaoocpp_mixin_print_to_yaooh,
 .resolve = (void(*)(pointer,const char*,const char*,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_mixin_resolve,
 .add_mixins = (void(*)(pointer,yaoocpp_item_pointer_vector_const_pointer)) yaoocpp_mixin_add_mixins,
 .inherit = (void(*)(pointer)) yaoocpp_mixin_inherit,

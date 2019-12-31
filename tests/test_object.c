@@ -14,15 +14,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
+%include <yaooc/object.yod>
+%header
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <yaooc/object.h>
 #include "test_harness.h"
 #include "demo_def.h"
+%%
 
 char dummy[sizeof(demo_t)];
 
@@ -55,7 +56,7 @@ void test_basic()
     Will not work if more than one level is traversed (parent calls its' parent method using same form).
     Bad -- Can get into infinite loop
   */
-  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(((yaooc_object_class_table_t*)(d->class_table_->parent_class_table_))->type_name_,"yaooc_object_t")==0);
+  TEST("Parent type name is 'yaooc_object_t'",strcmp(((yaooc_object_class_table_t*)(d->class_table_->parent_class_table_))->type_name_,"yaooc_object_t")==0);
 
   /*
     Using the complete method name

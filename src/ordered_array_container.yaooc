@@ -16,7 +16,7 @@
 */
 
 %prefix_directory yaooc
-%include <yaooc/array_container.yod>
+%include <yaooc/array_container.yaooh>
 
 %header
 typedef struct {
