@@ -1,0 +1,33 @@
+%ifndef __FRACTION_YAOOH_INCLUDED__
+%define __FRACTION_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_fraction {
+yaooc_fraction(){}
+~yaooc_fraction(){
+
+}
+yaooc_fraction(src){
+
+}
+operator=(src){
+
+}
+instance:
+int numerator_;
+int denominator_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer o) { }
+void set(int n,int d) { }
+void set_mixed(int w,int n,int d) { }
+void set_double(double d) { }
+void plus(yaooc_fraction_t* other) { }
+void minus(yaooc_fraction_t* other) { }
+void times(yaooc_fraction_t* other) { }
+void divided_by(yaooc_fraction_t* other) { }
+double to_double() const{ }
+};
+
+%endif

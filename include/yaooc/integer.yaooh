@@ -1,0 +1,26 @@
+%ifndef __INTEGER_YAOOH_INCLUDED__
+%define __INTEGER_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_integer {
+yaooc_integer(){}
+~yaooc_integer(){
+
+}
+yaooc_integer(src){
+
+}
+operator=(src){
+
+}
+instance:
+long long value_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer o) { }
+void set(long long v) { }
+long long get() const{ }
+};
+
+%endif

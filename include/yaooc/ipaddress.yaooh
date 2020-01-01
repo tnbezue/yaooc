@@ -1,0 +1,29 @@
+%ifndef __IPADDRESS_YAOOH_INCLUDED__
+%define __IPADDRESS_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_ipaddress {
+yaooc_ipaddress(){}
+~yaooc_ipaddress() = delete;
+yaooc_ipaddress(src){
+
+}
+operator=(src){
+
+}
+instance:
+int type_;
+char buf_[16];
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+void set(const char* ip_str) { }
+bool is_ip4() const{ }
+bool is_ip6() const{ }
+bool is_undefined() const{ }
+bool is_loopback() const{ }
+int type() const{ }
+};
+
+%endif

@@ -1,0 +1,67 @@
+%ifndef __BASE_PARSER_YAOOH_INCLUDED__
+%define __BASE_PARSER_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%struct parser_position {
+parser_position() = delete;
+~parser_position() = delete;
+parser_position(src) = delete;
+operator=(src) = delete;
+instance:
+const char* pos_;
+size_t line_no_;
+};
+%struct yaooc_token {
+yaooc_token() = delete;
+~yaooc_token() = delete;
+yaooc_token(src) = delete;
+operator=(src) = delete;
+instance:
+const char* beg_;
+const char* end_;
+};
+%class yaooc_base_parser {
+yaooc_base_parser(){}
+~yaooc_base_parser(){
+
+}
+yaooc_base_parser(src) = delete;
+operator=(src) = delete;
+instance:
+parser_position_stack_t* stack_;
+const char* parse_string_;
+const char* current_pos_;
+unsigned int line_no_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+void set_parse_string(const char* pstr) { }
+void rule_start() { }
+bool rule_success() { }
+bool rule_fail() { }
+bool eos() { }
+bool chr(char ch,yaooc_token_t* r) { }
+int chr_choices(const char* ch_choices,yaooc_token_t* r) { }
+bool str(const char* str,yaooc_token_t* r) { }
+int str_choices(yaooc_token_t* r,... args) { }
+bool digits(yaooc_token_t* r) { }
+bool hexdigits(yaooc_token_t* r) { }
+bool integer(yaooc_token_t* r) { }
+bool hexinteger(yaooc_token_t* r) { }
+bool real(yaooc_token_t* r) { }
+bool ident(yaooc_token_t* r) { }
+bool regex(regex_t* re,uint32_t match_opts,size_t n_ov,regmatch_t* ov,yaooc_token_t* r) { }
+bool quoted_string(char quote_char,yaooc_token_t* r) { }
+bool single_quoted_string(yaooc_token_t* r) { }
+bool double_quoted_string(yaooc_token_t* r) { }
+bool bare_string(yaooc_token_t* r) { }
+bool string_until_chrs(const char* chrs,yaooc_token_t* r) { }
+bool string_while_chrs(const char* chrs,yaooc_token_t* r) { }
+bool string_until_eol(yaooc_token_t* r) { }
+bool whitespace(yaooc_token_t* r) { }
+bool string_within_matching_chr(char lch,char rch,yaooc_token_t* r) { }
+bool result() const{ }
+};
+
+%endif

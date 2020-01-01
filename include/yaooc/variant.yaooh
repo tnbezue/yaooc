@@ -1,0 +1,27 @@
+%ifndef __VARIANT_YAOOH_INCLUDED__
+%define __VARIANT_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_variant {
+yaooc_variant(){}
+~yaooc_variant(){
+
+}
+yaooc_variant(src){
+
+}
+operator=(src){
+
+}
+instance:
+__variant_t ;
+yaooc_variant_type_t type_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer o) { }
+void set(yaooc_variant_type_t t,const void* value) { }
+const void* value() const{ }
+};
+
+%endif

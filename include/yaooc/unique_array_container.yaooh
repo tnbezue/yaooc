@@ -1,0 +1,26 @@
+%ifndef __UNIQUE_ARRAY_CONTAINER_YAOOH_INCLUDED__
+%define __UNIQUE_ARRAY_CONTAINER_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_unique_array_container {
+instance:
+char* array_;
+const type_info_t* type_info_;
+size_t size_;
+size_t capacity_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_array_container_swap;
+bool increase_capacity(size_t n) =yaooc_array_container_increase_capacity;
+size_t size_needed(size_t n) const=yaooc_array_container_size_needed;
+size_t size() const=yaooc_array_container_size;
+size_t capacity() const=yaooc_array_container_capacity;
+bool empty() const=yaooc_array_container_empty;
+iterator begin() =yaooc_array_container_begin;
+iterator end() =yaooc_array_container_end;
+const_iterator cbegin() const=yaooc_array_container_cbegin;
+const_iterator cend() const=yaooc_array_container_cend;
+};
+
+%endif

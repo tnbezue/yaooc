@@ -1,0 +1,13 @@
+%ifndef __UNIQUE_INDEX_ARRAY_CONTAINER_YAOOH_INCLUDED__
+%define __UNIQUE_INDEX_ARRAY_CONTAINER_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_unique_index_array_container {
+instance:
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+};
+
+%endif

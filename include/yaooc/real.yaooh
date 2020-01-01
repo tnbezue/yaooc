@@ -1,0 +1,26 @@
+%ifndef __REAL_YAOOH_INCLUDED__
+%define __REAL_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_real {
+yaooc_real(){}
+~yaooc_real(){
+
+}
+yaooc_real(src){
+
+}
+operator=(src){
+
+}
+instance:
+double value_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer o) { }
+void set(double v) { }
+double get() const{ }
+};
+
+%endif

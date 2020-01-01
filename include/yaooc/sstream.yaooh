@@ -1,0 +1,62 @@
+%ifndef __SSTREAM_YAOOH_INCLUDED__
+%define __SSTREAM_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_istringstream {
+yaooc_istringstream(){}
+~yaooc_istringstream(){
+
+}
+yaooc_istringstream(src) = delete;
+operator=(src) = delete;
+instance:
+FILE* handle_;
+char* buffer_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_istream_swap;
+bool eof() const=yaooc_istream_eof;
+bool seek(size_t ofs,int whence) =yaooc_istream_seek;
+size_t tell() const=yaooc_istream_tell;
+bool good() const=yaooc_istream_good;
+void stream(... args) =yaooc_istream_stream;
+int peek() =yaooc_istream_peek;
+int scanf(const char* fmt,... args) =yaooc_istream_scanf;
+int vscanf(const char* fmt,va_list args) =yaooc_istream_vscanf;
+size_t read(void* buffer,size_t size,size_t count) =yaooc_istream_read;
+char* getstr(char* buffer,size_t n) =yaooc_istream_getstr;
+void reset() { }
+void set(const char* str) { }
+void setn(const char* str,size_t n) { }
+const char* c_str() const{ }
+};
+%class yaooc_ostringstream {
+yaooc_ostringstream(){}
+~yaooc_ostringstream(){
+
+}
+yaooc_ostringstream(src) = delete;
+operator=(src) = delete;
+instance:
+FILE* handle_;
+char* buffer_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_ostream_swap;
+bool eof() const=yaooc_ostream_eof;
+bool seek(size_t ofs,int whence) =yaooc_ostream_seek;
+size_t tell() const=yaooc_ostream_tell;
+bool good() const=yaooc_ostream_good;
+void stream(... args) =yaooc_ostream_stream;
+int printf(const char* fmt,... args) =yaooc_ostream_printf;
+int vprintf(const char* fmt,va_list args) =yaooc_ostream_vprintf;
+size_t write(const void* buffer,size_t size,size_t count) =yaooc_ostream_write;
+int putstr(const char* str) =yaooc_ostream_putstr;
+int putchr(int c) =yaooc_ostream_putchr;
+void reset() { }
+const char* c_str() const{ }
+};
+
+%endif

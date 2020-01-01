@@ -1,0 +1,49 @@
+%ifndef __EXCEPTION_YAOOH_INCLUDED__
+%define __EXCEPTION_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_exception {
+yaooc_exception(){}
+~yaooc_exception(){
+
+}
+yaooc_exception(src){
+
+}
+operator=(src){
+
+}
+instance:
+char* what_;
+int error_code_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+const char* what() const{ }
+int error_code() const{ }
+};
+%class yaooc_stream_exception {
+instance:
+char* what_;
+int error_code_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_exception_swap;
+const char* what() const=yaooc_exception_what;
+int error_code() const=yaooc_exception_error_code;
+};
+%class yaooc_array_container_exception {
+instance:
+char* what_;
+int error_code_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_exception_swap;
+const char* what() const=yaooc_exception_what;
+int error_code() const=yaooc_exception_error_code;
+};
+
+%endif

@@ -1,0 +1,57 @@
+%ifndef __THREAD_YAOOH_INCLUDED__
+%define __THREAD_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%struct yaooc_thread_start_info {
+yaooc_thread_start_info() = delete;
+~yaooc_thread_start_info() = delete;
+yaooc_thread_start_info(src) = delete;
+operator=(src) = delete;
+instance:
+void* object_;
+void* data_;
+};
+%class yaooc_thread {
+yaooc_thread(){}
+~yaooc_thread(){
+
+}
+yaooc_thread(src) = delete;
+operator=(src) = delete;
+instance:
+yaooc_thread_method method_;
+yaooc_internal_thread_t thread_id_;
+yaooc_thread_state_t state_;
+bool is_detached_;
+bool request_exit_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+yaooc_internal_thread_t id() const{ }
+void cancel() { }
+int join() { }
+int detach() { }
+yaooc_thread_state_t state() const{ }
+bool is_detached() const{ }
+bool start(void* data) { }
+};
+%class yaooc_mutex {
+yaooc_mutex(){}
+~yaooc_mutex(){
+
+}
+yaooc_mutex(src) = delete;
+operator=(rc) = delete;
+instance:
+yaooc_internal_mutex_t mutex_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+bool lock() { }
+bool trylock() { }
+bool unlock() { }
+};
+
+%endif

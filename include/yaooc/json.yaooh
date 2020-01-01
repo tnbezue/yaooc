@@ -1,0 +1,168 @@
+%ifndef __JSON_YAOOH_INCLUDED__
+%define __JSON_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_json_exception {
+instance:
+char* what_;
+int error_code_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_exception_swap;
+const char* what() const=yaooc_exception_what;
+int error_code() const=yaooc_exception_error_code;
+};
+%class yaooc_json_value {
+yaooc_json_value(){}
+~yaooc_json_value(){
+
+}
+yaooc_json_value(src){
+
+}
+operator=(src){
+
+}
+instance:
+json_data_t ;
+yaooc_json_type_t type_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+yaooc_json_type_t type() const{ }
+const type_info_t* __this_ti__;
+};
+%class yaooc_json_null {
+yaooc_json_null(){}
+~yaooc_json_null() = delete;
+operator=(src){
+
+}
+instance:
+json_data_t ;
+yaooc_json_type_t type_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_json_value_swap;
+yaooc_json_type_t type() const=yaooc_json_value_type;
+const type_info_t* __this_ti__;
+};
+%class yaooc_json_bool {
+yaooc_json_bool(){}
+~yaooc_json_bool() = delete;
+operator=(src){
+
+}
+instance:
+json_data_t ;
+yaooc_json_type_t type_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_json_value_swap;
+yaooc_json_type_t type() const=yaooc_json_value_type;
+const type_info_t* __this_ti__;
+bool get() const{ }
+void set(bool v) { }
+};
+%class yaooc_json_integer {
+yaooc_json_integer(){}
+~yaooc_json_integer() = delete;
+operator=(src){
+
+}
+instance:
+json_data_t ;
+yaooc_json_type_t type_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_json_value_swap;
+yaooc_json_type_t type() const=yaooc_json_value_type;
+const type_info_t* __this_ti__;
+int64_t get() const{ }
+void set(int64_t v) { }
+};
+%class yaooc_json_real {
+yaooc_json_real(){}
+~yaooc_json_real() = delete;
+operator=(src){
+
+}
+instance:
+json_data_t ;
+yaooc_json_type_t type_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_json_value_swap;
+yaooc_json_type_t type() const=yaooc_json_value_type;
+const type_info_t* __this_ti__;
+double get() const{ }
+void set(double v) { }
+};
+%class yaooc_json_string {
+yaooc_json_string(){}
+~yaooc_json_string(){
+
+}
+operator=(src){
+
+}
+instance:
+json_data_t ;
+yaooc_json_type_t type_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_json_value_swap;
+yaooc_json_type_t type() const=yaooc_json_value_type;
+const type_info_t* __this_ti__;
+const char* get() const{ }
+void set(const char* v) { }
+void clear() { }
+};
+%class yaooc_json_array {
+yaooc_json_array(){}
+~yaooc_json_array(){
+
+}
+operator=(src){
+
+}
+instance:
+json_data_t ;
+yaooc_json_type_t type_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_json_value_swap;
+yaooc_json_type_t type() const=yaooc_json_value_type;
+const type_info_t* __this_ti__;
+void insert(pointer v) { }
+size_t size() const{ }
+};
+%class yaooc_json_object {
+yaooc_json_object(){}
+~yaooc_json_object(){
+
+}
+operator=(src){
+
+}
+instance:
+json_data_t ;
+yaooc_json_type_t type_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_json_value_swap;
+yaooc_json_type_t type() const=yaooc_json_value_type;
+const type_info_t* __this_ti__;
+void insert(const_pointer key,const_pointer value) { }
+};
+
+%endif

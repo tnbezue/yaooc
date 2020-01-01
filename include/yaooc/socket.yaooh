@@ -1,0 +1,140 @@
+%ifndef __SOCKET_YAOOH_INCLUDED__
+%define __SOCKET_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_socket_exception {
+instance:
+char* what_;
+int error_code_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_exception_swap;
+const char* what() const=yaooc_exception_what;
+int error_code() const=yaooc_exception_error_code;
+};
+%class yaooc_socket {
+yaooc_socket(){}
+~yaooc_socket(){
+
+}
+yaooc_socket(src) = delete;
+operator=(src) = delete;
+instance:
+int sock_fd_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+void close() { }
+int send(const char* str) { }
+int sendn(const void* buffer,size_t n) { }
+int poll(int timeout_ms) { }
+int recv(void* buffer,int n) { }
+int blocking() { }
+int non_blocking() { }
+int async() { }
+int sync() { }
+void debug(bool v) { }
+void reuseaddr(bool v) { }
+void keepalive(int option_value) { }
+bool is_open() const{ }
+yaooc_ipaddress_pointer get_local_ip() const{ }
+unsigned int get_local_port() const{ }
+yaooc_ipaddress_pointer get_foreign_ip() const{ }
+unsigned int get_remote_port() const{ }
+};
+%class yaooc_tcp_socket {
+yaooc_tcp_socket(){}
+yaooc_tcp_socket(src) = delete;
+operator=(src) = delete;
+instance:
+int sock_fd_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_socket_swap;
+void close() =yaooc_socket_close;
+int send(const char* str) =yaooc_socket_send;
+int sendn(const void* buffer,size_t n) =yaooc_socket_sendn;
+int poll(int timeout_ms) =yaooc_socket_poll;
+int recv(void* buffer,int n) =yaooc_socket_recv;
+int blocking() =yaooc_socket_blocking;
+int non_blocking() =yaooc_socket_non_blocking;
+int async() =yaooc_socket_async;
+int sync() =yaooc_socket_sync;
+void debug(bool v) =yaooc_socket_debug;
+void reuseaddr(bool v) =yaooc_socket_reuseaddr;
+void keepalive(int option_value) =yaooc_socket_keepalive;
+bool is_open() const=yaooc_socket_is_open;
+yaooc_ipaddress_pointer get_local_ip() const=yaooc_socket_get_local_ip;
+unsigned int get_local_port() const=yaooc_socket_get_local_port;
+yaooc_ipaddress_pointer get_foreign_ip() const=yaooc_socket_get_foreign_ip;
+unsigned int get_remote_port() const=yaooc_socket_get_remote_port;
+void connect_port(const char* host,unsigned int port) { }
+void connect_service(const char* host,const char* service) { }
+};
+%class yaooc_tcp_socket_server {
+yaooc_tcp_socket_server(){}
+yaooc_tcp_socket_server(src) = delete;
+operator=(src) = delete;
+instance:
+int sock_fd_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_socket_swap;
+void close() =yaooc_socket_close;
+int send(const char* str) =yaooc_socket_send;
+int sendn(const void* buffer,size_t n) =yaooc_socket_sendn;
+int poll(int timeout_ms) =yaooc_socket_poll;
+int recv(void* buffer,int n) =yaooc_socket_recv;
+int blocking() =yaooc_socket_blocking;
+int non_blocking() =yaooc_socket_non_blocking;
+int async() =yaooc_socket_async;
+int sync() =yaooc_socket_sync;
+void debug(bool v) =yaooc_socket_debug;
+void reuseaddr(bool v) =yaooc_socket_reuseaddr;
+void keepalive(int option_value) =yaooc_socket_keepalive;
+bool is_open() const=yaooc_socket_is_open;
+yaooc_ipaddress_pointer get_local_ip() const=yaooc_socket_get_local_ip;
+unsigned int get_local_port() const=yaooc_socket_get_local_port;
+yaooc_ipaddress_pointer get_foreign_ip() const=yaooc_socket_get_foreign_ip;
+unsigned int get_remote_port() const=yaooc_socket_get_remote_port;
+void listen_service(const char* service,unsigned int max_connections) { }
+void listen_port(unsigned int port,unsigned int max_connections) { }
+yaooc_tcp_socket_pointer accept() { }
+};
+%class yaooc_udp_socket {
+yaooc_udp_socket(){}
+yaooc_udp_socket(src) = delete;
+operator=(src) = delete;
+instance:
+int sock_fd_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_socket_swap;
+void close() =yaooc_socket_close;
+int send(const char* str) =yaooc_socket_send;
+int sendn(const void* buffer,size_t n) =yaooc_socket_sendn;
+int poll(int timeout_ms) =yaooc_socket_poll;
+int recv(void* buffer,int n) =yaooc_socket_recv;
+int blocking() =yaooc_socket_blocking;
+int non_blocking() =yaooc_socket_non_blocking;
+int async() =yaooc_socket_async;
+int sync() =yaooc_socket_sync;
+void debug(bool v) =yaooc_socket_debug;
+void reuseaddr(bool v) =yaooc_socket_reuseaddr;
+void keepalive(int option_value) =yaooc_socket_keepalive;
+bool is_open() const=yaooc_socket_is_open;
+yaooc_ipaddress_pointer get_local_ip() const=yaooc_socket_get_local_ip;
+unsigned int get_local_port() const=yaooc_socket_get_local_port;
+yaooc_ipaddress_pointer get_foreign_ip() const=yaooc_socket_get_foreign_ip;
+unsigned int get_remote_port() const=yaooc_socket_get_remote_port;
+void broadcast(bool v) { }
+void connect_service(const char* host,const char* service) { }
+void connect_port(const char* host,unsigned int port) { }
+};
+
+%endif

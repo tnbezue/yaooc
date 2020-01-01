@@ -1,0 +1,96 @@
+%ifndef __ODBC_YAOOH_INCLUDED__
+%define __ODBC_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_odbc_exception {
+instance:
+char* what_;
+int error_code_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_exception_swap;
+const char* what() const=yaooc_exception_what;
+int error_code() const=yaooc_exception_error_code;
+};
+%class yaooc_odbc_environment {
+yaooc_odbc_environment(){}
+~yaooc_odbc_environment(){
+
+}
+yaooc_odbc_environment(src) = delete;
+operator=(src) = delete;
+instance:
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+};
+%class yaooc_odbc_statement {
+yaooc_odbc_statement(){}
+~yaooc_odbc_statement(){
+
+}
+yaooc_odbc_statement(src) = delete;
+operator=(src) = delete;
+instance:
+SQLHSTMT statement_handle_;
+unsigned int icol_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+bool bindcol_chr(char* v) { }
+bool bindcol_uchr(unsigned char* v) { }
+bool bindcol_short(short* v) { }
+bool bindcol_ushort(unsigned short* v) { }
+bool bindcol_int(int* v) { }
+bool bindcol_uint(unsigned int* v) { }
+bool bindcol_long(long long* v) { }
+bool bindcol_ulong(unsigned long long* v) { }
+bool bindcol_dbl(double* v) { }
+bool bindcol_str(char* v,SQLLEN l) { }
+bool bindcol_blob(void* v,SQLLEN l) { }
+bool bindcol_time(TIME_STRUCT* v) { }
+bool bindcol_date(DATE_STRUCT* v) { }
+bool bindcol_ts(TIMESTAMP_STRUCT* v) { }
+bool bindparam_chr(char* v) { }
+bool bindparam_uchr(unsigned char* v) { }
+bool bindparam_short(short* v) { }
+bool bindparam_ushort(unsigned short* v) { }
+bool bindparam_int(int* v) { }
+bool bindparam_uint(unsigned int* v) { }
+bool bindparam_long(long long* v) { }
+bool bindparam_ulong(unsigned long long* v) { }
+bool bindparam_dbl(double* v) { }
+bool bindparam_str(char* v,SQLLEN l) { }
+bool bindparam_blob(void* v,SQLLEN l) { }
+bool bindparam_time(TIME_STRUCT* v) { }
+bool bindparam_date(DATE_STRUCT* v) { }
+bool bindparam_ts(TIMESTAMP_STRUCT* v) { }
+bool fetch() { }
+bool execute() { }
+};
+%class yaooc_odbc_connection {
+yaooc_odbc_connection(){}
+~yaooc_odbc_connection(){
+
+}
+yaooc_odbc_connection(src) = delete;
+operator=(src) = delete;
+instance:
+SQLHDBC connection_handle_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+yaooc_odbc_statement_t* exec_direct(const char* str) { }
+yaooc_odbc_statement_t* prepare(const char* str) { }
+void connect(const char* str) { }
+void disconnect() { }
+void auto_commit(bool on) { }
+void commit() { }
+void rollback() { }
+};
+
+%endif

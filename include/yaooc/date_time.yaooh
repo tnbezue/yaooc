@@ -1,0 +1,36 @@
+%ifndef __DATE_TIME_YAOOH_INCLUDED__
+%define __DATE_TIME_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_date_time {
+yaooc_date_time(){}
+~yaooc_date_time() = delete;
+yaooc_date_time(src){
+
+}
+operator=(src){
+
+}
+instance:
+time_t time_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer p) { }
+void set(time_t t) { }
+void set_ymdhms(int y,int mon,int d,int h,int min,int s) { }
+void set_ymd(int y,int mon,int d,int h,int min,int s) { }
+void set_hms(int h,int min,int s) { }
+time_t get() const{ }
+int month() const{ }
+int day() const{ }
+int year() const{ }
+int hour() const{ }
+int minute() const{ }
+int second() const{ }
+int day_of_week() const{ }
+int day_of_year() const{ }
+char* strftime(const char* fmt) { }
+};
+
+%endif

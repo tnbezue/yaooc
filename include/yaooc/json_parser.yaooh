@@ -1,0 +1,64 @@
+%ifndef __JSON_PARSER_YAOOH_INCLUDED__
+%define __JSON_PARSER_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_json_parser_exception {
+instance:
+char* what_;
+int error_code_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_exception_swap;
+const char* what() const=yaooc_exception_what;
+int error_code() const=yaooc_exception_error_code;
+};
+%class yaooc_json_parser {
+instance:
+parser_position_stack_t* stack_;
+const char* parse_string_;
+const char* current_pos_;
+unsigned int line_no_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_base_parser_swap;
+void set_parse_string(const char* pstr) =yaooc_base_parser_set_parse_string;
+void rule_start() =yaooc_base_parser_rule_start;
+bool rule_success() =yaooc_base_parser_rule_success;
+bool rule_fail() =yaooc_base_parser_rule_fail;
+bool eos() =yaooc_base_parser_eos;
+bool chr(char ch,yaooc_token_t* r) =yaooc_base_parser_chr;
+int chr_choices(const char* ch_choices,yaooc_token_t* r) =yaooc_base_parser_chr_choices;
+bool str(const char* str,yaooc_token_t* r) =yaooc_base_parser_str;
+int str_choices(yaooc_token_t* r,... args) =yaooc_base_parser_str_choices;
+bool digits(yaooc_token_t* r) =yaooc_base_parser_digits;
+bool hexdigits(yaooc_token_t* r) =yaooc_base_parser_hexdigits;
+bool integer(yaooc_token_t* r) =yaooc_base_parser_integer;
+bool hexinteger(yaooc_token_t* r) =yaooc_base_parser_hexinteger;
+bool real(yaooc_token_t* r) =yaooc_base_parser_real;
+bool ident(yaooc_token_t* r) =yaooc_base_parser_ident;
+bool regex(regex_t* re,uint32_t match_opts,size_t n_ov,regmatch_t* ov,yaooc_token_t* r) =yaooc_base_parser_regex;
+bool quoted_string(char quote_char,yaooc_token_t* r) =yaooc_base_parser_quoted_string;
+bool single_quoted_string(yaooc_token_t* r) =yaooc_base_parser_single_quoted_string;
+bool double_quoted_string(yaooc_token_t* r) =yaooc_base_parser_double_quoted_string;
+bool bare_string(yaooc_token_t* r) =yaooc_base_parser_bare_string;
+bool string_until_chrs(const char* chrs,yaooc_token_t* r) =yaooc_base_parser_string_until_chrs;
+bool string_while_chrs(const char* chrs,yaooc_token_t* r) =yaooc_base_parser_string_while_chrs;
+bool string_until_eol(yaooc_token_t* r) =yaooc_base_parser_string_until_eol;
+bool whitespace(yaooc_token_t* r) { }
+bool string_within_matching_chr(char lch,char rch,yaooc_token_t* r) =yaooc_base_parser_string_within_matching_chr;
+bool result() const=yaooc_base_parser_result;
+bool parse_json_null(yaooc_json_value_t** jnull) { }
+bool parse_json_bool(yaooc_json_value_t** jbool) { }
+bool parse_json_integer(yaooc_json_value_t** jinteger) { }
+bool parse_json_real(yaooc_json_value_t** jreal) { }
+bool parse_json_string(yaooc_json_value_t** jstring) { }
+bool parse_json_array(yaooc_json_value_t** jarray) { }
+bool parse_json_object(yaooc_json_value_t** jobject) { }
+bool parse_json_value(yaooc_json_value_t** jvalue) { }
+bool parse_string(const char* str,yaooc_json_value_t** jvalue) { }
+bool parse_file(const char* file,yaooc_json_value_t** jvalue) { }
+};
+
+%endif

@@ -1,0 +1,85 @@
+%ifndef __REGEX_YAOOH_INCLUDED__
+%define __REGEX_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%struct yaooc_regex_pattern_info {
+yaooc_regex_pattern_info(){}
+~yaooc_regex_pattern_info(){
+
+}
+yaooc_regex_pattern_info(src){
+
+}
+operator=(src){
+
+}
+instance:
+char* pattern_;
+int flags_;
+};
+%class yaooc_regex_exception {
+instance:
+char* what_;
+int error_code_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_exception_swap;
+const char* what() const=yaooc_exception_what;
+int error_code() const=yaooc_exception_error_code;
+};
+%class yaooc_matchdata {
+yaooc_matchdata(){}
+~yaooc_matchdata(){
+
+}
+yaooc_matchdata(src){
+
+}
+operator=(src){
+
+}
+instance:
+regmatch_t* ovector_;
+char* subject_;
+int match_result_;
+int n_captures_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) { }
+yaooc_string_pointer at(size_t i) const{ }
+yaooc_string_pointer exec(const char* str) { }
+const char* subject() const{ }
+bool good() const{ }
+size_t size() const{ }
+};
+%class yaooc_regex {
+yaooc_regex(){}
+~yaooc_regex(){
+
+}
+yaooc_regex(src){
+
+}
+operator=(src){
+
+}
+instance:
+regex_t* re_;
+char* pattern_;
+int compile_flags_;
+int compile_result_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer s) =yaooc_object_swap;
+void set_pattern_flags(const char* pattern,int flags) { }
+const char* get_pattern() const{ }
+int get_flags() const{ }
+yaooc_matchdata_pointer match(const char* subject,int match_flags) { }
+bool match_next(yaooc_matchdata_pointer md) { }
+bool good() const{ }
+};
+
+%endif

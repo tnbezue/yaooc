@@ -1,0 +1,37 @@
+%ifndef __COMPLEX_YAOOH_INCLUDED__
+%define __COMPLEX_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_complex {
+yaooc_complex(){}
+~yaooc_complex(){
+
+}
+yaooc_complex(src){
+
+}
+operator=(src){
+
+}
+instance:
+double real_;
+double imag_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer o) { }
+void set(double r,double i) { }
+void set_polar(double magnitude,double angle) { }
+yaooc_complex_t* times(yaooc_complex_t* o) { }
+void times_(yaooc_complex_t* other) { }
+yaooc_complex_t* divided_by(yaooc_complex_t* o) { }
+void divided_by_(yaooc_complex_t* o) { }
+yaooc_complex_t* plus(yaooc_complex_t* o) { }
+void plus_(yaooc_complex_t* o) { }
+yaooc_complex_t* minus(yaooc_complex_t* o) { }
+void minus_(yaooc_complex_t* o) { }
+double magnitude() const{ }
+double direction() const{ }
+};
+
+%endif

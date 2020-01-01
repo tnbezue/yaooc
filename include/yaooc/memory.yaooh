@@ -1,0 +1,72 @@
+%ifndef __MEMORY_YAOOH_INCLUDED__
+%define __MEMORY_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%struct yaooc_dynamic_pointer {
+yaooc_dynamic_pointer(){}
+~yaooc_dynamic_pointer(){
+
+}
+yaooc_dynamic_pointer(src){
+
+}
+operator=(src){
+
+}
+int operator<=>(lhs,rhs){
+
+}
+operator<<(istrm){
+
+}
+operator>>(ostrm){
+
+}
+yaooc_dynamic_pointer_ctor_ptr(){ }instance:
+void* ptr_;
+};
+%class yaooc_unique_pointer {
+yaooc_unique_pointer(){}
+~yaooc_unique_pointer(){
+
+}
+yaooc_unique_pointer(src){
+
+}
+operator=(src){
+
+}
+instance:
+void* ptr_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer o) { }
+pointer get() const{ }
+pointer release() { }
+void reset(pointer ptr) { }
+};
+%class yaooc_shared_pointer {
+yaooc_shared_pointer(){}
+~yaooc_shared_pointer(){
+
+}
+yaooc_shared_pointer(src){
+
+}
+operator=(src){
+
+}
+instance:
+yaooc_counter_t* counter_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer o) { }
+pointer get() const{ }
+pointer release() { }
+void reset(pointer ptr) { }
+size_t count() const{ }
+};
+
+%endif

@@ -1,0 +1,41 @@
+%ifndef __FILE_YAOOH_INCLUDED__
+%define __FILE_YAOOH_INCLUDED__
+
+%include <yaooc/object.yaooh>
+%class yaooc_file {
+yaooc_file(){}
+~yaooc_file(){
+
+}
+yaooc_file(src){
+
+}
+operator=(src){
+
+}
+instance:
+char* file_;
+table:
+const class_table_t* parent_class_table_;
+const char* type_name_;
+void swap(pointer o) { }
+bool exists() const{ }
+dev_t dev() const{ }
+mode_t mode() const{ }
+time_t atime() const{ }
+time_t mtime() const{ }
+time_t ctime() const{ }
+uid_t uid() const{ }
+gid_t gid() const{ }
+nlink_t nlink() const{ }
+size_t size() const{ }
+bool isdir() const{ }
+bool ischr() const{ }
+bool isblk() const{ }
+bool isreg() const{ }
+bool isfile() const{ }
+bool islink() const{ }
+bool issock() const{ }
+};
+
+%endif
