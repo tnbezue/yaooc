@@ -1,0 +1,128 @@
+== Map
+There are four flavors of maps in YAOOC -- mini_map, medium_map, map, and ordered_map.
+The difference between them is the underlying container.
+
+mini_map uses the unique_array container.
+Since search is sequential, it's best for when the size of the map is relatively small (or infrequent search/insertion).
+Items are maintained in insertion order and will be iterated in insertion order.
+
+medium_map uses the unique index array container.
+Because of the index, search and insertion is much faster (for very large size more than 100 x faster).
+Should be used for larger map sizes.
+There is additional memory overhead because of the index (4*capacity bytes).
+Items are maintained in insertion order and will be iterated in insertion order.
+
+map uses the red black tree index array container.
+This is the fastest map.
+The memory overhead is greatest for map -- 32*size for 64 bit systems and 20*size for 32 bit systems.
+This is due to a red black node for each index.
+Items are maintained in insertion order and will be iterated in insertion order. If memory is not a concern, then use map.
+
+ordered_map uses unique ordered array_container.
+Should be used when a sorted map is desired.
+Search speed is better than mini_map and about the same for map.
+For a large number of items, insertion speed is faster than mini_map (because search speed is faster) but slower than map (because large chunks of memory is moved).
+Items are maintained in sorted order and will be iterated in sorted order.
+
+To use mini_map, in header file specify:
+
+[source,c]
+---------------------------
+%header
+#include <yaooc/map.h>
+MINI_MAP_DEFINITION(K,V,N)
+%%
+MINI_MAP_IMPLEMENTATION(K,V,N)
+---------------------------
+
+To use medium_map, in header file specify:
+
+[source,c]
+---------------------------
+%header
+#include <yaooc/map.h>
+MEDIUM_MAP_DEFINITION(K,V,N)
+%%
+MEDIUM_MAP_IMPLEMENTATION(K,V,N)
+---------------------------
+To use map, in header file specify:
+
+[source,c]
+---------------------------
+%header
+#include <yaooc/map.h>
+MAP_DEFINITION(K,V,N)
+%%
+MAP_IMPLEMENTATION(K,V,N)
+---------------------------
+
+[source,c]
+---------------------------
+%header
+#include <yaooc/map.h>
+ORDERED_MAP_DEFINITION(K,V,N)
+%%
+ORDERED_MAP_IMPLEMENTATION(K,V,N)
+---------------------------
+
+K is the key type, V is the value type, and N is the type for the map. The following types are created:
+
+.Types Created
+[options="header"]
+|====================================
+|Type|Description
+|N_t|The map type name
+|N_pointer|Pointer to instance of map type name
+|N_const_pointer|Constant pointer to instance of map type name
+|N_iterator|Iterator for instance of map type name
+|N_const_iterator|Constant iterator for instance of map type name
+|====================================
+
+=== Methods
+Map inherits the array methods and defines the following additional methods.
+
+.Map Methods
+[options="header"]
+|====================================
+|Method|Description
+|iterator insert(const_pointer key,const_pointer value)|Insert key/value pair.
+If key already exists, the existing value is replaced with new value.
+Equivalent to C++ map operator[]
+|pointer at(const_pointer k)|Pointer to value of entry with key k
+|iterator find(const_pointer key)|Finds key/value pair for key.
+|iterator erase(const_iterator pos)|Remove item at pos and returns iterator to item following item removed.
+|iterator erase_range(const_iterator|first,const_iterator last)	Remove items from first to last and return iterator to next element
+|iterator erase_key(const_pointer k)|Remove item with key and return iterator to next element
+|void reserve(size_t new_cap)|Increase capacity to new_cap. If new_cap less than capacity, do nothing
+|void shrink_to_fit()|Shrinks capacity to size
+|void clear()|Remove all items from map
+|====================================
+
+=== Example
+
+A map with my_string as key and integer as value.
+
+[source,c]
+----------------------------
+%header
+#include <yaooc/map.h>
+MAP_DEFINITION(my_string,int,my_string_int_map)
+%%
+MAP_IMPLEMENTATION(my_string,int,my_string_int_map)
+
+my_string_int_map_t* my_map=new(my_string_int_map);
+my_string_t* key=new(my_string);
+char* numbs[] = { "zero","one","two","three","four","five","six","seven","eight","nine"};
+int value;
+for(value=0;i<10;i++) {
+  M(key,set,numbs[value]);
+  M(my_map,insert,key,&value);
+}
+
+my_string_int_map_const_iterator iter;
+for(iter=M(my_map,cbegin);iter!=M(my_map,cend);iter++)
+  printf("%s-%d\n",iter->first.str,iter->second);
+
+delete(key);
+delete(my_map);
+----------------------------
