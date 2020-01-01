@@ -236,7 +236,8 @@ int main(int argc,char* argv[])
           M(&h_strm,open,header_fname,"w");
           char* uc_root=gb_save(yaooc_upcase(root));
           M(&h_strm,printf,"#ifndef __%s_INCLUDED__\n"
-                          "#define __%s_INCLUDED__\n\n",uc_root,uc_root);
+                          "#define __%s_INCLUDED__\n"
+                          "#include <yaooc/new.h>\n",uc_root,uc_root);
           l = M(&definition_directory,size)+strlen(root)+10; // header_directory + "/" + root + ".yaooh"
           char* yaooh_fname=gb_new_array(char,l);
           *yaooh_fname=0;

@@ -137,7 +137,7 @@ static yaooc_string_t* preprocess(const char* file)
 #endif
   char* tmp_file=new_array(char,PATH_MAX);
   strcpy(tmp_file,tmp_ptr);
-  strcat(tmp_file,"/yocXXXXXX");
+  strcat(tmp_file,"/yaoocXXXXXX");
   int tmp_handle=mkstemp(tmp_file);
 //  puts(tmp_file);
   write(tmp_handle,M(contents,c_str),M(contents,size));
@@ -160,6 +160,7 @@ static yaooc_string_t* preprocess(const char* file)
   }
   M(&gpp_command,append," < ");
   M(&gpp_command,append,tmp_file);
+  M(&gpp_command,append," 2>&1");
 //  puts(M(&gpp_command,c_str));
   M(contents,clear);
   FILE*cmd_pipe=popen(M(&gpp_command,c_str),"r");
@@ -170,21 +171,14 @@ static yaooc_string_t* preprocess(const char* file)
       M(contents,appendn,buffer,n);
     }
   }
-//  puts(M(contents,c_str));
-//  exit(0);
-/*
-  yaooc_string_t* so=new(yaooc_string);
-  yaooc_string_t* se=new(yaooc_string);
-  if(command_pipe(M(&gpp_command,c_str),contents,so,se) != 0) {
-    fprintf(stdout,"%s\n",M(so,c_str));
-    fprintf(stderr,"%s\n",M(se,c_str));
-    THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,71,
-            "Error preprocessing file \"%s\".",file));
-  }
-  deletep(&gpp_command,yaooc_string);
-  delete(contents);
-  delete(se);*/
+  int rc=pclose(cmd_pipe);
+  unlink(tmp_file);
   gb_exit();
+  if(rc != 0) {
+    puts(M(contents,c_str));
+    THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,77,
+        "Error preprocessing YAOOC file %s.\nReview above output for error.",file));
+  }
   return contents;
 }
 
@@ -296,7 +290,7 @@ static yaooc_string_t* preprocess(const char* file)
                 M(&hs->name_,set,name);
                  // assume yaooh file
                 M(&hs->content_,set,"#include <");
-                M(&hs->content_,appendn,yaoocpp_parser_file_being_parsed,strlen(yaoocpp_parser_file_being_parsed)-3);
+                M(&hs->content_,appendn,yaoocpp_parser_file_being_parsed,strlen(yaoocpp_parser_file_being_parsed)-5);
                 M(&hs->content_,append,"h>");
                 hs->defined_in_top_level_file_=true;
                 *section = (yaoocpp_section_t*)hs;

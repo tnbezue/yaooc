@@ -101,7 +101,7 @@ static yaooc_string_t* preprocess(const char* file)
 #endif
   char* tmp_file=new_array(char,PATH_MAX);
   strcpy(tmp_file,tmp_ptr);
-  strcat(tmp_file,"/yocXXXXXX");
+  strcat(tmp_file,"/yaoocXXXXXX");
   int tmp_handle=mkstemp(tmp_file);
 
   write(tmp_handle,M(contents,c_str),M(contents,size));
@@ -124,6 +124,7 @@ static yaooc_string_t* preprocess(const char* file)
   }
   M(&gpp_command,append," < ");
   M(&gpp_command,append,tmp_file);
+  M(&gpp_command,append," 2>&1");
 
   M(contents,clear);
   FILE*cmd_pipe=popen(M(&gpp_command,c_str),"r");
@@ -134,21 +135,14 @@ static yaooc_string_t* preprocess(const char* file)
       M(contents,appendn,buffer,n);
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  int rc=pclose(cmd_pipe);
+  unlink(tmp_file);
   gb_exit();
+  if(rc != 0) {
+    puts(M(contents,c_str));
+    THROW(new_ctor(yaoocpp_parser_exception,yaoocpp_parser_exception_ctor_v,77,
+        "Error preprocessing YAOOC file %s.\nReview above output for error.",file));
+  }
   return contents;
 }
 
@@ -223,7 +217,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
                 M(&hs->name_,set,name);
                  
                 M(&hs->content_,set,"#include <");
-                M(&hs->content_,appendn,yaoocpp_parser_file_being_parsed,strlen(yaoocpp_parser_file_being_parsed)-3);
+                M(&hs->content_,appendn,yaoocpp_parser_file_being_parsed,strlen(yaoocpp_parser_file_being_parsed)-5);
                 M(&hs->content_,append,"h>");
                 hs->defined_in_top_level_file_=true;
                 *section = (yaoocpp_section_t*)hs;

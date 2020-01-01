@@ -1405,10 +1405,14 @@ yaoocpp_destructor_pointer this=__pthis__;(void)this;
         CFOR_EACH(i,new_items) {
           yaoocpp_variable_const_pointer var=i->ptr_;
           *buffer=0;
-          if(M(&var->type_,ends_with,"*") && !M(&var->type_,starts_with,"const")) { 
-            sprintf(buffer,"if(this->%s!=NULL) delete(this->%s);\n",M(&var->name_,c_str),M(&var->name_,c_str));
-          } else if(M(&var->type_,ends_with,"_t")) {
-            sprintf(buffer,"deletep(&this->%s,%.*s);\n",M(&var->name_,c_str),(int)(M(&var->type_,size)-2),M(&var->type_,c_str));
+          if(!M(&var->type_,starts_with,"const")) {
+            if(M(&var->type_,ends_with,"_t*")) { 
+              sprintf(buffer,"if(this->%s!=NULL) delete(this->%s);\n",M(&var->name_,c_str),M(&var->name_,c_str));
+            } else if(M(&var->type_,ends_with,"*")) { 
+              sprintf(buffer,"if(this->%s!=NULL) FREE(this->%s);\n",M(&var->name_,c_str),M(&var->name_,c_str));
+            } else if(M(&var->type_,ends_with,"_t")) {
+              sprintf(buffer,"deletep(&this->%s,%.*s);\n",M(&var->name_,c_str),(int)(M(&var->type_,size)-2),M(&var->type_,c_str));
+            }
           }
           if(*buffer != 0)
             M(&this->implementation_,append,buffer);
