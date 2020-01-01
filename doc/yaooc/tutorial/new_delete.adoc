@@ -1,0 +1,35 @@
+== New/Delete
+In C\+\+, the syntax of new is changed to achieve different results.
+C does not have this luxury -- a different method has to be used to achieve different results.
+The following table shows a few C++ forms of new and the corresponding C method provided in YAOOC.
+In the table, T is the type, n is the number of elements to create, ref is reference to existing object, ptr is pointer to existing object, ctor is a constructor method, and args are one or more arguments.
+
+.YAOOC vs C++ New
+[options="header"]
+|====================================
+|Purpose|C++|YAOOC
+|Create single object of type T using default constructor|new T|new(T)
+|Create array of n objects of type T|new T[n]|new_array(T,n)
+|Create single object from existing object (copy constructor)|new T(ref)|new_copy(ptr)
+|Create Array of n objects from existing object (copy constructor)|N/A|new_array_copy(ptr,n)
+|Create single object using specified constructor to initialize the object|new T(args)|new_ctor(T,ctor,args)
+|Create array of n objects using specified constructor to initialize each object|N/A|new_array_ctor(T,n,ctor,args)
+|====================================
+
+Delete has two forms as shown in table below
+
+.YAOOC vs C++ Delete
+[format="csv",width="60%",cols="3",options="header"]
+|====================================
+Purpose,C++,YAOOC
+Delete single object,delete ptr,delete(ptr)
+Delete array of objects,delete [] ptr,delete(ptr)
+|====================================
+
+In YAOOC, delete is used to delete a single object or an array of objects.
+However, if symmetry is desired, delete_array can be used.
+
+CAUTION: Do not mix new/delete with malloc/free.
+You can use malloc/free in a program that uses YAOOC.
+However, do not use free on an object created with new.
+Likewise, do not use delete for memory allocated with malloc.

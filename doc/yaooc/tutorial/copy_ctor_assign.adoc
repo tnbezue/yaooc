@@ -1,0 +1,47 @@
+== Copy Constructor and Assignment
+Let's continue to improve my_string by adding a copy constructor and assignment (operator= in C++).
+
+[source,c]
+---------------------------------------
+%struct my_string {
+    ...
+    // Copy constructor -- method name will be my_string_copy_ctor
+    my_string(src) : my_string()  // default constructor used as initializer
+    {
+      my_string_assign(this,src);
+    }
+
+    // Assignment  -- method name will be my_string_assign
+    // src is a const pointer to another my_string instance
+    operator=(src)
+    {
+      my_string_dtor(this);  // can call destructor directly.  Note that "this" has to be included as first argument
+      this->str = src->str ? strdup(src->str) : NULL;
+    }
+    ...
+  instance:
+    char* str;
+};
+---------------------------------------
+
+=== Copy Constructor
+The copy constructor is called when the new_copy method is used.
+The "src" variable is a my_string_const_pointer that points to the object being copied.
+If not specified (or "my_string(src)=default;"), you guessed it, yaoocpp will create a copy constructor -- in this case, the one specified above.
+
+To disable the creation of a copy constructor, use "my_string(src)=delete;".
+
+=== Assignment
+The assignment method is used to assign one object to another. However, the traditional "=" operator should not be used. In YAOOC, use the "assign" method.
+
+[source,c]
+---------------------------------------
+my_string_t* ms1=new(my_string);
+my_string_t* ms2=new(my_string);
+...
+ms2=ms1; // While valid C code, most likely not what was intended
+assign(ms2,ms1); // Assigns ms1 to ms2 using assign method
+---------------------------------------
+If not specified (or "operator=(src)=default;" specified), yaoocpp will create it.
+However, in this case, the above assignment method is [red]#NOT# the one that would have been created.
+More on this later.

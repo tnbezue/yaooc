@@ -1,0 +1,39 @@
+== Default Constructor and Destructor
+Let's make my_string a bit more robust by adding default constructor and destructor.
+
+[source,c]
+------------------------------------------
+%struct my_string {
+    // Default constructor -- method name will be my_string_default_ctor
+    my_string()
+    {
+      // "this" is a my_string pointer to this instance of my_string
+      // "this" is available for use in constuctors, destructor, methods, etc.
+      this->str=NULL;
+    }
+    // Destructor  -- method name will be my_string_dtor
+    ~my_string()
+    {
+      if(this->str)
+        free(this->str);
+    }
+  instance:
+    char* str;
+};
+------------------------------------------
+
+=== Default Constructor
+The default constructor is called by the new method after allocating memory for the object.
+If the default constructor is not specified or it is specified as "my_string()=default;" yaoocpp will create a default constructor.
+The above default constructor is the default constructor that would be created by yaoocpp.
+
+In a later lesson, the rules yaoocpp uses to create a default constructor will be explained further.
+
+To keep yaoocpp from creating a default constructor, use "my_string()=delete;"
+
+=== Destructor
+The destructor is called by the delete method prior to freeing memory allocated.
+If the destructor is not specified or is specified as "~my_string()=default;",
+then yaoocpp will create a destructor (in this case, the one shown above).
+
+To avoid the creation of a destructor, use "~my_string()=delete;".

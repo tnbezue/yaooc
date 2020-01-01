@@ -1,0 +1,52 @@
+== Hello Word
+Let's get started with the classic hello world program.
+
+[source,c]
+-----------------------------
+#include <string.h>
+#include <stdio.h>
+#include <yaooc/new.h>
+
+int main(int argc,char* argv)
+{
+  char* str=new_array(char,128);
+  strcpy(str,"Hello world!");
+  printf("%s\n",str);
+  delete(str);
+}
+-----------------------------
+
+gcc, clang, and tcc (tiny c compiler) are the supported compilers. To compile:
+
+[source,bash]
+  gcc `yaooc-config --cflags` hello_world.c `yaooc-config --libs` -o hello_world
+
+The "new_array" method allocates space for an array of elements of the specified type -- in this case, 128 characters.
+The allocated space can be used as it normally would. The "delete" method frees the space allocated by "new_array".
+"new_array" and "delete" do a lot more than what is demonstrated here.
+The complete workings will be revealed in later lessons.
+
+=== Naming Convention
+Type names end with "_t". YAOOC has defined types with the "_t" appended for POD types (see table below).
+When using the macros provided by YAOOC, the "_t" portion should not be specified -- YAOOC macros will append the "_t" where needed. Note that in the hello world program, "char" was used rather than "char_t".
+The following table shows the basic YAOOC types.
+
+.POD types
+[format="csv",width="60%",cols="3"]
+|==============================
+Type,Description,Size in bytes
+char_t,Signed character,1
+uchar_t,Unsigned character,1
+short_t,Signed short,2
+ushort_t,Unsigned short,2
+int_t,Signed integer,4
+uint_t,Unsigned integer,4
+long_t,Signed long,8 (on 32 and 64 bit systems)
+ulong_t,Unsigned long,8 (on 32 and 64 bit systems)
+double_t,Double precision floating point,8
+size_t,Size type,4 (32 bit system) 8 (64 bit system)
+pointer,void *,4 (32 bit system) 8 (64 bit system)
+const_pointer,const void *,4 (32 bit system) 8 (64 bit system)
+|==============================
+
+YAOOC makes extensive use of pointer and const_pointer as types for method parameters. This is done to avoid the many compiler warnings that would be generated. Note that both do not have "_t".

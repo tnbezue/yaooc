@@ -1,0 +1,73 @@
+== Input/Output Streams
+One of the most notable C++ features is input and output streams. For example:
+
+[source,c]
+-------------------------------
+string b="Testing";
+cout << "The value of \"b\" is " << b << endl;
+cout << "Enter new value for \"b\" " << endl;
+cin >> b;
+-------------------------------
+
+In YAOOC, this behavior is also implemented.
+If a class is to use I/O streams, operators "<<" and ">>" have to be implemented.
+They appear before the "instance:" and "table:" entries.
+If the class is used in a stream and operators "<<" and ">>" are not defined, an exception (more on exceptions later) is thrown.
+
+[source,c]
+-------------------------------
+%class my_string {
+    ...
+    operator<<(ostrm) {  // ostrm is a pointer to yaooc output stream
+      M(ostrm,printf,"%s",this->str);
+    }
+    operator>>(istrm) {  // istrm is a pointer to yaooc input stream
+    {
+      char temp[256];
+      M(istrm,scanf,"%255s",temp);
+      my_string_dtor(this);
+      this->str=strdup(temp);
+    }
+  instance:
+    ...
+  table:
+    ...
+};
+-------------------------------
+
+In the methods above, you may have noticed the use of printf and scanf.
+Yes, in YAOOC, streams are a wrapper class for methods that use the C FILE type.
+Many of the C methods that use FILE* (printf, scanf, feof, puts, gets, etc) are available in YAOOC streams.
+YAOOC provides cout (stdout), cin (stdin), and cerr (stderr) streams.
+
+Now my_string can be used in input and output streams by using the stream method.
+
+[source,c]
+-------------------------------
+my_string_pointer sp1=new(my_string);
+M(cout,printf,"Enter value for sp1\n")
+M(cin,stream,sp1,NULL);
+M(cout,printf,"You entered: ");
+M(cout,stream,sp1,endl,NULL);
+-------------------------------
+
+Notice that for the stream method, NULL is used to indicate the end of argument list.
+Numerous times I've forgotten the NULL at the end which causes the program to crash.
+The STREAM macro provided by YAOOC can be used. It adds NULL to the end of the argument list.
+
+[source,c]
+-------------------------------
+STREAM(cin,sp1);
+STREAM(cout,sp1,endl);
+-------------------------------
+
+YAOOC provides the following stream classes.
+
+.YAOOC vs C++ Delete
+[format="csv",width="60%",cols="3",options="header"]
+|====================================
+Type,Input,Output
+Base stream,yaooc_istream,yaooc_ostream
+File,yaooc_ifstream,yaooc_ofstream
+String,yaooc_istringstream,yaooc_ostringstream
+|====================================

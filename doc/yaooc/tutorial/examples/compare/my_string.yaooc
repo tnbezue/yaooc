@@ -1,0 +1,54 @@
+
+#include <stdio.h>
+#include <string.h>
+
+%struct my_string {
+    my_string()
+    {
+      this->str=NULL;
+    }
+
+    ~my_string() {
+      if(this->str)
+        FREE(this->str);
+    }
+
+    my_string(src) : my_string()
+    {
+      assign(this,src);
+    }
+
+    operator=(src)
+    {
+      my_string_dtor(this);  // Can call destructor directly
+      this->str = src->str ? strdup(src->str) : NULL;
+    }
+
+    int operator<=>(lhs,rhs)
+    {
+      // lhs and rhs are const pointers to my_string instances
+      if(lhs->str == NULL) {
+        if(rhs->str == NULL)
+        return 0; /* both NULL, equal */
+        else
+        return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
+      } else if(rhs->str == NULL)
+        return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
+      return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
+    }
+  instance:
+    char* str;
+};
+
+int main(int argc,char* argv[])
+{
+  my_string_t* ms = new(my_string);
+  ms->str=strdup("This is a demonstration of my_string");
+  my_string_t* ms2=new_copy(ms);
+  printf("My string is: %s\n",ms->str);
+  printf("My string 2 is: %s\n",ms2->str);
+  if(op_eq(ms,ms2))
+    printf("ms1 and ms2 are equal\n");
+  delete(ms);
+  delete(ms2);
+}

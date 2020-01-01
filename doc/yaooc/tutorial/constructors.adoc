@@ -1,0 +1,55 @@
+=== Constructors
+YAOOC allows constructors other than the default and copy constructor to be created. In this section, three constuctors will be defined. They are shown below.
+
+[source,c]
+------------------------------------
+%class my_string {
+  ...
+    // Constructors
+    // Create my_string using the first n characters of a null terminated character array
+    // Uses default constructor as an initializer
+    my_string_ctor_ccs_size(const char* str,size_t n) : my_string()
+    {
+      if(str != NULL) {
+        if(n > strlen(str))
+          n=strlen(str);
+        if(n > 0) {
+          this->str=malloc(n+1);
+          strncpy(this->str,str,n);
+          this->str[n]=0;
+        }
+      }
+    }
+
+    // Create my_string using entire null terminated character array
+    // Uses another constructor as an initialier
+    my_string_ctor_ccs(const char* str) : my_string_ctor_ccs_size(str,SIZE_MAX)
+    {
+    }
+
+    // Create my_string of n copies of supplied character
+    // When a constructor is not specified as an initializer, the default constructor for this class will be used
+    my_string_ctor_chr_size(int c,size_t n) : str(malloc(n+1))
+    {
+      memset(this->str,c,n);
+      this->str[n]=0;
+    }
+  instance:
+  ....
+};
+------------------------------------
+Constructor names start with the class name followed by any valid C ident characters.
+It is suggested that "_ctor_" (makes it easy to identify constructors) and abbreviations for argument types be used.
+Constructors are used with the new_ctor form of new.
+
+[source,c]
+------------------------------------
+my_string_t* ms1=new_ctor(my_string,my_string_ctor_ccs_size,"YAOOC -- Yet Another Object Oriented C.  This portion will not be included",39);
+my_string_t* ms2=new_ctor(my_string,my_string_ctor_ccs,"YAOOC -- Yet Another Object Oriented C.");
+my_string_t* ms3=new_ctor(my_string,my_string_ctor_chr_n,'Y',26);
+------------------------------------
+
+=== Constructor Initializers
+Constructor initializers can be any other constructor for this class or any variable defined in the instance portion of the class definition.
+Only one constructor can be used in the initializer list and if one is used, it must be the first initializer.
+If a constructor is not specified in the initilizer list, the default construtor is used.

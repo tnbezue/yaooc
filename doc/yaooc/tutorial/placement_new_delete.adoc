@@ -1,0 +1,65 @@
+== Placement New and Delete
+In the previous lesson, static objects were introduced. This lesson will introduce placement new to initialize static objects and a placement delete to destroy these objects. Note that C++ does not provide a placement delete but can be simulated by directly calling the destructor (ptr->~T()).
+
+.Placment New/Delete methods
+[options="header"]
+|====================================
+|Purpose|C++|YAOOC
+|Initialize the single object at ptr of type T using default constructor|new (ptr) T|newp(ptr,T)
+|Initialize array of n objects at ptr of type T|new (ptr) T[n]|newp_array(ptr,T,n)
+|Initialize new object from existing dynamically allocated object (copy constructor)
+Use newp_copy_static (below) to initialize from static object|new (ptr) T(ref)|newp_copy(dst_ptr,src_ptr)
+|Initialize new object from existing static object|N/A|newp_copy_static(dst_ptr,T,src_ptr)
+|Initialize n new objects from existing dynamically allocated object (copy constructor)|N/A|newp_array_copy(dst_ptr,src_ptr,n)
+|Initialize n new objects from existing static object (copy constructor)|N/A|newp_array_copy_static(dst_ptr,T,src_ptr,n)
+|Initialize new object using specified constructor to initialize the object|new (ptr) T(args)|newp_ctor(ptr,T,ctor,args)
+|Initialize n new objects using specified constructor to initialize each object|N/A|newp_array_ctor(ptr,T,n,ctor,args)
+|Destroy single object of type T|N/A|deletep(ptr,T)
+|Destroy array of N objects of type T|N/A|deletep_array(ptr,T,N)
+|====================================
+Placement new can be used to initialize objects declared on the stack and deletep can be used to destroy these objects.
+
+[source,c]
+-----------------------
+my_string_t mys1;  /* Note that the "_t" is used */
+newp(&mys1,my_string);
+my_string_t mys2;
+newp_ctor(&mys2,my_string,my_string_ctor_ccs,"This is a test");
+assign_static(&mys1,&mys2,my_string);
+M(&mys2,set,"Changed value for mys2");
+deletep(&mys1,my_string);
+deletep(&mys2,my_string);
+-----------------------
+=== Static object in streams
+Streams use dynamically allocated objects.
+As mentioned in the memory layout lesson, the type info for dynamically allocated objects is readily available.
+This information is used by the stream method.
+For POD and static objects, the type info has to be added to the stream.
+The macros below facilitate streams reading POD and static objects properly.
+
+.Stream Macros for Static Objects
+[options="header"]
+|====================================
+|Macro|Description
+|I_OBJ(T,O)|Input static object O of type T
+|I_CHR(ch)|Input single character
+|I_UCHR(uch)|Input single unsigned character
+|I_SHORT(s)|Input short
+|I_USHORT(us)|Input unsigned short
+|I_INT(i)|Input integer
+|I_UINT(ui)|Input unsigned integer
+|I_LONG(l)|Input long
+|I_ULONG(ul)|Input unsigned long
+|I_DBL(d)|Input double
+|I_CCS(ccs)|Input character string
+|====================================
+For writing POD and static objects to streams, use "O_" rather than "I_" for macros in above table.
+
+[source,c]
+--------------------------
+my_string_t ms;
+newp(&ms,my_string);
+STREAM(cout,O_CCS("Enter a string value"),endl);
+STREAM(cin,I_OBJ(my_string,ms));
+STREAM(cout,O_CSS("The value enter was: "),O_OBJ(my_string,ms),endl);
+--------------------------

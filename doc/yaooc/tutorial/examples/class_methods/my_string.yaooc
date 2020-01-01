@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <string.h>
+
+%include <yaooc/object.yaooh>
+
+%class my_string : yaooc_object {
+    my_string()
+    {
+      this->str=NULL;
+    }
+
+    ~my_string() {
+      if(this->str)
+        FREE(this->str);
+    }
+
+    my_string(src) : my_string()
+    {
+      assign(this,src);
+    }
+
+    operator=(src)
+    {
+      M(this,set,src->str); // Could also use my_string_set(this,src->str);
+    }
+
+    int operator<=>(lhs,rhs)
+    {
+      // lhs and rhs are const pointers to my_string instances
+      if(lhs->str == NULL) {
+        if(rhs->str == NULL)
+        return 0; /* both NULL, equal */
+        else
+        return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
+      } else if(rhs->str == NULL)
+        return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
+      return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
+    }
+  instance:
+    char* str;
+  table:
+    const char* get() const
+    {
+      return this->str;
+    }
+
+    void set(const char* str)
+    {
+      my_string_dtor(this);
+      this->str = str ? strdup(str) : NULL;
+    }
+};
+
+int main(int argc,char* argv[])
+{
+  my_string_t* ms = new(my_string);
+  ms->str=strdup("This is a demonstration of my_string");
+  my_string_t* ms2=new_copy(ms);
+  printf("My string is: %s\n",M(ms,get));
+  printf("My string 2 is: %s\n",M(ms2,get));
+  if(op_eq(ms,ms2))
+    printf("ms1 and ms2 are equal\n");
+  M(ms2,set,"MS2 now different");
+  printf("My string is: %s\n",M(ms,get));
+  printf("My string 2 is: %s\n",M(ms2,get));
+  if(op_ne(ms,ms2))
+    printf("ms1 and ms2 are not equal\n");
+  delete(ms);
+  delete(ms2);
+}

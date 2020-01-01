@@ -1,0 +1,60 @@
+== Class Methods
+In this lesson the my_string class will be improved by adding two class methods.
+In order to have class methods, "%class" will be used rather than "%struct" to define a class.
+
+For the my_string class, a get and set method will be defined.
+The get method returns a const pointer to the string and the set method sets the string.
+
+[source,c]
+------------------------------
+%class my_string {
+  ....
+instance:
+  char* str;
+table:
+  const char* get() const // method name will be my_string_get
+  {
+    return this->str;
+  }
+
+  void set(const char* s)
+  {
+    my_string_dtor(this);
+    this->str = s==NULL ? NULL : strdup(s);
+  }
+};
+------------------------------
+
+Methods and variables appearing after "table:" will be placed in the class table.
+Items in class table are shared by all instances of object.
+
+In C\++, structs and classes are basically the same.
+In YAOOC, "%struct" and "%class" are different -- "%struct" does not have a class table.
+
+CAUTION: Never use memset(this,0,sizeof(T)) to initialize an object.
+The first entry in the object is a pointer to the class table, using memset will destroy the value of the class table.
+
+To call a class table method, use the M macro (M for method).
+The syntax is M(ptr,method,args).
+The args portion should not be specified if a method does not have any arguments.
+
+[source,c]
+------------------------------
+M(msp,set,"This is a test");
+printf("%s\n",M(msp,get));
+------------------------------
+To see various uses of the M macro, see the test files in the tests directory.
+
+=== Forward declaration of class
+In C++, a class can have a forward declaration.
+
+[source,c]
+  class my_string_t;
+
+This can also be done in YAOOC.
+
+
+[source,c]
+%class my_string;
+
+NOTE: In reviewing the example for this lesson, notice that copy constructor now uses set method.

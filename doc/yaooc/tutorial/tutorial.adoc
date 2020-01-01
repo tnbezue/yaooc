@@ -1,0 +1,46 @@
+Yet Another Object Oriented
+============================
+:author: Terry N Bezue
+:Email: tnbezue@gmail.com
+:toc:
+:numbered:
+
+include::introduction.adoc[]
+
+include::hello_world.adoc[]
+
+include::new_delete.adoc[]
+
+include::custom_class.adoc[]
+
+include::default_ctor_dtor.adoc[]
+
+include::copy_ctor_assign.adoc[]
+
+include::comparing.adoc[]
+
+include::class_methods.adoc[]
+
+include::iostreams.adoc[]
+
+include::constructors.adoc[]
+
+include::inheritance.adoc[]
+
+include::memory_layout.adoc[]
+
+include::placement_new_delete.adoc[]
+
+include::yaoocpp_rules.adoc[]
+
+include::complete_my_string.adoc[]
+
+include::garbage_bag.adoc[]
+
+include::exceptions.adoc[]
+
+include::containers.adoc[]
+
+include::vector.adoc[]
+
+include::map.adoc[]

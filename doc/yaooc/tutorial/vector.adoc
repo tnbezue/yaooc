@@ -1,0 +1,85 @@
+== Vector
+There are two macros that allow usage of vectors -- VECTOR_DEFINITION and VECTOR_IMPLEMENTATION.
+
+VECTOR_DEFINITION defines the vector using the yaooc_class_table and yaooc_class_instance macros.
+VECTOR_DEFINITION normally appears in the C header file.
+
+VECTOR_IMPLEMENTATION defines the vector class table and type info. VECTOR_IMPLEMENTATION is used in the C source file.
+
+The macros are used as follows in a YAOOC file:
+
+[source,c]
+----------------------------
+%header
+VECTOR_DEFINITION(T,N)
+%%
+VECTOR_IMPLEMENTATION(T,N)
+----------------------------
+T is the type contained in the vector and N is the type name for the vector.
+The following types are created
+
+.C Types for Vector
+[options="header"]
+|====================================
+|Type|Description
+|N_t|The vector type name
+|N_pointer|Pointer to instance of vector type name
+|N_const_pointer|Constant pointer to instance of vector type name
+|N_iterator|Iterator for instance of vector type name
+|N_const_iterator|Constant iterator for instance of vector type name
+|====================================
+
+=== Methods
+Vector inherits the array methods and defines the following additional methods.
+
+[options="header"]
+|====================================
+|Method|Description
+|iterator at(size_t i)|iterator to item at index i
+|iterator push_back(const_pointer value)|Adds value to end of vector and return iterator to value
+|void pop_back()|removes last item from vector
+|iterator insert(iterator pos,const_pointer value)|Insert value at postion pos and returns iterator to value inserted
+|iterator insert_range(const_iterator pos,const_iterator first,const_iterator last)|Insert values from range begin to end and returns iterator to first item inserted
+|iterator erase(const_iterator pos)|Remove item at pos and returns iterator to item following item removed.
+|iterator erase_range(const_iterator first,const_iterator last)|Remove items from first to last and return iterator to next element
+|void reserve(size_t new_cap)|Increase capacity to new_cap.
+|void shrink_to_fit()|Shrinks capacity to size
+|iterator front()|iterator to first item in vector
+|iterator back()|iterator to last item in vector
+|iterator resize_value(size_t n,const_pointer value)|Resize so that container size is n.
+ If n<0, destroys elements beyond n.
+ If n>0, elements added to end are equal to value.
+|iterator resize(size_t n)|Resize so that container size is n.
+ If n<0, destroys elements beyond n.
+ If n>0, values added are created using default constructor.
+|void clear()	Remove all items from vector
+|====================================
+
+=== Example
+
+[source,c]
+-----------------------------------
+#include <yaooc/vector.h>
+...
+%header
+VECTOR_DEFINITION(my_string,my_string_vector)
+%%
+VECTOR_IMPLEMENTATION(my_string,my_string_vector)
+my_string_vector msv=new(my_string_vector);
+my_string_t* ms=new(my_string);
+M(ms,set,"This");
+M(msv,push_back,ms);
+M(ms,set,"is");
+M(msv,push_back,ms);
+M(ms,set,"a");
+M(msv,push_back,ms);
+M(ms,set,"demonstration");
+M(msv,push_back,ms);
+
+my_string_vector_const_iterator iter;
+for(iter=M(iv,cbegin);iter!=M(iv,cend);iter++)
+  printf("%s\n",iter->str);
+...
+delete(ms);
+delete(msv);
+-----------------------------------

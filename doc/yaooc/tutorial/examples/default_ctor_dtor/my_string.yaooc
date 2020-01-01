@@ -1,0 +1,25 @@
+
+#include <stdio.h>
+#include <string.h>
+
+%struct my_string {
+    my_string()
+    {
+      this->str=NULL;
+    }
+
+    ~my_string() {
+      if(this->str)
+        FREE(this->str);
+    }
+  instance:
+    char* str;
+};
+
+int main(int argc,char* argv[])
+{
+  my_string_t* ms = new(my_string);
+  ms->str=strdup("This is a demonstration of my_string");
+  printf("My string is: %s\n",ms->str);
+  delete(ms);
+}

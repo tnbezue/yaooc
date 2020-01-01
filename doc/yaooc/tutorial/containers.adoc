@@ -1,0 +1,100 @@
+== Containers
+Another well known feature of C\++ that is implemented in YAOOC is containers -- vector, map, set, etc.
+One goal of YAOOC is to use similar iterators as C\+\+ (increment and decrement using ++ or --).
+The only structure in C that allows this is an array.
+Therefore, the base class for vector, map, set, etc is an array.
+The table below shows the array types that are implemented in YAOOC.
+
+.YAOOC Array Types
+[options="header"]
+|====================================
+|Array type|Description
+|array_container|Random access array container
+|unique_array_container|Random access array container where values are unique
+|ordered_array_container|Ordered random array access container
+|unique_ordered_array_container|Ordered random array access container where values are unique
+|index_array_container|Random access array container with shadow index such that array[index[i]] (i=0 to n) will be ordered
+|unique_index_array_container|Random access indexed array container where values are unique
+|rbtree_index_array_container|Random access array container with indexes kept in a red black tree. array[node->index] (node is rb tree iterator) is ordered
+|====================================
+These containers are used to implement higher level containers such as vector or map.
+Items that are contained in the array should have the rich compare type info method defined.
+
+The storage of the container is handled automatically, being expanded and contracted as needed.
+Any iterators for an array may be invalidated when an item is inserted.
+
+The array_container is good for storing items that are appended to the end.
+As the size increases, search time increases since the search is sequential.
+
+The unique_array_container is the same as array_container except items are unique.
+As with array_container, as size increases, so does search time.
+Insert time also increases since array must be searched before insert.
+
+The ordered_array_container keeps items in an ordered fashion.
+Since items are ordered, search times are decreased.
+For large objects, insert times may increase since chunks of memory may be moved so that order is maintained.
+
+The unique_ordered_array_container is same as ordered_array_container except items are unique.
+Searches are faster than the array_container since items are ordered.
+
+The index_array_container maintains a shadow index array such that array[index[i]] (i = 0 to size-1) will be ordered.
+Items are normally added to the end of the array with inserts/moves occurring in the index array.
+This allows for faster inserts (since items are added to end) and faster searches (because of shadow index).
+
+The unique_index_array_container is the same as index_array_container except values are unique.
+
+The rbtree_index_array_container behaves the same as the unique_index_array_container.
+However, indexes are kept in a red black tree.
+The rbtree_index_array_container is about 20 times faster than unique_index_array_container.
+
+=== Methods
+The following methods are defined by array.
+
+.Array Methods
+[options="header"]
+|====================================
+|Method|Description
+|size_t size() const|Current size of array
+|size_t capacity() const|Current capacity of array
+|bool empty() const|True if size is 0
+|iterator begin()|iterator to beginning of array
+|iterator end()|iterator to end of array
+|const_iterator cbegin() const|const iterator to beginning of array
+|const iterator cend() const|const iterator to end of array
+|====================================
+Values are inserted into containers using pointers to values (not the value).
+For example, if int_vec is an integer vector, the following is most likely not what was intended.
+
+[source,c]
+M(int_vec,insert,M(int_vec,cend),20);  // Invalid insertion of 20 at end of vector
+
+To insert a value into a container, assign the values to a variable of the correct type, and pass the address of the variable as the value to be inserted.
+
+[source,c]
+-----------------------
+int value=20;
+M(int_vec,insert,M(int_vec,cend),&value);  // Correctly inserts 20 at end of vector
+-----------------------
+
+=== Iterators
+An iterator and const_iterator is available for derived classes.
+Caution should be used when using methods that return an iterator.
+In the example below, if array is an integer array, the iterators i and j are not equal.
+
+[source,c]
+-----------------------
+iterator i = M(array,begin)+5;
+iterator j = M(array,at,5);
+-----------------------
+Since begin returns a generic iterator (void * -- which many compilers treat as char* in mathematical operations),
+begin + 5 would be just 5 bytes beyond beginning of array -- which is most likely not what was intended.
+The at method will return 5*sizeof(int) bytes beyond beginning of array -- which is probably what was intended.
+
+The following could also be used:
+
+[source,c]
+-----------------------
+typedef int * integer_array_iterator;     // BTW, the YAOOC container declarations (vector, map, etc) defines interator and const_iterator types.
+integer_array_iterator i = M(array,begin);
+i += 5;
+-----------------------

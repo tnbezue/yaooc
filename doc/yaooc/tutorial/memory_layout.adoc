@@ -1,0 +1,84 @@
+== Memory Layout
+Before continuing with the my_string class, it's helpful to understand how memory allocation is handled in YAOOC. When an object (or array of objects) is allocated, additional memory is allocated for a pointer to type info structure and the number of objects allocated. This memory layout is shown below.
+
+.Comparison methods
+[cols="1"]
+|====================================
+|Pointer to type info structure (const type_info_t*)
+|Number of elements allocated (size_t)
+|[red yellow-background]#1st element (new returns pointer to this element)#
+|2nd element
+|...
+|nth element
+|====================================
+
+The first entry is the type info table (contains pointers to constructor, destructor, copy constructor, etc) for the type.
+The second entry is the number of elements allocated.
+The overhead is 8 bytes for a 32 bit system and 16 bytes for a 64 bit system.
+
+Note that this is per allocation -- not per element.
+If a single character is allocated, 9 (or 17) bytes will actually be allocated.
+An array of 100,000 characters would require 100,008 (or 100,016) bytes.
+
+This memory allocation scheme allows the type info to be readily available for internal YAOOC methods that use it.
+For example, the assign method can access the type info to apply the appropriate assignment method.
+Likewise, the delete method can determine the destructor and number of elements to delete.
+User methods should not try to access the type info or element count.
+
+For objects that have not been allocated with new (i.e., declared on the stack) or for elements beyond the first element of an array,
+the type info structure is not available (these objects will henceforth be referred to as static objects).
+Therefore, some of the methods that have been presented so far will not work on static objects.
+Static versions of these methods (appended with "_static") will have to be used.
+Since the type info pointer is not available, the class type is included as an argument to the static versions.
+
+.Methods for static objects
+[options="header"]
+|====================================
+|Method|Purpose
+|assign_static(p1,p2,T)|Assign object p2 to object p1. Both are of type T
+|op_eq_static(p1,p2,T)|Compares if objects p1 and p2 of type T are equal
+|op_ne_static(p1,p2,T)|Compares if objects p1 and p2 of type T are not equal
+|op_lt_static(p1,p2,T)|Compares if object p1 is less than p2. Both objects are of type T
+|op_le_static(p1,p2,T)|Compares if object p1 is less than or equal to p2. Both objects are of type T
+|op_gt_static(p1,p2,T)|Compares if object p1 is greater than p2. Both objects are of type T
+|op_ge_static(p1,p2,T)|Compares if object p1 is greater than or equal to p2. Both objects are of type T
+|====================================
+
+For example, to compare if two static my_string objects are equal, use:
+
+[source,c]
+-----------------------------------
+#define INIT_STATIC_MY_STRING { .class_table_=&my_string_class_table, .str=NULL }
+my_string_t ms1 = INIT_STATIC_MY_STRING;
+my_string_t ms2 = INIT_STATIC_MY_STRING;
+....
+if(op_eq_static(&ms1,&ms2,my_string))
+  puts("Equal");
+-----------------------------------
+In C, when a YAOOC object is declared on the stack (static), the default constructor is not called to initialize the object. The above example shows how a static object may be initialized. This can be cumbersome for a class with many instance members. A more practical method will be presented in the next lesson.
+
+=== Renew
+While on the subject of memory, it should be noted that YAOOC provides a method that is not available in C++ -- renew.
+Renew is to new as realloc is to malloc.
+ptr is a pointer to memory that was previously allocated with new (unlike realloc, it cannot be NULL).
+
+.Renew Methods
+[options="header"]
+|====================================
+|Method|Description
+|renew_array(ptr,N)|Reallocates memory at ptr for N elements by appending elements created using the default constructor
+|renew_array_copy(ptr,N,src)|Reallocates memory at ptr for N elements. Appended elements are a copy of src object
+|renew_array_ctor(ptr,N,ctor,args)|Reallocates memory at ptr for N elements. Appended elements are constructed using ctor
+|====================================
+The above table only presents the case where N is greater than the current allocation.
+If N is less than the current allocation, the destructor is called for each element removed before memory is reallocated.
+If N is the same as the current allocation, no action is taken.
+
+[source,c]
+-----------------------------------
+my_string_t* demo=new_array(my_string,8); /* Initial size is 8 */
+...
+demo=renew(demo,20); /* Increase capacity to 20 */
+...
+demo=renew(demo,5); /* Decrease capacity to 5 */
+-----------------------------------

@@ -1,0 +1,93 @@
+== Custom Class
+Over the next few lessons a custom class will be created.
+The class will be a simple string class.
+This is meant to show the features of YAOOC rather than good programming practice.
+
+The simplest class can be defined as follows:
+
+[source,c]
+-------------------------------
+#include <yaooc/new.h>
+#include <stdio.h>
+
+%struct my_string {
+  instance:
+    char* str;
+};
+
+int main(int argc,char* argv[])
+{
+  my_string_t* ms = new(my_string);
+  ms->str=strdup("This is a test of my_string");
+  /* Do some other stuff with my_string */
+  delete(ms);
+}
+-------------------------------
+
+"%struct" specifies the beginning of the class definition.
+Variables declared following "instance:" will be members of the object.
+
+The above "%struct" section translates into the following type declaration.
+
+[source,c]
+-----------------------------------------
+typedef struct my_string_s my_string_t;
+typedef my_string_t* my_string_pointer;
+typedef const my_string_t* my_string_const_pointer;
+struct my_string_s {
+  char *str;
+};
+-----------------------------------------
+
+NOTE: The actual type created is the class name specified (my_string) appended with "_t".
+
+Additional code is created by "%struct" definition.
+The addition code created is covered in the next few lessons.
+
+The C compiler cannot directly compile the above. The YAOOCPP preprocessor (yaoocpp) is used to translate the above into a C header and source file. The compilation is handled in 2 steps.
+
+[source,bash]
+-----------------------
+yaoocpp my_string.yaooc
+gcc -fms-extensions -I/usr/local/include -o my_string my_string.c -lyaooc -Wall
+-----------------------
+
+The following can be added to a makefile to translate a YAOOC file into C header and source files.
+
+[source,makefile]
+-----------------------
+%.c %.h:%.yaooc
+  yaoocpp $<
+-----------------------
+
+More on yaoocpp later.
+
+[IMPORTANT]
+Before continuing with the my_string class, one important requirement for custom classes -- class instances must be movable
+(objects within containers may be moved).
+
+Consider the following YAOOC definition.
+[source,c]
+-----------------------------------------
+%struct circular_buffer {
+  instance:
+  char* beg;
+  char* end;
+  char buffer[32];
+};
+-----------------------------------------
+
+In the above example, if beg and end are pointers to locations within buffer, then the pointers would be invalidated if the object is moved to a different memory location. Thus it is an immovable object and should not be used in YAOOC.
+
+If the class is defined as:
+
+[source,c]
+-----------------------------------------
+%struct circular_buffer {
+  instance:
+  char* beg;
+  char* end;
+  char* buffer;
+};
+-----------------------------------------
+If beg and end are pointers to memory within memory pointed to by buffer, then moving the object will not invalidate the pointers. This it a movable object and can be used in YAOOC.

@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <string.h>
+%include <yaooc/object.yaooh>
+
+#include <yaooc/stream.h>
+
+%class my_string : yaooc_object {
+    my_string()
+    {
+      this->str=NULL;
+    }
+
+    ~my_string() {
+      if(this->str)
+        FREE(this->str);
+    }
+
+    my_string(src) : my_string()
+    {
+      assign(this,src);
+    }
+
+    operator=(src)
+    {
+      M(this,set,src->str); // Could also use my_string_set(this,src->str);
+    }
+
+    int operator<=>(lhs,rhs)
+    {
+      // lhs and rhs are const pointers to my_string instances
+      if(lhs->str == NULL) {
+        if(rhs->str == NULL)
+        return 0; /* both NULL, equal */
+        else
+        return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
+      } else if(rhs->str == NULL)
+        return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
+      return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
+    }
+
+    operator<<(ostrm) {  // ostrm is a pointer to yaooc output stream
+      M(ostrm,printf,"%s",this->str);
+    }
+
+    operator>>(istrm) {  // istrm is a pointer to yaooc input stream
+      my_string_dtor(this);
+      char temp[256];
+      M(istrm,scanf,"%255s",temp);
+      this->str=strdup(temp);
+    }
+
+  instance:
+    char* str;
+  table:
+    const char* get() const
+    {
+      return this->str;
+    }
+
+    void set(const char* str)
+    {
+      my_string_dtor(this);
+      this->str = str ? strdup(str) : NULL;
+    }
+};
+
+int main(int argc,char* argv[])
+{
+  my_string_t* ms = new(my_string);
+  ms->str=strdup("This is a demonstration of my_string");
+  my_string_t* ms2=new_copy(ms);
+  STREAM(cout,O_CCS("My string is: "),ms,endl);
+  STREAM(cout,O_CCS("My string 2 is: "),ms2,endl);
+  if(op_eq(ms,ms2))
+    STREAM(cout,O_CCS("ms1 and ms2 are equal"),endl);
+  STREAM(cout,O_CCS("Enter value for ms2"),endl);
+  STREAM(cin,ms2);
+  STREAM(cout,O_CCS("My string is: "),ms,endl);
+  STREAM(cout,O_CCS("My string 2 is: "),ms2,endl);
+  if(op_ne(ms,ms2))
+    STREAM(cout,O_CCS("ms1 and ms2 are not equal"),endl);
+  else
+    STREAM(cout,O_CCS("ms1 and ms2 are equal"),endl);
+  delete(ms);
+  delete(ms2);
+}

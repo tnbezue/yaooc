@@ -1,0 +1,7 @@
+== Complete my_string class
+Now, let's get back to developing the my_string class.
+This will be the final version version presented in this tutorial.
+
+Review the complete my_string class in the examples folder for this lesson.
+At this pointer, it is suggested to review the YAOOCPP manual also to
+completely understand the concepts presented.

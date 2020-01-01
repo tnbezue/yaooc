@@ -1,0 +1,71 @@
+== Garbage Bag
+With C++, pointers can be wrapped in a smart pointer so that when it goes out of scope, the object is deleted.
+In YAOOC, the garbage bag serves a similar purpose.
+When objects are created with new, it can be stored in the garbage bag.
+When the garbage bag is deleted, all pointers in bag are deleted as well.
+
+Pointers to objects stored in garbage bag must have been created using new.
+Pointers created using malloc should not be stored in the garbage bag.
+
+For basic usage, YAOOC provides the following macros for using garbage bags.
+
+.YAOOC Garbage Bag Macros
+[options="header"]
+|=========================
+|Macro|Purpose
+|gb_init()|Create a new garbage bag called local_gb
+|gb_save(ptr)|Save pointer in garbage bag and returns value being saved
+|gb_clear()|Removes pointers from garbage bag without deleting pointers
+|gb_delete()|Deletes pointers in garbage bag. More pointer can still be saved
+|gb_exit()|Deletes pointers in garbage bag and destroys garbage bag.
+|=========================
+
+Generally, gb_init() is specified at the beginning of a method.
+gb_save() is used to save pointer within the method.
+gb_exit is used before exiting method.
+
+[source,c]
+------------------------
+int some_method() {
+  gb_init();
+  int rc=0;
+  my_string_pointer sp=gb_save(new(my_string));
+  ...
+  char *temp = gb_save(new_array(char,128));
+  ...
+  sp=gb_save(new_ctor(my_string,my_string_ctor_ccs,"This will be deleted when garbage bag is deleted"));
+  ...
+  gb_exit();
+  return rc;
+}
+------------------------
+YAOOC also provides macros that combine new and gb_save. They are shown in the following table.
+
+.YAOOC Garbage Bag Macros Combined with New
+[options="header"]
+|=========================
+|Macro|Purpose
+|gb_new(T)|Same as gb_save(new(T))
+|gb_new_array(T,N)|Same as gb_save(new_array(T,N))
+|gb_new_copy(P)|Same as gb_save(new_copy(P))
+|=========================
+Static variables can also be placed in the garbage bag. For static variables, only the destructor is called.
+
+.YAOOC Garbage Bag Macros for Static Objects
+[options="header"]
+|=========================
+|Macro|Purpose
+|gb_save_static(P,T)|Save static variable in garbage bag
+|gb_save_array_static(P,T,N)|Save static array in garbage bag
+|=========================
+
+YAOOC also provides macros than combine placement new and pbsave.
+
+.YAOOC Garbage Bag Macros Combined with Placement New
+[options="header"]
+|=========================
+|Macro|Purpose
+|gb_newp(ptr,T)|Same as gb_save_static(newp(ptr,T),T)
+|gb_newp_array(ptr,T,N)|Same as gb_save_static(new_array(ptr,T,N),T)
+|gb_newp_copy_static(ptr,T)|Same as gb_save_static(new_copy(ptr,T),T)
+|=========================

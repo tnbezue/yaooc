@@ -1,0 +1,60 @@
+== Comparing Objects
+Let's give my_string the ability to compare (==, !=, <, etc) with other my_string objects
+
+[source,c]
+----------------------------------
+%struct my_string {
+    ...
+    // Used for comparing my_string objects
+    // Returns <0 for lhs<rhs; 0 if lhs==rhs; and >0 if lhs>rhs
+    int operator<=>(lhs,rhs)
+    {
+      // lhs and rhs are const pointers to my_string instances
+      if(lhs->str == NULL) {
+        if(rhs->str == NULL)
+          return 0; /* both NULL, equal */
+        else
+          return -1; /* lhs is NULL, rhs is not.  NULL is less than not NULL */
+      } else if(rhs->str == NULL)
+        return 1; /* lhs is not NULL, rhs is NULL. non NULL greater than NULL */
+      return strcmp(lhs->str,rhs->str); /* Both not null, compare the strings */
+    }
+    ...
+  instance:
+    char* str;
+};
+----------------------------------
+
+=== Rich Compare
+
+The rich compare method is used to compare object (==,!=,<,<=,>, and >=).
+If a rich compare method is not defined, yaoocpp does not generate one.
+Furthermore, any comparisons performed would be as if rich compare returned 0 -- thus all objects of this type would be equal.
+
+As with assignment, traditional camparison operators should not be used to compare objects. The following table gives the methods to use for comparisons.
+
+
+.Comparison methods
+[options="header"]
+|====================================
+|Description|Operator|YAOOC method
+|Equal to|==|op_eq(p1,p2)
+|Not equal to|!=|op_ne(p1,p2)
+|Less than|<|op_lt(p1,p2)
+|Less than or equal to|<=|op_le(p1,p2)
+|Greater than|>|op_gt(p1,p2)
+|Greater than or equal to|>=|op_ge(p1,p2)
+|====================================
+
+The following compares if two my_string objects are equal.
+
+[source,c]
+----------------------------------
+my_string_pointer p1=new(my_string);
+my_string_pointer p2=new(my_string);
+....
+if(p1==p2) /* Again, valid C but most likely not what was intended */
+  { puts("Equal"); }
+if(op_eq(p1,p2)) /* Will perform comparisons as specified by rich compare method */
+  { puts("Equal"); }
+----------------------------------
