@@ -1,4 +1,4 @@
-%include <yaooc/object.yod>
+%include <yaooc/object.yaooh>
 
 %header
 #include <stdio.h>
@@ -36,7 +36,7 @@ const char* tens[] = { "", "", "twenty","thirty","forty","fifty","sixty","sevent
       this->str=src->str?yaooc_strdup(src->str):NULL;
     }
 
-    intoperator<=>(lhs,rhs)
+    int operator<=>(lhs,rhs)
     {
       return lhs->x - rhs->x;
     }

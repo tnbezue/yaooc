@@ -1,29 +1,4 @@
-/*
-		Copyright (C) 2016-2018  by Terry N Bezue
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-%include <yaooc/object.yod>
-%header
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include "test_harness.h"
-#include "demo_def.h"
-%%
+#include "test_object.h"
 
 char dummy[sizeof(demo_t)];
 
@@ -37,8 +12,8 @@ void test_basic()
   TEST("isa demo_t",ISA(d,demo));
   TEST("is a decendant of object_t",ISA(d,yaooc_object));
   TEST("Not a decendant of string_t",!ISA(d,yaooc_string));
-//  TEST("ISA method return 'demo_t'",ISA(d,"demo_t"));
-//  TEST("ISA from static yaooc_object table",strcmp(yaooc_object_isa(d),"yaooc_object_t")==0);
+
+
   TEST("D is 32",d->x==32);
   demo_pointer d2=new(demo);
   M(d2,setx,19);
@@ -47,47 +22,47 @@ void test_basic()
   TEST("after swap D is 19",d->x==19);
   TEST("and D2 is 32",d2->x==32);
 
-  /*
-    Ways of calling parent method.  See next test case for more details.
-  */
-  /*
-    Using method similar to M macro
-    Works for calling the parent if only one level will be traversed.
-    Will not work if more than one level is traversed (parent calls its' parent method using same form).
-    Bad -- Can get into infinite loop
-  */
+  
+
+
+  
+
+
+
+
+
   TEST("Parent type name is 'yaooc_object_t'",strcmp(((yaooc_object_class_table_t*)(d->class_table_->parent_class_table_))->type_name_,"yaooc_object_t")==0);
 
-  /*
-    Using the complete method name
-    If a different parent method is implemented with different name (or inheritance hierarchy changed), may not work as expected
-    Code would have to be manually changed.
-    Good -- Implementing parent method with different name is rare.
-  */
-//  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(yaooc_object_isa(d),"yaooc_object_t")==0);
+  
 
-  /*
-    Using parent class table directly.
-    Slighty better than above.  May still require code changes if heirarchy changed.
-    Better -- Parenting changes are very rare
-  */
-//  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(yaooc_object_class_table.isa(d),"yaooc_object_t")==0);
 
-  /*
-    Using parent class table via this class table parent_class_table entry
-    Eliminates the shortcomings of the above three methods.
-    Best -- can't think of any case it would not work. A simple #define makes it easier
-  */
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
 #define demo_parent_class_table ((yaooc_object_class_table_t*)(demo_class_table.parent_class_table_))
-//  TEST("Parent isa method returns 'yaooc_object_t'",strcmp(demo_parent_class_table->isa(d),"yaooc_object_t")==0);
+
   delete(d);
   delete(d2);
 }
 
-/*
-	The following classes (base, derived1, and derived2) will show 4 methods of calling a parent method.
-	Each class will define the do_something method.
-*/
+
+
+
+
 yaooc_class_table(base)
 {
   yaooc_object_class_table_t;
@@ -120,11 +95,11 @@ yaooc_class_table(derived1)
 yaooc_class_without_instance(derived1);
 
 int derived1_do_something_count=0;
-/*
-  Access parent method through parent class table entry in class table.
-  This is similar to M macro. If parent class also calls it's parent, you'll end up in an infinte loop
-  Rating: Bad
- */
+
+
+
+
+
 void derived1_do_something_bad(pointer p)
 {
   derived1_pointer this=p;
@@ -134,12 +109,12 @@ void derived1_do_something_bad(pointer p)
   ((base_class_table_t*)(this->class_table_->parent_class_table_))->do_something(p);
 }
 
-/*
-  Access the parent method using the parent method name.
-  Will never have an infinite loop.  However, if the name of the parent method is changed,
-  this method would have to be changed. Changing the name of a method is rare.
-  Rating: good
- */
+
+
+
+
+
+
 void derived1_do_something_good(pointer p)
 {
   if(++derived1_do_something_count > 5)
@@ -148,12 +123,12 @@ void derived1_do_something_good(pointer p)
   base_do_something(p);
 }
 
-/*
-  Access the parent method using the parent class table.
-  Better than above. No infinite loop and works even if parent method name changes.
-  If inheritance changes (which is rare), then this method would have to be changed.
-  Rating: better
- */
+
+
+
+
+
+
 void derived1_do_something_better(pointer p)
 {
   if(++derived1_do_something_count > 5)
@@ -162,12 +137,12 @@ void derived1_do_something_better(pointer p)
   base_class_table.do_something(p);
 }
 
-/*
-  Access the parent method using parent class table entry from class table of this class.
-  Slightly better than previous. Avoids the other short commings. Even if inheritance is changed,
-  don't have to change this method.
-  Rating: best
- */
+
+
+
+
+
+
 void derived1_do_something_best(pointer p)
 {
   if(++derived1_do_something_count > 5)
@@ -312,3 +287,4 @@ test_function tests[]=
 };
 
 STD_MAIN(tests)
+

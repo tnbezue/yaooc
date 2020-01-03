@@ -59,7 +59,7 @@ Static variables can also be placed in the garbage bag. For static variables, on
 |gb_save_array_static(P,T,N)|Save static array in garbage bag
 |=========================
 
-YAOOC also provides macros than combine placement new and pbsave.
+YAOOC also provides macros than combine placement new and gb_save.
 
 .YAOOC Garbage Bag Macros Combined with Placement New
 [options="header"]

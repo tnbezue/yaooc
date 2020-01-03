@@ -238,7 +238,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
       return RULE_FAIL(this);
     
 }
-bool yaoocpp_parser_prefix_directory(pointer __pthis__)
+bool yaoocpp_parser_header_prefix(pointer __pthis__)
 {
 yaoocpp_parser_pointer this=__pthis__;(void)this;
 
@@ -248,7 +248,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         
         
         int saved_line_no=this->line_no_;
-        if(M(this,str,"prefix_directory",&temp)) {
+        if(M(this,str,"header_prefix",&temp)) {
           if(saved_line_no == this->line_no_) {
             if(M(this,double_quoted_string,&dirname) || M(this,bare_string,&dirname)) {
               M(&yaoocpp_header_prefix,setn,dirname.beg_,dirname.end_-dirname.beg_);
@@ -298,7 +298,7 @@ bool yaoocpp_parser_source(pointer __pthis__,yaoocpp_section_t** section)
 yaoocpp_parser_pointer this=__pthis__;(void)this;
 
       regex_t re,re2;
-      regcomp(&re,"^%\\s*(class|struct|union|header|mixin|prefix_directory)\\s+",REG_EXTENDED|REG_NEWLINE);
+      regcomp(&re,"^%\\s*(class|struct|union|header|mixin|header_prefix)\\s+",REG_EXTENDED|REG_NEWLINE);
       regcomp(&re2,"^#\\s*[0-9]+",REG_EXTENDED|REG_NEWLINE);
       regmatch_t ov[3];
       const char* ptr;
@@ -1101,7 +1101,7 @@ yaoocpp_parser_pointer this=__pthis__;(void)this;
         } else if(yaoocpp_parser_class_definition(this,&current_section)) {
           M(&this->sections_,push_back,make_dynamic_pointer(current_section));
           delete(current_section);
-        } else if(yaoocpp_parser_prefix_directory(this)) {
+        } else if(yaoocpp_parser_header_prefix(this)) {
 
 
         } else if(yaoocpp_parser_header(this,(pointer)&current_section)) {

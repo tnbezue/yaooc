@@ -12,9 +12,9 @@ YAOOC (Yet Another Object Oriented C), as the name implies, is another framework
 * I/O streams
 * iterators
 
-The purpose of this tutorial is to provide readers an introduction to using the YAOOC framework. It is assumed that the reader has a knowledge of object oriented languages.
+This tutorial will provide readers an introduction to using the YAOOC framework. It is assumed that the reader has a knowledge of object oriented languages.
 
 There are other implementations of object oriented C. An internet search will return several. No comparisons will be made to the other implementations. It's left as an exercise for the reader.
 
-Examples
+=== Examples
 The examples presented in this guide are located in the examples folder -- further divided by lesson in which example appears.

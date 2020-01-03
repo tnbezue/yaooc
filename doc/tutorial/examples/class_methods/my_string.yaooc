@@ -3,7 +3,7 @@
 
 %include <yaooc/object.yaooh>
 
-%class my_string : yaooc_object {
+%class my_string {
     my_string()
     {
       this->str=NULL;

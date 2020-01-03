@@ -1,6 +1,6 @@
 #ifndef __PARSER_INCLUDED__
 #define __PARSER_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/base_parser.h>
 #include <yaooc/exception.h>
 #include <yaooc/string.h>
@@ -64,7 +64,7 @@ void yaoocpp_parser_assign(pointer,const_pointer);
 #define yaoocpp_parser_result yaooc_base_parser_result
  void yaoocpp_parser_parse_file(pointer,const char*);
  bool yaoocpp_parser_line_directive(pointer,yaoocpp_section_t**);
- bool yaoocpp_parser_prefix_directory(pointer);
+ bool yaoocpp_parser_header_prefix(pointer);
  bool yaoocpp_parser_header(pointer,yaoocpp_section_t**);
  bool yaoocpp_parser_source(pointer,yaoocpp_section_t**);
  bool yaoocpp_parser_class_forward(pointer,yaoocpp_section_t**);

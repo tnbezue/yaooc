@@ -1,4 +1,4 @@
-=== Constructors
+== Constructors
 YAOOC allows constructors other than the default and copy constructor to be created. In this section, three constuctors will be defined. They are shown below.
 
 [source,c]

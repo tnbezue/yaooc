@@ -1,5 +1,5 @@
-Yet Another Object Oriented
-============================
+Yet Another Object Oriented C PreProcessor
+==========================================
 :author: Terry N Bezue
 :Email: tnbezue@gmail.com
 :toc:

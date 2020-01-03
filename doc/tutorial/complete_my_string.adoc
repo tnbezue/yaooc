@@ -1,7 +1,24 @@
 == Complete my_string class
 Now, let's get back to developing the my_string class.
 This will be the final version version presented in this tutorial.
-
+This version has more methods and introduces two new class sections -- adjunct and private.
 Review the complete my_string class in the examples folder for this lesson.
-At this pointer, it is suggested to review the YAOOCPP manual also to
+
+=== Adjunct members
+The adjunct section is similar to the instance and table sections -- it contains methods and variables.
+The methods and variables are meant to be helpers for the class and descendant classes. The closest
+C++ analogy would be static class members.
+
+Adjunct members are prefixed with the class name and underscore.
+For example, in the my_string class, the adjunct method insert_space is defined as
+my_string_insert_space in the C header and source files.
+
+For methods, the first argument is a pointer to the class instance.
+
+=== Private members
+Private members are the same as adjunct members except they are intended to only be used by this class.
+Private methods and variables are declared as static C methods and variables in the C source file only.
+
+=== Complete YAOOCPP documentation
+At this point, it is suggested to review the YAOOCPP manual also to
 completely understand the concepts presented.
