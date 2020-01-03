@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2019  by Terry N Bezue
+		Copyright (C) 2016-2020  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -220,7 +220,7 @@ static yaooc_string_t* preprocess(const char* file)
         } else if(yaoocpp_parser_class_definition(this,&current_section)) {
           M(&this->sections_,push_back,make_dynamic_pointer(current_section));
           delete(current_section);
-        } else if(yaoocpp_parser_prefix_directory(this)) {
+        } else if(yaoocpp_parser_header_prefix(this)) {
 //          M(&this->sections_,push_back,(pointer)&current_section);
 //          delete(current_section);
         } else if(yaoocpp_parser_header(this,(pointer)&current_section)) {
@@ -311,7 +311,7 @@ static yaooc_string_t* preprocess(const char* file)
       return RULE_FAIL(this);
     }
 
-    bool prefix_directory()
+    bool header_prefix()
     {
       RULE_START(this);
       yaooc_token_t temp,dirname;
@@ -319,7 +319,7 @@ static yaooc_string_t* preprocess(const char* file)
         // Save line number.  If after next token, the line number has changed,
         // then only spaces follows directive -- an error
         int saved_line_no=this->line_no_;
-        if(M(this,str,"prefix_directory",&temp)) {
+        if(M(this,str,"header_prefix",&temp)) {
           if(saved_line_no == this->line_no_) {
             if(M(this,double_quoted_string,&dirname) || M(this,bare_string,&dirname)) {
               M(&yaoocpp_header_prefix,setn,dirname.beg_,dirname.end_-dirname.beg_);
@@ -365,7 +365,7 @@ static yaooc_string_t* preprocess(const char* file)
     bool source(yaoocpp_section_t** section)
     {
       regex_t re,re2;
-      regcomp(&re,"^%\\s*(class|struct|union|header|mixin|prefix_directory)\\s+",REG_EXTENDED|REG_NEWLINE);
+      regcomp(&re,"^%\\s*(class|struct|union|header|mixin|header_prefix)\\s+",REG_EXTENDED|REG_NEWLINE);
       regcomp(&re2,"^#\\s*[0-9]+",REG_EXTENDED|REG_NEWLINE);
       regmatch_t ov[3];
       const char* ptr;
