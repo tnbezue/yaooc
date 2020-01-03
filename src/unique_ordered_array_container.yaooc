@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2019  by Terry N Bezue
+		Copyright (C) 2016-2020  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-%prefix_directory yaooc
+%header_prefix yaooc
 %include <yaooc/ordered_array_container.yaooh>
 
 #include <stdio.h>

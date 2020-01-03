@@ -1,5 +1,5 @@
 /*
-		Copyright (C) 2016-2019  by Terry N Bezue
+		Copyright (C) 2016-2020  by Terry N Bezue
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 %include <yaooc/object.yaooh>
 %include <yaooc/exception.yaooh>
-%prefix_directory yaooc
+%header_prefix yaooc
 
 %class yaooc_odbc_exception : yaooc_exception {
   yaooc_odbc_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;

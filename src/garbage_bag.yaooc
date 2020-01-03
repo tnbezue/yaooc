@@ -1,5 +1,22 @@
+/*
+		Copyright (C) 2016-2020  by Terry N Bezue
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 %include <yaooc/array_container.yaooh>
-%prefix_directory yaooc
+%header_prefix yaooc
 
 typedef yaooc_garbage_bag_item_t* yaooc_garbage_bag_iterator;
 typedef const yaooc_garbage_bag_item_t* yaooc_garbage_bag_const_iterator;
@@ -131,7 +148,10 @@ typedef const yaooc_garbage_bag_item_t* yaooc_garbage_bag_const_iterator;
 #define gb_save_array_static(P,T,N)       yaooc_garbage_bag_add_static(local_pb,P,T ## _ti,N)
 #define gb_newp(P,T)  gb_save_static(newp(P,T),T)
 #define gb_newp_array(P,T,N)     gb_save_array_static(newp_array(P,T,N),T,N)
-#define gb_newp_copy_static(P,T,CP)      yaooc_garbage_bag_newp_array_copy_static(local_pb,P,T ## _ti,1)
+//#define gb_newp_copy_static(P,T,CP)      yaooc_garbage_bag_newp_array_copy_static(local_pb,P,T ## _ti,1)
+#define gb_newp_copy_static(P,T,CP)     gb_save_array_static(newp_copy_static(P,T,CP),T)
+#define gb_newp_array_copy_static(P,T,CP,N)      gb_save_array_static(newp_array_copy_static(P,T,CP,N),T,N)
+#define gb_newp_array_copy_static(P,T,CP,N)      gb_save_array_static(newp_array_copy_static(P,T,CP,N),T,N)
 #define gb_newp_array_copy_static(P,T,CP,N)      gb_save_array_static(newp_array_copy_static(P,T,CP,N),T,N)
 //#define gb_newp_array_copy_static(P,T,CP,N)      yaooc_garbage_bag_newp_array_copy_static(local_pb,P,T ## _ti,N)
 #define gb_newp_ctor(P,T,CON,...)      yaooc_garbage_bag_newp_array_ctor(local_pb,P,T,1,CON,## __VA_ARGG__)
