@@ -11,7 +11,7 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
 
 ## Example
 
-    %include <yaooc/object.yod>
+    %include <yaooc/object.yaooh>
     #include <yaooc/stream.h>
     #include <stdio.h>
     #include <string.h>
@@ -20,7 +20,7 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
         // Constructor
         my_string() : str(NULL) { }
         // Destructor
-        ~my_string() { if(this->str) free(this->str) }
+        ~my_string() { if(this->str) free(this->str); }
         // Copy Constructor
         my_string(src) { my_string_assign(this,src); }
         // Assigment
@@ -112,7 +112,7 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
       M(ms1,set,"This is string 1");
       // My string using copy constructor
       my_string_t* ms5 = new_copy(ms1);
-      M(ms5,set,"This is string 5")
+      M(ms5,set,"This is string 5");
       // Output to cout stream
       STREAM(cout,ms1,endl,ms2,endl,ms3,endl,ms4,endl,ms5,endl);
       // Less than compare of two strings
