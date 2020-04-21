@@ -1,10 +1,12 @@
 # Yet Another Object Oriented C (yaooc)
 
-As the name suggests, YAOOC is another framework to make C a bit more like C++ -- new,
-delete, string class, vector, map, iterators, etc.
+In the beginning, YAOOC was another framework to make C a bit more like C++ -- new,
+delete, string class, vector, map, iterators, exceptions, etc.
 
-It also adds features that are found in scripting languages.  For example, the string class has
-methods such as split and chomp.
+It has morphed into a "compiler".
+It translates a YAOOC file (syntax is a cross between C and C++) into a C source and header file.
+In the future (distant future), it will be capable of "compiling" C++ code into C (similar to cfront).
+This will be useful to C compilers that don't support C++ (i.e., tiny C compiler).
 
 To get an idea of the features, review the tutorial (doc/yaooc/tutorial).  Each lesson is
 only one or two pages.  The entire tutorial should take 30-45 minutes to complete.
@@ -12,9 +14,17 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
 ## Example
 
     %include <yaooc/object.yaooh>
+    %include <yaooc/exception.yaooh>
+
     #include <yaooc/stream.h>
     #include <stdio.h>
     #include <string.h>
+
+    %class my_string_exception : yaooc_exception {
+      my_string_exception() : yaooc_exception() { }
+      my_string_exception_ctor_v(const char* fmt,...) = yaooc_exception_ctor_v;
+    };
+
     %class my_string : yaooc_object
     {
         // Constructor
@@ -91,6 +101,8 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
         }
         void set(const char* str)
         {
+          if(str==NULL)
+            THROW(new_ctor(my_string,my_string_ctor_v,"Cannot set string to be NULL"));
           my_string_dtor(this);
           this->str = str==NULL ? NULL : strdup(str);
         }
@@ -98,33 +110,41 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
       instance:
         char *str;
     };
+
     int main(int argc,char* argv[])
     {
-      // My string using default constructor
-      my_string_t* ms1=new(my_string);
-      // My string using constructor my_string_ctor_ccs_size
-      my_string_t* ms2=new_ctor(my_string,my_string_ctor_ccs_size,"This is string 2. Will not be included",17);
-      // My string using constructor my_string_ctor_ccs
-      my_string_t* ms3=new_ctor(my_string,my_string_ctor_ccs,"This is string 3.");
-      // My string using constructor my_string_chr_size
-      my_string_t* ms4=new_ctor(my_string,my_string_ctor_chr_size,'A',26);
-      // Set value for ms1
-      M(ms1,set,"This is string 1");
-      // My string using copy constructor
-      my_string_t* ms5 = new_copy(ms1);
-      M(ms5,set,"This is string 5");
-      // Output to cout stream
-      STREAM(cout,ms1,endl,ms2,endl,ms3,endl,ms4,endl,ms5,endl);
-      // Less than compare of two strings
-      if(op_lt(ms2,ms4)) {
-        printf("'%s' is less than '%s'.\n",ms2->str,ms4->str);
+      my_string_t *ms1=NULL,*ms2=NULL,*ms3=NULL,*ms4=NULL,*ms5=NULL;
+      TRY {
+        // My string using default constructor
+        my_string_t* ms1=new(my_string);
+        // My string using constructor my_string_ctor_ccs_size
+        my_string_t* ms2=new_ctor(my_string,my_string_ctor_ccs_size,"This is string 2. Will not be included",17);
+        // My string using constructor my_string_ctor_ccs
+        my_string_t* ms3=new_ctor(my_string,my_string_ctor_ccs,"This is string 3.");
+        // My string using constructor my_string_chr_size
+        my_string_t* ms4=new_ctor(my_string,my_string_ctor_chr_size,'A',26);
+        // Set value for ms1
+        M(ms1,set,"This is string 1");
+        // My string using copy constructor
+        my_string_t* ms5 = new_copy(ms1);
+        M(ms5,set,"This is string 5");
+        // Output to cout stream
+        STREAM(cout,ms1,endl,ms2,endl,ms3,endl,ms4,endl,ms5,endl);
+        // Less than compare of two strings
+        if(op_lt(ms2,ms4)) {
+          printf("'%s' is less than '%s'.\n",ms2->str,ms4->str);
+        }
+      } CATCH(my_string_exception,mse) {
+        M(cout,printf,"My string exception ocurred: %s\n",M(mse,what));
+      } CATCH(yaooc_exception,e) {
+        M(cout,printf,"Exception occured: %s\n",M(e,what));
       }
       // Delete objects created
-      delete(ms1);
-      delete(ms2);
-      delete(ms3);
-      delete(ms4);
-      delete(ms5);
+      if (ms1) delete(ms1);
+      if (ms2) delete(ms2);
+      if (ms3) delete(ms3);
+      if (ms4) delete(ms4);
+      if (ms5) delete(ms5);
     }
 
 ## Goals
