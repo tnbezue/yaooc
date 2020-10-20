@@ -1,6 +1,6 @@
 # Yet Another Object Oriented C (yaooc)
 
-In the beginning, YAOOC was another framework to make C a bit more like C++ -- new,
+In the beginning, YAOOC was a collection of macros (and a bit of code) to make C a bit more like C++ -- new,
 delete, string class, vector, map, iterators, exceptions, etc.
 
 It has morphed into a "compiler".
@@ -13,9 +13,11 @@ only one or two pages.  The entire tutorial should take 30-45 minutes to complet
 
 ## Example
 
+    /* Code parsed by YAOOC begins with percent sign (%) */
     %include <yaooc/object.yaooh>
     %include <yaooc/exception.yaooh>
 
+    /* Normal C code is passed to C compiler */
     #include <yaooc/stream.h>
     #include <stdio.h>
     #include <string.h>
