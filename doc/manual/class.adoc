@@ -1,0 +1,188 @@
+== Class Specification
+The "%class" directive is used to define a class.
+Unless otherwise noted, sections presented here also apply to the "%struct" and "%union" directives.
+
+.%class syntax
+[source,c]
+----------------------------
+%class class_name : parent {
+  type info
+  constructors
+  instance:
+    ...
+  table:
+    ...
+  adjunct:
+    ...
+  private:
+    ...
+}
+----------------------------
+=== Class Name
+The class_name is class being defined.
+The class_name is appended with "_t" to give the actual class name.
+
+[source,c]
+--------
+class my_string {
+  ...
+};
+--------
+
+The actual class name is "my_string_t".
+However, when used in a YAOOC macro, only my_string is used.
+
+.Example
+[source,c]
+my_string_t* ms = new(my_string);
+
+=== Parent
+The parent defines the class from which this class is derived.
+A class must specify a parent.
+If a parent is not defined, then yaooc_object is used as the parent.
+
+A struct does not require a parent.
+
+=== Type Info
+The type info section consists of the default constructor, destructor, copy constructor,
+assignment, rich compare, to stream, and from stream methods.
+
+==== Default Constructor
+The default constructor is defined as follows:
+
+[source,c]
+--------
+%class class_name() {
+  class_name() {
+    // c code
+  }
+};
+--------
+
+The variable "this" is defined as a pointer to the instance being initialized.
+
+For example:
+
+[source,c]
+-------
+%class my_string {
+  my_string()
+  {
+     this->str=NULL;
+  }
+}
+-------
+
+If a default constructor is not specified, then YAOOCPP will generate one.
+To disable the creation of a default constructor use "class_name()=delete";
+
+.Disable Creation of Default Constructor
+[source,c]
+-------
+%class my_string {
+  my_string() = delete;
+}
+-------
+
+==== Destructor
+The destructor is defined as follows:
+
+[source,c]
+--------
+%class class_name() {
+  ~class_name() {
+    // c code
+  }
+};
+--------
+
+The variable "this" is defined as a pointer to the instance being destroyed.
+The destructor should only destroy the instance variables defined at this level of inheritance.
+
+If a destructor is not specified, then YAOOCPP will generate one.
+To disable the creation of a destructor use "~class_name()=delete";
+
+.Disable Creation of Default Constructor
+[source,c]
+-------
+%class my_string {
+  ~my_string() = delete;
+}
+-------
+
+==== Copy Constructor
+The copy constructor is defined as follows:
+
+[source,c]
+--------
+%class class_name(src) {
+  ~class_name() {
+    // c code
+  }
+};
+--------
+
+"src" is a const pointer to the instance being copied.
+Any variable name other the "src" may be used.
+
+If a copy constructor is not specified, then YAOOCPP will generate one.
+To disable the creation of a copy constructor use "class_name(src)=delete";
+
+.Disable Creation of Copy Constructor
+[source,c]
+-------
+%class my_string {
+  my_string(src) = delete;
+}
+-------
+
+=== Assignment
+The assignment is defined as follows:
+
+[source,c]
+--------
+%class class_name(src) {
+  operator=(src) {
+    // c code
+  }
+};
+--------
+
+"src" is a const pointer from which this instance is assigned.
+Any variable name other the "src" may be used.
+
+If an assignment method is not specified, then YAOOCPP will generate one.
+To disable the creation of an assignment method, use "operator=(src)=delete";
+
+.Disable Creation of Assignment Method
+[source,c]
+-------
+%class my_string {
+  operator=(src) = delete;
+}
+-------
+
+=== Rich Compare
+The rich compare method is used to compare two objects of the same type.
+The rich compare method is defined as follows:
+
+[source,c]
+--------
+%class class_name(src) {
+  int operator<=>(lhs,rhs) {
+    // c code
+  }
+};
+--------
+
+"lhs" and "rhs" are const pointers to objects being compared.
+Any variable names other the "lhs" and "rhs" may be used.
+The method should return negative value for lhs less than rhs;
+zero for lhs equal rhs;
+and positive value for lhs greater than rhs.
+
+If a rich compare method is not specified, then YAOOCPP will NOT generate one.
+Not having a rich compare method would be as if zero where returned -- thus, all instance of this type would be equal.
+
+=== To stream method
+The to stream method is used to output 

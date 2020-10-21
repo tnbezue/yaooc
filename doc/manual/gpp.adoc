@@ -1,0 +1,25 @@
+== Generic PreProcessor
+YAOOCPP uses the generic preprocessor (https://files.nothingisreal.com/software/gpp/gpp.html).
+It uses many of the same directives as the C preprocessor (include, define, if, etc)
+However, the directives begin with '%' rather than '\#'.
+Therefore, items that should be preprocessed in YAOOCPP, begin with '%'.
+Items that should be preprocessed by the C preprocessor, begin with '#'.
+
+=== Example
+Consider the following code.
+
+[source,c]
+----------------------
+%include <yaooc/object.yaooh>
+#include <stdio.h>
+----------------------
+
+The first include statement is preprocessed when YAOOCPP is executed.
+The second include statement is written to the C source file and will be preprocessed when the program is compiled.
+
+The "%include" should only be used to include YAOOH (YAOOC header) files.
+It should not be used to include C header files.
+
+Likewise, "#include" should not be used to include YAOOH files.
+
+See the GPP documentation for further information.

@@ -1,0 +1,18 @@
+Yet Another Object Oriented C PreProcessor
+==========================================
+:author: Terry N Bezue
+:Email: tnbezue@gmail.com
+:toc:
+:numbered:
+
+include::introduction.adoc[]
+
+include::gpp.adoc[]
+
+include::header_prefix.adoc[]
+
+include::header.adoc[]
+
+include::class.adoc[]
+
+include::yaoocpp_rules.adoc[]

@@ -1,0 +1,17 @@
+== Introduction
+YAOOC (Yet Another Object Oriented C), as the name implies,
+is another framework that implements many of the features found in C++.
+
+.YAOOC implements the following:
+* new/delete (for POD and custom classes)
+* custom classes
+* inheritance
+* polymorphism
+* exceptions
+* string class
+* container classes (vector, map, set, etc)
+* I/O streams
+* iterators
+
+The YAOOC PreProcessor (yaoocpp) is used to convert the YAOOC file into a C header and source file.
+This manual will describe the content of the YAOOC file and options for the preprocessor.

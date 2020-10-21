@@ -1,0 +1,18 @@
+== Header Prefix Directive
+The header prefix
+
+For example, if the below code is specified in the my_string.yaooc file.
+
+[source,c]
+%header_prefix yaooc
+
+YAOOCPP will generate the following include directive in the my_string.c file.
+
+[source,c]
+#include <yaooc/my_string.h>
+
+The header prefix is optional.  If not specified, it is assumed that the header and source are in the same directory.
+YAOOCPP will generate the following include directive in the my_string.c file.
+
+[source,c]
+#include "my_string.h"

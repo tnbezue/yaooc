@@ -1,0 +1,37 @@
+== Header Section
+The header section begins with the "%header" keyword.
+It ends with double present sign (%%).
+Everything from the beginning to the end of the header section will be copied the header file.
+
+=== Example
+Given the following in a YAOOC source file.
+
+[source,c]
+---------------------
+%header
+#include <string.h>
+#include <yaooc/new.h>
+
+typedef union {
+  int int_value;
+  long long_value;
+  double dbl_value;
+  void * ptr_value;
+} variant_t;
+%%
+---------------------
+
+YAOOCPP will copy the following the header file.
+
+[source,c]
+---------------------
+#include <string.h>
+#include <yaooc/new.h>
+
+typedef union {
+  int int_value;
+  long long_value;
+  double dbl_value;
+  void * ptr_value;
+} variant_t;
+---------------------
