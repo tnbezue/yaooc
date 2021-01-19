@@ -1,6 +1,6 @@
 #ifndef __COMPLEX_INCLUDED__
 #define __COMPLEX_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/stream.h>
 

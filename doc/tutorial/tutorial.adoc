@@ -31,8 +31,6 @@ include::memory_layout.adoc[]
 
 include::placement_new_delete.adoc[]
 
-include::yaoocpp_rules.adoc[]
-
 include::complete_my_string.adoc[]
 
 include::garbage_bag.adoc[]

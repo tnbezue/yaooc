@@ -1,6 +1,6 @@
 #ifndef __JSON_INCLUDED__
 #define __JSON_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/exception.h>
 #include <yaooc/stream.h>

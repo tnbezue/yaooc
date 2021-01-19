@@ -1,6 +1,6 @@
 #ifndef __SOCKET_INCLUDED__
 #define __SOCKET_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/exception.h>
 yaooc_class_table(yaooc_socket_exception) {

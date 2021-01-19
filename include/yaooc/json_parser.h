@@ -1,6 +1,6 @@
 #ifndef __JSON_PARSER_INCLUDED__
 #define __JSON_PARSER_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/base_parser.h>
 #include <yaooc/exception.h>
 #include <yaooc/json.h>

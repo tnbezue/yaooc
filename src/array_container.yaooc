@@ -62,7 +62,6 @@ void throw_yaooc_array_container_exception(pointer,const char*);
       yaooc_array_container_clear(this);
       yaooc_array_container_reserve(this,SIZE(src));
       yaooc_array_container_insert_range(this,BEGIN(this),BEGIN(src),END(src));
-
     }
 
     int operator<=>(lhs,rhs) {
@@ -79,7 +78,7 @@ void throw_yaooc_array_container_exception(pointer,const char*);
         }
       }
       // Everything equal so far, use sizes for comparison
-      return (int)(M(lhs,size) - M(rhs,size));
+      return (M(lhs,size) < M(rhs,size)) - (M(lhs,size) > M(rhs,size));
     }
 
 		operator<<(ostrm) {

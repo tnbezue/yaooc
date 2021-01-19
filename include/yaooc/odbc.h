@@ -1,6 +1,6 @@
 #ifndef __ODBC_INCLUDED__
 #define __ODBC_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/exception.h>
 yaooc_class_table(yaooc_odbc_exception) {

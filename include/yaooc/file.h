@@ -1,6 +1,6 @@
 #ifndef __FILE_INCLUDED__
 #define __FILE_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/stream.h>
 #include <fcntl.h>

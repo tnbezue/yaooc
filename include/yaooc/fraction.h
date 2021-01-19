@@ -1,6 +1,6 @@
 #ifndef __FRACTION_INCLUDED__
 #define __FRACTION_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/exception.h>
 #include <yaooc/macros.h>

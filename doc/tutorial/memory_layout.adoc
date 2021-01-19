@@ -59,8 +59,8 @@ In C, when a YAOOC object is declared on the stack (static), the default constru
 
 === Renew
 While on the subject of memory, it should be noted that YAOOC provides a method that is not available in C++ -- renew.
-Renew is to new as realloc is to malloc.
-ptr is a pointer to memory that was previously allocated with new (unlike realloc, it cannot be NULL).
+Renew is to new as realloc is to malloc in that it will extend/contract previous allocated memory.
+Unlike realloc, the pointer to the previously allocated memory can not be NULL -- it must have been previously allocated with new.
 
 .Renew Methods
 [options="header"]

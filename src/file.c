@@ -16,7 +16,7 @@ void yaooc_file_dtor(pointer __pthis__)
 {
 yaooc_file_pointer this=__pthis__;(void)this;
 
-if(this->file_!=NULL) delete(this->file_);
+if(this->file_!=NULL) FREE(this->file_);
 
 }
 void yaooc_file_copy_ctor(pointer __pthis__,const_pointer __psrc__)

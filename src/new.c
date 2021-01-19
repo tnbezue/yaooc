@@ -301,15 +301,14 @@ void __deletep_array(void* ptr,const type_info_t* ti,size_t n)
   // Execute dtors for each item (if not null)
 	if(!is_min_pod_type(ti)) {
 		size_t type_size=yaooc_sizeof(ti);
-		while(ti != NULL) {
-			if(ti->dtor_ != NULL) {
-				yaooc_private_iterator obj=ptr;
-				for(i=0;i<n;i++) {
-					ti->dtor_(obj);
-					obj+=type_size;
-				}
-			}
-			ti=ti->parent_;
+    const type_info_ti* iti;
+		yaooc_private_iterator obj=ptr;
+    for(i=0;i<n;i++) {
+      for(iti=ti;iti != NULL;iti=iti->parent_) {
+        if(iti->dtor_ != NULL)
+					iti->dtor_(obj);
+      }
+      obj+=type_size;
 		}
 	}
 }

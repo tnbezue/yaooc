@@ -1,6 +1,6 @@
 #ifndef __REGEX_INCLUDED__
 #define __REGEX_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/exception.h>
 #include <yaooc/string.h>

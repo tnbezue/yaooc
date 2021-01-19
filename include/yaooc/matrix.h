@@ -1,6 +1,6 @@
 #ifndef __MATRIX_INCLUDED__
 #define __MATRIX_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/exception.h>
 yaooc_class_table(yaooc_matrix_exception) {

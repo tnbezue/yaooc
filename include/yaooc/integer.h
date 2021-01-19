@@ -1,6 +1,6 @@
 #ifndef __INTEGER_INCLUDED__
 #define __INTEGER_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/stream.h>
 

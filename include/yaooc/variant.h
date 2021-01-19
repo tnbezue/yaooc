@@ -1,6 +1,6 @@
 #ifndef __VARIANT_INCLUDED__
 #define __VARIANT_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/base_parser.h>
 #include <yaooc/exception.h>
 typedef enum { VAR_NONE, VAR_CHAR, VAR_UCHAR, VAR_SHORT, VAR_USHORT, VAR_INT, VAR_UINT, VAR_LONG, VAR_ULONG,

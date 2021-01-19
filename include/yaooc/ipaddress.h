@@ -1,6 +1,6 @@
 #ifndef __IPADDRESS_INCLUDED__
 #define __IPADDRESS_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/stream.h>
 

@@ -1,6 +1,6 @@
 #ifndef __RBTREE_INDEX_ARRAY_CONTAINER_INCLUDED__
 #define __RBTREE_INDEX_ARRAY_CONTAINER_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/array_container.h>
 typedef enum { BLACK=0, RED } yaooc_rbnode_color_t;
 

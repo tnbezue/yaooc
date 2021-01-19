@@ -1,6 +1,6 @@
 #ifndef __REAL_INCLUDED__
 #define __REAL_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 yaooc_class_table(yaooc_real) {
   yaooc_object_class_table_t;

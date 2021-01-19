@@ -21,8 +21,8 @@ Placement new can be used to initialize objects declared on the stack and delete
 
 [source,c]
 -----------------------
-my_string_t mys1;  /* Note that the "_t" is used */
-newp(&mys1,my_string);
+my_string_t mys1;  /* Note that the "_t" is used here ... */
+newp(&mys1,my_string);  /* ... but not here */
 my_string_t mys2;
 newp_ctor(&mys2,my_string,my_string_ctor_ccs,"This is a test");
 assign_static(&mys1,&mys2,my_string);
@@ -61,5 +61,5 @@ my_string_t ms;
 newp(&ms,my_string);
 STREAM(cout,O_CCS("Enter a string value"),endl);
 STREAM(cin,I_OBJ(my_string,ms));
-STREAM(cout,O_CSS("The value enter was: "),O_OBJ(my_string,ms),endl);
+STREAM(cout,O_CCS("The value enter was: "),O_OBJ(my_string,ms),endl);
 --------------------------

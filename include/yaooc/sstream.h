@@ -1,6 +1,6 @@
 #ifndef __SSTREAM_INCLUDED__
 #define __SSTREAM_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/stream.h>
 yaooc_class_table(yaooc_istringstream) {
   yaooc_istream_class_table_t;

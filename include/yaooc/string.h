@@ -1,6 +1,6 @@
 #ifndef __STRING_INCLUDED__
 #define __STRING_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/array_container.h>
 typedef char* yaooc_string_iterator;
 typedef const char* yaooc_string_const_iterator;

@@ -1,6 +1,6 @@
 #ifndef __OBJECT_INCLUDED__
 #define __OBJECT_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/new.h>
 void yaooc_pure_virtual(const char* method,const char* cls);
 

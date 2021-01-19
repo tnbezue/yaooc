@@ -1,6 +1,6 @@
 #ifndef __ARRAY_CONTAINER_INCLUDED__
 #define __ARRAY_CONTAINER_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/algorithm.h>
 #include <yaooc/stream.h>

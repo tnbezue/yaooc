@@ -27,6 +27,7 @@ PAIR_IMPLEMENTATION(int,yaooc_string,int_string_pair);
 
 void test_ctor_dtor()
 {
+  TESTCASE("CTOR/DTOR");
   int_string_pair_t p1;
   int value=12;
   yaooc_string_pointer str=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"Testing");
@@ -41,6 +42,7 @@ void test_ctor_dtor()
 
 void test_copy_ctor()
 {
+  TESTCASE("Copy ctor");
   int_string_pair_t p1;
   int value=12;
   yaooc_string_pointer str=new_ctor(yaooc_string,yaooc_string_ctor_ccs,"Testing");
@@ -56,6 +58,7 @@ void test_copy_ctor()
 
 void test_assign()
 {
+  TESTCASE("Assign");
   int_string_pair_t p1;
 
   int value=12;
@@ -72,6 +75,7 @@ void test_assign()
 
 void test_less_than()
 {
+  TESTCASE("Compare");
   int_string_pair_t p1;
   int value=12;
   yaooc_string_pointer str=new(yaooc_string);
@@ -100,7 +104,6 @@ void test_less_than()
   TEST("p1 > p2 (false)",!op_gt_static(&p1,&p2,int_string_pair));
   TEST("p1 >= p2 (false)",!op_ge_static(&p1,&p2,int_string_pair));
 
-  deletep(&p1,int_string_pair);
   value=10;
   make_int_string_pair(&p1,&value,NULL);
   TEST("p1 == p2 (true)",op_eq_static(&p1,&p2,int_string_pair));

@@ -45,6 +45,8 @@ printf("%s\n",M(msp,get));
 ------------------------------
 To see various uses of the M macro, see the test files in the tests directory.
 
+NOTE: In reviewing the example for this lesson, notice that copy constructor now uses set method.
+
 === Forward declaration of class
 In C++, a class can have a forward declaration.
 
@@ -56,5 +58,3 @@ This can also be done in YAOOC.
 
 [source,c]
 %class my_string;
-
-NOTE: In reviewing the example for this lesson, notice that copy constructor now uses set method.

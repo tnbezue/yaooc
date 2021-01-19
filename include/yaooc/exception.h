@@ -1,6 +1,6 @@
 #ifndef __EXCEPTION_INCLUDED__
 #define __EXCEPTION_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <setjmp.h>
 

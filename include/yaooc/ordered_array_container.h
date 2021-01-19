@@ -1,6 +1,6 @@
 #ifndef __ORDERED_ARRAY_CONTAINER_INCLUDED__
 #define __ORDERED_ARRAY_CONTAINER_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/array_container.h>
 typedef struct {
 	yaooc_private_iterator position_;	

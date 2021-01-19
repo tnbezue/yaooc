@@ -1,6 +1,6 @@
 #ifndef __UINT24_INCLUDED__
 #define __UINT24_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/new.h>
 #include <yaooc/stream.h>
 typedef uint8_t uint8_bytes_t[3];

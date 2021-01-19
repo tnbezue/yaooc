@@ -17,7 +17,7 @@ void yaooc_regex_pattern_info_dtor(pointer __pthis__)
 {
 yaooc_regex_pattern_info_pointer this=__pthis__;(void)this;
 
-if(this->pattern_!=NULL) delete(this->pattern_);
+if(this->pattern_!=NULL) FREE(this->pattern_);
 
 }
 void yaooc_regex_pattern_info_copy_ctor(pointer __pthis__,const_pointer __psrc__)

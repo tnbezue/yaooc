@@ -20,7 +20,7 @@ The table below shows the array types that are implemented in YAOOC.
 These containers are used to implement higher level containers such as vector or map.
 Items that are contained in the array should have the rich compare type info method defined.
 
-The storage of the container is handled automatically, being expanded and contracted as needed.
+The storage for the container is handled automatically, being expanded and contracted as needed.
 Any iterators for an array may be invalidated when an item is inserted.
 
 The array_container is good for storing items that are appended to the end.

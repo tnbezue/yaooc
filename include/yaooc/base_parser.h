@@ -1,6 +1,6 @@
 #ifndef __BASE_PARSER_INCLUDED__
 #define __BASE_PARSER_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/stack.h>
 #ifdef __YAOOC_USE_TRE__

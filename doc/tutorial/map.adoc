@@ -24,7 +24,7 @@ Search speed is better than mini_map and about the same for map.
 For a large number of items, insertion speed is faster than mini_map (because search speed is faster) but slower than map (because large chunks of memory is moved).
 Items are maintained in sorted order and will be iterated in sorted order.
 
-To use mini_map, in header file specify:
+To use mini_map, specify:
 
 [source,c]
 ---------------------------
@@ -35,7 +35,7 @@ MINI_MAP_DEFINITION(K,V,N)
 MINI_MAP_IMPLEMENTATION(K,V,N)
 ---------------------------
 
-To use medium_map, in header file specify:
+To use medium_map, specify:
 
 [source,c]
 ---------------------------
@@ -45,7 +45,7 @@ MEDIUM_MAP_DEFINITION(K,V,N)
 %%
 MEDIUM_MAP_IMPLEMENTATION(K,V,N)
 ---------------------------
-To use map, in header file specify:
+To use map, specify:
 
 [source,c]
 ---------------------------
@@ -55,6 +55,7 @@ MAP_DEFINITION(K,V,N)
 %%
 MAP_IMPLEMENTATION(K,V,N)
 ---------------------------
+To use ordered map, specify:
 
 [source,c]
 ---------------------------

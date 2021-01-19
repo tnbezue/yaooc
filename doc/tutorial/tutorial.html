@@ -1,0 +1,2886 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 9.0.3" />
+<title>Yet Another Object Oriented C PreProcessor</title>
+<style type="text/css">
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+h5 {
+  font-size: 1.0em;
+}
+
+div.sectionbody {
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
+
+.monospaced, code, pre {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+  padding: 0;
+  margin: 0;
+}
+pre {
+  white-space: pre-wrap;
+}
+
+#author {
+  color: #527bbd;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+#email {
+}
+#revnumber, #revdate, #revremark {
+}
+
+#footer {
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #888;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; vertical-align: text-bottom; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  #footer-badges { display: none; }
+}
+
+#toc {
+  margin-bottom: 2.5em;
+}
+
+#toctitle {
+  color: #527bbd;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overridden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+
+
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
+}
+
+}
+asciidoc.install(2);
+/*]]>*/
+</script>
+</head>
+<body class="article">
+<div id="header">
+<h1>Yet Another Object Oriented C PreProcessor</h1>
+<span id="author">Terry N Bezue</span><br />
+<span id="email"><code>&lt;<a href="mailto:tnbezue@gmail.com">tnbezue@gmail.com</a>&gt;</code></span><br />
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_introduction">1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>YAOOC (Yet Another Object Oriented C), as the name implies, is another framework that implements many of the features found in C++.</p></div>
+<div class="ulist"><div class="title">YAOOC implements the following:</div><ul>
+<li>
+<p>
+new/delete (for POD and custom classes)
+</p>
+</li>
+<li>
+<p>
+custom classes
+</p>
+</li>
+<li>
+<p>
+inheritance
+</p>
+</li>
+<li>
+<p>
+polymorphism
+</p>
+</li>
+<li>
+<p>
+exceptions
+</p>
+</li>
+<li>
+<p>
+string class
+</p>
+</li>
+<li>
+<p>
+container classes (vector, map, set, etc)
+</p>
+</li>
+<li>
+<p>
+I/O streams
+</p>
+</li>
+<li>
+<p>
+iterators
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>This tutorial will provide readers an introduction to using the YAOOC framework. It is assumed that the reader has a knowledge of object oriented languages.</p></div>
+<div class="paragraph"><p>There are other implementations of object oriented C. An internet search will return several. No comparisons will be made to the other implementations. It&#8217;s left as an exercise for the reader.</p></div>
+<div class="sect2">
+<h3 id="_examples">1.1. Examples</h3>
+<div class="paragraph"><p>The examples presented in this guide are located in the examples folder&#8201;&#8212;&#8201;further divided by lesson in which example appears.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_hello_word">2. Hello Word</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Let&#8217;s get started with the classic hello world program.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000080">#include</span></span> <span style="color: #FF0000">&lt;string.h&gt;</span>
+<span style="font-weight: bold"><span style="color: #000080">#include</span></span> <span style="color: #FF0000">&lt;stdio.h&gt;</span>
+<span style="font-weight: bold"><span style="color: #000080">#include</span></span> <span style="color: #FF0000">&lt;yaooc/new.h&gt;</span>
+
+<span style="color: #009900">int</span> <span style="font-weight: bold"><span style="color: #000000">main</span></span><span style="color: #990000">(</span><span style="color: #009900">int</span> argc<span style="color: #990000">,</span><span style="color: #009900">char</span><span style="color: #990000">*</span> argv<span style="color: #990000">)</span>
+<span style="color: #FF0000">{</span>
+  <span style="color: #009900">char</span><span style="color: #990000">*</span> str<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new_array</span></span><span style="color: #990000">(</span><span style="color: #009900">char</span><span style="color: #990000">,</span><span style="color: #993399">128</span><span style="color: #990000">);</span>
+  <span style="font-weight: bold"><span style="color: #000000">strcpy</span></span><span style="color: #990000">(</span>str<span style="color: #990000">,</span><span style="color: #FF0000">"Hello world!"</span><span style="color: #990000">);</span>
+  <span style="font-weight: bold"><span style="color: #000000">printf</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"%s</span><span style="color: #CC33CC">\n</span><span style="color: #FF0000">"</span><span style="color: #990000">,</span>str<span style="color: #990000">);</span>
+  <span style="font-weight: bold"><span style="color: #000000">delete</span></span><span style="color: #990000">(</span>str<span style="color: #990000">);</span>
+<span style="color: #FF0000">}</span></tt></pre></div></div>
+<div class="paragraph"><p>gcc, clang, and tcc (tiny c compiler) are the supported compilers. To compile:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>gcc `yaooc-config --cflags` hello_world<span style="color: #990000">.</span>c `yaooc-config --libs` -o hello_world</tt></pre></div></div>
+<div class="paragraph"><p>The "new_array" method allocates space for an array of elements of the specified type&#8201;&#8212;&#8201;in this case, 128 characters.
+The allocated space can be used as it normally would. The "delete" method frees the space allocated by "new_array".
+"new_array" and "delete" do a lot more than what is demonstrated here.
+The complete workings will be revealed in later lessons.</p></div>
+<div class="sect2">
+<h3 id="_naming_convention">2.1. Naming Convention</h3>
+<div class="paragraph"><p>Type names end with "_t". YAOOC has defined types with the "_t" appended for POD types (see table below).
+When using the macros provided by YAOOC, the "_t" portion should not be specified&#8201;&#8212;&#8201;YAOOC macros will append the "_t" where needed. Note that in the hello world program, "char" was used rather than "char_t".
+The following table shows the basic YAOOC types.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="60%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 1. POD types</caption>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Type</p></td>
+<td align="left" valign="top"><p class="table">Description</p></td>
+<td align="left" valign="top"><p class="table">Size in bytes</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">char_t</p></td>
+<td align="left" valign="top"><p class="table">Signed character</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">uchar_t</p></td>
+<td align="left" valign="top"><p class="table">Unsigned character</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">short_t</p></td>
+<td align="left" valign="top"><p class="table">Signed short</p></td>
+<td align="left" valign="top"><p class="table">2</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">ushort_t</p></td>
+<td align="left" valign="top"><p class="table">Unsigned short</p></td>
+<td align="left" valign="top"><p class="table">2</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">int_t</p></td>
+<td align="left" valign="top"><p class="table">Signed integer</p></td>
+<td align="left" valign="top"><p class="table">4</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">uint_t</p></td>
+<td align="left" valign="top"><p class="table">Unsigned integer</p></td>
+<td align="left" valign="top"><p class="table">4</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">long_t</p></td>
+<td align="left" valign="top"><p class="table">Signed long</p></td>
+<td align="left" valign="top"><p class="table">8 (on 32 and 64 bit systems)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">ulong_t</p></td>
+<td align="left" valign="top"><p class="table">Unsigned long</p></td>
+<td align="left" valign="top"><p class="table">8 (on 32 and 64 bit systems)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">double_t</p></td>
+<td align="left" valign="top"><p class="table">Double precision floating point</p></td>
+<td align="left" valign="top"><p class="table">8</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">size_t</p></td>
+<td align="left" valign="top"><p class="table">Size type</p></td>
+<td align="left" valign="top"><p class="table">4 (32 bit system) 8 (64 bit system)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">pointer</p></td>
+<td align="left" valign="top"><p class="table">void *</p></td>
+<td align="left" valign="top"><p class="table">4 (32 bit system) 8 (64 bit system)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">const_pointer</p></td>
+<td align="left" valign="top"><p class="table">const void *</p></td>
+<td align="left" valign="top"><p class="table">4 (32 bit system) 8 (64 bit system)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>YAOOC makes extensive use of pointer and const_pointer as types for method parameters. This is done to avoid the many compiler warnings that would be generated. Note that both do not have "_t".</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_new_delete">3. New/Delete</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>In C++, the syntax of new is changed to achieve different results.
+C does not have this luxury&#8201;&#8212;&#8201;a different method has to be used to achieve different results.
+The following table shows a few C++ forms of new and the corresponding C method provided in YAOOC.
+In the table, T is the type, n is the number of elements to create, ref is reference to existing object, ptr is pointer to existing object, ctor is a constructor method, and args are one or more arguments.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 2. YAOOC vs C++ New</caption>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+<thead>
+<tr>
+<th align="left" valign="top">Purpose</th>
+<th align="left" valign="top">C++</th>
+<th align="left" valign="top">YAOOC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Create single object of type T using default constructor</p></td>
+<td align="left" valign="top"><p class="table">new T</p></td>
+<td align="left" valign="top"><p class="table">new(T)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Create array of n objects of type T</p></td>
+<td align="left" valign="top"><p class="table">new T[n]</p></td>
+<td align="left" valign="top"><p class="table">new_array(T,n)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Create single object from existing object (copy constructor)</p></td>
+<td align="left" valign="top"><p class="table">new T(ref)</p></td>
+<td align="left" valign="top"><p class="table">new_copy(ptr)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Create Array of n objects from existing object (copy constructor)</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
+<td align="left" valign="top"><p class="table">new_array_copy(ptr,n)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Create single object using specified constructor to initialize the object</p></td>
+<td align="left" valign="top"><p class="table">new T(args)</p></td>
+<td align="left" valign="top"><p class="table">new_ctor(T,ctor,args)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Create array of n objects using specified constructor to initialize each object</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
+<td align="left" valign="top"><p class="table">new_array_ctor(T,n,ctor,args)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>Delete has two forms as shown in table below</p></div>
+<div class="tableblock">
+<table rules="all"
+width="60%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 3. YAOOC vs C++ Delete</caption>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+<thead>
+<tr>
+<th align="left" valign="top">Purpose</th>
+<th align="left" valign="top">C++</th>
+<th align="left" valign="top">YAOOC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Delete single object</p></td>
+<td align="left" valign="top"><p class="table">delete ptr</p></td>
+<td align="left" valign="top"><p class="table">delete(ptr)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Delete array of objects</p></td>
+<td align="left" valign="top"><p class="table">delete [] ptr</p></td>
+<td align="left" valign="top"><p class="table">delete(ptr)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>In YAOOC, delete is used to delete a single object or an array of objects.
+However, if symmetry is desired, delete_array can be used.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Caution</div>
+</td>
+<td class="content">Do not mix new/delete with malloc/free.
+You can use malloc/free in a program that uses YAOOC.
+However, do not use free on an object created with new.
+Likewise, do not use delete for memory allocated with malloc.</td>
+</tr></table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_custom_class">4. Custom Class</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Over the next few lessons a custom class will be created.
+The class will be a simple string class.
+This is meant to show the features of YAOOC rather than good programming practice.</p></div>
+<div class="paragraph"><p>The simplest class can be defined as follows:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000080">#include</span></span> <span style="color: #FF0000">&lt;yaooc/new.h&gt;</span>
+<span style="font-weight: bold"><span style="color: #000080">#include</span></span> <span style="color: #FF0000">&lt;stdio.h&gt;</span>
+
+<span style="color: #990000">%</span><span style="font-weight: bold"><span style="color: #0000FF">struct</span></span> <span style="color: #008080">my_string</span> <span style="color: #FF0000">{</span>
+<span style="font-weight: bold"><span style="color: #008080">  instance:</span></span>
+    <span style="color: #009900">char</span><span style="color: #990000">*</span> str<span style="color: #990000">;</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+
+<span style="color: #009900">int</span> <span style="font-weight: bold"><span style="color: #000000">main</span></span><span style="color: #990000">(</span><span style="color: #009900">int</span> argc<span style="color: #990000">,</span><span style="color: #009900">char</span><span style="color: #990000">*</span> argv<span style="color: #990000">[])</span>
+<span style="color: #FF0000">{</span>
+  my_string_t<span style="color: #990000">*</span> ms <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">);</span>
+  ms<span style="color: #990000">-&gt;</span>str<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">strdup</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"This is a test of my_string"</span><span style="color: #990000">);</span>
+  <span style="font-style: italic"><span style="color: #9A1900">/* Do some other stuff with my_string */</span></span>
+  <span style="font-weight: bold"><span style="color: #000000">delete</span></span><span style="color: #990000">(</span>ms<span style="color: #990000">);</span>
+<span style="color: #FF0000">}</span></tt></pre></div></div>
+<div class="paragraph"><p>"%struct" specifies the beginning of the class definition.
+Variables declared following "instance:" will be members of the object.</p></div>
+<div class="paragraph"><p>The above "%struct" section translates into the following type declaration.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">typedef</span></span> <span style="font-weight: bold"><span style="color: #0000FF">struct</span></span> <span style="color: #008080">my_string_s</span> my_string_t<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #0000FF">typedef</span></span> my_string_t<span style="color: #990000">*</span> my_string_pointer<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #0000FF">typedef</span></span> <span style="font-weight: bold"><span style="color: #0000FF">const</span></span> my_string_t<span style="color: #990000">*</span> my_string_const_pointer<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #0000FF">struct</span></span> <span style="color: #008080">my_string_s</span> <span style="color: #FF0000">{</span>
+  <span style="color: #009900">char</span> <span style="color: #990000">*</span>str<span style="color: #990000">;</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">The actual type created is the class name specified (my_string) appended with "_t".</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>Additional code is created by "%struct" definition.
+The addition code created is covered in the next few lessons.</p></div>
+<div class="paragraph"><p>The C compiler cannot directly compile the above. The YAOOCPP preprocessor (yaoocpp) is used to translate the above into a C header and source file. The compilation is handled in 2 steps.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>yaoocpp my_string<span style="color: #990000">.</span>yaooc
+gcc -fms-extensions -I/usr/local/include -o my_string my_string<span style="color: #990000">.</span>c -lyaooc -Wall</tt></pre></div></div>
+<div class="paragraph"><p>The following can be added to a makefile to translate a YAOOC file into C header and source files.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span>.c <span style="color: #FF0000">%.h:%.yaooc</span>
+  yaoocpp <span style="color: #009900">$&lt;</span></tt></pre></div></div>
+<div class="paragraph"><p>More on yaoocpp later.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">Before continuing with the my_string class, one important requirement for custom classes&#8201;&#8212;&#8201;class instances must be movable
+(objects within containers may be moved).</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>Consider the following YAOOC definition.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="font-weight: bold"><span style="color: #0000FF">struct</span></span> <span style="color: #008080">circular_buffer</span> <span style="color: #FF0000">{</span>
+<span style="font-weight: bold"><span style="color: #008080">  instance:</span></span>
+  <span style="color: #009900">char</span><span style="color: #990000">*</span> beg<span style="color: #990000">;</span>
+  <span style="color: #009900">char</span><span style="color: #990000">*</span> end<span style="color: #990000">;</span>
+  <span style="color: #009900">char</span> buffer<span style="color: #990000">[</span><span style="color: #993399">32</span><span style="color: #990000">];</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>In the above example, if beg and end are pointers to locations within buffer, then the pointers would be invalidated if the object is moved to a different memory location. Thus it is an immovable object and should not be used in YAOOC.</p></div>
+<div class="paragraph"><p>If the class is defined as:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="font-weight: bold"><span style="color: #0000FF">struct</span></span> <span style="color: #008080">circular_buffer</span> <span style="color: #FF0000">{</span>
+<span style="font-weight: bold"><span style="color: #008080">  instance:</span></span>
+  <span style="color: #009900">char</span><span style="color: #990000">*</span> beg<span style="color: #990000">;</span>
+  <span style="color: #009900">char</span><span style="color: #990000">*</span> end<span style="color: #990000">;</span>
+  <span style="color: #009900">char</span><span style="color: #990000">*</span> buffer<span style="color: #990000">;</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>If beg and end are pointers to memory within memory pointed to by buffer, then moving the object will not invalidate the pointers. This it a movable object and can be used in YAOOC.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_default_constructor_and_destructor">5. Default Constructor and Destructor</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Let&#8217;s make my_string a bit more robust by adding default constructor and destructor.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="font-weight: bold"><span style="color: #0000FF">struct</span></span> <span style="color: #008080">my_string</span> <span style="color: #FF0000">{</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Default constructor -- method name will be my_string_default_ctor</span></span>
+    <span style="font-weight: bold"><span style="color: #000000">my_string</span></span><span style="color: #990000">()</span>
+    <span style="color: #FF0000">{</span>
+      <span style="font-style: italic"><span style="color: #9A1900">// "this" is a my_string pointer to this instance of my_string</span></span>
+      <span style="font-style: italic"><span style="color: #9A1900">// "this" is available for use in constuctors, destructor, methods, etc.</span></span>
+      this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">=</span>NULL<span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Destructor  -- method name will be my_string_dtor</span></span>
+    <span style="color: #990000">~</span><span style="font-weight: bold"><span style="color: #000000">my_string</span></span><span style="color: #990000">()</span>
+    <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span>this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">)</span>
+        <span style="font-weight: bold"><span style="color: #000000">free</span></span><span style="color: #990000">(</span>this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span>
+<span style="font-weight: bold"><span style="color: #008080">  instance:</span></span>
+    <span style="color: #009900">char</span><span style="color: #990000">*</span> str<span style="color: #990000">;</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="sect2">
+<h3 id="_default_constructor">5.1. Default Constructor</h3>
+<div class="paragraph"><p>The default constructor is called by the new method after allocating memory for the object.
+If the default constructor is not specified or it is specified as "my_string()=default;" yaoocpp will create a default constructor.
+The above default constructor is the default constructor that would be created by yaoocpp.</p></div>
+<div class="paragraph"><p>Refer to the YAOOCPP users manual for the rules YAOOCPP uses to create a default constructor.</p></div>
+<div class="paragraph"><p>To keep yaoocpp from creating a default constructor, use "my_string()=delete;"</p></div>
+</div>
+<div class="sect2">
+<h3 id="_destructor">5.2. Destructor</h3>
+<div class="paragraph"><p>The destructor is called by the delete method prior to freeing memory allocated.
+If the destructor is not specified or is specified as "~my_string()=default;",
+then yaoocpp will create a destructor (in this case, the one shown above).</p></div>
+<div class="paragraph"><p>To avoid the creation of a destructor, use "~my_string()=delete;".</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_copy_constructor_and_assignment">6. Copy Constructor and Assignment</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Let&#8217;s continue to improve my_string by adding a copy constructor and assignment (operator= in C++).</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="font-weight: bold"><span style="color: #0000FF">struct</span></span> <span style="color: #008080">my_string</span> <span style="color: #FF0000">{</span>
+    <span style="color: #990000">...</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Copy constructor -- method name will be my_string_copy_ctor</span></span>
+    <span style="font-weight: bold"><span style="color: #000000">my_string</span></span><span style="color: #990000">(</span>src<span style="color: #990000">)</span> <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #000000">my_string</span></span><span style="color: #990000">()</span>  <span style="font-style: italic"><span style="color: #9A1900">// default constructor used as initializer</span></span>
+    <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #000000">my_string_assign</span></span><span style="color: #990000">(</span>this<span style="color: #990000">,</span>src<span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span>
+
+    <span style="font-style: italic"><span style="color: #9A1900">// Assignment  -- method name will be my_string_assign</span></span>
+    <span style="font-style: italic"><span style="color: #9A1900">// src is a const pointer to another my_string instance</span></span>
+    operator<span style="color: #990000">=(</span>src<span style="color: #990000">)</span>
+    <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #000000">my_string_dtor</span></span><span style="color: #990000">(</span>this<span style="color: #990000">);</span>  <span style="font-style: italic"><span style="color: #9A1900">// can call destructor directly.  Note that "this" has to be included as first argument</span></span>
+      this<span style="color: #990000">-&gt;</span>str <span style="color: #990000">=</span> src<span style="color: #990000">-&gt;</span>str <span style="color: #990000">?</span> <span style="font-weight: bold"><span style="color: #000000">strdup</span></span><span style="color: #990000">(</span>src<span style="color: #990000">-&gt;</span>str<span style="color: #990000">)</span> <span style="color: #990000">:</span> NULL<span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span>
+    <span style="color: #990000">...</span>
+<span style="font-weight: bold"><span style="color: #008080">  instance:</span></span>
+    <span style="color: #009900">char</span><span style="color: #990000">*</span> str<span style="color: #990000">;</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="sect2">
+<h3 id="_copy_constructor">6.1. Copy Constructor</h3>
+<div class="paragraph"><p>The copy constructor is called when the new_copy method is used.
+The "src" variable is a my_string_const_pointer that points to the object being copied.
+If not specified (or "my_string(src)=default;"), you guessed it, yaoocpp will create a copy constructor&#8201;&#8212;&#8201;in this case, the one specified above.</p></div>
+<div class="paragraph"><p>To disable the creation of a copy constructor, use "my_string(src)=delete;".</p></div>
+</div>
+<div class="sect2">
+<h3 id="_assignment">6.2. Assignment</h3>
+<div class="paragraph"><p>The assignment method is used to assign one object to another. However, the traditional "=" operator should not be used. In YAOOC, use the "assign" method.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>my_string_t<span style="color: #990000">*</span> ms1<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">);</span>
+my_string_t<span style="color: #990000">*</span> ms2<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">);</span>
+<span style="color: #990000">...</span>
+ms2<span style="color: #990000">=</span>ms1<span style="color: #990000">;</span> <span style="font-style: italic"><span style="color: #9A1900">// While valid C code, most likely not what was intended</span></span>
+<span style="font-weight: bold"><span style="color: #000000">assign</span></span><span style="color: #990000">(</span>ms2<span style="color: #990000">,</span>ms1<span style="color: #990000">);</span> <span style="font-style: italic"><span style="color: #9A1900">// Assigns ms1 to ms2 using assign method</span></span></tt></pre></div></div>
+<div class="paragraph"><p>If not specified (or "operator=(src)=default;" specified), yaoocpp will create it.
+However, in this case, the above assignment method is <span class="red">NOT</span> the one that would have been created.
+More on this later.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_comparing_objects">7. Comparing Objects</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Let&#8217;s give my_string the ability to compare (==, !=, &lt;, etc) with other my_string objects</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="font-weight: bold"><span style="color: #0000FF">struct</span></span> <span style="color: #008080">my_string</span> <span style="color: #FF0000">{</span>
+    <span style="color: #990000">...</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Used for comparing my_string objects</span></span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Returns &lt;0 for lhs&lt;rhs; 0 if lhs==rhs; and &gt;0 if lhs&gt;rhs</span></span>
+    <span style="color: #009900">int</span> operator<span style="color: #990000">&lt;=&gt;(</span>lhs<span style="color: #990000">,</span>rhs<span style="color: #990000">)</span>
+    <span style="color: #FF0000">{</span>
+      <span style="font-style: italic"><span style="color: #9A1900">// lhs and rhs are const pointers to my_string instances</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span>lhs<span style="color: #990000">-&gt;</span>str <span style="color: #990000">==</span> NULL<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span>rhs<span style="color: #990000">-&gt;</span>str <span style="color: #990000">==</span> NULL<span style="color: #990000">)</span>
+          <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="color: #993399">0</span><span style="color: #990000">;</span> <span style="font-style: italic"><span style="color: #9A1900">/* both NULL, equal */</span></span>
+        <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+          <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="color: #990000">-</span><span style="color: #993399">1</span><span style="color: #990000">;</span> <span style="font-style: italic"><span style="color: #9A1900">/* lhs is NULL, rhs is not.  NULL is less than not NULL */</span></span>
+      <span style="color: #FF0000">}</span> <span style="font-weight: bold"><span style="color: #0000FF">else</span></span> <span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span>rhs<span style="color: #990000">-&gt;</span>str <span style="color: #990000">==</span> NULL<span style="color: #990000">)</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="color: #993399">1</span><span style="color: #990000">;</span> <span style="font-style: italic"><span style="color: #9A1900">/* lhs is not NULL, rhs is NULL. non NULL greater than NULL */</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #000000">strcmp</span></span><span style="color: #990000">(</span>lhs<span style="color: #990000">-&gt;</span>str<span style="color: #990000">,</span>rhs<span style="color: #990000">-&gt;</span>str<span style="color: #990000">);</span> <span style="font-style: italic"><span style="color: #9A1900">/* Both not null, compare the strings */</span></span>
+    <span style="color: #FF0000">}</span>
+    <span style="color: #990000">...</span>
+<span style="font-weight: bold"><span style="color: #008080">  instance:</span></span>
+    <span style="color: #009900">char</span><span style="color: #990000">*</span> str<span style="color: #990000">;</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="sect2">
+<h3 id="_rich_compare">7.1. Rich Compare</h3>
+<div class="paragraph"><p>The rich compare method is used to compare object (==,!=,&lt;,&#8656;,&gt;, and &gt;=).
+If a rich compare method is not defined, yaoocpp does not generate one.
+Furthermore, any comparisons performed would be as if rich compare returned 0&#8201;&#8212;&#8201;thus all objects of this type would be equal.</p></div>
+<div class="paragraph"><p>As with assignment, traditional camparison operators should not be used to compare objects. The following table gives the methods to use for comparisons.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 4. Comparison methods</caption>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+<thead>
+<tr>
+<th align="left" valign="top">Description</th>
+<th align="left" valign="top">Operator</th>
+<th align="left" valign="top">YAOOC method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Equal to</p></td>
+<td align="left" valign="top"><p class="table">==</p></td>
+<td align="left" valign="top"><p class="table">op_eq(p1,p2)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Not equal to</p></td>
+<td align="left" valign="top"><p class="table">!=</p></td>
+<td align="left" valign="top"><p class="table">op_ne(p1,p2)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Less than</p></td>
+<td align="left" valign="top"><p class="table">&lt;</p></td>
+<td align="left" valign="top"><p class="table">op_lt(p1,p2)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Less than or equal to</p></td>
+<td align="left" valign="top"><p class="table">&#8656;</p></td>
+<td align="left" valign="top"><p class="table">op_le(p1,p2)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Greater than</p></td>
+<td align="left" valign="top"><p class="table">&gt;</p></td>
+<td align="left" valign="top"><p class="table">op_gt(p1,p2)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Greater than or equal to</p></td>
+<td align="left" valign="top"><p class="table">&gt;=</p></td>
+<td align="left" valign="top"><p class="table">op_ge(p1,p2)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>The following compares if two my_string objects are equal.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #008080">my_string_pointer</span> p1<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">);</span>
+<span style="color: #008080">my_string_pointer</span> p2<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">);</span>
+<span style="color: #990000">....</span>
+<span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span>p1<span style="color: #990000">==</span>p2<span style="color: #990000">)</span> <span style="font-style: italic"><span style="color: #9A1900">/* Again, valid C but most likely not what was intended */</span></span>
+  <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">puts</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Equal"</span><span style="color: #990000">);</span> <span style="color: #FF0000">}</span>
+<span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #000000">op_eq</span></span><span style="color: #990000">(</span>p1<span style="color: #990000">,</span>p2<span style="color: #990000">))</span> <span style="font-style: italic"><span style="color: #9A1900">/* Will perform comparisons as specified by rich compare method */</span></span>
+  <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">puts</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Equal"</span><span style="color: #990000">);</span> <span style="color: #FF0000">}</span></tt></pre></div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_class_methods">8. Class Methods</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>In this lesson the my_string class will be improved by adding two class methods.
+In order to have class methods, "%class" will be used rather than "%struct" to define a class.</p></div>
+<div class="paragraph"><p>For the my_string class, a get and set method will be defined.
+The get method returns a const pointer to the string and the set method sets the string.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="color: #008080">class</span> my_string <span style="color: #FF0000">{</span>
+  <span style="color: #990000">....</span>
+<span style="font-weight: bold"><span style="color: #008080">instance:</span></span>
+  <span style="color: #009900">char</span><span style="color: #990000">*</span> str<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #008080">table:</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">const</span></span> <span style="color: #009900">char</span><span style="color: #990000">*</span> <span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">()</span> <span style="font-weight: bold"><span style="color: #0000FF">const</span></span> <span style="font-style: italic"><span style="color: #9A1900">// method name will be my_string_get</span></span>
+  <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+
+  <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">set</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">const</span></span> <span style="color: #009900">char</span><span style="color: #990000">*</span> s<span style="color: #990000">)</span>
+  <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #000000">my_string_dtor</span></span><span style="color: #990000">(</span>this<span style="color: #990000">);</span>
+    this<span style="color: #990000">-&gt;</span>str <span style="color: #990000">=</span> s<span style="color: #990000">==</span>NULL <span style="color: #990000">?</span> NULL <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #000000">strdup</span></span><span style="color: #990000">(</span>s<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>Methods and variables appearing after "table:" will be placed in the class table.
+Items in class table are shared by all instances of object.</p></div>
+<div class="paragraph"><p>In C\++, structs and classes are basically the same.
+In YAOOC, "%struct" and "%class" are different&#8201;&#8212;&#8201;"%struct" does not have a class table.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Caution</div>
+</td>
+<td class="content">Never use memset(this,0,sizeof(T)) to initialize an object.
+The first entry in the object is a pointer to the class table, using memset will destroy the value of the class table.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>To call a class table method, use the M macro (M for method).
+The syntax is M(ptr,method,args).
+The args portion should not be specified if a method does not have any arguments.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>msp<span style="color: #990000">,</span>set<span style="color: #990000">,</span><span style="color: #FF0000">"This is a test"</span><span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">printf</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"%s</span><span style="color: #CC33CC">\n</span><span style="color: #FF0000">"</span><span style="color: #990000">,</span><span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>msp<span style="color: #990000">,</span>get<span style="color: #990000">));</span></tt></pre></div></div>
+<div class="paragraph"><p>To see various uses of the M macro, see the test files in the tests directory.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">In reviewing the example for this lesson, notice that copy constructor now uses set method.</td>
+</tr></table>
+</div>
+<div class="sect2">
+<h3 id="_forward_declaration_of_class">8.1. Forward declaration of class</h3>
+<div class="paragraph"><p>In C++, a class can have a forward declaration.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #008080">class</span> my_string_t<span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>This can also be done in YAOOC.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="color: #008080">class</span> my_string<span style="color: #990000">;</span></tt></pre></div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_input_output_streams">9. Input/Output Streams</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>One of the most notable C++ features is input and output streams. For example:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #008080">string</span> b<span style="color: #990000">=</span><span style="color: #FF0000">"Testing"</span><span style="color: #990000">;</span>
+cout <span style="color: #990000">&lt;&lt;</span> <span style="color: #FF0000">"The value of </span><span style="color: #CC33CC">\"</span><span style="color: #FF0000">b</span><span style="color: #CC33CC">\"</span><span style="color: #FF0000"> is "</span> <span style="color: #990000">&lt;&lt;</span> b <span style="color: #990000">&lt;&lt;</span> endl<span style="color: #990000">;</span>
+cout <span style="color: #990000">&lt;&lt;</span> <span style="color: #FF0000">"Enter new value for </span><span style="color: #CC33CC">\"</span><span style="color: #FF0000">b</span><span style="color: #CC33CC">\"</span><span style="color: #FF0000"> "</span> <span style="color: #990000">&lt;&lt;</span> endl<span style="color: #990000">;</span>
+cin <span style="color: #990000">&gt;&gt;</span> b<span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>In YAOOC, this behavior is also implemented.
+If a class is to use I/O streams, operators "&lt;&lt;" and "&gt;&gt;" have to be implemented.
+They appear before the "instance:" and "table:" entries.
+If the class is used in a stream and operators "&lt;&lt;" and "&gt;&gt;" are not defined, an exception (more on exceptions later) is thrown.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="color: #008080">class</span> my_string <span style="color: #FF0000">{</span>
+    <span style="color: #990000">...</span>
+    operator<span style="color: #990000">&lt;&lt;(</span>ostrm<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>  <span style="font-style: italic"><span style="color: #9A1900">// ostrm is a pointer to yaooc output stream</span></span>
+      <span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>ostrm<span style="color: #990000">,</span>printf<span style="color: #990000">,</span><span style="color: #FF0000">"%s"</span><span style="color: #990000">,</span>this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span>
+    operator<span style="color: #990000">&gt;&gt;(</span>istrm<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>  <span style="font-style: italic"><span style="color: #9A1900">// istrm is a pointer to yaooc input stream</span></span>
+    <span style="color: #FF0000">{</span>
+      <span style="color: #009900">char</span> temp<span style="color: #990000">[</span><span style="color: #993399">256</span><span style="color: #990000">];</span>
+      <span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>istrm<span style="color: #990000">,</span>scanf<span style="color: #990000">,</span><span style="color: #FF0000">"%255s"</span><span style="color: #990000">,</span>temp<span style="color: #990000">);</span>
+      <span style="font-weight: bold"><span style="color: #000000">my_string_dtor</span></span><span style="color: #990000">(</span>this<span style="color: #990000">);</span>
+      this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">strdup</span></span><span style="color: #990000">(</span>temp<span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span>
+<span style="font-weight: bold"><span style="color: #008080">  instance:</span></span>
+    <span style="color: #990000">...</span>
+<span style="font-weight: bold"><span style="color: #008080">  table:</span></span>
+    <span style="color: #990000">...</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>In the methods above, you may have noticed the use of printf and scanf.
+Yes, in YAOOC, streams are a wrapper class for methods that use the C FILE type.
+Many of the C methods that use FILE* (printf, scanf, feof, puts, gets, etc) are available in YAOOC streams.
+YAOOC provides cout (stdout), cin (stdin), and cerr (stderr) streams.</p></div>
+<div class="paragraph"><p>Now my_string can be used in input and output streams by using the stream method.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #008080">my_string_pointer</span> sp1<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>cout<span style="color: #990000">,</span>printf<span style="color: #990000">,</span><span style="color: #FF0000">"Enter value for sp1</span><span style="color: #CC33CC">\n</span><span style="color: #FF0000">"</span><span style="color: #990000">)</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>cin<span style="color: #990000">,</span>stream<span style="color: #990000">,</span>sp1<span style="color: #990000">,</span>NULL<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>cout<span style="color: #990000">,</span>printf<span style="color: #990000">,</span><span style="color: #FF0000">"You entered: "</span><span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>cout<span style="color: #990000">,</span>stream<span style="color: #990000">,</span>sp1<span style="color: #990000">,</span>endl<span style="color: #990000">,</span>NULL<span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>Notice that for the stream method, NULL is used to indicate the end of argument list.
+Numerous times I&#8217;ve forgotten the NULL at the end which causes the program to crash.
+The STREAM macro provided by YAOOC can be used. It adds NULL to the end of the argument list.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000000">STREAM</span></span><span style="color: #990000">(</span>cin<span style="color: #990000">,</span>sp1<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">STREAM</span></span><span style="color: #990000">(</span>cout<span style="color: #990000">,</span>sp1<span style="color: #990000">,</span>endl<span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>YAOOC provides the following stream classes.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="60%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 5. YAOOC vs C++ Delete</caption>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+<thead>
+<tr>
+<th align="left" valign="top">Type</th>
+<th align="left" valign="top">Input</th>
+<th align="left" valign="top">Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Base stream</p></td>
+<td align="left" valign="top"><p class="table">yaooc_istream</p></td>
+<td align="left" valign="top"><p class="table">yaooc_ostream</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">File</p></td>
+<td align="left" valign="top"><p class="table">yaooc_ifstream</p></td>
+<td align="left" valign="top"><p class="table">yaooc_ofstream</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">String</p></td>
+<td align="left" valign="top"><p class="table">yaooc_istringstream</p></td>
+<td align="left" valign="top"><p class="table">yaooc_ostringstream</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_constructors">10. Constructors</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>YAOOC allows constructors other than the default and copy constructor to be created. In this section, three constuctors will be defined. They are shown below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="color: #008080">class</span> my_string <span style="color: #FF0000">{</span>
+  <span style="color: #990000">...</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Constructors</span></span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Create my_string using the first n characters of a null terminated character array</span></span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Uses default constructor as an initializer</span></span>
+    <span style="font-weight: bold"><span style="color: #000000">my_string_ctor_ccs_size</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">const</span></span> <span style="color: #009900">char</span><span style="color: #990000">*</span> str<span style="color: #990000">,</span><span style="color: #008080">size_t</span> n<span style="color: #990000">)</span> <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #000000">my_string</span></span><span style="color: #990000">()</span>
+    <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span>str <span style="color: #990000">!=</span> NULL<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span>n <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">strlen</span></span><span style="color: #990000">(</span>str<span style="color: #990000">))</span>
+          n<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">strlen</span></span><span style="color: #990000">(</span>str<span style="color: #990000">);</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span>n <span style="color: #990000">&gt;</span> <span style="color: #993399">0</span><span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+          this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">malloc</span></span><span style="color: #990000">(</span>n<span style="color: #990000">+</span><span style="color: #993399">1</span><span style="color: #990000">);</span>
+          <span style="font-weight: bold"><span style="color: #000000">strncpy</span></span><span style="color: #990000">(</span>this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">,</span>str<span style="color: #990000">,</span>n<span style="color: #990000">);</span>
+          this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">[</span>n<span style="color: #990000">]=</span><span style="color: #993399">0</span><span style="color: #990000">;</span>
+        <span style="color: #FF0000">}</span>
+      <span style="color: #FF0000">}</span>
+    <span style="color: #FF0000">}</span>
+
+    <span style="font-style: italic"><span style="color: #9A1900">// Create my_string using entire null terminated character array</span></span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Uses another constructor as an initialier</span></span>
+    <span style="font-weight: bold"><span style="color: #000000">my_string_ctor_ccs</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">const</span></span> <span style="color: #009900">char</span><span style="color: #990000">*</span> str<span style="color: #990000">)</span> <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #000000">my_string_ctor_ccs_size</span></span><span style="color: #990000">(</span>str<span style="color: #990000">,</span>SIZE_MAX<span style="color: #990000">)</span>
+    <span style="color: #FF0000">{</span>
+    <span style="color: #FF0000">}</span>
+
+    <span style="font-style: italic"><span style="color: #9A1900">// Create my_string of n copies of supplied character</span></span>
+    <span style="font-style: italic"><span style="color: #9A1900">// When a constructor is not specified as an initializer, the default constructor for this class will be used</span></span>
+    <span style="font-weight: bold"><span style="color: #000000">my_string_ctor_chr_size</span></span><span style="color: #990000">(</span><span style="color: #009900">int</span> c<span style="color: #990000">,</span><span style="color: #008080">size_t</span> n<span style="color: #990000">)</span> <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #000000">str</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #000000">malloc</span></span><span style="color: #990000">(</span>n<span style="color: #990000">+</span><span style="color: #993399">1</span><span style="color: #990000">))</span>
+    <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #000000">memset</span></span><span style="color: #990000">(</span>this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">,</span>c<span style="color: #990000">,</span>n<span style="color: #990000">);</span>
+      this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">[</span>n<span style="color: #990000">]=</span><span style="color: #993399">0</span><span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span>
+<span style="font-weight: bold"><span style="color: #008080">  instance:</span></span>
+  <span style="color: #990000">....</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>Constructor names start with the class name followed by any valid C ident characters.
+It is suggested that "<em>ctor</em>" (makes it easy to identify constructors) and abbreviations for argument types be used.
+Constructors are used with the new_ctor form of new.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>my_string_t<span style="color: #990000">*</span> ms1<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new_ctor</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">,</span>my_string_ctor_ccs_size<span style="color: #990000">,</span><span style="color: #FF0000">"YAOOC -- Yet Another Object Oriented C.  This portion will not be included"</span><span style="color: #990000">,</span><span style="color: #993399">39</span><span style="color: #990000">);</span>
+my_string_t<span style="color: #990000">*</span> ms2<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new_ctor</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">,</span>my_string_ctor_ccs<span style="color: #990000">,</span><span style="color: #FF0000">"YAOOC -- Yet Another Object Oriented C."</span><span style="color: #990000">);</span>
+my_string_t<span style="color: #990000">*</span> ms3<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new_ctor</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">,</span>my_string_ctor_chr_n<span style="color: #990000">,</span><span style="color: #FF0000">'Y'</span><span style="color: #990000">,</span><span style="color: #993399">26</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="sect2">
+<h3 id="_constructor_initializers">10.1. Constructor Initializers</h3>
+<div class="paragraph"><p>Constructor initializers can be any other constructor for this class or any variable defined in the instance portion of the class definition.
+Only one constructor can be used in the initializer list and if one is used, it must be the first initializer.
+If a constructor is not specified in the initilizer list, the default construtor is used.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_inheritance">11. Inheritance</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>For a "%struct", inheritance is implemented as follows:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="font-weight: bold"><span style="color: #0000FF">struct</span></span> <span style="color: #008080">class_name</span> <span style="color: #990000">:</span> parent_name <span style="color: #FF0000">{</span>
+  <span style="color: #990000">...</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>A "%struct" inherits all instance entries of the parent.</p></div>
+<div class="paragraph"><p>For "%class", a parent is required ("%struct" does not require a parent). If not specified, the parent will be "yaooc_object". For simplicity, let&#8217;s assume that "yaooc_object" is defined as follows.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="color: #008080">class</span> yaooc_object <span style="color: #FF0000">{</span>
+<span style="font-weight: bold"><span style="color: #008080">  table:</span></span>
+    <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">swap</span></span><span style="color: #990000">(</span><span style="color: #008080">pointer</span> s<span style="color: #990000">)</span> <span style="color: #FF0000">{</span> <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>A class inherits all instance and table members. Table and instance members can be overriden. An overridden method should have the same return type, name, and argument types.</p></div>
+<div class="paragraph"><p>For the my_string class, the swap method will be overridden with the following:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="color: #008080">class</span> my_string <span style="color: #990000">:</span> yaooc_object <span style="color: #FF0000">{</span>
+    <span style="color: #990000">...</span>
+<span style="font-weight: bold"><span style="color: #008080">  instance:</span></span>
+    <span style="color: #990000">...</span>
+<span style="font-weight: bold"><span style="color: #008080">  table:</span></span>
+    <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">swap</span></span><span style="color: #990000">(</span><span style="color: #008080">pointer</span> o<span style="color: #990000">)</span>
+    <span style="color: #FF0000">{</span>
+      <span style="color: #008080">my_string_pointer</span> other<span style="color: #990000">=</span>o<span style="color: #990000">;</span>  <span style="font-style: italic"><span style="color: #9A1900">// "o" is a generic pointer, must use my_string_pointer</span></span>
+      <span style="color: #009900">char</span><span style="color: #990000">*</span> temp<span style="color: #990000">=</span>this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">;</span>
+      this<span style="color: #990000">-&gt;</span>str<span style="color: #990000">=</span>other<span style="color: #990000">-&gt;</span>str<span style="color: #990000">;</span>
+      other<span style="color: #990000">-&gt;</span>str<span style="color: #990000">=</span>temp<span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>Note the the swap method uses a generic pointer (void *) as an argument.
+A pointer of the appropriate type must be defined.</p></div>
+<div class="paragraph"><p>Although possible (if you understand the inner workings of YAOOC),
+a struct should not have a class as a parent and a class should not have a struct as a parent.</p></div>
+<div class="sect2">
+<h3 id="_calling_parent_method">11.1. Calling Parent Method</h3>
+<div class="paragraph"><p>For methods defined in the table section of a class, two macros are defined to allow a parent method to be called.</p></div>
+<div class="paragraph"><p>The "super()" macro is used to call the parent method of the same name and arguments.
+For example, in the "swap" method for my_string, "super()" would call the yaooc_object "swap" method.</p></div>
+<div class="paragraph"><p>The "PM" (parent method) macro is used to call any other parent method. It&#8217;s syntax is "PM(method,args)"</p></div>
+</div>
+<div class="sect2">
+<h3 id="_type_declarations">11.2. Type declarations</h3>
+<div class="paragraph"><p>When a class is inherited from another class, the behaviour of default constructor, destructor, etc is as follows.</p></div>
+<div class="sect3">
+<h4 id="_default_constructor_2">11.2.1. Default Constructor</h4>
+<div class="paragraph"><p>If a default contructor is defined, YAOOC uses it.
+If a default constructor is not defined, YAOOC will traverse the inheritance tree (parent, grand parent, etc) until a default constructor is found. If not found (user specified "delete" for this and ancestor default constructors), no action is taken.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_destructor_2">11.2.2. Destructor</h4>
+<div class="paragraph"><p>When an object is deleted, each destructor in reverse order of inheritance (the child destructor, the parent destructor, the grandparent destructor, etc) will be called until the root class is reached. The destrutor should only destory the portion of the object that was initialized at the current level of inheritance.
+The ancestors will destroy their portions.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_copy_constructor_2">11.2.3. Copy Constructor</h4>
+<div class="paragraph"><p>Like the default constructor, YAOOC will traverse the inheritance tree until a defined copy constructor is found.
+If not found, then the instance is copied (using memcpy).</p></div>
+</div>
+<div class="sect3">
+<h4 id="_assignment_2">11.2.4. Assignment</h4>
+<div class="paragraph"><p>Like the copy constructor, YAOOC will traverse the inheritance tree until a defined assignment method is found.
+If not found, then the instance is copied (using memcpy).</p></div>
+</div>
+<div class="sect3">
+<h4 id="_rich_compare_2">11.2.5. Rich compare</h4>
+<div class="paragraph"><p>YAOOC will traverse the inheritance tree until a rich compare method is found.
+If none is found, then it would be as if 0 were returned.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_to_from_stream">11.2.6. To/From stream</h4>
+<div class="paragraph"><p>Like rich compare, YAOOC traverses the inheritance tree until a to/from stream method is found.
+If none found, then an exception is thrown.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_memory_layout">12. Memory Layout</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Before continuing with the my_string class, it&#8217;s helpful to understand how memory allocation is handled in YAOOC. When an object (or array of objects) is allocated, additional memory is allocated for a pointer to type info structure and the number of objects allocated. This memory layout is shown below.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 6. Comparison methods</caption>
+<col width="100%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Pointer to type info structure (const type_info_t*)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Number of elements allocated (size_t)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><span class="red yellow-background">1st element (new returns pointer to this element)</span></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">2nd element</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">&#8230;</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">nth element</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>The first entry is the type info table (contains pointers to constructor, destructor, copy constructor, etc) for the type.
+The second entry is the number of elements allocated.
+The overhead is 8 bytes for a 32 bit system and 16 bytes for a 64 bit system.</p></div>
+<div class="paragraph"><p>Note that this is per allocation&#8201;&#8212;&#8201;not per element.
+If a single character is allocated, 9 (or 17) bytes will actually be allocated.
+An array of 100,000 characters would require 100,008 (or 100,016) bytes.</p></div>
+<div class="paragraph"><p>This memory allocation scheme allows the type info to be readily available for internal YAOOC methods that use it.
+For example, the assign method can access the type info to apply the appropriate assignment method.
+Likewise, the delete method can determine the destructor and number of elements to delete.
+User methods should not try to access the type info or element count.</p></div>
+<div class="paragraph"><p>For objects that have not been allocated with new (i.e., declared on the stack) or for elements beyond the first element of an array,
+the type info structure is not available (these objects will henceforth be referred to as static objects).
+Therefore, some of the methods that have been presented so far will not work on static objects.
+Static versions of these methods (appended with "_static") will have to be used.
+Since the type info pointer is not available, the class type is included as an argument to the static versions.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 7. Methods for static objects</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Method</th>
+<th align="left" valign="top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">assign_static(p1,p2,T)</p></td>
+<td align="left" valign="top"><p class="table">Assign object p2 to object p1. Both are of type T</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">op_eq_static(p1,p2,T)</p></td>
+<td align="left" valign="top"><p class="table">Compares if objects p1 and p2 of type T are equal</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">op_ne_static(p1,p2,T)</p></td>
+<td align="left" valign="top"><p class="table">Compares if objects p1 and p2 of type T are not equal</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">op_lt_static(p1,p2,T)</p></td>
+<td align="left" valign="top"><p class="table">Compares if object p1 is less than p2. Both objects are of type T</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">op_le_static(p1,p2,T)</p></td>
+<td align="left" valign="top"><p class="table">Compares if object p1 is less than or equal to p2. Both objects are of type T</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">op_gt_static(p1,p2,T)</p></td>
+<td align="left" valign="top"><p class="table">Compares if object p1 is greater than p2. Both objects are of type T</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">op_ge_static(p1,p2,T)</p></td>
+<td align="left" valign="top"><p class="table">Compares if object p1 is greater than or equal to p2. Both objects are of type T</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>For example, to compare if two static my_string objects are equal, use:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000080">#define</span></span> INIT_STATIC_MY_STRING <span style="color: #FF0000">{</span> <span style="color: #990000">.</span>class_table_<span style="color: #990000">=&amp;</span>my_string_class_table<span style="color: #990000">,</span> <span style="color: #990000">.</span>str<span style="color: #990000">=</span>NULL <span style="color: #FF0000">}</span>
+<span style="color: #008080">my_string_t</span> ms1 <span style="color: #990000">=</span> INIT_STATIC_MY_STRING<span style="color: #990000">;</span>
+<span style="color: #008080">my_string_t</span> ms2 <span style="color: #990000">=</span> INIT_STATIC_MY_STRING<span style="color: #990000">;</span>
+<span style="color: #990000">....</span>
+<span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #000000">op_eq_static</span></span><span style="color: #990000">(&amp;</span>ms1<span style="color: #990000">,&amp;</span>ms2<span style="color: #990000">,</span>my_string<span style="color: #990000">))</span>
+  <span style="font-weight: bold"><span style="color: #000000">puts</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Equal"</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>In C, when a YAOOC object is declared on the stack (static), the default constructor is not called to initialize the object. The above example shows how a static object may be initialized. This can be cumbersome for a class with many instance members. A more practical method will be presented in the next lesson.</p></div>
+<div class="sect2">
+<h3 id="_renew">12.1. Renew</h3>
+<div class="paragraph"><p>While on the subject of memory, it should be noted that YAOOC provides a method that is not available in C++&#8201;&#8212;&#8201;renew.
+Renew is to new as realloc is to malloc in that it will extend/contract previous allocated memory.
+Unlike realloc, the pointer to the previously allocated memory can not be NULL&#8201;&#8212;&#8201;it must have been previously allocated with new.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 8. Renew Methods</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Method</th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">renew_array(ptr,N)</p></td>
+<td align="left" valign="top"><p class="table">Reallocates memory at ptr for N elements by appending elements created using the default constructor</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">renew_array_copy(ptr,N,src)</p></td>
+<td align="left" valign="top"><p class="table">Reallocates memory at ptr for N elements. Appended elements are a copy of src object</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">renew_array_ctor(ptr,N,ctor,args)</p></td>
+<td align="left" valign="top"><p class="table">Reallocates memory at ptr for N elements. Appended elements are constructed using ctor</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>The above table only presents the case where N is greater than the current allocation.
+If N is less than the current allocation, the destructor is called for each element removed before memory is reallocated.
+If N is the same as the current allocation, no action is taken.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>my_string_t<span style="color: #990000">*</span> demo<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new_array</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">,</span><span style="color: #993399">8</span><span style="color: #990000">);</span> <span style="font-style: italic"><span style="color: #9A1900">/* Initial size is 8 */</span></span>
+<span style="color: #990000">...</span>
+demo<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">renew</span></span><span style="color: #990000">(</span>demo<span style="color: #990000">,</span><span style="color: #993399">20</span><span style="color: #990000">);</span> <span style="font-style: italic"><span style="color: #9A1900">/* Increase capacity to 20 */</span></span>
+<span style="color: #990000">...</span>
+demo<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">renew</span></span><span style="color: #990000">(</span>demo<span style="color: #990000">,</span><span style="color: #993399">5</span><span style="color: #990000">);</span> <span style="font-style: italic"><span style="color: #9A1900">/* Decrease capacity to 5 */</span></span></tt></pre></div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_placement_new_and_delete">13. Placement New and Delete</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>In the previous lesson, static objects were introduced. This lesson will introduce placement new to initialize static objects and a placement delete to destroy these objects. Note that C++ does not provide a placement delete but can be simulated by directly calling the destructor (ptr&#8594;~T()).</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 9. Placment New/Delete methods</caption>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+<thead>
+<tr>
+<th align="left" valign="top">Purpose</th>
+<th align="left" valign="top">C++</th>
+<th align="left" valign="top">YAOOC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Initialize the single object at ptr of type T using default constructor</p></td>
+<td align="left" valign="top"><p class="table">new (ptr) T</p></td>
+<td align="left" valign="top"><p class="table">newp(ptr,T)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Initialize array of n objects at ptr of type T</p></td>
+<td align="left" valign="top"><p class="table">new (ptr) T[n]</p></td>
+<td align="left" valign="top"><p class="table">newp_array(ptr,T,n)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Initialize new object from existing dynamically allocated object (copy constructor)
+Use newp_copy_static (below) to initialize from static object</p></td>
+<td align="left" valign="top"><p class="table">new (ptr) T(ref)</p></td>
+<td align="left" valign="top"><p class="table">newp_copy(dst_ptr,src_ptr)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Initialize new object from existing static object</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
+<td align="left" valign="top"><p class="table">newp_copy_static(dst_ptr,T,src_ptr)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Initialize n new objects from existing dynamically allocated object (copy constructor)</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
+<td align="left" valign="top"><p class="table">newp_array_copy(dst_ptr,src_ptr,n)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Initialize n new objects from existing static object (copy constructor)</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
+<td align="left" valign="top"><p class="table">newp_array_copy_static(dst_ptr,T,src_ptr,n)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Initialize new object using specified constructor to initialize the object</p></td>
+<td align="left" valign="top"><p class="table">new (ptr) T(args)</p></td>
+<td align="left" valign="top"><p class="table">newp_ctor(ptr,T,ctor,args)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Initialize n new objects using specified constructor to initialize each object</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
+<td align="left" valign="top"><p class="table">newp_array_ctor(ptr,T,n,ctor,args)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Destroy single object of type T</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
+<td align="left" valign="top"><p class="table">deletep(ptr,T)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Destroy array of N objects of type T</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
+<td align="left" valign="top"><p class="table">deletep_array(ptr,T,N)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>Placement new can be used to initialize objects declared on the stack and deletep can be used to destroy these objects.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #008080">my_string_t</span> mys1<span style="color: #990000">;</span>  <span style="font-style: italic"><span style="color: #9A1900">/* Note that the "_t" is used here ... */</span></span>
+<span style="font-weight: bold"><span style="color: #000000">newp</span></span><span style="color: #990000">(&amp;</span>mys1<span style="color: #990000">,</span>my_string<span style="color: #990000">);</span>  <span style="font-style: italic"><span style="color: #9A1900">/* ... but not here */</span></span>
+<span style="color: #008080">my_string_t</span> mys2<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #000000">newp_ctor</span></span><span style="color: #990000">(&amp;</span>mys2<span style="color: #990000">,</span>my_string<span style="color: #990000">,</span>my_string_ctor_ccs<span style="color: #990000">,</span><span style="color: #FF0000">"This is a test"</span><span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">assign_static</span></span><span style="color: #990000">(&amp;</span>mys1<span style="color: #990000">,&amp;</span>mys2<span style="color: #990000">,</span>my_string<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(&amp;</span>mys2<span style="color: #990000">,</span>set<span style="color: #990000">,</span><span style="color: #FF0000">"Changed value for mys2"</span><span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">deletep</span></span><span style="color: #990000">(&amp;</span>mys1<span style="color: #990000">,</span>my_string<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">deletep</span></span><span style="color: #990000">(&amp;</span>mys2<span style="color: #990000">,</span>my_string<span style="color: #990000">);</span></tt></pre></div></div>
+<div class="sect2">
+<h3 id="_static_object_in_streams">13.1. Static object in streams</h3>
+<div class="paragraph"><p>Streams use dynamically allocated objects.
+As mentioned in the memory layout lesson, the type info for dynamically allocated objects is readily available.
+This information is used by the stream method.
+For POD and static objects, the type info has to be added to the stream.
+The macros below facilitate streams reading POD and static objects properly.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 10. Stream Macros for Static Objects</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Macro</th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">I_OBJ(T,O)</p></td>
+<td align="left" valign="top"><p class="table">Input static object O of type T</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">I_CHR(ch)</p></td>
+<td align="left" valign="top"><p class="table">Input single character</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">I_UCHR(uch)</p></td>
+<td align="left" valign="top"><p class="table">Input single unsigned character</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">I_SHORT(s)</p></td>
+<td align="left" valign="top"><p class="table">Input short</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">I_USHORT(us)</p></td>
+<td align="left" valign="top"><p class="table">Input unsigned short</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">I_INT(i)</p></td>
+<td align="left" valign="top"><p class="table">Input integer</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">I_UINT(ui)</p></td>
+<td align="left" valign="top"><p class="table">Input unsigned integer</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">I_LONG(l)</p></td>
+<td align="left" valign="top"><p class="table">Input long</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">I_ULONG(ul)</p></td>
+<td align="left" valign="top"><p class="table">Input unsigned long</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">I_DBL(d)</p></td>
+<td align="left" valign="top"><p class="table">Input double</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">I_CCS(ccs)</p></td>
+<td align="left" valign="top"><p class="table">Input character string</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>For writing POD and static objects to streams, use "O_" rather than "I_" for macros in above table.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #008080">my_string_t</span> ms<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #000000">newp</span></span><span style="color: #990000">(&amp;</span>ms<span style="color: #990000">,</span>my_string<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">STREAM</span></span><span style="color: #990000">(</span>cout<span style="color: #990000">,</span><span style="font-weight: bold"><span style="color: #000000">O_CCS</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Enter a string value"</span><span style="color: #990000">),</span>endl<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">STREAM</span></span><span style="color: #990000">(</span>cin<span style="color: #990000">,</span><span style="font-weight: bold"><span style="color: #000000">I_OBJ</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">,</span>ms<span style="color: #990000">));</span>
+<span style="font-weight: bold"><span style="color: #000000">STREAM</span></span><span style="color: #990000">(</span>cout<span style="color: #990000">,</span><span style="font-weight: bold"><span style="color: #000000">O_CCS</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"The value enter was: "</span><span style="color: #990000">),</span><span style="font-weight: bold"><span style="color: #000000">O_OBJ</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">,</span>ms<span style="color: #990000">),</span>endl<span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_complete_my_string_class">14. Complete my_string class</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Now, let&#8217;s get back to developing the my_string class.
+This will be the final version version presented in this tutorial.
+This version has more methods and introduces two new class sections&#8201;&#8212;&#8201;adjunct and private.
+Review the complete my_string class in the examples folder for this lesson.</p></div>
+<div class="sect2">
+<h3 id="_adjunct_members">14.1. Adjunct members</h3>
+<div class="paragraph"><p>The adjunct section is similar to the instance and table sections&#8201;&#8212;&#8201;it contains methods and variables.
+The methods and variables are meant to be helpers for the class and descendant classes. The closest
+C++ analogy would be static class members.</p></div>
+<div class="paragraph"><p>Adjunct members are prefixed with the class name and underscore.
+For example, in the my_string class, the adjunct method insert_space is defined as
+my_string_insert_space in the C header and source files.</p></div>
+<div class="paragraph"><p>For methods, the first argument is a pointer to the class instance.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_private_members">14.2. Private members</h3>
+<div class="paragraph"><p>Private members are the same as adjunct members except they are intended to only be used by this class.
+Private methods and variables are declared as static C methods and variables in the C source file only.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_complete_yaoocpp_documentation">14.3. Complete YAOOCPP documentation</h3>
+<div class="paragraph"><p>At this point, it is suggested to review the YAOOCPP manual also to
+completely understand the concepts presented.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_garbage_bag">15. Garbage Bag</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>With C++, pointers can be wrapped in a smart pointer so that when it goes out of scope, the object is deleted.
+In YAOOC, the garbage bag serves a similar purpose.
+When objects are created with new, it can be stored in the garbage bag.
+When the garbage bag is deleted, all pointers in bag are deleted as well.</p></div>
+<div class="paragraph"><p>Pointers to objects stored in garbage bag must have been created using new.
+Pointers created using malloc should not be stored in the garbage bag.</p></div>
+<div class="paragraph"><p>For basic usage, YAOOC provides the following macros for using garbage bags.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 11. YAOOC Garbage Bag Macros</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Macro</th>
+<th align="left" valign="top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">gb_init()</p></td>
+<td align="left" valign="top"><p class="table">Create a new garbage bag called local_gb</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">gb_save(ptr)</p></td>
+<td align="left" valign="top"><p class="table">Save pointer in garbage bag and returns value being saved</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">gb_clear()</p></td>
+<td align="left" valign="top"><p class="table">Removes pointers from garbage bag without deleting pointers</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">gb_delete()</p></td>
+<td align="left" valign="top"><p class="table">Deletes pointers in garbage bag. More pointer can still be saved</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">gb_exit()</p></td>
+<td align="left" valign="top"><p class="table">Deletes pointers in garbage bag and destroys garbage bag.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>Generally, gb_init() is specified at the beginning of a method.
+gb_save() is used to save pointer within the method.
+gb_exit is used before exiting method.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #009900">int</span> <span style="font-weight: bold"><span style="color: #000000">some_method</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+  <span style="font-weight: bold"><span style="color: #000000">gb_init</span></span><span style="color: #990000">();</span>
+  <span style="color: #009900">int</span> rc<span style="color: #990000">=</span><span style="color: #993399">0</span><span style="color: #990000">;</span>
+  <span style="color: #008080">my_string_pointer</span> sp<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">gb_save</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">));</span>
+  <span style="color: #990000">...</span>
+  <span style="color: #009900">char</span> <span style="color: #990000">*</span>temp <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">gb_save</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #000000">new_array</span></span><span style="color: #990000">(</span><span style="color: #009900">char</span><span style="color: #990000">,</span><span style="color: #993399">128</span><span style="color: #990000">));</span>
+  <span style="color: #990000">...</span>
+  sp<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">gb_save</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #000000">new_ctor</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">,</span>my_string_ctor_ccs<span style="color: #990000">,</span><span style="color: #FF0000">"This will be deleted when garbage bag is deleted"</span><span style="color: #990000">));</span>
+  <span style="color: #990000">...</span>
+  <span style="font-weight: bold"><span style="color: #000000">gb_exit</span></span><span style="color: #990000">();</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> rc<span style="color: #990000">;</span>
+<span style="color: #FF0000">}</span></tt></pre></div></div>
+<div class="paragraph"><p>YAOOC also provides macros that combine new and gb_save. They are shown in the following table.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 12. YAOOC Garbage Bag Macros Combined with New</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Macro</th>
+<th align="left" valign="top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">gb_new(T)</p></td>
+<td align="left" valign="top"><p class="table">Same as gb_save(new(T))</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">gb_new_array(T,N)</p></td>
+<td align="left" valign="top"><p class="table">Same as gb_save(new_array(T,N))</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">gb_new_copy(P)</p></td>
+<td align="left" valign="top"><p class="table">Same as gb_save(new_copy(P))</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>Static variables can also be placed in the garbage bag. For static variables, only the destructor is called.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 13. YAOOC Garbage Bag Macros for Static Objects</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Macro</th>
+<th align="left" valign="top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">gb_save_static(P,T)</p></td>
+<td align="left" valign="top"><p class="table">Save static variable in garbage bag</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">gb_save_array_static(P,T,N)</p></td>
+<td align="left" valign="top"><p class="table">Save static array in garbage bag</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>YAOOC also provides macros than combine placement new and gb_save.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 14. YAOOC Garbage Bag Macros Combined with Placement New</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Macro</th>
+<th align="left" valign="top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">gb_newp(ptr,T)</p></td>
+<td align="left" valign="top"><p class="table">Same as gb_save_static(newp(ptr,T),T)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">gb_newp_array(ptr,T,N)</p></td>
+<td align="left" valign="top"><p class="table">Same as gb_save_static(new_array(ptr,T,N),T)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">gb_newp_copy_static(ptr,T)</p></td>
+<td align="left" valign="top"><p class="table">Same as gb_save_static(new_copy(ptr,T),T)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_exceptions">16. Exceptions</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Another well known feature of C++ is exceptions. YAOOC has this feature as well. The syntax is:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>TRY <span style="color: #FF0000">{</span>
+  <span style="color: #990000">...</span>
+<span style="color: #FF0000">}</span> <span style="font-weight: bold"><span style="color: #000000">CATCH</span></span> <span style="color: #990000">(</span>exception_type<span style="color: #990000">,</span>exception_var<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+  <span style="color: #990000">...</span>
+<span style="color: #FF0000">}</span> ETRY</tt></pre></div></div>
+<div class="paragraph"><p>Where exception_type is the type of exception and exception_var is the variable to which the exception is assigned.
+Note the comma between exception type and exception var.</p></div>
+<div class="ulist"><div class="title">Exception Rules</div><ul>
+<li>
+<p>
+All exceptions must be a descendant of yaooc_exeception (shown below).
+</p>
+</li>
+<li>
+<p>
+There can be multiple CATCH blocks.
+</p>
+</li>
+<li>
+<p>
+TRY/CATCH blocks can be nested&#8201;&#8212;&#8201;either in TRY portion or CATCH portion.
+</p>
+</li>
+<li>
+<p>
+CATCH will catch exception of the type specified and types that are derived from exception_type.
+</p>
+</li>
+<li>
+<p>
+An exception stack is created for each thread.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>To throw an exception, use the THROW macro.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000000">THROW</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>exception_type<span style="color: #990000">))</span></tt></pre></div></div>
+<div class="paragraph"><p>If any thread throws an exception that is not caught, then a message indicating uncaught exception is printed to stderr and the program is terminated.</p></div>
+<div class="paragraph"><p>All exceptions should be a descendant of yaooc_exception.
+The class definition of yaooc_exception is:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span><span style="color: #008080">class</span> yaooc_exception <span style="color: #990000">:</span> yaooc_object
+<span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #000000">yaooc_exception</span></span><span style="color: #990000">()</span> <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #000000">what_</span></span><span style="color: #990000">(</span>NULL<span style="color: #990000">)</span> <span style="color: #FF0000">{</span> <span style="color: #FF0000">}</span>
+
+    <span style="font-weight: bold"><span style="color: #000000">yaooc_exception_ctor_v</span></span><span style="color: #990000">(</span><span style="color: #009900">int</span> error_code<span style="color: #990000">,</span><span style="font-weight: bold"><span style="color: #0000FF">const</span></span> <span style="color: #009900">char</span><span style="color: #990000">*</span>fmt<span style="color: #990000">,...</span> args<span style="color: #990000">)</span>
+    <span style="color: #FF0000">{</span>
+      this<span style="color: #990000">-&gt;</span>error_code_<span style="color: #990000">=</span>error_code<span style="color: #990000">;</span>
+      <span style="color: #008080">va_list</span> args2<span style="color: #990000">;</span>
+      <span style="font-weight: bold"><span style="color: #000000">va_copy</span></span><span style="color: #990000">(</span>args2<span style="color: #990000">,</span>args<span style="color: #990000">);</span>
+      <span style="color: #009900">int</span> size_needed<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">vsnprintf</span></span><span style="color: #990000">(</span>NULL<span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span>fmt<span style="color: #990000">,</span>args2<span style="color: #990000">);</span>
+      <span style="font-weight: bold"><span style="color: #000000">va_end</span></span><span style="color: #990000">(</span>args2<span style="color: #990000">);</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span>size_needed <span style="color: #990000">&gt;</span> <span style="color: #993399">0</span><span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+        this<span style="color: #990000">-&gt;</span>what_<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">MALLOC</span></span><span style="color: #990000">(++</span>size_needed<span style="color: #990000">);</span>
+        <span style="font-weight: bold"><span style="color: #000000">vsnprintf</span></span><span style="color: #990000">(</span>this<span style="color: #990000">-&gt;</span>what_<span style="color: #990000">,</span>size_needed<span style="color: #990000">,</span>fmt<span style="color: #990000">,</span>args<span style="color: #990000">);</span>
+      <span style="color: #FF0000">}</span>
+    <span style="color: #FF0000">}</span>
+
+    <span style="color: #990000">~</span><span style="font-weight: bold"><span style="color: #000000">yaooc_exception</span></span><span style="color: #990000">()</span>
+    <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span>this<span style="color: #990000">-&gt;</span>what_<span style="color: #990000">)</span>
+        <span style="font-weight: bold"><span style="color: #000000">FREE</span></span><span style="color: #990000">(</span>this<span style="color: #990000">-&gt;</span>what_<span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span>
+
+    <span style="font-weight: bold"><span style="color: #000000">yaooc_exception</span></span><span style="color: #990000">(</span>src<span style="color: #990000">)</span> <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #000000">yaooc_exception</span></span><span style="color: #990000">()</span>
+    <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #000000">yaooc_exception_assign</span></span><span style="color: #990000">(</span>this<span style="color: #990000">,</span>src<span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span>
+
+    operator<span style="color: #990000">=(</span>src<span style="color: #990000">)</span>
+    <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #000000">yaooc_exception_dtor</span></span><span style="color: #990000">(</span>this<span style="color: #990000">);</span>
+      this<span style="color: #990000">-&gt;</span>error_code_<span style="color: #990000">=</span>src<span style="color: #990000">-&gt;</span>error_code_<span style="color: #990000">;</span>
+      this<span style="color: #990000">-&gt;</span>what_ <span style="color: #990000">=</span> src<span style="color: #990000">-&gt;</span>what_ <span style="color: #990000">?</span> <span style="font-weight: bold"><span style="color: #000000">STRDUP</span></span><span style="color: #990000">(</span>src<span style="color: #990000">-&gt;</span>what_<span style="color: #990000">)</span> <span style="color: #990000">:</span> NULL<span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span>
+
+<span style="font-weight: bold"><span style="color: #008080">  table:</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">const</span></span> <span style="color: #009900">char</span><span style="color: #990000">*</span> <span style="font-weight: bold"><span style="color: #000000">what</span></span><span style="color: #990000">()</span> <span style="font-weight: bold"><span style="color: #0000FF">const</span></span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> this<span style="color: #990000">-&gt;</span>what_<span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+    <span style="color: #009900">int</span> <span style="font-weight: bold"><span style="color: #000000">error_code</span></span><span style="color: #990000">()</span> <span style="font-weight: bold"><span style="color: #0000FF">const</span></span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> this<span style="color: #990000">-&gt;</span>error_code_<span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+
+<span style="font-weight: bold"><span style="color: #008080">  instance:</span></span>
+    <span style="color: #009900">char</span><span style="color: #990000">*</span> what_<span style="color: #990000">;</span>
+    <span style="color: #009900">int</span> error_code_<span style="color: #990000">;</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>The constructor yaooc_exception_ctor_v creates an exception using printf syntax.
+For example,</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000000">THROW</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #000000">new_ctor</span></span><span style="color: #990000">(</span>yaooc_exception<span style="color: #990000">,</span>yaooc_exception_ctor_v<span style="color: #990000">,</span><span style="color: #FF0000">"Error in file %s at line %d"</span><span style="color: #990000">,</span>__FILE__<span style="color: #990000">,</span>__LINE__<span style="color: #990000">));</span></tt></pre></div></div>
+<div class="sect2">
+<h3 id="_try_catch_blocks_have_a_garbage_bag">16.1. TRY/CATCH blocks have a garbage bag</h3>
+<div class="paragraph"><p>Objects that were created within the scope of the TRY/CATCH block need to be deleted&#8201;&#8212;&#8201;even if an exception is thrown.
+YAOOC facilitates this by providing a garbage bag in the TRY/CATCH block.
+The following macros can be used within a TRY/CATCH block.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 15. Exception Garbage Bag Macros</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Macro</th>
+<th align="left" valign="top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">egb_save(ptr)</p></td>
+<td align="left" valign="top"><p class="table">Save pointer in exception garbage bag and returns value being saved</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">egb_clear</p></td>
+<td align="left" valign="top"><p class="table">Removes pointers from exception garbage bag without deleting pointers</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">egb_delete</p></td>
+<td align="left" valign="top"><p class="table">Deletes pointers in exception garbage bag. More pointer can still be saved</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>Usually, only the egb_save macro is used.</p></div>
+<div class="paragraph"><p>The TRY/CATCH block garbage bag is created when the TRY keyword is encountered. A unique garbage bag is created for each TRY encountered. Pointers saved (egb_save) in garbage bag will be saved in the current TRY/CATCH block garbage bag. The garbage bag is deleted (and all pointers contained) when the TRY/CATCH block goes out of scope. If a method is called within the TRY/CATCH block, that method can use egb_save to save pointers in the garbage bag.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>TRY <span style="color: #FF0000">{</span>  <span style="font-style: italic"><span style="color: #9A1900">/* Garbage bag 1 is created here */</span></span>
+  <span style="color: #990000">...</span> <span style="font-style: italic"><span style="color: #9A1900">/* egb_save saves to garbage bag 1 */</span></span>
+  TRY <span style="color: #FF0000">{</span> <span style="font-style: italic"><span style="color: #9A1900">/* Garbage bag 2 is created here */</span></span>
+    <span style="color: #990000">...</span>   <span style="font-style: italic"><span style="color: #9A1900">/* egb_save saves to garbage bag 2 */</span></span>
+  <span style="color: #FF0000">}</span> <span style="font-weight: bold"><span style="color: #000000">CATCH</span></span><span style="color: #990000">(</span>exception<span style="color: #990000">,</span>e<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="color: #990000">...</span>
+  <span style="color: #FF0000">}</span> ETRY <span style="font-style: italic"><span style="color: #9A1900">/* Garbage bag 2 is deleted here */</span></span>
+<span style="color: #FF0000">}</span> <span style="font-weight: bold"><span style="color: #000000">CATCH</span></span><span style="color: #990000">(</span>exception<span style="color: #990000">,</span>e<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+   <span style="color: #990000">...</span>
+<span style="color: #FF0000">}</span> ETRY <span style="font-style: italic"><span style="color: #9A1900">/* Garbage bag 1 is deleted here */</span></span></tt></pre></div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_containers">17. Containers</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Another well known feature of C++ that is implemented in YAOOC is containers&#8201;&#8212;&#8201;vector, map, set, etc.
+One goal of YAOOC is to use similar iterators as C+\+ (increment and decrement using ++ or --).
+The only structure in C that allows this is an array.
+Therefore, the base class for vector, map, set, etc is an array.
+The table below shows the array types that are implemented in YAOOC.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 16. YAOOC Array Types</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Array type</th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">array_container</p></td>
+<td align="left" valign="top"><p class="table">Random access array container</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">unique_array_container</p></td>
+<td align="left" valign="top"><p class="table">Random access array container where values are unique</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">ordered_array_container</p></td>
+<td align="left" valign="top"><p class="table">Ordered random array access container</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">unique_ordered_array_container</p></td>
+<td align="left" valign="top"><p class="table">Ordered random array access container where values are unique</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">index_array_container</p></td>
+<td align="left" valign="top"><p class="table">Random access array container with shadow index such that array[index[i]] (i=0 to n) will be ordered</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">unique_index_array_container</p></td>
+<td align="left" valign="top"><p class="table">Random access indexed array container where values are unique</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">rbtree_index_array_container</p></td>
+<td align="left" valign="top"><p class="table">Random access array container with indexes kept in a red black tree. array[node&#8594;index] (node is rb tree iterator) is ordered</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>These containers are used to implement higher level containers such as vector or map.
+Items that are contained in the array should have the rich compare type info method defined.</p></div>
+<div class="paragraph"><p>The storage for the container is handled automatically, being expanded and contracted as needed.
+Any iterators for an array may be invalidated when an item is inserted.</p></div>
+<div class="paragraph"><p>The array_container is good for storing items that are appended to the end.
+As the size increases, search time increases since the search is sequential.</p></div>
+<div class="paragraph"><p>The unique_array_container is the same as array_container except items are unique.
+As with array_container, as size increases, so does search time.
+Insert time also increases since array must be searched before insert.</p></div>
+<div class="paragraph"><p>The ordered_array_container keeps items in an ordered fashion.
+Since items are ordered, search times are decreased.
+For large objects, insert times may increase since chunks of memory may be moved so that order is maintained.</p></div>
+<div class="paragraph"><p>The unique_ordered_array_container is same as ordered_array_container except items are unique.
+Searches are faster than the array_container since items are ordered.</p></div>
+<div class="paragraph"><p>The index_array_container maintains a shadow index array such that array[index[i]] (i = 0 to size-1) will be ordered.
+Items are normally added to the end of the array with inserts/moves occurring in the index array.
+This allows for faster inserts (since items are added to end) and faster searches (because of shadow index).</p></div>
+<div class="paragraph"><p>The unique_index_array_container is the same as index_array_container except values are unique.</p></div>
+<div class="paragraph"><p>The rbtree_index_array_container behaves the same as the unique_index_array_container.
+However, indexes are kept in a red black tree.
+The rbtree_index_array_container is about 20 times faster than unique_index_array_container.</p></div>
+<div class="sect2">
+<h3 id="_methods">17.1. Methods</h3>
+<div class="paragraph"><p>The following methods are defined by array.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 17. Array Methods</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Method</th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">size_t size() const</p></td>
+<td align="left" valign="top"><p class="table">Current size of array</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">size_t capacity() const</p></td>
+<td align="left" valign="top"><p class="table">Current capacity of array</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">bool empty() const</p></td>
+<td align="left" valign="top"><p class="table">True if size is 0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator begin()</p></td>
+<td align="left" valign="top"><p class="table">iterator to beginning of array</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator end()</p></td>
+<td align="left" valign="top"><p class="table">iterator to end of array</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">const_iterator cbegin() const</p></td>
+<td align="left" valign="top"><p class="table">const iterator to beginning of array</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">const iterator cend() const</p></td>
+<td align="left" valign="top"><p class="table">const iterator to end of array</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>Values are inserted into containers using pointers to values (not the value).
+For example, if int_vec is an integer vector, the following is most likely not what was intended.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>int_vec<span style="color: #990000">,</span>insert<span style="color: #990000">,</span><span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>int_vec<span style="color: #990000">,</span>cend<span style="color: #990000">),</span><span style="color: #993399">20</span><span style="color: #990000">);</span>  <span style="font-style: italic"><span style="color: #9A1900">// Invalid insertion of 20 at end of vector</span></span></tt></pre></div></div>
+<div class="paragraph"><p>To insert a value into a container, assign the values to a variable of the correct type, and pass the address of the variable as the value to be inserted.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #009900">int</span> value<span style="color: #990000">=</span><span style="color: #993399">20</span><span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>int_vec<span style="color: #990000">,</span>insert<span style="color: #990000">,</span><span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>int_vec<span style="color: #990000">,</span>cend<span style="color: #990000">),&amp;</span>value<span style="color: #990000">);</span>  <span style="font-style: italic"><span style="color: #9A1900">// Correctly inserts 20 at end of vector</span></span></tt></pre></div></div>
+</div>
+<div class="sect2">
+<h3 id="_iterators">17.2. Iterators</h3>
+<div class="paragraph"><p>An iterator and const_iterator is available for derived classes.
+Caution should be used when using methods that return an iterator.
+In the example below, if array is an integer array, the iterators i and j are not equal.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #008080">iterator</span> i <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>array<span style="color: #990000">,</span>begin<span style="color: #990000">)+</span><span style="color: #993399">5</span><span style="color: #990000">;</span>
+<span style="color: #008080">iterator</span> j <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>array<span style="color: #990000">,</span>at<span style="color: #990000">,</span><span style="color: #993399">5</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>Since begin returns a generic iterator (void *&#8201;&#8212;&#8201;which many compilers treat as char* in mathematical operations),
+begin + 5 would be just 5 bytes beyond beginning of array&#8201;&#8212;&#8201;which is most likely not what was intended.
+The at method will return 5*sizeof(int) bytes beyond beginning of array&#8201;&#8212;&#8201;which is probably what was intended.</p></div>
+<div class="paragraph"><p>The following could also be used:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">typedef</span></span> <span style="color: #009900">int</span> <span style="color: #990000">*</span> integer_array_iterator<span style="color: #990000">;</span>     <span style="font-style: italic"><span style="color: #9A1900">// BTW, the YAOOC container declarations (vector, map, etc) defines interator and const_iterator types.</span></span>
+<span style="color: #008080">integer_array_iterator</span> i <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>array<span style="color: #990000">,</span>begin<span style="color: #990000">);</span>
+i <span style="color: #990000">+=</span> <span style="color: #993399">5</span><span style="color: #990000">;</span></tt></pre></div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vector">18. Vector</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>There are two macros that allow usage of vectors&#8201;&#8212;&#8201;VECTOR_DEFINITION and VECTOR_IMPLEMENTATION.</p></div>
+<div class="paragraph"><p>VECTOR_DEFINITION defines the vector using the yaooc_class_table and yaooc_class_instance macros.
+VECTOR_DEFINITION normally appears in the C header file.</p></div>
+<div class="paragraph"><p>VECTOR_IMPLEMENTATION defines the vector class table and type info. VECTOR_IMPLEMENTATION is used in the C source file.</p></div>
+<div class="paragraph"><p>The macros are used as follows in a YAOOC file:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span>header
+<span style="font-weight: bold"><span style="color: #000000">VECTOR_DEFINITION</span></span><span style="color: #990000">(</span>T<span style="color: #990000">,</span>N<span style="color: #990000">)</span>
+<span style="color: #990000">%%</span>
+<span style="font-weight: bold"><span style="color: #000000">VECTOR_IMPLEMENTATION</span></span><span style="color: #990000">(</span>T<span style="color: #990000">,</span>N<span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>T is the type contained in the vector and N is the type name for the vector.
+The following types are created</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 18. C Types for Vector</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Type</th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">N_t</p></td>
+<td align="left" valign="top"><p class="table">The vector type name</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">N_pointer</p></td>
+<td align="left" valign="top"><p class="table">Pointer to instance of vector type name</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">N_const_pointer</p></td>
+<td align="left" valign="top"><p class="table">Constant pointer to instance of vector type name</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">N_iterator</p></td>
+<td align="left" valign="top"><p class="table">Iterator for instance of vector type name</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">N_const_iterator</p></td>
+<td align="left" valign="top"><p class="table">Constant iterator for instance of vector type name</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_methods_2">18.1. Methods</h3>
+<div class="paragraph"><p>Vector inherits the array methods and defines the following additional methods.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Method</th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">iterator at(size_t i)</p></td>
+<td align="left" valign="top"><p class="table">iterator to item at index i</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator push_back(const_pointer value)</p></td>
+<td align="left" valign="top"><p class="table">Adds value to end of vector and return iterator to value</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">void pop_back()</p></td>
+<td align="left" valign="top"><p class="table">removes last item from vector</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator insert(iterator pos,const_pointer value)</p></td>
+<td align="left" valign="top"><p class="table">Insert value at postion pos and returns iterator to value inserted</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator insert_range(const_iterator pos,const_iterator first,const_iterator last)</p></td>
+<td align="left" valign="top"><p class="table">Insert values from range begin to end and returns iterator to first item inserted</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator erase(const_iterator pos)</p></td>
+<td align="left" valign="top"><p class="table">Remove item at pos and returns iterator to item following item removed.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator erase_range(const_iterator first,const_iterator last)</p></td>
+<td align="left" valign="top"><p class="table">Remove items from first to last and return iterator to next element</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">void reserve(size_t new_cap)</p></td>
+<td align="left" valign="top"><p class="table">Increase capacity to new_cap.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">void shrink_to_fit()</p></td>
+<td align="left" valign="top"><p class="table">Shrinks capacity to size</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator front()</p></td>
+<td align="left" valign="top"><p class="table">iterator to first item in vector</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator back()</p></td>
+<td align="left" valign="top"><p class="table">iterator to last item in vector</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator resize_value(size_t n,const_pointer value)</p></td>
+<td align="left" valign="top"><p class="table">Resize so that container size is n.
+ If n&lt;0, destroys elements beyond n.
+ If n&gt;0, elements added to end are equal to value.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator resize(size_t n)</p></td>
+<td align="left" valign="top"><p class="table">Resize so that container size is n.
+ If n&lt;0, destroys elements beyond n.
+ If n&gt;0, values added are created using default constructor.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_example">18.2. Example</h3>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000080">#include</span></span> <span style="color: #FF0000">&lt;yaooc/vector.h&gt;</span>
+<span style="color: #990000">...</span>
+<span style="color: #990000">%</span>header
+<span style="font-weight: bold"><span style="color: #000000">VECTOR_DEFINITION</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">,</span>my_string_vector<span style="color: #990000">)</span>
+<span style="color: #990000">%%</span>
+<span style="font-weight: bold"><span style="color: #000000">VECTOR_IMPLEMENTATION</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">,</span>my_string_vector<span style="color: #990000">)</span>
+<span style="color: #008080">my_string_vector</span> msv<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>my_string_vector<span style="color: #990000">);</span>
+my_string_t<span style="color: #990000">*</span> ms<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>ms<span style="color: #990000">,</span>set<span style="color: #990000">,</span><span style="color: #FF0000">"This"</span><span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>msv<span style="color: #990000">,</span>push_back<span style="color: #990000">,</span>ms<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>ms<span style="color: #990000">,</span>set<span style="color: #990000">,</span><span style="color: #FF0000">"is"</span><span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>msv<span style="color: #990000">,</span>push_back<span style="color: #990000">,</span>ms<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>ms<span style="color: #990000">,</span>set<span style="color: #990000">,</span><span style="color: #FF0000">"a"</span><span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>msv<span style="color: #990000">,</span>push_back<span style="color: #990000">,</span>ms<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>ms<span style="color: #990000">,</span>set<span style="color: #990000">,</span><span style="color: #FF0000">"demonstration"</span><span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>msv<span style="color: #990000">,</span>push_back<span style="color: #990000">,</span>ms<span style="color: #990000">);</span>
+
+<span style="color: #008080">my_string_vector_const_iterator</span> iter<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #0000FF">for</span></span><span style="color: #990000">(</span>iter<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>iv<span style="color: #990000">,</span>cbegin<span style="color: #990000">);</span>iter<span style="color: #990000">!=</span><span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>iv<span style="color: #990000">,</span>cend<span style="color: #990000">);</span>iter<span style="color: #990000">++)</span>
+  <span style="font-weight: bold"><span style="color: #000000">printf</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"%s</span><span style="color: #CC33CC">\n</span><span style="color: #FF0000">"</span><span style="color: #990000">,</span>iter<span style="color: #990000">-&gt;</span>str<span style="color: #990000">);</span>
+<span style="color: #990000">...</span>
+<span style="font-weight: bold"><span style="color: #000000">delete</span></span><span style="color: #990000">(</span>ms<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">delete</span></span><span style="color: #990000">(</span>msv<span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_map">19. Map</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>There are four flavors of maps in YAOOC&#8201;&#8212;&#8201;mini_map, medium_map, map, and ordered_map.
+The difference between them is the underlying container.</p></div>
+<div class="paragraph"><p>mini_map uses the unique_array container.
+Since search is sequential, it&#8217;s best for when the size of the map is relatively small (or infrequent search/insertion).
+Items are maintained in insertion order and will be iterated in insertion order.</p></div>
+<div class="paragraph"><p>medium_map uses the unique index array container.
+Because of the index, search and insertion is much faster (for very large size more than 100 x faster).
+Should be used for larger map sizes.
+There is additional memory overhead because of the index (4*capacity bytes).
+Items are maintained in insertion order and will be iterated in insertion order.</p></div>
+<div class="paragraph"><p>map uses the red black tree index array container.
+This is the fastest map.
+The memory overhead is greatest for map&#8201;&#8212;&#8201;32*size for 64 bit systems and 20*size for 32 bit systems.
+This is due to a red black node for each index.
+Items are maintained in insertion order and will be iterated in insertion order. If memory is not a concern, then use map.</p></div>
+<div class="paragraph"><p>ordered_map uses unique ordered array_container.
+Should be used when a sorted map is desired.
+Search speed is better than mini_map and about the same for map.
+For a large number of items, insertion speed is faster than mini_map (because search speed is faster) but slower than map (because large chunks of memory is moved).
+Items are maintained in sorted order and will be iterated in sorted order.</p></div>
+<div class="paragraph"><p>To use mini_map, specify:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span>header
+<span style="font-weight: bold"><span style="color: #000080">#include</span></span> <span style="color: #FF0000">&lt;yaooc/map.h&gt;</span>
+<span style="font-weight: bold"><span style="color: #000000">MINI_MAP_DEFINITION</span></span><span style="color: #990000">(</span>K<span style="color: #990000">,</span>V<span style="color: #990000">,</span>N<span style="color: #990000">)</span>
+<span style="color: #990000">%%</span>
+<span style="font-weight: bold"><span style="color: #000000">MINI_MAP_IMPLEMENTATION</span></span><span style="color: #990000">(</span>K<span style="color: #990000">,</span>V<span style="color: #990000">,</span>N<span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>To use medium_map, specify:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span>header
+<span style="font-weight: bold"><span style="color: #000080">#include</span></span> <span style="color: #FF0000">&lt;yaooc/map.h&gt;</span>
+<span style="font-weight: bold"><span style="color: #000000">MEDIUM_MAP_DEFINITION</span></span><span style="color: #990000">(</span>K<span style="color: #990000">,</span>V<span style="color: #990000">,</span>N<span style="color: #990000">)</span>
+<span style="color: #990000">%%</span>
+<span style="font-weight: bold"><span style="color: #000000">MEDIUM_MAP_IMPLEMENTATION</span></span><span style="color: #990000">(</span>K<span style="color: #990000">,</span>V<span style="color: #990000">,</span>N<span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>To use map, specify:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span>header
+<span style="font-weight: bold"><span style="color: #000080">#include</span></span> <span style="color: #FF0000">&lt;yaooc/map.h&gt;</span>
+<span style="font-weight: bold"><span style="color: #000000">MAP_DEFINITION</span></span><span style="color: #990000">(</span>K<span style="color: #990000">,</span>V<span style="color: #990000">,</span>N<span style="color: #990000">)</span>
+<span style="color: #990000">%%</span>
+<span style="font-weight: bold"><span style="color: #000000">MAP_IMPLEMENTATION</span></span><span style="color: #990000">(</span>K<span style="color: #990000">,</span>V<span style="color: #990000">,</span>N<span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>To use ordered map, specify:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span>header
+<span style="font-weight: bold"><span style="color: #000080">#include</span></span> <span style="color: #FF0000">&lt;yaooc/map.h&gt;</span>
+<span style="font-weight: bold"><span style="color: #000000">ORDERED_MAP_DEFINITION</span></span><span style="color: #990000">(</span>K<span style="color: #990000">,</span>V<span style="color: #990000">,</span>N<span style="color: #990000">)</span>
+<span style="color: #990000">%%</span>
+<span style="font-weight: bold"><span style="color: #000000">ORDERED_MAP_IMPLEMENTATION</span></span><span style="color: #990000">(</span>K<span style="color: #990000">,</span>V<span style="color: #990000">,</span>N<span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>K is the key type, V is the value type, and N is the type for the map. The following types are created:</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 19. Types Created</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Type</th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">N_t</p></td>
+<td align="left" valign="top"><p class="table">The map type name</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">N_pointer</p></td>
+<td align="left" valign="top"><p class="table">Pointer to instance of map type name</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">N_const_pointer</p></td>
+<td align="left" valign="top"><p class="table">Constant pointer to instance of map type name</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">N_iterator</p></td>
+<td align="left" valign="top"><p class="table">Iterator for instance of map type name</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">N_const_iterator</p></td>
+<td align="left" valign="top"><p class="table">Constant iterator for instance of map type name</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_methods_3">19.1. Methods</h3>
+<div class="paragraph"><p>Map inherits the array methods and defines the following additional methods.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 20. Map Methods</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Method</th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">iterator insert(const_pointer key,const_pointer value)</p></td>
+<td align="left" valign="top"><p class="table">Insert key/value pair.
+If key already exists, the existing value is replaced with new value.
+Equivalent to C++ map operator[]</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">pointer at(const_pointer k)</p></td>
+<td align="left" valign="top"><p class="table">Pointer to value of entry with key k</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator find(const_pointer key)</p></td>
+<td align="left" valign="top"><p class="table">Finds key/value pair for key.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator erase(const_iterator pos)</p></td>
+<td align="left" valign="top"><p class="table">Remove item at pos and returns iterator to item following item removed.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator erase_range(const_iterator</p></td>
+<td align="left" valign="top"><p class="table">first,const_iterator last) Remove items from first to last and return iterator to next element</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">iterator erase_key(const_pointer k)</p></td>
+<td align="left" valign="top"><p class="table">Remove item with key and return iterator to next element</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">void reserve(size_t new_cap)</p></td>
+<td align="left" valign="top"><p class="table">Increase capacity to new_cap. If new_cap less than capacity, do nothing</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">void shrink_to_fit()</p></td>
+<td align="left" valign="top"><p class="table">Shrinks capacity to size</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">void clear()</p></td>
+<td align="left" valign="top"><p class="table">Remove all items from map</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_example_2">19.2. Example</h3>
+<div class="paragraph"><p>A map with my_string as key and integer as value.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">%</span>header
+<span style="font-weight: bold"><span style="color: #000080">#include</span></span> <span style="color: #FF0000">&lt;yaooc/map.h&gt;</span>
+<span style="font-weight: bold"><span style="color: #000000">MAP_DEFINITION</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">,</span><span style="color: #009900">int</span><span style="color: #990000">,</span>my_string_int_map<span style="color: #990000">)</span>
+<span style="color: #990000">%%</span>
+<span style="font-weight: bold"><span style="color: #000000">MAP_IMPLEMENTATION</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">,</span><span style="color: #009900">int</span><span style="color: #990000">,</span>my_string_int_map<span style="color: #990000">)</span>
+
+my_string_int_map_t<span style="color: #990000">*</span> my_map<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>my_string_int_map<span style="color: #990000">);</span>
+my_string_t<span style="color: #990000">*</span> key<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">new</span></span><span style="color: #990000">(</span>my_string<span style="color: #990000">);</span>
+<span style="color: #009900">char</span><span style="color: #990000">*</span> numbs<span style="color: #990000">[]</span> <span style="color: #990000">=</span> <span style="color: #FF0000">{</span> <span style="color: #FF0000">"zero"</span><span style="color: #990000">,</span><span style="color: #FF0000">"one"</span><span style="color: #990000">,</span><span style="color: #FF0000">"two"</span><span style="color: #990000">,</span><span style="color: #FF0000">"three"</span><span style="color: #990000">,</span><span style="color: #FF0000">"four"</span><span style="color: #990000">,</span><span style="color: #FF0000">"five"</span><span style="color: #990000">,</span><span style="color: #FF0000">"six"</span><span style="color: #990000">,</span><span style="color: #FF0000">"seven"</span><span style="color: #990000">,</span><span style="color: #FF0000">"eight"</span><span style="color: #990000">,</span><span style="color: #FF0000">"nine"</span><span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+<span style="color: #009900">int</span> value<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #0000FF">for</span></span><span style="color: #990000">(</span>value<span style="color: #990000">=</span><span style="color: #993399">0</span><span style="color: #990000">;</span>i<span style="color: #990000">&lt;</span><span style="color: #993399">10</span><span style="color: #990000">;</span>i<span style="color: #990000">++)</span> <span style="color: #FF0000">{</span>
+  <span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>key<span style="color: #990000">,</span>set<span style="color: #990000">,</span>numbs<span style="color: #990000">[</span>value<span style="color: #990000">]);</span>
+  <span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>my_map<span style="color: #990000">,</span>insert<span style="color: #990000">,</span>key<span style="color: #990000">,&amp;</span>value<span style="color: #990000">);</span>
+<span style="color: #FF0000">}</span>
+
+<span style="color: #008080">my_string_int_map_const_iterator</span> iter<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #0000FF">for</span></span><span style="color: #990000">(</span>iter<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>my_map<span style="color: #990000">,</span>cbegin<span style="color: #990000">);</span>iter<span style="color: #990000">!=</span><span style="font-weight: bold"><span style="color: #000000">M</span></span><span style="color: #990000">(</span>my_map<span style="color: #990000">,</span>cend<span style="color: #990000">);</span>iter<span style="color: #990000">++)</span>
+  <span style="font-weight: bold"><span style="color: #000000">printf</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"%s-%d</span><span style="color: #CC33CC">\n</span><span style="color: #FF0000">"</span><span style="color: #990000">,</span>iter<span style="color: #990000">-&gt;</span>first<span style="color: #990000">.</span>str<span style="color: #990000">,</span>iter<span style="color: #990000">-&gt;</span>second<span style="color: #990000">);</span>
+
+<span style="font-weight: bold"><span style="color: #000000">delete</span></span><span style="color: #990000">(</span>key<span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #000000">delete</span></span><span style="color: #990000">(</span>my_map<span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
+<div id="footer">
+<div id="footer-text">
+Last updated
+ 2020-05-25 11:14:30 EDT
+</div>
+</div>
+</body>
+</html>

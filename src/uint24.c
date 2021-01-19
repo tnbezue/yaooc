@@ -20,6 +20,7 @@ int yaooc_uint24_rich_compare(const_pointer __plhs__,const_pointer __prhs__)
 yaooc_uint24_const_pointer lhs=__plhs__;(void)lhs;
 yaooc_uint24_const_pointer rhs=__prhs__;(void)rhs;
 
+
       return yaooc_uint24_to_uint32(lhs) - yaooc_uint24_to_uint32(rhs);
     
 }
@@ -28,6 +29,7 @@ void yaooc_uint24_to_stream(const_pointer __pthis__,ostream_pointer __pstrm__)
 yaooc_uint24_const_pointer this=__pthis__;(void)this;
 yaooc_ostream_pointer ostrm=__pstrm__;(void)ostrm;
 
+
       M(ostrm,printf,"%u",yaooc_uint24_to_uint32(this));
     
 }
@@ -35,6 +37,7 @@ void yaooc_uint24_from_stream(pointer __pthis__,ostream_pointer __pstrm__)
 {
 yaooc_uint24_pointer this=__pthis__;(void)this;
 yaooc_istream_pointer istrm=__pstrm__;(void)istrm;
+
 
       uint32_t ui32;
       M(istrm,scanf,"%u",&ui32);

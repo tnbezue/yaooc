@@ -10,9 +10,9 @@ cin >> b;
 -------------------------------
 
 In YAOOC, this behavior is also implemented.
-If a class is to use I/O streams, operators "<<" and ">>" have to be implemented.
+If a class is to use I/O streams, operators "\<<" and ">>" have to be implemented.
 They appear before the "instance:" and "table:" entries.
-If the class is used in a stream and operators "<<" and ">>" are not defined, an exception (more on exceptions later) is thrown.
+If the class is used in a stream and operators "\<<" and ">>" are not defined, an exception (more on exceptions later) is thrown.
 
 [source,c]
 -------------------------------

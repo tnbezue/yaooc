@@ -1,6 +1,6 @@
 #ifndef __DATE_TIME_INCLUDED__
 #define __DATE_TIME_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <yaooc/string.h>
 #include <yaooc/stream.h>

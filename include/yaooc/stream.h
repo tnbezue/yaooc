@@ -1,6 +1,6 @@
 #ifndef __STREAM_INCLUDED__
 #define __STREAM_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/object.h>
 #include <stdio.h>
 void throw_stream_exception(pointer,const char*);

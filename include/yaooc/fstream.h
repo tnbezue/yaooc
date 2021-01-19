@@ -1,6 +1,6 @@
 #ifndef __FSTREAM_INCLUDED__
 #define __FSTREAM_INCLUDED__
-
+#include <yaooc/new.h>
 #include <yaooc/stream.h>
 yaooc_class_table(yaooc_ifstream) {
   yaooc_istream_class_table_t;

@@ -27,7 +27,7 @@ The default constructor is called by the new method after allocating memory for 
 If the default constructor is not specified or it is specified as "my_string()=default;" yaoocpp will create a default constructor.
 The above default constructor is the default constructor that would be created by yaoocpp.
 
-In a later lesson, the rules yaoocpp uses to create a default constructor will be explained further.
+Refer to the YAOOCPP users manual for the rules YAOOCPP uses to create a default constructor.
 
 To keep yaoocpp from creating a default constructor, use "my_string()=delete;"
 
