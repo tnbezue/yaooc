@@ -43,6 +43,8 @@ typedef struct {
           lower=middle+1;
           position=lower;
         } else if(rich_cmp(middle_ptr,value) > 0) {
+	  if(lower == upper)
+		break;
           upper=middle-1;
           position=middle;
         } else {
